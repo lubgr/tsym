@@ -1,0 +1,34 @@
+
+snippet group "CppUnit TEST_GROUP Macro" b
+TEST_GROUP($1) {};
+endsnippet
+
+snippet test "CppUnit TEST Macro"
+TEST(`!p
+import re
+
+testGroupPattern = re.compile('^ *TEST_GROUP\((\w+)\)')
+
+if not snip.c:
+    lineNumber = int(vim.current.window.cursor[0] - 2)
+    testGroup = str(lineNumber)
+    while lineNumber > 0:
+        lineNumber = lineNumber - 1
+        line = vim.current.buffer[lineNumber]
+        match = testGroupPattern.match(line)
+        if match:
+            snip.rv = match.group(1)
+            break
+`, $1)
+{
+    $0
+}
+endsnippet
+
+snippet eq "CppUnit CHECK_EQUAL Macro"
+CHECK_EQUAL($1, $2);$0
+endsnippet
+
+snippet ch "CppUnit CHECK Macro" b
+CHECK($1);$0
+endsnippet

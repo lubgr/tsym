@@ -1,0 +1,9 @@
+*.o
+*.gcda
+*.gcno
+*.swp
+doc/coverage/*
+doc/log
+build/*
+bin/runtests
+.gdb_history

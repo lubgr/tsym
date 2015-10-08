@@ -1,0 +1,502 @@
+
+#include <cassert>
+#include <cmath>
+#include "numtrigosimpl.h"
+#include "constant.h"
+#include "numeric.h"
+#include "product.h"
+#include "sum.h"
+#include "power.h"
+#include "undefined.h"
+#include "logging.h"
+
+namespace tsym {
+    namespace {
+        BasePtr timesPi(int num, int denom)
+        {
+            return Product::create(Numeric::create(num, denom), Constant::createPi());
+        }
+    }
+}
+
+tsym::NumTrigoSimpl::NumTrigoSimpl() :
+    Pi(Constant::createPi()),
+    PI(Pi->numericEval()),
+    type(Trigonometric::SIN), /* Dummy value. */
+    isSimplified(false),
+    sign(1)
+{
+    const BasePtr& zero(Numeric::zero());
+    const BasePtr& one(Numeric::one());
+    const BasePtr two(Numeric::create(2));
+    const BasePtr half(Numeric::create(1, 2));
+    const BasePtr fourth(Numeric::create(1, 4));
+    const BasePtr sqrtTwo(Power::sqrt(two));
+    const BasePtr sqrtThree(Power::sqrt(Numeric::create(3)));
+    const BasePtr sqrtSix(Power::sqrt(Numeric::create(6)));
+
+    /* sin(0) = 0. */
+    sinTable.push_back(std::make_pair(zero, zero));
+    /* sin(1/12*pi) = (sqrt(6) - sqrt(2))/4. */
+    sinTable.push_back(std::make_pair(timesPi(1, 12),
+                Product::create(fourth, Sum::create(sqrtSix, Product::minus(sqrtTwo)))));
+    /* sin(1/8*pi) = sqrt(2 - sqrt(2))/2. */
+    sinTable.push_back(std::make_pair(timesPi(1, 8),
+                Product::create(half, Power::sqrt(Sum::create(two, Product::minus(sqrtTwo))))));
+    /* sin(1/6*pi) = 1/2. */
+    sinTable.push_back(std::make_pair(timesPi(1, 6), half));
+    /* sin(1/4*pi) = 1/sqrt(2). */
+    sinTable.push_back(std::make_pair(timesPi(1, 4), Power::oneOver(sqrtTwo)));
+    /* sin(1/3*pi) = sqrt(3)/2. */
+    sinTable.push_back(std::make_pair(timesPi(1, 3), Product::create(half, sqrtThree)));
+    /* sin(3/8*pi) = sqrt(2 + sqrt(2))/2. */
+    sinTable.push_back(std::make_pair(timesPi(3, 8),
+                Product::create(half, Power::sqrt(Sum::create(two, sqrtTwo)))));
+    /* sin(5/12*pi) = (sqrt(6) + sqrt(2))/4. */
+    sinTable.push_back(std::make_pair(timesPi(5, 12),
+                Product::create(fourth, Sum::create(sqrtSix, sqrtTwo))));
+    /* sin(pi/2) = 1. */
+    sinTable.push_back(std::make_pair(timesPi(1, 2), one));
+    /* tan(0) = 0. */
+    tanTable.push_back(std::make_pair(zero, zero));
+    /* tan(1/12*pi) = 2 - sqrt(3). */
+    tanTable.push_back(std::make_pair(timesPi(1, 12), Sum::create(two,
+                    Product::minus(sqrtThree))));
+    /* tan(1/8*pi) = sqrt(2) - 1. */
+    tanTable.push_back(std::make_pair(timesPi(1, 8), Sum::create(sqrtTwo, Product::minus(one))));
+    /* tan(1/6*pi) = 1/sqrt(3). */
+    tanTable.push_back(std::make_pair(timesPi(1, 6), Power::oneOver(sqrtThree)));
+    /* tan(1/4*pi) = 1. */
+    tanTable.push_back(std::make_pair(timesPi(1, 4), one));
+    /* tan(1/3*pi) = sqrt(3). */
+    tanTable.push_back(std::make_pair(timesPi(1, 3), sqrtThree));
+    /* tan(3/8*pi) = sqrt(2) + 1. */
+    tanTable.push_back(std::make_pair(timesPi(3, 8), Sum::create(sqrtTwo, one)));
+    /* tan(5/12*pi) = 2 + sqrt(3). */
+    tanTable.push_back(std::make_pair(timesPi(5, 12), Sum::create(two, sqrtThree)));
+    /* tan(pi/2) = Undefined. */
+    tanTable.push_back(std::make_pair(timesPi(1, 2), Undefined::create()));
+}
+
+void tsym::NumTrigoSimpl::setType(Trigonometric::Type type)
+{
+    this->type = type;
+}
+
+void tsym::NumTrigoSimpl::setArg(const Number& arg)
+{
+    setArg(Numeric::create(arg));
+}
+
+void tsym::NumTrigoSimpl::setArg(const BasePtr& arg)
+{
+    assert(arg->isNumericallyEvaluable());
+
+    this->arg = arg;
+    origArg = arg;
+}
+
+void tsym::NumTrigoSimpl::compute()
+{
+    assert(!arg->isUndefined());
+
+    reset();
+    detour();
+}
+
+void tsym::NumTrigoSimpl::reset()
+{
+    isSimplified = false;
+    sign = 1;
+    arg = origArg;
+    res = Undefined::create();
+}
+
+void tsym::NumTrigoSimpl::detour()
+{
+    if (isNotAnInverseFct())
+        computeSinCosTan();
+    else
+        computeAsinAcosAtan();
+}
+
+bool tsym::NumTrigoSimpl::isNotAnInverseFct() const
+{
+    return type == Trigonometric::SIN || type == Trigonometric::COS || type == Trigonometric::TAN;
+}
+
+void tsym::NumTrigoSimpl::computeSinCosTan()
+{
+    if (isArgRationalNonZeroNumeric())
+        /* This can't be simplified, break early. */
+        return;
+
+    prepareSinCosTan();
+    detourSinCosTan();
+}
+
+bool tsym::NumTrigoSimpl::isArgRationalNonZeroNumeric() const
+{
+    if (arg->isZero())
+        return false;
+    else
+        return isRationalNumeric(arg);
+}
+
+bool tsym::NumTrigoSimpl::isRationalNumeric(const BasePtr& ptr) const
+{
+    if (ptr->isNumeric())
+        return ptr->numericEval().isRational();
+    else
+        return false;
+}
+
+void tsym::NumTrigoSimpl::prepareSinCosTan()
+{
+    if (arg->isNumeric())
+        adjustNumericArg();
+
+    adjustArgRange();
+}
+
+void tsym::NumTrigoSimpl::adjustNumericArg()
+{
+    const Number n(arg->numericEval());
+
+    arg = Product::create(Numeric::create(n/PI), Pi);
+}
+
+void tsym::NumTrigoSimpl::adjustArgRange()
+{
+    const BasePtr twoPi(timesPi(2, 1));
+
+    /* The argument is a multiple of Pi, and it is shifted into 0 <= arg < 2*Pi. */
+    while (arg->numericEval() < 0)
+        arg = Sum::create(arg, twoPi);
+
+    while (arg->numericEval() >= twoPi->numericEval())
+        arg = Sum::create(arg, Product::minus(twoPi));
+}
+
+void tsym::NumTrigoSimpl::detourSinCosTan()
+{
+    if (type == Trigonometric::SIN)
+        sin();
+    else if (type == Trigonometric::COS)
+        cos();
+    else if (type == Trigonometric::TAN)
+        tan();
+    else
+        logging::error() << "Wrong trigonometric function type!";
+}
+
+void tsym::NumTrigoSimpl::sin()
+{
+    const unsigned quadrant = getQuadrant();
+
+    setSinSign(quadrant);
+    shiftToFirstQuadrant(quadrant);
+
+    return compShiftedSin();
+}
+
+unsigned tsym::NumTrigoSimpl::getQuadrant() const
+{
+    const BasePtr piMultiple(Product::create(arg, Power::oneOver(Pi)));
+    const Number fac(piMultiple->numericEval());
+
+    assert(fac >= 0 && fac < 2);
+
+    if (fac < Number(1, 2))
+        return 1;
+    else if (fac < 1)
+        return 2;
+    else if (fac < Number(3, 2))
+        return 3;
+    else
+        return 4;
+}
+
+void tsym::NumTrigoSimpl::setSinSign(unsigned quadrant)
+{
+    if (quadrant > 2)
+        sign = -1;
+    else
+        sign = 1;
+}
+
+void tsym::NumTrigoSimpl::shiftToFirstQuadrant(unsigned quadrant)
+{
+    const BasePtr piHalf(timesPi(1, 2));
+
+    assert(quadrant != 0 && quadrant <= 4);
+
+    for (unsigned i = 1; i < quadrant; ++i)
+        arg = Sum::create(arg, Product::minus(piHalf));
+
+    if (quadrant == 2 || quadrant == 4)
+        arg = Sum::create(piHalf, Product::minus(arg));
+}
+
+void tsym::NumTrigoSimpl::compShiftedSin()
+{
+    const BasePtr *exact(getValue(sinTable));
+
+    if (exact != NULL)
+        setResult(*exact);
+    else if (isDoubleNumeric(origArg))
+        compNumericalSin();
+    else
+        return;
+}
+
+const tsym::BasePtr *tsym::NumTrigoSimpl::getValue(
+        const std::vector< std::pair<BasePtr, BasePtr> >& table) const
+    /* Returns a pointer to the exact value (thus, the second entry of an element in the given
+     * table), if one matches the argument. Numerical evaluation is carried out for all elements,
+     * that don't exactly match. The latter could be made optional. However, the chance that the
+     * following equality leads to a match by accident is extremely low. */
+{
+    std::vector< std::pair<BasePtr, BasePtr> >::const_iterator it;
+    const Number nArg(arg->numericEval());
+
+    for (it = table.begin(); it != table.end(); ++it)
+        if (arg->isEqual(it->first))
+            return &it->second;
+        else if (nArg == it->first->numericEval())
+            return &it->second;
+
+    return NULL;
+}
+
+void tsym::NumTrigoSimpl::setResult(const BasePtr& result)
+{
+    res = Product::create(Numeric::create(sign), result);
+    isSimplified = true;
+}
+
+bool tsym::NumTrigoSimpl::isDoubleNumeric(const BasePtr& ptr) const
+{
+    if (ptr->isNumeric())
+        return ptr->numericEval().isDouble();
+    else
+        return false;
+}
+
+void tsym::NumTrigoSimpl::compNumericalSin()
+    /* Shifts argument back to a plain Numeric, i.e., division by Constant Pi and multiplication
+     * with (double) Numeric Pi. Then, the STL sine function is used. */
+{
+    arg = Product::create(arg, Power::oneOver(Pi));
+    arg = Product::create(arg, Numeric::create(PI));
+
+    compNumerically(&std::sin);
+}
+
+void tsym::NumTrigoSimpl::compNumerically(double (*fct)(double))
+{
+    double result;
+
+    assert(arg->isNumeric());
+    assert(arg->numericEval().isDouble());
+
+    result = fct(arg->numericEval().toDouble());
+
+    setResult(Numeric::create(result));
+}
+
+void tsym::NumTrigoSimpl::cos()
+    /* Implemented via cos(alpha + 90°) = sin(alpha). */
+{
+    arg = Sum::create(arg, timesPi(1, 2));
+
+    /* The argument could be beyond 2*Pi now, thus adjust it if necessary. */
+    adjustArgRange();
+
+    sin();
+}
+
+void tsym::NumTrigoSimpl::tan()
+{
+    const unsigned quadrant = getQuadrant();
+    const BasePtr *exact(getValue(tanTable));
+
+    setTanSign(quadrant);
+
+    if (exact != NULL)
+        setResult(*exact);
+    else
+        tanViaSinCos();
+}
+
+void tsym::NumTrigoSimpl::setTanSign(unsigned quadrant)
+{
+    if (quadrant == 1 || quadrant == 3)
+        sign = 1;
+    else
+        sign = -1;
+}
+
+void tsym::NumTrigoSimpl::tanViaSinCos()
+{
+    bool simplified = false;
+    BasePtr cosine;
+    BasePtr sine;
+
+    setSinForTan(sine, simplified);
+    setCosForTan(cosine, simplified);
+
+    if (cosine->isZero())
+        /* This should't happen, because tan(Pi/2) is in the tanTable. */
+        setResult(Undefined::create());
+    else if (simplified)
+        setResult(Product::create(sine, Power::oneOver(cosine)));
+
+    /* Restore original state. */
+    type = Trigonometric::TAN;
+}
+
+void tsym::NumTrigoSimpl::setSinForTan(BasePtr& result, bool& simplified)
+{
+    setForTan(Trigonometric::SIN, result, simplified);
+}
+
+void tsym::NumTrigoSimpl::setCosForTan(BasePtr& result, bool& simplified)
+{
+    setForTan(Trigonometric::COS, result, simplified);
+}
+
+void tsym::NumTrigoSimpl::setForTan(Trigonometric::Type type, BasePtr& result, bool& simplified)
+{
+    this->type = type;
+
+    compute();
+
+    result = res;
+    simplified = isSimplified;
+
+    reset();
+}
+
+void tsym::NumTrigoSimpl::computeAsinAcosAtan()
+{
+    if (isInverseArgOutOfRange()) {
+        setResult(Undefined::create());
+        return;
+    }
+
+    prepareAsinAcosAtan();
+    detourAsinAcosAtan();
+}
+
+bool tsym::NumTrigoSimpl::isInverseArgOutOfRange() const
+{
+    const Number nArg(arg->numericEval());
+
+    if (type == Trigonometric::ATAN)
+        return false;
+    else if (nArg < -1 || nArg > 1)
+        return true;
+    else
+        return false;
+}
+
+void tsym::NumTrigoSimpl::prepareAsinAcosAtan()
+{
+    const Number nArg(arg->numericEval());
+
+    if (nArg < 0) {
+        arg = Product::minus(arg);
+        sign = -1;
+    }
+}
+
+void tsym::NumTrigoSimpl::detourAsinAcosAtan()
+{
+    if (type == Trigonometric::ASIN)
+        asin();
+    else if (type == Trigonometric::ACOS)
+        acos();
+    else if (type == Trigonometric::ATAN)
+        atan();
+    else
+        logging::error() << "Wrong trigonometric function type!";
+}
+
+void tsym::NumTrigoSimpl::asin()
+{
+    const BasePtr *exact(getKey(sinTable));
+
+    if (exact != NULL)
+        setResult(*exact);
+    else if (isDoubleNumeric(origArg)) {
+        reset();
+        compNumerically(&std::asin);
+    }
+}
+
+const tsym::BasePtr *tsym::NumTrigoSimpl::getKey(
+        const std::vector< std::pair<BasePtr, BasePtr> >& table) const
+{
+    std::vector< std::pair<BasePtr, BasePtr> >::const_iterator it;
+    const Number nArg(arg->numericEval());
+
+    for (it = table.begin(); it != table.end(); ++it)
+        if (it->second->isUndefined())
+            continue;
+        else if (arg->isEqual(it->second))
+            return &it->first;
+        else if (nArg == it->second->numericEval())
+            return &it->first;
+
+    return NULL;
+}
+
+void tsym::NumTrigoSimpl::acos()
+    /* Implemented via acos(arg) = Pi/2 - asin(arg). */
+{
+    asin();
+
+    if (!isSimplified)
+        return;
+    else
+        acosFromAsinResult();
+}
+
+void tsym::NumTrigoSimpl::acosFromAsinResult()
+{
+    const BasePtr piHalf(timesPi(1, 2));
+
+    if (isDoubleNumeric(res))
+        res = Numeric::create(0.5*PI - res->numericEval());
+    else
+        res = Sum::create(piHalf, Product::minus(res));
+}
+
+void tsym::NumTrigoSimpl::atan()
+{
+    const BasePtr *exact(getKey(tanTable));
+
+    if (exact != NULL)
+        setResult(*exact);
+    else if (isDoubleNumeric(origArg)) {
+        reset();
+        compNumerically(&std::atan);
+    }
+}
+
+bool tsym::NumTrigoSimpl::hasSimplifiedResult() const
+{
+    return isSimplified;
+}
+
+tsym::BasePtr tsym::NumTrigoSimpl::get() const
+{
+    if (isSimplified)
+        return res;
+
+    logging::error() << "Requesting numeric trigonometric simplification for unsimplified " <<
+        "expression! Return Undefined.";
+
+    return Undefined::create();
+}

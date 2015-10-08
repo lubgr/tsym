@@ -1,0 +1,444 @@
+
+#include <cassert>
+#include "productsimpl.h"
+#include "product.h"
+#include "numeric.h"
+#include "power.h"
+#include "sum.h"
+#include "order.h"
+#include "symbol.h"
+#include "numpowersimpl.h"
+#include "logging.h"
+
+tsym::BasePtrList tsym::ProductSimpl::simplify(const BasePtrList& factors)
+{
+    /* We need to extract the factors of included powers at this point, due to the handling of
+     * numeric powers. This differs from Cohen's algorithm. */
+    BasePtrList fac(extractProducts(factors));
+
+    if (fac.size() == 2)
+        return simplTwoFactors(fac);
+    else
+        return simplNFactors(fac);
+}
+
+tsym::BasePtrList tsym::ProductSimpl::extractProducts(const BasePtrList& orig)
+{
+    BasePtrList::const_iterator it;
+    BasePtrList factors;
+
+    for (it = orig.begin(); it != orig.end(); ++it)
+        if ((*it)->isProduct())
+            factors.insert(factors.begin(), (*it)->operands().begin(),
+                    (*it)->operands().end());
+        else
+            factors.push_back(*it);
+
+    return factors;
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplTwoFactors(const BasePtrList& u)
+{
+    BasePtr f1(*u.begin());
+    BasePtr f2(*(++u.begin()));
+
+    return simplTwoFactors(f1, f2);
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplTwoFactors(const BasePtr& f1, const BasePtr& f2)
+{
+    if (f1->isProduct() || f2->isProduct())
+        return simplTwoFactorsWithProduct(f1, f2);
+    else
+        return simplTwoFactorsWithoutProduct(f1, f2);
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplTwoFactorsWithProduct(const BasePtr& f1,
+        const BasePtr& f2)
+{
+    BasePtrList l1 = f1->isProduct() ? f1->operands() : BasePtrList(f1);
+    BasePtrList l2 = f2->isProduct() ? f2->operands() : BasePtrList(f2);
+
+    return merge(l1, l2);
+}
+
+tsym::BasePtrList tsym::ProductSimpl::merge(const BasePtrList& l1, const BasePtrList& l2)
+{
+    if (l1.empty())
+        return l2;
+    else if (l2.empty())
+        return l1;
+    else
+        return mergeNonEmpty(l1, l2);
+}
+
+tsym::BasePtrList tsym::ProductSimpl::mergeNonEmpty(const BasePtrList& p, const BasePtrList& q)
+{
+    const BasePtr p1(p.front());
+    const BasePtr q1(q.front());
+    const BasePtrList p1q1(p1, q1);
+    const BasePtrList q1p1(q1, p1);
+    BasePtrList pRest(p.rest());
+    BasePtrList qRest(q.rest());
+    BasePtrList res;
+
+    res = simplTwoFactors(p1, q1);
+
+    if (res.empty())
+        return merge(pRest, qRest);
+    else if (res.size() == 1 && res.front()->isOne())
+        return BasePtrList(merge(pRest, qRest));
+    else if (res.size() == 1)
+        return BasePtrList(res, merge(pRest, qRest));
+    else if (res.isEqual(p1q1))
+        return BasePtrList(p1, merge(pRest, q));
+    else if (res.isEqual(q1p1))
+        return BasePtrList(q1, merge(p, qRest));
+
+    logging::error() << "ProductSimpl: Error merging non-empty lists: " << p << " " << q << "!";
+
+    return BasePtrList();
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplTwoFactorsWithoutProduct(const BasePtr& f1,
+        const BasePtr& f2)
+{
+    if (f1->isOne())
+        return BasePtrList(f2);
+    else if (f2->isOne())
+        return BasePtrList(f1);
+    else if (f1->isConst() && f2->isConst())
+        /* Here, we differ from Cohen's algorithm, as numerics and constant powers (sqrt(2) etc.)are
+         * handled together and somewhat similarly. */
+        return simplTwoConst(f1, f2);
+    else if (haveEqualBases(f1, f2))
+        return simplTwoEqualBases(f1, f2);
+    else if (order::doPermute(f1, f2))
+        return BasePtrList(f2, f1);
+    else
+        return BasePtrList(f1, f2);
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplTwoConst(const BasePtr& f1, const BasePtr& f2)
+{
+    if (f1->isNumeric() && f2->isNumeric())
+        return simplTwoNumerics(f1, f2);
+    else if (f1->isNumeric())
+        /* The product of a numeric and a numeric power is treated in a special way: 2*sqrt(2) is
+         * not evaluated to 2^(3/2), but stays a product. If f2 is a constant sum, its expansion is
+         * handled later on. */
+        return simplNumAndConst(f1, f2);
+    else if (f2->isNumeric())
+        return simplNumAndConst(f2, f1);
+    else if (haveEqualBases(f1, f2))
+        /* 2*sqrt(2) has been handled earlier, so this will catch terms like 2^(1/3)*2(1/4). */
+        return simplTwoEqualBases(f1, f2);
+    else if (areNumPowersWithEqualExp(f1, f2))
+        /* ... while this is for sqrt(2)*sqrt(3) = sqrt(6). */
+        return simplTwoEqualExp(f1, f2);
+    else if (areNumPowersWithZeroSumExp(f1, f2))
+        /* ... and this is for 2^(1/4)*3^(-1/4) = (2/3)^(1/4). */
+        return simplTwoZeroSumExp(f1, f2);
+    else if (areNumPowersWithEqualExpDenom(f1, f2))
+        return simplTwoEqualExpDenom(f1, f2);
+    else if (order::doPermute(f1, f2))
+        /* This has to be checked additionaly for e.g. (1 + sqrt(2))*sqrt(3), which doesn't need
+         * simplification at this point, but should be perturbed in its order. */
+        return BasePtrList(f2, f1);
+
+    return BasePtrList(f1, f2);
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplTwoNumerics(const BasePtr& f1, const BasePtr& f2)
+{
+    const Number n1(f1->numericEval());
+    const Number n2(f2->numericEval());
+    /* An integer overflow may happen here for large values of n1 and n2. The number class handles
+     * this by converting the result to double. */
+    const Number res(n1*n2);
+
+    if (res.isOne())
+        return BasePtrList();
+    else
+        return BasePtrList(Numeric::create(res));
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplNumAndConst(const BasePtr& numeric,
+        const BasePtr& constant)
+{
+    /* At this point, the second parameter should either be a sum, a numeric power or a constant
+     * power. */
+    assert(!constant->isConstant());
+
+    if (constant->isSum())
+        return BasePtrList(numeric, constant);
+    else if (constant->isNumericPower())
+        return simplNumAndNumPow(numeric, constant);
+    else if (constant->isPower())
+        return BasePtrList(numeric, constant);
+
+    logging::error() << "Wrong type during ProductSimpl of two const. expressions! Got " <<
+            numeric << " as Numeric and " << constant << " as const.!";
+
+    return BasePtrList(numeric, constant);
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplNumAndNumPow(const BasePtr& numeric,
+        const BasePtr& numPow)
+{
+    const Number base(numPow->base()->numericEval());
+    const Number exp(numPow->exp()->numericEval());
+    const Number preFactor(numeric->numericEval());
+
+    return simplNumAndNumPow(preFactor, base, exp);
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplNumAndNumPow(const Number& preFactor, const Number& base,
+        const Number& exp)
+{
+    NumPowerSimpl numericPow;
+    BasePtr newBase;
+    BasePtr newExp;
+    BasePtr preFac;
+
+    numericPow.setPower(base, exp);
+    numericPow.setPreFac(preFactor);
+
+    newBase = Numeric::create(numericPow.getNewBase());
+    newExp = Numeric::create(numericPow.getNewExp());
+    preFac = Numeric::create(numericPow.getPreFactor());
+
+    if (preFac->isOne())
+        return BasePtrList(Power::create(newBase, newExp));
+    else
+        return BasePtrList(preFac, Power::create(newBase, newExp));
+}
+
+bool tsym::ProductSimpl::haveEqualBases(const BasePtr& f1, const BasePtr& f2)
+{
+    return f1->base()->isEqual(f2->base());
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplTwoEqualBases(const BasePtr& f1, const BasePtr& f2)
+{
+    const BasePtr newExp(Sum::create(f1->exp(), f2->exp()));
+
+    return BasePtrList(Power::create(f1->base(), newExp));
+}
+
+bool tsym::ProductSimpl::areNumPowersWithEqualExp(const BasePtr& f1, const BasePtr& f2)
+{
+    BasePtr exp1;
+    BasePtr exp2;
+
+    if (!f1->isNumericPower())
+        return false;
+    else if (!f2->isNumericPower())
+        return false;
+
+    exp1 = f1->exp();
+    exp2 = f2->exp();
+
+    return exp1->isEqual(exp2);
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplTwoEqualExp(const BasePtr& f1, const BasePtr& f2)
+{
+    const Number base1(f1->base()->numericEval());
+    const Number base2(f2->base()->numericEval());
+    const Number& exp(f1->exp()->numericEval());
+
+    return simplNumAndNumPow(1, base1*base2, exp);
+}
+
+bool tsym::ProductSimpl::areNumPowersWithZeroSumExp(const BasePtr& f1, const BasePtr& f2)
+{
+    const BasePtr sum(Sum::create(f1->exp(), f2->exp()));
+
+    return sum->isZero();
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplTwoZeroSumExp(const BasePtr& f1, const BasePtr& f2)
+{
+    /* f1 and f2 are both numeric powers. */
+    const Number base1(f1->base()->numericEval());
+    const BasePtr exp1(f1->exp());
+    Number base2(f2->base()->numericEval());
+
+    base2 = base2.toThe(-1);
+
+    /* No care must be taken for the sign of f1 and f2, the subsequent treatment will choose the
+     * positive exponent. */
+    return BasePtrList(Power::create(Numeric::create(base1*base2), exp1));
+}
+
+bool tsym::ProductSimpl::areNumPowersWithEqualExpDenom(const BasePtr& f1, const BasePtr& f2)
+{
+    if (f1->isNumericPower() && f2->isNumericPower())
+        return f1->exp()->numericEval().denominator() == f2->exp()->numericEval().denominator();
+    else
+        return false;
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplTwoEqualExpDenom(const BasePtr& f1, const BasePtr& f2)
+    /* This method has to manually perform an evaluation of integer exponentiation and
+     * multiplication. If it were using Power/Product or the Number class, possible integer
+     * overflows would have to be evaluated leading to a conversion of Numbers to double. While such
+     * a result could be checked, meaningless errors would be logged indicating a false overflow
+     * during a trial evaluation. Using the Int class directly enables stepwise checking for
+     * overflows without log messages. */
+{
+    assert(f1->isNumericPower() && f2->isNumericPower());
+    const BasePtr newExp(Numeric::create(1, f1->exp()->numericEval().denominator()));
+    const Int& limit(NumPowerSimpl::getMaxPrimeResolution());
+    const Int denom[] = { evalDenomExpNumerator(f1), evalDenomExpNumerator(f2) };
+    const Int num[] = { evalNumExpNumerator(f1), evalNumExpNumerator(f2) };
+    Number newBase;
+    Int newDenom;
+    Int newNum;
+
+    if (num[0].hasOverflowed() || num[1].hasOverflowed() ||
+            denom[0].hasOverflowed() || denom[1].hasOverflowed())
+        return BasePtrList(f1, f2);
+
+    newNum = num[0]*num[1];
+    newDenom = denom[0]*denom[1];
+
+    if (newNum.hasOverflowed() || newDenom.hasOverflowed())
+        return BasePtrList(f1, f2);
+
+    newBase = Number(newNum, newDenom);
+
+    if (newBase.numerator() > limit || newBase.denominator() > limit)
+        return BasePtrList(f1, f2);
+    else
+        return BasePtrList(Power::create(Numeric::create(newBase), newExp));
+}
+
+tsym::Int tsym::ProductSimpl::evalNumExpNumerator(const BasePtr& numPow)
+{
+    const Int exp(numPow->exp()->numericEval().numerator());
+    const Number base(numPow->base()->numericEval());
+
+    return evalExpNumerator(base, exp);
+}
+
+tsym::Int tsym::ProductSimpl::evalExpNumerator(const Number& base, const Int& exp)
+{
+    const Int& selectedBase = exp > 0 ? base.numerator() : base.denominator();
+
+    return selectedBase.toThe(exp.abs());
+}
+
+tsym::Int tsym::ProductSimpl::evalDenomExpNumerator(const BasePtr& numPow)
+{
+    const Number base(numPow->base()->numericEval().toThe(-1));
+    const Int exp(numPow->exp()->numericEval().numerator());
+
+    return evalExpNumerator(base, exp);
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplNFactors(const BasePtrList& u)
+{
+    BasePtrList uCopy(u);
+
+    prepareConst(uCopy);
+
+    return simplPreparedFactors(uCopy);
+}
+
+void tsym::ProductSimpl::prepareConst(BasePtrList& u)
+    /* Some elements of the factor list have to be preprocessed due to the handling of numeric
+     * powers: as the contraction of two numeric powers may result in a product of an integer and a
+     * different numeric power (e.g. sqrt(3)*sqrt(6) = 3*sqrt(2)), the usual ordering of
+     * non-simplified terms wouldn't work properly, because only one operation per expression pair
+     * is provided (in the example: it could be necessary to shift the integer 3 to the beginning of
+     * the factor list to contract it with another integer). */
+{
+    contractNumerics(u);
+    contractNumPowWithEqualBases(u);
+    contractNumPowViaExp(u, &ProductSimpl::areNumPowersWithEqualExp,
+            &ProductSimpl::simplTwoEqualExp);
+    contractNumPowViaExp(u, &ProductSimpl::areNumPowersWithEqualExpDenom,
+            &ProductSimpl::simplTwoEqualExpDenom);
+}
+
+void tsym::ProductSimpl::contractNumerics(BasePtrList& u)
+{
+    BasePtrList::iterator it(u.begin());
+    Number n(1);
+
+    while (it != u.end())
+        if ((*it)->isNumeric()) {
+            n *= (*it)->numericEval();
+            it = u.erase(it);
+        } else
+            ++it;
+
+    if (!n.isOne() || u.empty())
+        u.push_front(Numeric::create(n));
+}
+
+void tsym::ProductSimpl::contractNumPowWithEqualBases(BasePtrList& u)
+{
+    BasePtrList::iterator it1;
+    BasePtrList::iterator it2;
+
+    for (it1 = u.begin(); it1 != u.end(); ++it1)
+        if ((*it1)->isNumericPower())
+            for (it2 = it1; it2 != u.end(); ++it2)
+                if (it2 != it1 && haveEqualBases(*it1, *it2)) {
+                    *it1 = simplTwoEqualBases(*it1, *it2).front();
+                    it2 = u.erase(it2);
+                }
+}
+
+void tsym::ProductSimpl::contractNumPowViaExp(BasePtrList& u,
+        bool (ProductSimpl::*check) (const BasePtr& f1, const BasePtr& f2),
+        BasePtrList (ProductSimpl::*simpl)(const BasePtr& f1, const BasePtr& f2))
+{
+    BasePtrList::iterator it1(u.begin());
+    BasePtrList::iterator it2;
+    BasePtrList res;
+    bool found;
+
+    while (it1 != u.end()) {
+        for (found = false, it2 = it1, ++it2; it2 != u.end(); ++it2)
+            if ((this->*(check))(*it1, *it2)) {
+                res = (this->*(simpl))(*it1, *it2);
+
+                it1 = u.erase(it1);
+                u.insert(it1, res.begin(), res.end());
+                it2 = --u.erase(it2);
+                it1 = it2;
+
+                found = true;
+            }
+
+        if (!found)
+            ++it1;
+    }
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplPreparedFactors(const BasePtrList& u)
+{
+    if (u.size() == 1)
+        return u;
+    else if (u.size() == 2)
+        return simplTwoFactors(u);
+    else
+        return simplNPreparedFactors(u);
+}
+
+tsym::BasePtrList tsym::ProductSimpl::simplNPreparedFactors(const BasePtrList& u)
+{
+    const BasePtrList uRest(u.rest());
+    const BasePtr u1(u.front());
+    BasePtrList simplRest;
+
+    simplRest = simplify(uRest);
+
+    /* Again, slightly different from Cohen's algorithm: u1 can't be a product, because products
+     * components have been merged into the input BasePtrList at the very beginning. */
+    return merge(BasePtrList(u1), simplRest);
+}
