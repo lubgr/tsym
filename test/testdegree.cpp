@@ -261,12 +261,18 @@ TEST(Degree, powerWithNegIntExp)
 
 TEST(Degree, powerTooSmallIntExp)
 {
-    const BasePtr pow = Power::create(a, Numeric::create(Int::min()));
+    const Int min(Int::min());
+    const BasePtr pow = Power::create(a, Numeric::create(min));
     int degree;
 
     disableLog();
     degree = pow->degree(a);
     enableLog();
 
-    CHECK_EQUAL(0, degree);
+    /* Depending on the architecture (32/64bit), Int::min() is just the primitive int-limit. */
+    if (min.fitsIntoInt()) {
+        CHECK_EQUAL(min.toInt(), degree);
+    } else {
+        CHECK_EQUAL(0, degree);
+    }
 }
