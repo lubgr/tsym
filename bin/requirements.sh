@@ -1,50 +1,53 @@
 #!/bin/sh
 
-NECESSARY_EXEC="git make g++ valgrind gdb"
-SUPPLEMENT_EXEC="vim python gcovr ginsh"
-
-NECESSARY_FILES="/usr/local/share/gdb/cpputest.py /usr/local/share/gdb/hlgdb.py"
-
-NECESSARY_LDFLAGS="-lCppUTest -lstdc++"
+NECESSARY_EXEC="git make g++ grep"
+NECESSARY_LDFLAGS="-lCppUTest -lstdc++ -lm"
 NECESSARY_HEADERS="CppUTest/TestHarness.h CppUTest/SimpleString.h"
 
-error=0
+SUPPLEMENT_EXEC="clang vim python gdb gcovr valgrind ginsh"
+SUPPLEMENT_LDFLAGS="-ltrlog"
+SUPPLEMENT_HEADERS="trlog/trlog.h"
+SUPPLEMENT_FILES="/usr/local/share/gdb/cpputest.py /usr/local/share/gdb/hlgdb.py"
 
-for executable in $NECESSARY_EXEC; do
-    if ! which $executable &> /dev/null; then
-        echo "Executable $executable not found!"
-        error=1
-    fi
-done
+function checkExecutable {
+    for executable in $1; do
+        if ! which $executable &> /dev/null; then
+            echo "$2 executable $executable not found!"
+        fi
+    done
+}
 
-for flag in $NECESSARY_LDFLAGS; do
-    if ! echo "int main() { return 0; }" | gcc $flag -o /dev/null -xc++ - &>/dev/null; then
-        echo "Couldn't link against ${flag}!"
-        error=1
-    fi
-done
+function checkLibraryLink {
+    for flag in $1; do
+        if ! echo "int main() { return 0; }" | cc $flag -o /dev/null -xc++ - &>/dev/null; then
+            echo "Couldn't link against $2 ${flag}!"
+        fi
+    done
+}
 
-for header in $NECESSARY_HEADERS; do
-    if ! echo -e "#include \"$header\"\n int main() { return 0; }" | \
-        gcc $flag -o /dev/null -xc++ - ; then
-        echo "Couldn't include header ${header}!"
-        error=1
-    fi
-done
+function checkHeaderFiles {
+    for header in $1; do
+        if ! echo -e "#include \"$header\"\n int main() { return 0; }" | \
+            cc $flag -o /dev/null -xc++ - ; then
+            echo "Couldn't include $2 header ${header}!"
+        fi
+    done
+}
 
-for file in $NECESSARY_FILES; do
-    if ! [ -f $file ]; then
-        echo "File $file not found!"
-        error=1
-    fi
-done
+function checkFiles {
+    for file in $1; do
+        if ! [ -f $file ]; then
+            echo "$2 file $file not found!"
+        fi
+    done
+}
 
-if [ $error -eq 1 ]; then
-    exit 1
-fi
+checkExecutable $NECESSARY_EXEC "Mandatory"
+checkLibraryLink $NECESSARY_LDFLAGS "mandatory"
+checkHeaderFiles $NECESSARY_HEADERS "mandatory"
 
-for executable in $SUPPLEMENT_EXEC; do
-    if ! which $executable &> /dev/null; then
-        echo "Executable $executable not found!"
-    fi
-done
+checkExecutable $SUPPLEMENT_EXEC "Supplementary"
+checkLibraryLink $SUPPLEMENT_LDFLAGS "supplementary"
+checkHeaderFiles $SUPPLEMENT_HEADERS "supplementary"
+checkFiles $SUPPLEMENT_FILES "Supplementary"
+
