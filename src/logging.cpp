@@ -33,7 +33,7 @@ trlog::Stream tsym::logging::fatal()
 
 namespace tsym {
     /* Default behavior; don't show info or debug messages: */
-    log::Level logging::verbosity = WARNING;
+    logging::Level logging::verbosity = WARNING;
 
     namespace {
         std::ostream& stream(logging::Level level)
