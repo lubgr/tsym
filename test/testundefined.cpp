@@ -56,3 +56,14 @@ TEST(Undefined, numericEvaluation)
 {
     CHECK(undefined->numericEval().isUndefined());
 }
+
+TEST(Undefined, equalityOtherUndefined)
+{
+    const BasePtr otherUndefined = Undefined::create();
+
+    CHECK(!undefined->isEqual(undefined));
+    CHECK(!undefined->isEqual(otherUndefined));
+
+    CHECK(undefined->isDifferent(undefined));
+    CHECK(undefined->isDifferent(otherUndefined));
+}

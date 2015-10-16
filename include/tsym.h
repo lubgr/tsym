@@ -7,6 +7,7 @@
 #include "matrix.h"
 #include "number.h"
 #include "solver.h"
+#include "stringtovar.h"
 #include "var.h"
 #include "vector.h"
 #include "version.h"
