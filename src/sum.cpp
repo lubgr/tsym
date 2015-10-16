@@ -97,6 +97,9 @@ tsym::Fraction tsym::Sum::normal(SymbolMap& map) const
 {
     std::vector<Fraction> fractions;
 
+    if (expand()->isZero())
+        return Fraction(Numeric::zero());
+
     for (BasePtrList::const_iterator it = ops.begin(); it != ops.end(); ++it)
         fractions.push_back((*it)->normal(map));
 

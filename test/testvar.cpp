@@ -752,6 +752,14 @@ TEST(Var, diffOfSum)
     CHECK_EQUAL(expected, result);
 }
 
+TEST(Var, normalToZero)
+{
+    const Var sum = a*b + a*c - a*(b + c);
+
+    CHECK(sum.expand().isZero());
+    CHECK(sum.normal().isZero());
+}
+
 TEST(Var, printerOperator)
 {
     const std::string expected("a");
