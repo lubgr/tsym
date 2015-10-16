@@ -34,6 +34,8 @@ tsym::BasePtr tsym::GcdStrategy::compute(const BasePtr& u, const BasePtr& v,
 
     if (uExp->isOne() || vExp->isOne())
         ;
+    else if (uExp->isZero() && vExp->isZero())
+        return Undefined::create();
     else if (uExp->isZero())
         result = vExp;
     else if (vExp->isZero())
