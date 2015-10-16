@@ -13,8 +13,11 @@ tsym::BasePtr tsym::Undefined::create()
     return BasePtr(new Undefined());
 }
 
-bool tsym::Undefined::isEqual(const BasePtr&) const
+bool tsym::Undefined::isEqual(const BasePtr& other) const
 {
+    if (other->isUndefined())
+        logging::warning() << "Equality request between two undefined expressions! Returns false.";
+
     return false;
 }
 
@@ -48,8 +51,11 @@ bool tsym::Undefined::isUndefined() const
     return true;
 }
 
-bool tsym::Undefined::isDifferent(const BasePtr&) const
+bool tsym::Undefined::isDifferent(const BasePtr& other) const
 {
+    if (other->isUndefined())
+        logging::warning() << "Difference request between two Undefined! Returns true.";
+
     return true;
 }
 

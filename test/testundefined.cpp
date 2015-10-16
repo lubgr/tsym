@@ -61,9 +61,13 @@ TEST(Undefined, equalityOtherUndefined)
 {
     const BasePtr otherUndefined = Undefined::create();
 
+    disableLog();
+
     CHECK(!undefined->isEqual(undefined));
     CHECK(!undefined->isEqual(otherUndefined));
 
     CHECK(undefined->isDifferent(undefined));
     CHECK(undefined->isDifferent(otherUndefined));
+
+    enableLog();
 }
