@@ -56,7 +56,7 @@ TEST(StringToVar, symbol)
 TEST(StringToVar, symbolWithUnaryPlus)
 {
     const StringToVar stv("+a");
-    
+
     checkSuccess(a, stv);
 }
 
@@ -119,7 +119,7 @@ TEST(StringToVar, numericPosScientificZeroExp)
 {
     const StringToVar stv(".34E+0");
     const Var expected(0.34);
-    
+
     checkSuccess(expected, stv);
 }
 
@@ -133,6 +133,10 @@ TEST(StringToVar, numericPosScientificLowerENegExp)
 
 TEST(StringToVar, numericPosScientificUpperENegExp)
 {
+    const StringToVar stv("1.234E-56");
+    const Var expected(1.234e-56);
+
+    checkSuccess(expected, stv);
 }
 
 TEST(StringToVar, numericPosScientificUpperEPosExpNoPeriod)
@@ -219,7 +223,7 @@ TEST(StringToVar, sqrtTwo)
 {
     const StringToVar stv("sqrt(2)");
     const Var expected = tsym::sqrt(2);
-    
+
     checkSuccess(expected, stv);
 }
 

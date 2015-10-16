@@ -249,7 +249,6 @@ TEST(Int, toPrimitiveInt02)
         CHECK_EQUAL(value, maxRes);
         CHECK_EQUAL(-value, minRes);
     }
-
 }
 
 TEST(Int, toPrimitiveLong)
