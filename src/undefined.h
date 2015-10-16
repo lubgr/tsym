@@ -19,7 +19,9 @@ namespace tsym {
 
             /* Returns always true: */
             bool isDifferent(const BasePtr& other) const;
+            bool has(const BasePtr& other) const;
             BasePtr subst(const BasePtr& from, const BasePtr& to) const;
+            int degree(const BasePtr& variable) const;
 
             bool isUndefined() const;
 

@@ -53,10 +53,22 @@ bool tsym::Undefined::isDifferent(const BasePtr&) const
     return true;
 }
 
+bool tsym::Undefined::has(const BasePtr&) const
+    /* The Base implementation checks for equality, which doesn't make sense for an Undefined. */
+{
+    return false;
+}
+
 tsym::BasePtr tsym::Undefined::subst(const BasePtr& from, const BasePtr& to) const
 {
     if (from->isUndefined())
         return to;
     else
         return clone();
+}
+
+int tsym::Undefined::degree(const BasePtr&) const
+    /* Same as in the has-method. */
+{
+    return 0;
 }
