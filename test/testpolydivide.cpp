@@ -71,8 +71,8 @@ TEST(PolyDivide, invalidInputBothZero)
     result = poly::divide(zero, zero);
     enableLog();
 
-    CHECK_EQUAL(Undefined::create(), result.front());
-    CHECK_EQUAL(Undefined::create(), result.back());
+    CHECK(result.front()->isUndefined());
+    CHECK(result.back()->isUndefined());
 }
 
 TEST(PolyDivide, invalidInputWithFunction)
@@ -85,8 +85,8 @@ TEST(PolyDivide, invalidInputWithFunction)
     result = poly::divide(u, v, BasePtrList(a));
     enableLog();
 
-    CHECK_EQUAL(Undefined::create(), result.front());
-    CHECK_EQUAL(Undefined::create(), result.back());
+    CHECK(result.front()->isUndefined());
+    CHECK(result.back()->isUndefined());
 }
 
 TEST(PolyDivide, intRemainder)
@@ -111,8 +111,10 @@ TEST(PolyDivide, intRemainder)
     summands.clear();
 
     summands.push_back(Power::create(a, two));
-    summands.push_back(Product::create(two, a));
+    summands.push_back(Product::minus(two, a));
     summands.push_back(four);
+
+    expectedQuotient = Sum::create(summands);
 
     CHECK_EQUAL(expectedQuotient, res.front());
     CHECK_EQUAL(expectedRemainder, res.back());

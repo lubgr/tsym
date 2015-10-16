@@ -67,7 +67,7 @@ TEST(Normal, constantE)
 
 TEST(Normal, undefined)
 {
-    CHECK_EQUAL(undefined, undefined->normal());
+    CHECK(undefined->normal()->isUndefined());
 }
 
 TEST(Normal, powerWithPosIntExp)

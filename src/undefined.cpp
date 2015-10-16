@@ -50,7 +50,7 @@ bool tsym::Undefined::isUndefined() const
 
 bool tsym::Undefined::isDifferent(const BasePtr&) const
 {
-    return false;
+    return true;
 }
 
 tsym::BasePtr tsym::Undefined::subst(const BasePtr& from, const BasePtr& to) const

@@ -52,7 +52,11 @@ TEST_GROUP(Gcd)
     {
         const BasePtr result = poly::gcd(u, v, gcd);
 
-        CHECK_EQUAL(expected, result);
+        if (expected->isUndefined()) {
+            CHECK(result->isUndefined());
+        } else {
+            CHECK_EQUAL(expected, result);
+        }
     }
 };
 
@@ -102,9 +106,7 @@ TEST(Gcd, bothZero)
 TEST(Gcd, bothZeroAfterExpansion)
     /* Same as above. */
 {
-    disableLog();
     check(undefined, zeroAfterExpansion, zeroAfterExpansion);
-    enableLog();
 }
 
 TEST(Gcd, firstArgZeroAfterExpansion)

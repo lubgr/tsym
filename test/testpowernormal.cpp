@@ -47,7 +47,7 @@ TEST(PowerNormal, unspecifiedInput)
 
     res = pn.normal();
 
-    CHECK_EQUAL(undefined, res.num());
+    CHECK(res.num()->isUndefined());
     CHECK_EQUAL(one, res.denom());
 }
 
@@ -304,7 +304,7 @@ TEST(PowerNormal, rationalBaseUndefined)
 
     res = pn.normal().eval();
 
-    CHECK_EQUAL(undefined, res);
+    CHECK(res->isUndefined());
 }
 
 TEST(PowerNormal, rationalBaseUndefinedByExpansion)
@@ -318,5 +318,5 @@ TEST(PowerNormal, rationalBaseUndefinedByExpansion)
 
     res = pn.normal().eval();
 
-    CHECK_EQUAL(undefined, res);
+    CHECK(res->isUndefined());
 }

@@ -64,7 +64,7 @@ TEST(Expansion, trivialUndefined)
     const BasePtr orig = Undefined::create();
     const BasePtr expanded = orig->expand();
 
-    CHECK_EQUAL(orig, expanded);
+    CHECK(expanded->isUndefined());
 }
 
 TEST(Expansion, trivialConstant)
@@ -329,6 +329,8 @@ TEST(Expansion, sumPowerOfThree)
     summands.push_back(Product::create(three, b, b, c));
     summands.push_back(Product::create(three, a, a, c));
     summands.push_back(Product::create(six, a, b, c));
+
+    expected = Sum::create(summands);
 
     result = orig->expand();
 

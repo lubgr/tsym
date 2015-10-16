@@ -34,7 +34,7 @@ TEST(Undefined, numericTerm)
 
 TEST(Undefined, nonNumericTerm)
 {
-    CHECK_EQUAL(undefined, undefined->nonNumericTerm());
+    CHECK(undefined->nonNumericTerm()->isUndefined());
 }
 
 TEST(Undefined, constTerm)
@@ -44,7 +44,7 @@ TEST(Undefined, constTerm)
 
 TEST(Undefined, nonConstTerm)
 {
-    CHECK_EQUAL(undefined, undefined->nonConstTerm());
+    CHECK(undefined->nonConstTerm()->isUndefined());
 }
 
 TEST(Undefined, numericEvaluability)

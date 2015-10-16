@@ -107,7 +107,7 @@ TEST(Subst, undefinedNoChange)
 {
     const BasePtr result = undefined->subst(a, b);
 
-    CHECK_EQUAL(undefined, result);
+    CHECK(result->isUndefined());
 }
 
 TEST(Subst, cosineToConstant)

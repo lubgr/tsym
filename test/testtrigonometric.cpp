@@ -151,7 +151,7 @@ TEST(Trigonometric, undefinedArg)
 {
     const BasePtr sin = Trigonometric::createSin(undefined);
 
-    CHECK_EQUAL(undefined, sin);
+    CHECK(sin->isUndefined());
 }
 
 TEST(Trigonometric, sinOfAsin)
