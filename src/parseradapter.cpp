@@ -1,4 +1,5 @@
 
+#include <sstream>
 #include <string>
 #include <cstring>
 #include <limits>
@@ -223,11 +224,14 @@ void tsym_parserAdapter_deletePtr(void *ptr)
     ptr = NULL;
 }
 
-void tsym_parserAdapter_logParsingError(const char *message, char *yytext)
+void tsym_parserAdapter_logParsingError(const char *message, char *yytext, int column)
 {
-    std::string errorMessage(message);
+    std::stringstream stream;
 
-    errorMessage.append(yytext);
+    stream << message << " at position: " << column;
 
-    registerError(errorMessage);
+    if (strlen(yytext) > 0)
+        stream << " \'" << yytext << "\'";
+
+    registerError(stream.str());
 }

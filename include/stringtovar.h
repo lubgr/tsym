@@ -7,7 +7,16 @@
 
 namespace tsym {
     class StringToVar {
-        /* Simple wrapper class around the parser to construct expressions from textual input. */
+        /* Simple wrapper class around the parser to construct expressions from textual input. Error
+         * processing isn't very sophisticated: in case of a syntax error, everything starting from
+         * that error is rejected. Examples of error recovery are:
+         *
+         * - "1a" = 1
+         * - "a_subscript" = a_s
+         * - "sqrt(2)*sinn(0)" = sqrt(2)*sinn (where 'sinn' is a variable!)
+         *
+         * This might in many cases be not very accurate, but provides a simple procedure for wrong
+         * input. */
         public:
             StringToVar(const std::string& source);
 

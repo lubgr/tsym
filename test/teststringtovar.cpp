@@ -36,6 +36,15 @@ TEST_GROUP(StringToVar)
         CHECK(stv.errorMessages().empty());
     }
 
+    void checkTotalFailure(const StringToVar& stv)
+    {
+        CHECK(!stv.success());
+
+        CHECK_EQUAL("Undefined", stv.get().type());
+
+        CHECK(!stv.errorMessages().empty());
+    }
+
     void checkFailure(const Var& expected, const StringToVar& stv)
     {
         CHECK(!stv.success());
@@ -51,6 +60,54 @@ TEST(StringToVar, symbol)
     const StringToVar stv("a");
 
     checkSuccess(a, stv);
+}
+
+TEST(StringToVar, wrongSymbolWithNumberStart)
+{
+    const Var expected(1);
+    disableLog();
+    const StringToVar stv("1a");
+    enableLog();
+
+    checkFailure(expected, stv);
+}
+
+TEST(StringToVar, symbolWithShortSupscript)
+{
+    const StringToVar stv("aBc123_a");
+    const Name name("aBc123", "a");
+    const Var expected(Symbol::create(name));
+
+    checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, symbolWithLongSupscript)
+{
+    const StringToVar stv("aBc123_{+aA-_1}");
+    const Name name("aBc123", "+aA-_1");
+    const Var expected(Symbol::create(name));
+
+    checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, symbolWithSupscriptError)
+{
+    const Var expected("aBc123", "a");
+    disableLog();
+    const StringToVar stv("aBc123_abc");
+    enableLog();
+
+    checkFailure(expected, stv);
+}
+
+TEST(StringToVar, symbolWithSuperErrorRecovery)
+{
+    const Var expected = a*Var("aBc123", "a");
+    disableLog();
+    const StringToVar stv("a*aBc123_abc*2");
+    enableLog();
+
+    checkFailure(expected, stv);
 }
 
 TEST(StringToVar, symbolWithUnaryPlus)
@@ -217,6 +274,16 @@ TEST(StringToVar, sinOfSymbol)
     const Var expected = tsym::sin(a);
 
     checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, sinWrongSpelling)
+{
+    const Var expected = 2*tsym::sqrt(2)*Var("sinn");
+    disableLog();
+    const StringToVar stv("2*sqrt(2)*sinn(a)*(a + b)");
+    enableLog();
+
+    checkFailure(expected, stv);
 }
 
 TEST(StringToVar, sqrtTwo)

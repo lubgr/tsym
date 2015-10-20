@@ -6,6 +6,8 @@
     int yylex(void);
     void yyerror(char *message);
     void *globalResult;
+    unsigned column;
+    char *yytext;
 %}
 
 %token LONG
@@ -28,7 +30,7 @@
 %type <stringVal> UNDEFINED INT_RANGE DOUBLE_RANGE
 %type <doubleVal> DOUBLE
 %type <longVal> LONG
-%type <basePtr> result expr function
+%type <basePtr> result expr function error
 
 %left '+' '-'
 %left '*' '/'
@@ -42,18 +44,20 @@
 result: expr {
         globalResult = $1;
     }
+    | error
+    ;
 
 expr: function
     | UNDEFINED {
-        tsym_parserAdapter_logParsingError("Invalid input: ", $1);
+        tsym_parserAdapter_logParsingError("Invalid input:", $1, column);
         $$ = tsym_parserAdapter_createUndefined();
     }
     | INT_RANGE {
-        tsym_parserAdapter_logParsingError("Integer out of representable range: ", $1);
+        tsym_parserAdapter_logParsingError("Integer out of representable range: ", $1, column);
         $$ = tsym_parserAdapter_createMaxInt("Continue with max. integer: ");
     }
     | DOUBLE_RANGE {
-        tsym_parserAdapter_logParsingError("Float out of representable range: ", $1);
+        tsym_parserAdapter_logParsingError("Float out of representable range:", $1, column);
         $$ = tsym_parserAdapter_createMaxDouble("Continue with maximum double: ");
     }
     | LONG {
@@ -64,7 +68,6 @@ expr: function
     }
     | SYMBOL {
         $$ = tsym_parserAdapter_createSymbol($1);
-        free($1);
     }
     | expr '+' expr {
         $$ = tsym_parserAdapter_createSum($1, $3);
@@ -137,5 +140,5 @@ function: SIN '(' expr ')' {
 
 void yyerror(char *s)
 {
-    tsym_parserAdapter_logParsingError(s, "");
+    tsym_parserAdapter_logParsingError(s, yytext, column);
 }

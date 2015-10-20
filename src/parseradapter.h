@@ -43,7 +43,7 @@ extern "C" {
     void *tsym_parserAdapter_createSquareRoot(const void *arg);
     void tsym_parserAdapter_deletePtrs(void *ptr1, void *ptr2);
     void tsym_parserAdapter_deletePtr(void *ptr);
-    void tsym_parserAdapter_logParsingError(const char *message, char *yytext);
+    void tsym_parserAdapter_logParsingError(const char *message, char *yytext, int column);
 
 #ifdef __cplusplus
 }

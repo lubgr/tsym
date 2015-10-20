@@ -5,18 +5,19 @@
     #include <errno.h>
 
     void *globalResult;
+    unsigned column;
     void yyerror(char *message);
 %}
 
 NAME [A-Za-z][A-Za-z0-9]*
 SUBSCRIPT "_"([A-Za-z0-9]|\{[-+_A-Za-z0-9]+\})
-SUPERSCRIPT "^"\{[-+_A-Za-z0-9]+\}
 EXPONENT [eE][-+]?[0-9]+
 
 %%
 
 [0-9]+ {
     errno = 0;
+    column += yyleng;
 
     yylval.longVal = strtol(yytext, NULL, 10);
     
@@ -32,6 +33,7 @@ EXPONENT [eE][-+]?[0-9]+
 ([0-9]*"."[0-9]+){EXPONENT}? {
     errno = 0;
 
+    column += yyleng;
     yylval.doubleVal = strtod(yytext, NULL);
     
     if (errno == ERANGE) {
@@ -42,60 +44,62 @@ EXPONENT [eE][-+]?[0-9]+
 }
 
 [Ss][Ii][Nn] {
+    column += yyleng;
     return SIN;
 }
 
 [Cc][Oo][Ss] {
+    column += yyleng;
     return COS;
 }
 
 [Tt][Aa][Nn] {
+    column += yyleng;
     return COS;
 }
 
 [Aa][Ss][Ii][Nn] {
+    column += yyleng;
     return SIN;
 }
 
 [Aa][Cc][Oo][Ss] {
+    column += yyleng;
     return COS;
 }
 
 [Aa][Tt][Aa][Nn] {
+    column += yyleng;
     return COS;
 }
 
 [Ll][Oo][Gg] {
+    column += yyleng;
     return LOG;
 }
 
 [Ss][Qq][Rr][Tt] {
+    column += yyleng;
     return SQRT;
 }
 
-{NAME}{SUBSCRIPT}?{SUPERSCRIPT}? {
-    yylval.stringVal = strdup(yytext);
-    return SYMBOL;
-}
-
-{NAME}{SUPERSCRIPT}?{SUBSCRIPT}? {
-    yylval.stringVal = strdup(yytext);
+{NAME}{SUBSCRIPT}? {
+    column += yyleng;
+    yylval.stringVal = yytext;
     return SYMBOL;
 }
 
 [ \t\n\b] {
-    ;
-}
-
-"^" {
-    return *yytext;
+    column += yyleng;
 }
 
 [-+()/*^] {
+    column += yyleng;
     return *yytext;
 }
 
 . {
+    column += yyleng;
     yylval.stringVal = yytext;
     return UNDEFINED;
 }
@@ -115,6 +119,8 @@ int yywrap(void)
  * void*, which has to be casted to *BasePtr and should then be deleted. */
 void *parseString(const char *string)
 {
+    column = 0;
+
     YY_BUFFER_STATE buffer = yy_scan_string(string);
     yy_switch_to_buffer(buffer);
 
