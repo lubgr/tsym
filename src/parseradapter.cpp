@@ -161,7 +161,12 @@ void *tsym_parserAdapter_createProduct(const void *factor1, const void *factor2)
 
 void *tsym_parserAdapter_createQuotient(const void *dividend, const void *divisor)
 {
-    return create(Product::create, dividend, create(Power::oneOver, divisor));
+    void *divisorAsFactor(create(Power::oneOver, divisor));
+    void *result(create(Product::create, dividend, divisorAsFactor));
+
+    tsym_parserAdapter_deletePtr(divisorAsFactor);
+
+    return result;
 }
 
 void *tsym_parserAdapter_createPower(const void *base, const void *exponent)
