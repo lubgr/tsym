@@ -4,9 +4,21 @@
     #include <stdlib.h>
     #include <errno.h>
 
-    void *globalResult;
-    unsigned column;
-    void yyerror(char *message);
+    extern void yyerror(char *message);
+
+    extern void *result;
+    extern int foundSyntaxError;
+
+    static unsigned currentColumn;
+    static unsigned errorColumn;
+
+    void updateColumnCount()
+    {
+        if (!foundSyntaxError)
+            errorColumn = currentColumn + 1;
+
+        currentColumn += yyleng;
+    }
 %}
 
 NAME [A-Za-z][A-Za-z0-9]*
@@ -17,15 +29,18 @@ EXPONENT [eE][-+]?[0-9]+
 
 [0-9]+ {
     errno = 0;
-    column += yyleng;
 
     yylval.longVal = strtol(yytext, NULL, 10);
     
     if (errno == ERANGE) {
+        updateColumnCount();
+        foundSyntaxError = 1;
         yylval.stringVal = yytext;
         return INT_RANGE;
-    } else
+    } else {
+        updateColumnCount();
         return LONG;
+    }
 }
 
 ([0-9]+"."[0-9]*) |
@@ -33,75 +48,80 @@ EXPONENT [eE][-+]?[0-9]+
 ([0-9]*"."[0-9]+){EXPONENT}? {
     errno = 0;
 
-    column += yyleng;
     yylval.doubleVal = strtod(yytext, NULL);
     
     if (errno == ERANGE) {
+        updateColumnCount();
+        foundSyntaxError = 1;
         yylval.stringVal = yytext;
         return DOUBLE_RANGE;
-    } else
+    } else {
+        updateColumnCount();
         return DOUBLE;
+    }
 }
 
 [Ss][Ii][Nn] {
-    column += yyleng;
+    updateColumnCount();
     return SIN;
 }
 
 [Cc][Oo][Ss] {
-    column += yyleng;
+    updateColumnCount();
     return COS;
 }
 
 [Tt][Aa][Nn] {
-    column += yyleng;
-    return COS;
+    updateColumnCount();
+    return TAN;
 }
 
 [Aa][Ss][Ii][Nn] {
-    column += yyleng;
-    return SIN;
+    updateColumnCount();
+    return ASIN;
 }
 
 [Aa][Cc][Oo][Ss] {
-    column += yyleng;
-    return COS;
+    updateColumnCount();
+    return ACOS;
 }
 
 [Aa][Tt][Aa][Nn] {
-    column += yyleng;
-    return COS;
+    updateColumnCount();
+    return ATAN;
 }
 
 [Ll][Oo][Gg] {
-    column += yyleng;
+    updateColumnCount();
     return LOG;
 }
 
 [Ss][Qq][Rr][Tt] {
-    column += yyleng;
+    updateColumnCount();
     return SQRT;
 }
 
 {NAME}{SUBSCRIPT}? {
-    column += yyleng;
+    updateColumnCount();
     yylval.stringVal = yytext;
     return SYMBOL;
 }
 
 [ \t\n\b] {
-    column += yyleng;
+    updateColumnCount();
 }
 
 [-+()/*^] {
-    column += yyleng;
+    updateColumnCount();
     return *yytext;
 }
 
 . {
-    column += yyleng;
+    updateColumnCount();
+
+    yyerror("Character not recognized: ");
+
     yylval.stringVal = yytext;
-    return UNDEFINED;
 }
 
 %%
@@ -119,7 +139,10 @@ int yywrap(void)
  * void*, which has to be casted to *BasePtr and should then be deleted. */
 void *parseString(const char *string)
 {
-    column = 0;
+    result = NULL;
+    foundSyntaxError = 0;
+    currentColumn = 0;
+    errorColumn = 0;
 
     YY_BUFFER_STATE buffer = yy_scan_string(string);
     yy_switch_to_buffer(buffer);
@@ -129,5 +152,10 @@ void *parseString(const char *string)
     yy_delete_buffer(buffer);
 
     /* Defined in the parser source and set at the toplevel rule: */
-    return globalResult;
+    return result;
+}
+
+unsigned getErrorColumn()
+{
+    return errorColumn;
 }

@@ -1,4 +1,5 @@
 
+#include <cassert>
 #include <limits>
 #include "stringtovar.h"
 #include "globals.h"
@@ -16,7 +17,6 @@ TEST_GROUP(StringToVar)
     Var b;
     Var c;
     Var d;
-    Var e;
 
     void setup()
     {
@@ -24,7 +24,6 @@ TEST_GROUP(StringToVar)
         b = Var("b");
         c = Var("c");
         d = Var("d");
-        e = Var("e");
     }
 
     void checkSuccess(const Var& expected, const StringToVar& stv)
@@ -36,18 +35,25 @@ TEST_GROUP(StringToVar)
         CHECK(stv.errorMessages().empty());
     }
 
-    void checkTotalFailure(const StringToVar& stv)
+    void checkTotalFailure(const StringToVar& stv, unsigned expectedErrorIndex)
     {
         CHECK(!stv.success());
 
         CHECK_EQUAL("Undefined", stv.get().type());
 
+        CHECK_EQUAL(expectedErrorIndex, stv.firstErrorIndex());
+
         CHECK(!stv.errorMessages().empty());
     }
 
-    void checkFailure(const Var& expected, const StringToVar& stv)
+    void checkFailure(const Var& expected, const StringToVar& stv, unsigned expectedErrorIndex)
     {
         CHECK(!stv.success());
+
+        assert(expected.type() != "Undefined");
+        assert(stv.get().type() != "Undefined");
+
+        CHECK_EQUAL(expectedErrorIndex, stv.firstErrorIndex());
 
         CHECK_EQUAL(expected, stv.get());
 
@@ -62,6 +68,13 @@ TEST(StringToVar, symbol)
     checkSuccess(a, stv);
 }
 
+TEST(StringToVar, symbolInWhitespace)
+{
+    const StringToVar stv(" \n  \b  a  \t   ");
+
+    checkSuccess(a, stv);
+}
+
 TEST(StringToVar, wrongSymbolWithNumberStart)
 {
     const Var expected(1);
@@ -69,7 +82,7 @@ TEST(StringToVar, wrongSymbolWithNumberStart)
     const StringToVar stv("1a");
     enableLog();
 
-    checkFailure(expected, stv);
+    checkFailure(expected, stv, 1);
 }
 
 TEST(StringToVar, symbolWithShortSupscript)
@@ -90,24 +103,34 @@ TEST(StringToVar, symbolWithLongSupscript)
     checkSuccess(expected, stv);
 }
 
-TEST(StringToVar, symbolWithSupscriptError)
+TEST(StringToVar, symbolWithSubscriptError)
 {
     const Var expected("aBc123", "a");
     disableLog();
     const StringToVar stv("aBc123_abc");
     enableLog();
 
-    checkFailure(expected, stv);
+    checkFailure(expected, stv, 8);
 }
 
-TEST(StringToVar, symbolWithSuperErrorRecovery)
+TEST(StringToVar, symbolWithSubscriptErrorInProduct)
+{
+    const Var expected("aBc123", "a");
+    disableLog();
+    const StringToVar stv("aBc123_abc*3*sin(a)");
+    enableLog();
+
+    checkFailure(expected, stv, 8);
+}
+
+TEST(StringToVar, symbolWithSubscriptErrorRecovery)
 {
     const Var expected = a*Var("aBc123", "a");
     disableLog();
     const StringToVar stv("a*aBc123_abc*2");
     enableLog();
 
-    checkFailure(expected, stv);
+    checkFailure(expected, stv, 10);
 }
 
 TEST(StringToVar, symbolWithUnaryPlus)
@@ -283,7 +306,7 @@ TEST(StringToVar, sinWrongSpelling)
     const StringToVar stv("2*sqrt(2)*sinn(a)*(a + b)");
     enableLog();
 
-    checkFailure(expected, stv);
+    checkFailure(expected, stv, 14);
 }
 
 TEST(StringToVar, sqrtTwo)
@@ -297,6 +320,14 @@ TEST(StringToVar, sqrtTwo)
 TEST(StringToVar, powerOfSymbols)
 {
     const StringToVar stv("a^b");
+    const Var expected = tsym::pow(a, b);
+
+    checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, powerOfSymbolsWithUselessParentheses)
+{
+    const StringToVar stv("(((((a)))))^((b))");
     const Var expected = tsym::pow(a, b);
 
     checkSuccess(expected, stv);
@@ -331,7 +362,7 @@ TEST(StringToVar, posIntegerOutsideRange)
 
     result = stv.get();
 
-    checkFailure(Var(Numeric::create(Int::max())), stv);
+    checkFailure(Var(Numeric::create(Int::max())), stv, 0);
 }
 
 TEST(StringToVar, negIntegerOutsideRange)
@@ -343,7 +374,7 @@ TEST(StringToVar, negIntegerOutsideRange)
 
     result = stv.get();
 
-    checkFailure(Var(Numeric::create(Int::min())), stv);
+    checkFailure(Var(Numeric::create(Int::min())), stv, 1);
 }
 
 TEST(StringToVar, posDoubleOutsideOfRange)
@@ -355,7 +386,7 @@ TEST(StringToVar, posDoubleOutsideOfRange)
 
     result = stv.get();
 
-    checkFailure(Var(Numeric::create(std::numeric_limits<double>::max())), stv);
+    checkFailure(Var(Numeric::create(std::numeric_limits<double>::max())), stv, 0);
 }
 
 TEST(StringToVar, negDoubleOutsideOfRange)
@@ -367,5 +398,157 @@ TEST(StringToVar, negDoubleOutsideOfRange)
 
     result = stv.get();
 
-    checkFailure(Var(Numeric::create(-std::numeric_limits<double>::max())), stv);
+    checkFailure(Var(Numeric::create(-std::numeric_limits<double>::max())), stv, 1);
+}
+
+TEST(StringToVar, parenthesesAroundSymbol)
+{
+    const StringToVar stv("(a)");
+
+    checkSuccess(a, stv);
+}
+
+TEST(StringToVar, multipleParenthesesInSum)
+{
+    const StringToVar stv("(((a + (b + c) + (15))))");
+    const Var expected = a + b + c + 15;
+
+    checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, productWithSumsInParentheses)
+{
+    const StringToVar stv("a*(b + c) + 4*(a + d)");
+    const Var expected = a*(b + c) + 4*a + 4*d;
+
+    checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, productWithSumInParentheses)
+{
+    const StringToVar stv("a*(b + c)*5*d");
+    const Var expected = a*(b + c)*5*d;
+
+    checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, unrecognizedTokensWithSyntaxError)
+{
+    disableLog();
+    const StringToVar stv("-{}*12*sin(b)");
+    enableLog();
+
+    checkTotalFailure(stv, 1);
+}
+
+TEST(StringToVar, unrecognizedToken)
+{
+    const Var expected = 12*sin(b);
+    disableLog();
+    const StringToVar stv("{12*sin(b)");
+    enableLog();
+
+    checkFailure(expected, stv, 0);
+}
+
+TEST(StringToVar, unrecognizedTokensAfterValidExpression)
+{
+    const Var expected = 123*atan(a + b);
+    disableLog();
+    const StringToVar stv("123*atan(a + b){\a}[[");
+    enableLog();
+
+    checkFailure(expected, stv, 15);
+}
+
+TEST(StringToVar, unrecognizedTokensInsideValidExpression)
+{
+    const Var expected = a*b*sqrt(12*pow(c, 2) - c) - 40;
+    disableLog();
+    const StringToVar stv("[äüa*b*sqrt(12*c^2 - &c) - 40üä]\\");
+    enableLog();
+
+    checkFailure(expected, stv, 0);
+}
+
+TEST(StringToVar, unrecognizedTokensInsideParentheses)
+{
+    const Var expected = 123*atan(a + b);
+    disableLog();
+    const StringToVar stv("({=}[[123*atan(a + b))");
+    enableLog();
+
+    checkFailure(expected, stv, 1);
+}
+
+TEST(StringToVar, emptyParenthesesAfterValidExpressionInProduct)
+{
+    const Var expected = 123*atan(a + b);
+    disableLog();
+    const StringToVar stv("123*atan(a + b)*()");
+    enableLog();
+
+    checkFailure(expected, stv, 17);
+}
+
+TEST(StringToVar, syntaxErrorAfterValidExpressionInProduct)
+{
+    const Var expected = 123*atan(a + b);
+    disableLog();
+    const StringToVar stv("123*atan(a + b)*({)}[[");
+    enableLog();
+
+    checkFailure(expected, stv, 17);
+}
+
+TEST(StringToVar, emptyParentheses)
+{
+    disableLog();
+    const StringToVar stv("(())");
+    enableLog();
+
+    checkTotalFailure(stv, 2);
+}
+
+TEST(StringToVar, emptyParenthesesBeforeValidPart)
+{
+    disableLog();
+    const StringToVar stv("(())a*b + c");
+    enableLog();
+
+    checkTotalFailure(stv, 2);
+}
+
+TEST(StringToVar, mixedTerm01)
+{
+    const StringToVar stv("-a*sin(b)*(c + d)*12*b");
+    const Var expected = -a*sin(b)*(c + d)*12*b;
+
+    checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, mixedTerm02)
+{
+    const StringToVar stvFrac("a*atan(1/sqrt(17))*cos(c*d)*sin(a*b)^2*tan(a*b)");
+    const StringToVar stvNoFrac("a*atan(17^(-1/2))*cos(c*d)*sin(a*b)^2*tan(a*b)");
+    const Var expected = a*atan(1/tsym::sqrt(17))*cos(c*d)*pow(sin(a*b), 2)*tan(a*b);
+
+    checkSuccess(expected, stvFrac);
+    checkSuccess(expected, stvNoFrac);
+}
+
+TEST(StringToVar, mixedTerm03)
+{
+    const StringToVar stv("-a^(2/3)*b^(2/3*c - d)*c^((a + b)^2)");
+    const Var expected = -pow(a, Var(2, 3))*pow(b, 2*c/3 - d)*pow(c, pow(a + b, 2));
+
+    checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, powerOperator)
+{
+    const StringToVar stv("a^(b^2 + c)^2^3");
+    const Var expected = pow(a, pow(b*b + c, 8));
+
+    checkSuccess(expected, stv);
 }

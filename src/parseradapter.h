@@ -11,6 +11,8 @@ namespace tsym {
         BasePtr parse(const char *string);
         void clearErrors();
         const std::vector<std::string>& getErrors();
+        /* Returns 0, if no errors are encountered: */
+        unsigned getFirstErrorIndex();
     }
 }
 
@@ -43,7 +45,7 @@ extern "C" {
     void *tsym_parserAdapter_createSquareRoot(const void *arg);
     void tsym_parserAdapter_deletePtrs(void *ptr1, void *ptr2);
     void tsym_parserAdapter_deletePtr(void *ptr);
-    void tsym_parserAdapter_logParsingError(const char *message, char *yytext, int column);
+    void tsym_parserAdapter_logParsingError(const char *message, char *yytext);
 
 #ifdef __cplusplus
 }

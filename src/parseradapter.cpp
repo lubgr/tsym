@@ -1,5 +1,4 @@
 
-#include <sstream>
 #include <string>
 #include <cstring>
 #include <limits>
@@ -15,8 +14,9 @@
 #include "logarithm.h"
 #include "logging.h"
 
-/* This function is defined in the (f)lex file scanner.l, see comment over there for details. */
+/* These functions are defined in the (f)lex file scanner.l, see comment over there for details. */
 extern "C" void *parseString(const char *string);
+extern "C" unsigned getErrorColumn();
 
 using namespace tsym;
 
@@ -29,6 +29,16 @@ namespace {
     const BasePtr *fromVoid(const void *basePtr)
     {
         return reinterpret_cast<const BasePtr*>(basePtr);
+    }
+
+    BasePtr castNonZeroParseResult(const void *result)
+    {
+        const BasePtr *castedResult(fromVoid(result));
+        const BasePtr copy(*castedResult);
+
+        delete castedResult;
+
+        return copy;
     }
 
     void *create(BasePtr (*fct)(const BasePtr& operand), const void *operand)
@@ -67,12 +77,12 @@ namespace {
 tsym::BasePtr tsym::parserAdapter::parse(const char *string)
 {
     const void *parseResult = parseString(string);
-    const BasePtr *castedResult(fromVoid(parseResult));
-    const BasePtr copy(*castedResult);
 
-    delete castedResult;
-
-    return copy;
+    if (parseResult == NULL) {
+        logging::warning() << "Parsing \'" << string << "\' resulted in NULL pointer";
+        return Undefined::create();
+    } else
+        return castNonZeroParseResult(parseResult);
 }
 
 void tsym::parserAdapter::clearErrors()
@@ -86,6 +96,14 @@ void tsym::parserAdapter::clearErrors()
 const std::vector<std::string>& tsym::parserAdapter::getErrors()
 {
     return errors();
+}
+
+unsigned tsym::parserAdapter::getFirstErrorIndex()
+{
+    if (errors().empty())
+        return 0;
+    else
+        return getErrorColumn() - 1;
 }
 
 void *tsym_parserAdapter_createInteger(long value)
@@ -229,14 +247,11 @@ void tsym_parserAdapter_deletePtr(void *ptr)
     ptr = NULL;
 }
 
-void tsym_parserAdapter_logParsingError(const char *message, char *yytext, int column)
+void tsym_parserAdapter_logParsingError(const char *message, char *yytext)
 {
-    std::stringstream stream;
+    std::string errorMessage(message);
 
-    stream << message << " at position: " << column;
+    errorMessage.append(yytext);
 
-    if (strlen(yytext) > 0)
-        stream << " \'" << yytext << "\'";
-
-    registerError(stream.str());
+    registerError(errorMessage);
 }
