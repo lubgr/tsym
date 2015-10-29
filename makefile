@@ -3,9 +3,9 @@ BUILD = build
 COMMON = -pedantic -Wall -Wextra -fPIC
 COVERAGE = -fprofile-arcs -ftest-coverage
 
-CXXFLAGS = $(COMMON) -Werror=conversion -O0 -g3 -ggdb $(COVERAGE) -I include -I src
+CXXFLAGS = $(COMMON) -Werror=conversion -O0 -g3 -ggdb -I include -I src
 CFLAGS = $(COMMON) -Wno-unused-function -O0 -I $(BUILD) -I src
-YFLAGS = -y -d
+YFLAGS = -d
 LDLIBS = -lCppUTest -ltsym -lstdc++ -lm
 LDFLAGS = -L $(BUILD)
 
@@ -38,7 +38,7 @@ LIB_OBJ = $(LIB_SRC:src/%.cpp=$(BUILD)/%.o) $(BUILD)/parser.o $(BUILD)/scanner.o
 TEST_SRC = $(wildcard test/*.cpp)
 TEST_OBJ = $(TEST_SRC:test/%.cpp=$(BUILD)/%.o)
 
-VPATH = src/ test/
+default: tests
 
 tests release: $(TEST_EXEC)
 
@@ -51,13 +51,19 @@ $(LIB_TARGET): $(LIB_OBJ)
 	$(CXX) -shared $(COVERAGE) -o $(LIB_TARGET) $(LIB_OBJ)
 	ln -fs $(LIB_NAME) $(BUILD)/$(LIB_BASENAME).so
 
-$(BUILD)/%.o: %.cpp
+$(BUILD)/%.o: src/%.cpp
+	$(CXX) $(CXXFLAGS) $(COVERAGE) -o $@ -c $<
+
+$(BUILD)/%.o: test/%.cpp
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-$(BUILD)/%.c: %.l $(BUILD)/parser.c
+$(BUILD)/%.o: $(BUILD)/%.c
+	$(CC) $(CFLAGS) -o $@ -c $<
+
+$(BUILD)/%.c: src/%.l $(BUILD)/parser.c
 	$(LEX) $(LFLAGS) -o $@ $<
 
-$(BUILD)/%.c: %.y
+$(BUILD)/%.c: src/%.y
 	$(YACC) $(YFLAGS) -o $@ $<
 
 install: lib
@@ -79,4 +85,4 @@ clean:
 	$(RM) $(TEST_EXEC)
 	$(RM) doc/coverage/*
 
-.PHONY: clean release lib test tests install
+.PHONY: default clean release lib test tests install
