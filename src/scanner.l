@@ -139,12 +139,13 @@ int yywrap(void)
  * void*, which has to be casted to *BasePtr and should then be deleted. */
 void *parseString(const char *string)
 {
+    YY_BUFFER_STATE buffer;
     result = NULL;
     foundSyntaxError = 0;
     currentColumn = 0;
     errorColumn = 0;
-
-    YY_BUFFER_STATE buffer = yy_scan_string(string);
+    
+    buffer = yy_scan_string(string);
     yy_switch_to_buffer(buffer);
 
     yyparse();
