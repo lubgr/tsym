@@ -14,7 +14,7 @@
 %token LONG
 %token DOUBLE
 %token SYMBOL
-%token INT_RANGE DOUBLE_RANGE
+%token LONG_RANGE DOUBLE_RANGE
 %token SIN COS TAN ASIN ACOS ATAN
 %token SQRT
 %token LOG
@@ -27,10 +27,10 @@
 }
 
 %type <stringVal> SYMBOL
-%type <stringVal> INT_RANGE DOUBLE_RANGE
+%type <stringVal> LONG_RANGE DOUBLE_RANGE
 %type <doubleVal> DOUBLE
 %type <longVal> LONG
-%type <basePtr> parsedExpr expr function
+%type <basePtr> parsedExpr expr function textual
 
 %left '+' '-'
 %left '*' '/'
@@ -47,7 +47,8 @@ parsedExpr: expr {
     ;
 
 expr: function
-    | INT_RANGE {
+    | textual
+    | LONG_RANGE {
         tsym_parserAdapter_logParsingError("Integer out of representable range: ", $1);
         result = $$ = tsym_parserAdapter_createMaxInt("Continue with max. integer: ");
     }
@@ -60,9 +61,6 @@ expr: function
     }
     | DOUBLE {
         result = $$ = tsym_parserAdapter_createDouble($1);
-    }
-    | SYMBOL {
-        result = $$ = tsym_parserAdapter_createSymbol($1);
     }
     | expr '+' expr {
         result = $$ = tsym_parserAdapter_createSum($1, $3);
@@ -96,6 +94,9 @@ expr: function
     }
     ;
 
+textual: SYMBOL {
+        result = $$ = tsym_parserAdapter_createSymbol($1);
+    }
 
 function: SIN '(' expr ')' {
         result = $$ = tsym_parserAdapter_createSine($3);
@@ -127,6 +128,11 @@ function: SIN '(' expr ')' {
     }
     | SQRT '(' expr ')' {
         result = $$ = tsym_parserAdapter_createSquareRoot($3);
+        tsym_parserAdapter_deletePtr($3);
+    }
+    | textual '(' expr ')' {
+        foundSyntaxError = 1;
+        tsym_parserAdapter_logParsingError("Unknown function, treated as variable!", "");
         tsym_parserAdapter_deletePtr($3);
     }
     ;

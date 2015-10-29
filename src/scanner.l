@@ -36,7 +36,7 @@ EXPONENT [eE][-+]?[0-9]+
         updateColumnCount();
         foundSyntaxError = 1;
         yylval.stringVal = yytext;
-        return INT_RANGE;
+        return LONG_RANGE;
     } else {
         updateColumnCount();
         return LONG;

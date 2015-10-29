@@ -301,12 +301,12 @@ TEST(StringToVar, sinOfSymbol)
 
 TEST(StringToVar, sinWrongSpelling)
 {
-    const Var expected = 2*tsym::sqrt(2)*Var("sinn");
+    const Var expected = 2*tsym::sqrt(2)*Var("sinn")*(a + b);
     disableLog();
     const StringToVar stv("2*sqrt(2)*sinn(a)*(a + b)");
     enableLog();
 
-    checkFailure(expected, stv, 14);
+    checkFailure(expected, stv, 16);
 }
 
 TEST(StringToVar, sqrtTwo)
@@ -551,4 +551,32 @@ TEST(StringToVar, powerOperator)
     const Var expected = pow(a, pow(b*b + c, 8));
 
     checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, onlyPowerOperator)
+{
+    disableLog();
+    const StringToVar stv("^^^");
+    enableLog();
+    
+    checkTotalFailure(stv, 0);
+}
+
+TEST(StringToVar, onlyPowerOperatorWithParentheses)
+{
+    disableLog();
+    const StringToVar stv("^(a + b)");
+    enableLog();
+    
+    checkTotalFailure(stv, 0);
+}
+
+TEST(StringToVar, misspelledFunction)
+{
+    const Var expected("alksdjflkasjf");
+    disableLog();
+    const StringToVar stv("alksdjflkasjf(a + b)");
+    enableLog();
+    
+    checkFailure(expected, stv, 19);
 }

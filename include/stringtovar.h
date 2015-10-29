@@ -8,9 +8,8 @@
 namespace tsym {
     class StringToVar {
         /* Simple wrapper class around the parser to construct expressions from textual input. Error
-         * processing isn't very sophisticated: in case of a syntax error, everything starting from
-         * that error is rejected. Unrecognized characters are ignored wherever possible. Examples
-         * of error recovery are:
+         * processing isn't very sophisticated, and unrecognized characters are ignored wherever
+         * possible. Examples of error recovery are:
          *
          * - "1a" = 1
          * - "a_subscript" = a_s
