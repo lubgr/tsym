@@ -455,6 +455,18 @@ TEST(Power, identity)
     CHECK_EQUAL(expected, res->name());
 }
 
+TEST(Power, powerWithPowerExp)
+{
+    const BasePtr exp = Power::create(Sum::create(a, b), two);
+    const BasePtr res = Power::create(a, exp);
+
+    CHECK(res->isPower());
+    CHECK(res->exp()->isPower());
+
+    CHECK_EQUAL(a, res->base());
+    CHECK_EQUAL(exp, res->exp());
+}
+
 TEST(Power, multiplySymbolExp)
     /* (2^a)^a = 2^(a^2). */
 {
