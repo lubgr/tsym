@@ -1,6 +1,6 @@
 #!/bin/sh
 
-NECESSARY_EXEC="git make g++ grep"
+NECESSARY_EXEC="git make g++ grep lex yacc"
 NECESSARY_LDFLAGS="-lCppUTest -lstdc++ -lm"
 NECESSARY_HEADERS="CppUTest/TestHarness.h CppUTest/SimpleString.h"
 
