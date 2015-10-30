@@ -71,7 +71,7 @@ install: lib
 	cp $(LIB_TARGET) $(INSTALL_PREFIX)/lib/
 	ln -sf $(INSTALL_PREFIX)/lib/$(LIB_NAME) $(INSTALL_PREFIX)/lib/$(LIB_BASENAME).so
 	chmod 755 $(INSTALL_PREFIX)/include/tsym
-	chmod 644 $(INSTALL_PREFIX)/include/tsym* $(INSTALL_PREFIX)/lib/$(LIB_NAME)
+	chmod 644 $(INSTALL_PREFIX)/include/tsym/* $(INSTALL_PREFIX)/lib/$(LIB_NAME)
 
 uninstall:
 	rm -f $(INSTALL_LIBDIR)/$(LIB_BASENAME)*
