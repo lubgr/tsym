@@ -614,7 +614,7 @@ TEST(StringToVar, onlyPowerOperator)
     disableLog();
     const StringToVar stv("^^^");
     enableLog();
-    
+
     checkTotalFailure(stv, 0);
 }
 
@@ -623,7 +623,7 @@ TEST(StringToVar, onlyPowerOperatorWithParentheses)
     disableLog();
     const StringToVar stv("^(a + b)");
     enableLog();
-    
+
     checkTotalFailure(stv, 0);
 }
 
@@ -633,7 +633,7 @@ TEST(StringToVar, misspelledFunction)
     disableLog();
     const StringToVar stv("alksdjflkasjf(a + b)");
     enableLog();
-    
+
     checkFailure(expected, stv, 19);
 }
 
