@@ -18,6 +18,7 @@
 %token SIN COS TAN ASIN ACOS ATAN
 %token SQRT
 %token LOG
+%token PI EULER
 
 %union {
     char *stringVal;
@@ -96,6 +97,12 @@ expr: function
 
 textual: SYMBOL {
         result = $$ = tsym_parserAdapter_createSymbol($1);
+    }
+    | PI {
+        result = $$ = tsym_parserAdapter_createPi();
+    }
+    | EULER {
+        result = $$ = tsym_parserAdapter_createEuler();
     }
 
 function: SIN '(' expr ')' {

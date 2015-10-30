@@ -101,6 +101,16 @@ EXPONENT [eE][-+]?[0-9]+
     return SQRT;
 }
 
+[Pp][Ii] {
+    updateColumnCount();
+    return PI;
+}
+
+[Ee][Uu][Ll][Ee][Rr] {
+    updateColumnCount();
+    return EULER;
+}
+
 {NAME}{SUBSCRIPT}? {
     updateColumnCount();
     yylval.stringVal = yytext;

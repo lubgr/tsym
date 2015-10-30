@@ -13,6 +13,7 @@
 #include "power.h"
 #include "trigonometric.h"
 #include "logarithm.h"
+#include "constant.h"
 #include "logging.h"
 
 /* These functions are defined in the (f)lex file scanner.l, see comment over there for details. */
@@ -163,6 +164,20 @@ void *tsym_parserAdapter_createSymbol(const char *name)
     const BasePtr s(Symbol::create(nameWithSubscript));
 
     return toVoid(s);
+}
+
+void *tsym_parserAdapter_createPi()
+{
+    const BasePtr piConstant(Constant::createPi());
+
+    return toVoid(piConstant);
+}
+
+void *tsym_parserAdapter_createEuler()
+{
+    const BasePtr eulerConstant(Constant::createE());
+
+    return toVoid(eulerConstant);
 }
 
 void *tsym_parserAdapter_createUndefined()

@@ -6,7 +6,9 @@
 #include "sum.h"
 #include "product.h"
 #include "undefined.h"
-#include "abc.h"
+#include "numeric.h"
+#include "symbol.h"
+#include "globals.h"
 #include "cpputest.h"
 
 using namespace tsym;
@@ -633,4 +635,48 @@ TEST(StringToVar, misspelledFunction)
     enableLog();
     
     checkFailure(expected, stv, 19);
+}
+
+TEST(StringToVar, pi)
+{
+    const StringToVar stv1("pi");
+    const StringToVar stv2("Pi");
+    const StringToVar stv3("PI");
+    const StringToVar stv4("pI");
+
+    checkSuccess(Pi, stv1);
+    checkSuccess(Pi, stv2);
+    checkSuccess(Pi, stv3);
+    checkSuccess(Pi, stv4);
+}
+
+TEST(StringToVar, piInMixedTerm)
+{
+    const StringToVar stv("2*sin(pi) + pi*cos(pI)*sqrt(PI)");
+    const Var expected = -Pi*sqrt(Pi);
+
+    checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, euler)
+{
+    const StringToVar stv1("euler");
+    const StringToVar stv2("Euler");
+    const StringToVar stv3("EULER");
+    const StringToVar stv4("euLEr");
+    const StringToVar stv5("EuleR");
+
+    checkSuccess(e, stv1);
+    checkSuccess(e, stv2);
+    checkSuccess(e, stv3);
+    checkSuccess(e, stv4);
+    checkSuccess(e, stv5);
+}
+
+TEST(StringToVar, eulerInMixedTerm)
+{
+    const StringToVar stv("10*Euler + EULER^2 - a*b*log(euler)");
+    const Var expected = 10*e + e*e - a*b;
+
+    checkSuccess(expected, stv);
 }

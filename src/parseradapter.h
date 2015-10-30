@@ -28,6 +28,8 @@ extern "C" {
     void *tsym_parserAdapter_createDouble(double value);
     void *tsym_parserAdapter_createMaxDouble(const char *errorMessage);
     void *tsym_parserAdapter_createSymbol(const char *name);
+    void *tsym_parserAdapter_createPi();
+    void *tsym_parserAdapter_createEuler();
     void *tsym_parserAdapter_createUndefined();
     void *tsym_parserAdapter_createSum(const void *summand1, const void *summand2);
     void *tsym_parserAdapter_createDifference(const void *summand1, const void *summand2);
