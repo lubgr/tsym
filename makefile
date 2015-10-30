@@ -4,7 +4,7 @@ COMMON = -pedantic -Wall -Wextra -fPIC
 COVERAGE = -fprofile-arcs -ftest-coverage
 
 CXXFLAGS = $(COMMON) -Werror=conversion -O0 -g3 -ggdb -I include -I src
-CFLAGS = $(COMMON) -Wno-unused-function -O0 -I $(BUILD) -I src
+CFLAGS = $(COMMON) -Wno-sign-compare -Wno-unused-label -Wno-unused-function -O0 -I $(BUILD) -I src
 YFLAGS = -d
 LDLIBS = -lCppUTest -ltsym -lstdc++ -lm
 LDFLAGS = -L $(BUILD)

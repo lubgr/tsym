@@ -45,7 +45,7 @@ EXPONENT [eE][-+]?[0-9]+
 
 ([0-9]+"."[0-9]*) |
 ([0-9]+"."?[0-9]*){EXPONENT} |
-([0-9]*"."[0-9]+){EXPONENT}? {
+([0-9]*"."[0-9]+)({EXPONENT})? {
     errno = 0;
 
     yylval.doubleVal = strtod(yytext, NULL);
@@ -111,7 +111,7 @@ EXPONENT [eE][-+]?[0-9]+
     return EULER;
 }
 
-{NAME}{SUBSCRIPT}? {
+{NAME}({SUBSCRIPT})? {
     updateColumnCount();
     yylval.stringVal = yytext;
     return SYMBOL;
@@ -150,11 +150,12 @@ int yywrap(void)
 void *parseString(const char *string)
 {
     YY_BUFFER_STATE buffer;
+
     result = NULL;
     foundSyntaxError = 0;
     currentColumn = 0;
     errorColumn = 0;
-    
+
     buffer = yy_scan_string(string);
     yy_switch_to_buffer(buffer);
 

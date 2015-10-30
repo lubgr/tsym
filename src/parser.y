@@ -8,7 +8,7 @@
     int foundSyntaxError;
     void yyerror(char *message);
     void *result;
-    char *yytext;
+    extern char yytext[];
 %}
 
 %token LONG

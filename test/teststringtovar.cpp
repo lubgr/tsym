@@ -673,6 +673,21 @@ TEST(StringToVar, euler)
     checkSuccess(e, stv5);
 }
 
+TEST(StringToVar, symbolTimesFunction)
+{
+    const StringToVar stv("a*tan(b)");
+    const Var expected = a*tan(b);
+
+    checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, logOfEulerEvaluesToOne)
+{
+    const StringToVar stv("a*log(euler)");
+
+    checkSuccess(a, stv);
+}
+
 TEST(StringToVar, eulerInMixedTerm)
 {
     const StringToVar stv("10*Euler + EULER^2 - a*b*log(euler)");
