@@ -22,7 +22,7 @@
 %}
 
 NAME [A-Za-z][A-Za-z0-9]*
-SUBSCRIPT "_"([A-Za-z0-9]|\{[-+_A-Za-z0-9]+\})
+SUBSCRIPT "_"([A-Za-z0-9]|\{[A-Za-z0-9]+\})
 EXPONENT [eE][-+]?[0-9]+
 
 %%

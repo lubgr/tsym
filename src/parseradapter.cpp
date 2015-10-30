@@ -3,6 +3,7 @@
 #include <cstring>
 #include <limits>
 #include <vector>
+#include <cassert>
 #include "parseradapter.h"
 #include "sum.h"
 #include "symbol.h"
@@ -57,6 +58,24 @@ namespace {
         const BasePtr creation(fct(*castedOperand1, *castedOperand2));
 
         return toVoid(creation);
+    }
+
+    Name constructName(const std::string& orig)
+    {
+        const size_t underScorePos = orig.find('_');
+        std::string subscript;
+
+        if (underScorePos == std::string::npos)
+            return Name(orig);
+        else if (orig[underScorePos + 1] == '{') {
+            assert(orig[orig.length() - 1] == '}');
+            subscript = orig.substr(underScorePos + 2, orig.length() - underScorePos - 3);
+        } else {
+            assert(orig.length() == underScorePos + 2);
+            subscript = orig[underScorePos + 1];
+        }
+
+        return Name(orig.substr(0, underScorePos), subscript);
     }
 
     std::vector<std::string>& errors()
@@ -140,7 +159,8 @@ void *tsym_parserAdapter_createMaxDouble(const char *errorMessage)
 
 void *tsym_parserAdapter_createSymbol(const char *name)
 {
-    const BasePtr s(Symbol::create(std::string(name)));
+    const Name nameWithSubscript(constructName(name));
+    const BasePtr s(Symbol::create(nameWithSubscript));
 
     return toVoid(s);
 }

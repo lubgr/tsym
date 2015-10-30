@@ -96,14 +96,41 @@ TEST(StringToVar, symbolWithShortSupscript)
 
 TEST(StringToVar, symbolWithLongSupscript)
 {
-    const StringToVar stv("aBc123_{+aA-_1}");
-    const Name name("aBc123", "+aA-_1");
+    const StringToVar stv("aBc123_{aA321}");
+    const Name name("aBc123", "aA321");
     const Var expected(Symbol::create(name));
 
     checkSuccess(expected, stv);
 }
 
-TEST(StringToVar, symbolWithSubscriptError)
+TEST(StringToVar, symbolWithShortSubscriptInBraces)
+{
+    const StringToVar stv("abcdefghijk_{1}");
+    const Name name("abcdefghijk", "1");
+    const Var expected(Symbol::create(name));
+
+    checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, symbolWithEmptySubscript)
+{
+    disableLog();
+    const StringToVar stv("a_");
+    enableLog();
+
+    checkFailure(a, stv, 1);
+}
+
+TEST(StringToVar, symbolWithEmptySubscriptInBraces)
+{
+    disableLog();
+    const StringToVar stv("a_{}");
+    enableLog();
+
+    checkFailure(a, stv, 1);
+}
+
+TEST(StringToVar, symbolWithLongSubscriptWithoutBraces)
 {
     const Var expected("aBc123", "a");
     disableLog();
@@ -111,6 +138,33 @@ TEST(StringToVar, symbolWithSubscriptError)
     enableLog();
 
     checkFailure(expected, stv, 8);
+}
+
+TEST(StringToVar, symbolWithLongSubscriptWithUnrecognizedCharacters)
+{
+    disableLog();
+    const StringToVar stv("a_{1a[ü}");
+    enableLog();
+
+    checkFailure(a, stv, 1);
+}
+
+TEST(StringToVar, symbolWithUnrecognizedCharactersInBetween)
+{
+    disableLog();
+    const StringToVar stv("a{7z_2");
+    enableLog();
+
+    checkFailure(a, stv, 1);
+}
+
+TEST(StringToVar, symbolWithUnrecognizedCharacterInSubscript)
+{
+    disableLog();
+    const StringToVar stv("a_[");
+    enableLog();
+
+    checkFailure(a, stv, 1);
 }
 
 TEST(StringToVar, symbolWithSubscriptErrorInProduct)
