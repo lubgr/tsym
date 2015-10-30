@@ -16,7 +16,7 @@ endif
 
 CXXFLAGS += $(USE_TRLOG)
 CFLAGS += $(USE_TRLOG)
-LDFLAGS += $(LD_TRLOG)
+LDLIBS += $(LD_TRLOG)
 
 release: COMMON += -O2 -DNDEBUG
 release: CXXFLAGS = $(COMMON) -Werror=conversion $(USE_TRLOG) -I include -I src
