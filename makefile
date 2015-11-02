@@ -20,7 +20,8 @@ LDLIBS += $(LD_TRLOG)
 
 release: COMMON += -O2 -DNDEBUG
 release: CXXFLAGS = $(COMMON) -Werror=conversion $(USE_TRLOG) -I include -I src
-release: CFLAGS = $(COMMON) -Wno-unused-function $(USE_TRLOG) -I $(BUILD)
+release: CFLAGS = $(COMMON) -Wno-sign-compare -Wno-unused-label -Wno-unused-function $(USE_TRLOG) \
+    -I $(BUILD) -I src
 release: COVERAGE =
 
 INSTALL_PREFIX = /usr/local
@@ -85,4 +86,4 @@ clean:
 	$(RM) $(TEST_EXEC)
 	$(RM) doc/coverage/*
 
-.PHONY: default clean release lib test tests install
+.PHONY: default clean release lib test tests install uninstall
