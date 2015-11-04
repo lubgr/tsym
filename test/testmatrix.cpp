@@ -800,8 +800,9 @@ TEST(Matrix, inverse3x3)
     for (size_t i = 0; i < 3; ++i) {
         CHECK_EQUAL(1, one(i, i).normal());
         for (size_t j = 0; j < 3; ++j)
-            if (i != j)
+            if (i != j) {
                 CHECK_EQUAL(0, one(i, j).normal());
+            }
     }
 }
 
