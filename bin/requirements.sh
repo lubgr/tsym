@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 NECESSARY_EXEC="git make g++ grep lex yacc"
 NECESSARY_LDFLAGS="-lCppUTest -lstdc++ -lm"
