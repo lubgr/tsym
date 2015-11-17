@@ -4,6 +4,7 @@
     #include <stdlib.h>
     #include <errno.h>
 
+    int yyparse(void);
     extern void yyerror(char *message);
 
     extern void *result;
