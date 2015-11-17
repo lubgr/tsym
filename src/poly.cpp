@@ -225,9 +225,9 @@ tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v)
 
 const tsym::GcdStrategy *tsym::defaultGcd()
 {
-    static const GcdStrategy *algo = new SubresultantGcd();
+    static SubresultantGcd algo;
 
-    return algo;
+    return &algo;
 }
 
 tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v, const GcdStrategy *algo)
