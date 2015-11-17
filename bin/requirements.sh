@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-NECESSARY_EXEC="git make g++ grep lex yacc"
+NECESSARY_EXEC="git make g++ grep lex yacc bash"
 NECESSARY_LDFLAGS="-lCppUTest -lstdc++ -lm"
 NECESSARY_HEADERS="CppUTest/TestHarness.h CppUTest/SimpleString.h"
 
-SUPPLEMENT_EXEC="clang vim python gdb gcovr valgrind ginsh"
+SUPPLEMENT_EXEC="gawk clang vim python gdb gcovr valgrind ginsh bison flex"
 SUPPLEMENT_LDFLAGS="-ltrlog"
 SUPPLEMENT_HEADERS="trlog/trlog.h"
 SUPPLEMENT_FILES="/usr/local/share/gdb/cpputest.py /usr/local/share/gdb/hlgdb.py"

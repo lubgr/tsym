@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 TARGETDIR=doc/coverage
 

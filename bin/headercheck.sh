@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 CC=g++
 CFLAGS="-pedantic -Wall -I include -I src"
