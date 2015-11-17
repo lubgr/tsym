@@ -13,7 +13,6 @@ extern const tsym::BasePtr e;
 extern const tsym::BasePtr f;
 extern const tsym::BasePtr g;
 extern const tsym::BasePtr h;
-extern const tsym::BasePtr i;
 
 extern const tsym::BasePtr zero;
 extern const tsym::BasePtr one;

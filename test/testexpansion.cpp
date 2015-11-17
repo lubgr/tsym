@@ -15,12 +15,14 @@ TEST_GROUP(Expansion)
     BasePtr abSum;
     BasePtr cdSum;
     BasePtr abProduct;
+    BasePtr i;
 
     void setup()
     {
         abSum = Sum::create(a, b);
         cdSum = Sum::create(c, d);
         abProduct = Product::create(a, b);
+        i = Symbol::create("i");
     }
 
     BasePtr getProduct(const BasePtr& f1, const BasePtr& f2,
