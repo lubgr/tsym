@@ -85,8 +85,6 @@ tsym::Number tsym::Sum::numericEval() const
     BasePtrList::const_iterator it;
     Number res(0);
 
-    assert(isNumericallyEvaluable());
-
     for (it = ops.begin(); it != ops.end(); ++it)
         res += (*it)->numericEval();
 
