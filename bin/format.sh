@@ -12,7 +12,7 @@ for file in $files; do
         printf $formatstr "$file +$line" "empty line with whitespace"
     done
 
-    for line in `gawk '/^ *.+ +$/ {print NR}' $file`; do
+    for line in `gawk '/[^ ]+ +$/ {print NR}' $file`; do
         printf $formatstr "$file +$line" "trailing whitespace"
     done
 
