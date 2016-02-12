@@ -39,6 +39,7 @@ namespace tsym {
             static const Trigonometric *tryCast(const BasePtr& arg);
             static BasePtr createFromTrigo(Type type, const BasePtr& arg);
             static bool isOtherTheInverse(Type type, Type otherType);
+            static bool isThisTheInverse(Type type, Type otherType);
             static BasePtr createFromTrigoNoInverse(Type type, const BasePtr& arg);
             static std::string getStr(Type type);
 

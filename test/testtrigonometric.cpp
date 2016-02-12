@@ -207,6 +207,32 @@ TEST(Trigonometric, asinOfSin)
     CHECK_EQUAL(a, arg->operands().front());
 }
 
+TEST(Trigonometric, asinOfSinOfNumericallyEvaluable)
+    /* Asin(sin(12*sqrt(Pi))) is simplified, because it can be checked whether inner function is
+     * defined. */
+{
+    const BasePtr arg = Product::create(Numeric::create(12), Power::sqrt(Constant::createPi()));
+    const BasePtr sin = Trigonometric::createSin(arg);
+    const BasePtr res = Trigonometric::createAsin(sin);
+
+    CHECK_EQUAL(arg, res);
+}
+
+TEST(Trigonometric, atanOfTan)
+    /* Same as before with sine/asine. */
+{
+    const BasePtr tan = Trigonometric::createTan(a);
+    const BasePtr res = Trigonometric::createAtan(tan);
+    BasePtr replaced;
+
+    CHECK(res->isFunction());
+    CHECK(res->operands().front()->isFunction());
+
+    replaced = res->subst(a, two);
+
+    CHECK_EQUAL(two, replaced);
+}
+
 TEST(Trigonometric, sinOfAcos)
     /* Sin(acos(a)) = sqrt(1 - a^2). */
 {

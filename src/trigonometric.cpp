@@ -111,8 +111,31 @@ tsym::BasePtr tsym::Trigonometric::createFromTrigo(Type type, const BasePtr& arg
 
     if (isOtherTheInverse(type, otherType))
         return other->arg;
+    else if (isThisTheInverse(type, otherType) && arg->isNumericallyEvaluable())
+        /* If the argument lies in an invalid range for the inner trigonometric function, the result
+         * has been Undefined in the first place, thus no additional checks necessary here. */
+        return other->arg;
     else
         return createFromTrigoNoInverse(type, arg);
+}
+
+bool tsym::Trigonometric::isOtherTheInverse(Type type, Type otherType)
+    /* Doesn't return true for a general pair of e.g. asin - sin, the first type must be the
+     * non-inverse part. */
+{
+    if (type == SIN)
+        return otherType == ASIN;
+    else if (type == COS)
+        return otherType == ACOS;
+    else if (type == TAN)
+        return otherType == ATAN;
+    else
+        return false;
+}
+
+bool tsym::Trigonometric::isThisTheInverse(Type type, Type otherType)
+{
+    return isOtherTheInverse(otherType, type);
 }
 
 tsym::BasePtr tsym::Trigonometric::createFromTrigoNoInverse(Type type, const BasePtr& arg)
@@ -135,18 +158,6 @@ tsym::BasePtr tsym::Trigonometric::createFromTrigoNoInverse(Type type, const Bas
         return Fraction(aux1, other->arg).eval();
     else
         return BasePtr(new Trigonometric(arg, type));
-}
-
-bool tsym::Trigonometric::isOtherTheInverse(Type type, Type otherType)
-{
-    if (type == SIN)
-        return otherType == ASIN;
-    else if (type == COS)
-        return otherType == ACOS;
-    else if (type == TAN)
-        return otherType == ATAN;
-    else
-        return false;
 }
 
 std::string tsym::Trigonometric::getStr(Type type)
