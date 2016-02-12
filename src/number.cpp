@@ -102,7 +102,7 @@ void tsym::Number::simplify()
     if (isFrac())
         cancel();
 
-    #ifndef NDEBUG
+    #ifdef TSYM_DEBUG_STRINGS
     prettyStr = Printer(*this).getStr();
     #endif
 }

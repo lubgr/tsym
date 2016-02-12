@@ -2,6 +2,7 @@
 #define TSYM_BASEPTR_H
 
 #include <string>
+#include "version.h"
 
 namespace tsym { class Base; }
 
@@ -24,7 +25,7 @@ namespace tsym {
 
         private:
             const Base* bp;
-            #ifndef NDEBUG
+            #ifdef TSYM_DEBUG_STRINGS
             /* A member to be accessed by a gdb pretty printing plugin. As the class is immutable,
              * it has to be defined in (copy/assignment) constructors only. */
             std::string prettyStr;

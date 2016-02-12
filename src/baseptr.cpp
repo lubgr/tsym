@@ -27,7 +27,7 @@ tsym::BasePtr::BasePtr() :
      * above, when this particular undefined BasePtr goes out of scope somewhere. */
     ++bp->refCount;
 
-    #ifndef NDEBUG
+    #ifdef TSYM_DEBUG_STRINGS
     prettyStr = "Undefined";
     #endif
 }
@@ -40,7 +40,7 @@ tsym::BasePtr::BasePtr(const Base *base) :
 
     ++bp->refCount;
 
-    #ifndef NDEBUG
+    #ifdef TSYM_DEBUG_STRINGS
     prettyStr = (Printer(*this)).getStr();
     #endif
 
@@ -54,7 +54,7 @@ tsym::BasePtr::BasePtr(const BasePtr& other) :
     if (other.bp == NULL)
         logging::fatal() << "Initiate Base class with NULL pointer!";
 
-    #ifndef NDEBUG
+    #ifdef TSYM_DEBUG_STRINGS
     prettyStr = other.prettyStr;
     #endif
 
@@ -75,7 +75,7 @@ const tsym::BasePtr& tsym::BasePtr::operator = (const BasePtr& other)
 
     bp = other.bp;
 
-    #ifndef NDEBUG
+    #ifdef TSYM_DEBUG_STRINGS
     prettyStr = other.prettyStr;
     #endif
 

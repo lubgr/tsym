@@ -2,6 +2,7 @@
 #define TSYM_NUMBER_H
 
 #include "int.h"
+#include "version.h"
 
 namespace tsym {
     class Number {
@@ -93,7 +94,7 @@ namespace tsym {
             bool undefined;
             static const double TOL;
             static const double ZERO_TOL;
-            #ifndef NDEBUG
+            #ifdef TSYM_DEBUG_STRINGS
             /* A member to be accessed by a gdb pretty printing plugin. */
             std::string prettyStr;
             #endif

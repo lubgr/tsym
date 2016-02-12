@@ -3,7 +3,7 @@ BUILD = build
 COMMON = -pedantic -Wall -Wextra -fPIC
 COVERAGE = -fprofile-arcs -ftest-coverage
 
-CXXFLAGS = $(COMMON) -Werror=conversion -O0 -g3 -ggdb -I include -I src
+CXXFLAGS = $(COMMON) -Werror=conversion -O0 -g3 -ggdb -I include -I src -I build
 CFLAGS = $(COMMON) -Wno-sign-compare -Wno-unused-label -Wno-unused-function -O0 -I $(BUILD) -I src
 YFLAGS = -d
 LDLIBS = -lCppUTest -ltsym -lstdc++ -lm
@@ -24,10 +24,11 @@ release: CFLAGS = $(COMMON) -Wno-sign-compare -Wno-unused-label -Wno-unused-func
     -I $(BUILD) -I src
 release: COVERAGE =
 
+VERSION = build/version.h
 INSTALL_PREFIX = /usr/local
 
-MAJOR = $(shell grep 'major *=' include/version.h | grep -o '[0-9]\+')
-MINOR = $(shell grep 'minor *=' include/version.h | grep -o '[0-9]\+')
+MAJOR = $(shell git describe --abbrev=0 --tags | cut -b 2)
+MINOR = $(shell git describe --abbrev=0 --tags | cut -b 4)
 
 LIB_BASENAME = libtsym
 LIB_NAME = $(LIB_BASENAME).$(MAJOR).$(MINOR).so
@@ -67,16 +68,28 @@ $(BUILD)/%.c: src/%.l $(BUILD)/parser.c
 $(BUILD)/%.c: src/%.y
 	$(YACC) $(YFLAGS) -o $@ $<
 
+$(LIB_SRC) $(TEST_SRC): $(VERSION)
+
+$(VERSION):
+	@echo generate $(VERSION)
+	@echo "#define TSYM_VERSION_MAJOR $(MAJOR)" > $(VERSION)
+	@echo "#define TSYM_VERSION_MINOR $(MINOR)" >> $(VERSION)
+	@echo $(CXXFLAGS) | grep -qs '\-DNDEBUG' || echo "#define TSYM_DEBUG_STRINGS" >> $(VERSION)
+	@echo "#define TSYM_CPP_COMPILER \"`$(CXX) --version | head -n 1`\"" >> $(VERSION)
+	@echo "#define TSYM_CPP_FLAGS \"$(CXXFLAGS)\"" >> $(VERSION)
+	@echo "#define TSYM_C_COMPILER \"`$(CC) --version | head -n 1`\"" >> $(VERSION)
+	@echo "#define TSYM_C_FLAGS \"$(CFLAGS)\"" >> $(VERSION)
+	@echo "#define TSYM_YACC \"`$(YACC) --version | head -n 1`\"" >> $(VERSION)
+	@echo "#define TSYM_LEX \"`$(LEX) --version | head -n 1`\"" >> $(VERSION)
+
 install: lib
-	rsync -r --delete include/ $(INSTALL_PREFIX)/include/tsym
-	cp $(LIB_TARGET) $(INSTALL_PREFIX)/lib/
+	install -m 644 -Dt $(INSTALL_PREFIX)/include/tsym $(VERSION) include/*
+	install -m 644 $(LIB_TARGET) $(INSTALL_PREFIX)/lib/
 	ln -sf $(INSTALL_PREFIX)/lib/$(LIB_NAME) $(INSTALL_PREFIX)/lib/$(LIB_BASENAME).so
-	chmod 755 $(INSTALL_PREFIX)/include/tsym
-	chmod 644 $(INSTALL_PREFIX)/include/tsym/* $(INSTALL_PREFIX)/lib/$(LIB_NAME)
 
 uninstall:
-	rm -f $(INSTALL_LIBDIR)/$(LIB_BASENAME)*
-	rm -rf $(INSTALL_INCLUDE)
+	rm -f $(INSTALL_PREFIX)/lib/$(LIB_BASENAME).*
+	rm -rf $(INSTALL_PREFIX)/include/tsym
 
 test: $(TEST_EXEC)
 	@$(TEST_EXEC)
