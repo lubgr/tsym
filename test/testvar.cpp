@@ -743,6 +743,14 @@ TEST(Var, largeMixedTerm05)
     CHECK_EQUAL(8, res.operands().size());
 }
 
+TEST(Var, acosOfCosOfThreePiFourth)
+{
+    const Var res = acos(cos(7*Pi/4));
+    const Var expected = Pi/4;
+
+    CHECK_EQUAL(expected, res);
+}
+
 TEST(Var, diffOfSum)
 {
     const Var sum(2*pow(a, 3) + a*b);

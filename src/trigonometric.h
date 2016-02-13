@@ -9,7 +9,9 @@ namespace tsym {
          * arccosine and arctangent. If the argument is one of these trigonometric functions, the
          * simplification procedure may return the proper trigonometric identity. Numerical
          * arguments are resolved if possible, e.g. by a double Numeric or by a Power expression
-         * (e.g. sin(Pi/4) = 1/sqrt(2)). */
+         * (e.g. sin(Pi/4) = 1/sqrt(2)). In addition, inverse trigonometric functions of their
+         * counterparts are resolved for numerically evaluable arguments, e.g. asin(sin(1/2)) = 1/2
+         * or acos(cos(11/3*pi - sqrt(2))) = pi/3 + sqrt(2). */
         public:
             static BasePtr createSin(const BasePtr& arg);
             static BasePtr createCos(const BasePtr& arg);
@@ -40,6 +42,8 @@ namespace tsym {
             static BasePtr createFromTrigo(Type type, const BasePtr& arg);
             static bool isOtherTheInverse(Type type, Type otherType);
             static bool isThisTheInverse(Type type, Type otherType);
+            static BasePtr shiftArgIntoRange(Type type, BasePtr arg);
+            static void defineIntervalAndEndFactor(Type type, BasePtr *interval, BasePtr& factor);
             static BasePtr createFromTrigoNoInverse(Type type, const BasePtr& arg);
             static std::string getStr(Type type);
 

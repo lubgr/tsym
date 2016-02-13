@@ -207,20 +207,82 @@ TEST(Trigonometric, asinOfSin)
     CHECK_EQUAL(a, arg->operands().front());
 }
 
-TEST(Trigonometric, asinOfSinOfNumericallyEvaluable)
-    /* Asin(sin(12*sqrt(Pi))) is simplified, because it can be checked whether inner function is
-     * defined. */
+TEST(Trigonometric, asinOfSinOfNumEvalNoShift)
+    /* Asin(sin(-1/sqrt(5))) = -1/sqrt(5). */
 {
-    const BasePtr arg = Product::create(Numeric::create(12), Power::sqrt(Constant::createPi()));
+    const BasePtr arg = Power::oneOver(Product::minus(Power::create(five, Numeric::create(1, 2))));
+    const BasePtr res = Trigonometric::createAsin(Trigonometric::createSin(arg));
+
+    CHECK_EQUAL(arg, res);
+}
+
+TEST(Trigonometric, asinOfSinOfNumEvalNoShift2)
+    /* Asin(sin(2/17)) = 2/17. */
+{
+    const BasePtr arg = Numeric::create(2, 17);
     const BasePtr sin = Trigonometric::createSin(arg);
     const BasePtr res = Trigonometric::createAsin(sin);
 
     CHECK_EQUAL(arg, res);
 }
 
-TEST(Trigonometric, atanOfTan)
-    /* Same as before with sine/asine. */
+TEST(Trigonometric, asinOfSinOfNumEvalNegShift)
+    /*  Asin(sin(13/4*pi)) = -pi/4. */
 {
+    const BasePtr arg = Product::create(Numeric::create(13, 4), pi);
+    const BasePtr res = Trigonometric::createAsin(Trigonometric::createSin(arg));
+    const BasePtr expected = Product::create(Numeric::create(-1, 4), pi);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, asinOfSinOfNumEvalNegShift2)
+    /* Asin(sin(12*sqrt(pi))) = 7*pi - 12*sqrt(pi). */
+{
+    const BasePtr arg = Product::create(Numeric::create(12), Power::sqrt(Constant::createPi()));
+    const BasePtr sin = Trigonometric::createSin(arg);
+    const BasePtr res = Trigonometric::createAsin(sin);
+    const BasePtr expected = Sum::create(Product::create(seven, pi), Product::minus(arg));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, asinOfSinOfNumEvalPosShift)
+    /* Asin(sin(-79/7*pi + 2/15)) = 2/7*pi - 2/15. */
+{
+    const BasePtr arg = Sum::create(Numeric::create(2, 15),
+            Product::create(Numeric::create(-79, 7), pi));
+    const BasePtr res = Trigonometric::createAsin(Trigonometric::createSin(arg));
+    const BasePtr expected = Sum::create(Product::create(Numeric::create(2, 7), pi),
+            Numeric::create(-2, 15));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, asinOfSinOfNumEvalPosShift2)
+    /* Asin(sin(-6/7*pi)) = -pi/7. */
+{
+    const BasePtr arg = Product::create(Numeric::create(-6, 7), pi);
+    const BasePtr res = Trigonometric::createAsin(Trigonometric::createSin(arg));
+    const BasePtr expected = Product::create(Numeric::create(-1, 7), pi);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, atanOfTanNumEvalNoShift)
+    /* Atan(tan(1/2)) = 1/2. */
+{
+    const BasePtr half = Numeric::create(1, 2);
+    const BasePtr tan = Trigonometric::createTan(half);
+    const BasePtr res = Trigonometric::createAtan(tan);
+
+    CHECK_EQUAL(half, res);
+}
+
+TEST(Trigonometric, atanOfTanNumEvalWithNegShift)
+    /* Atan(tan(2)) = 2 - pi, after substitution. */
+{
+    const BasePtr expected = Sum::create(two, Product::minus(pi));
     const BasePtr tan = Trigonometric::createTan(a);
     const BasePtr res = Trigonometric::createAtan(tan);
     BasePtr replaced;
@@ -230,7 +292,75 @@ TEST(Trigonometric, atanOfTan)
 
     replaced = res->subst(a, two);
 
-    CHECK_EQUAL(two, replaced);
+    CHECK_EQUAL(expected, replaced);
+}
+
+TEST(Trigonometric, atanOfTanNumEvalWithPosShift)
+    /* Atan(tan(-23/21*pi - sqrt(3))) = 19/21*pi - sqrt(3). */
+{
+    const BasePtr sqrt = Product::minus(Power::sqrt(three));
+    const BasePtr arg = Sum::create(Product::create(Numeric::create(-23, 21), pi), sqrt);
+    const BasePtr res = Trigonometric::createAtan(Trigonometric::createTan(arg));
+    const BasePtr expected = Sum::create(Product::create(Numeric::create(19, 21), pi), sqrt);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, acosOfCosNumEvalNoShift)
+    /* Acos(cos(1/2)) = 1/2. */
+{
+    const BasePtr half = Numeric::create(1, 2);
+    const BasePtr cos = Trigonometric::createCos(half);
+    const BasePtr res = Trigonometric::createAcos(cos);
+
+    CHECK_EQUAL(half, res);
+}
+
+TEST(Trigonometric, acosOfCosNumEvalPosShift)
+    /* Acos(cos(-sqrt(21) - 3/8*pi)) = 13/8*pi - sqrt(21). */
+{
+    const BasePtr sqrt = Power::sqrt(Numeric::create(21));
+    const BasePtr arg = Product::minus(Sum::create(sqrt,
+                Product::create(Numeric::create(3, 8), pi)));
+    const BasePtr cos = Trigonometric::createCos(arg);
+    const BasePtr acos = Trigonometric::createAcos(cos);
+    const BasePtr expected = Sum::create(Product::create(Numeric::create(13, 8), pi),
+            Product::minus(sqrt));
+
+    CHECK_EQUAL(expected, acos);
+}
+
+TEST(Trigonometric, acosOfCosNumEvalNegShift)
+    /* Acos(cos(11/7*pi + 2^(1/3) + 0.123456)) = 2^(1/3) + 0.123456 - 3/7*pi. */
+{
+    const BasePtr pow = Power::create(two, Numeric::create(1, 3));
+    const BasePtr sum = Sum::create(Numeric::create(0.123456), pow);
+    const BasePtr arg = Sum::create(Product::create(Numeric::create(11, 7), pi), sum);
+    const BasePtr res = Trigonometric::createAcos(Trigonometric::createCos(arg));
+    const BasePtr expected = Sum::create(sum, Product::create(Numeric::create(-3, 7), pi));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, acosOfCosNumEvalNegShiftAndCorrection)
+    /* Acos(cos(37/11*pi)) = 7/11*pi. */
+{
+    const BasePtr arg = Product::create(Numeric::create(37, 11), pi);
+    const BasePtr res = Trigonometric::createAcos(Trigonometric::createCos(arg));
+    const BasePtr expected = Product::create(Numeric::create(7, 11), pi);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, acosOfCosNumEvalPosShiftAndCorrection)
+    /* Acos(cos(-sqrt(21) - pi)) = sqrt(21) - pi. */
+{
+    const BasePtr sqrt = Power::sqrt(Numeric::create(21));
+    const BasePtr arg = Product::minus(Sum::create(sqrt, Product::minus(pi)));
+    const BasePtr res = Trigonometric::createAcos(Trigonometric::createCos(arg));
+    const BasePtr expected = Sum::create(sqrt, Product::minus(pi));
+
+    CHECK_EQUAL(expected, res);
 }
 
 TEST(Trigonometric, sinOfAcos)
