@@ -19,9 +19,10 @@ CFLAGS += $(USE_TRLOG)
 LDLIBS += $(LD_TRLOG)
 
 release: COMMON += -O2 -DNDEBUG
-release: CXXFLAGS = $(COMMON) -Werror=conversion $(USE_TRLOG) -I include -I src
+release: CXXFLAGS = $(COMMON) -Werror=conversion $(USE_TRLOG) -I include -I src -I build
 release: CFLAGS = $(COMMON) -Wno-sign-compare -Wno-unused-label -Wno-unused-function $(USE_TRLOG) \
     -I $(BUILD) -I src
+release: NO_DEBUG_STRINGS = 1
 release: COVERAGE =
 
 VERSION = build/version.h
@@ -74,13 +75,18 @@ $(VERSION):
 	@echo generate $(VERSION)
 	@echo "#define TSYM_VERSION_MAJOR $(MAJOR)" > $(VERSION)
 	@echo "#define TSYM_VERSION_MINOR $(MINOR)" >> $(VERSION)
-	@echo $(CXXFLAGS) | grep -qs '\-DNDEBUG' || echo "#define TSYM_DEBUG_STRINGS" >> $(VERSION)
+	@echo "#define TSYM_COMMIT \"$(shell git describe)\"" >> $(VERSION)
+	@echo "#define TSYM_BRANCH \"$(shell git branch | grep '^\*' | cut -b3-)\"" >> $(VERSION)
+	@test -n "$(NO_DEBUG_STRINGS)" ||  echo "#define TSYM_DEBUG_STRINGS" >> $(VERSION)
 	@echo "#define TSYM_CPP_COMPILER \"`$(CXX) --version | head -n 1`\"" >> $(VERSION)
 	@echo "#define TSYM_CPP_FLAGS \"$(CXXFLAGS)\"" >> $(VERSION)
 	@echo "#define TSYM_C_COMPILER \"`$(CC) --version | head -n 1`\"" >> $(VERSION)
 	@echo "#define TSYM_C_FLAGS \"$(CFLAGS)\"" >> $(VERSION)
-	@echo "#define TSYM_YACC \"`$(YACC) --version | head -n 1`\"" >> $(VERSION)
-	@echo "#define TSYM_LEX \"`$(LEX) --version | head -n 1`\"" >> $(VERSION)
+	@echo "#define TSYM_PARSER_GENERATOR \"`$(YACC) --version | head -n 1`\"" >> $(VERSION)
+	@echo "#define TSYM_LEXICAL_ANALYZER \"`$(LEX) --version | head -n 1`\"" >> $(VERSION)
+	@echo "#define TSYM_BUILD_OS \"$(shell uname -mro)\"" >> $(VERSION)
+	@echo "#define TSYM_BUILD_DATE \"$(shell date +'%d. %b. %Y, %R %Z')\"" >> $(VERSION)
+
 
 install: lib
 	install -m 644 -Dt $(INSTALL_PREFIX)/include/tsym $(VERSION) include/*
