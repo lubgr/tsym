@@ -3,8 +3,7 @@
 
 #include <cassert>
 #include <map>
-#include "baseptr.h"
-#include "symbol.h"
+#include "base.h"
 
 namespace tsym {
     class SymbolMap {

@@ -2,7 +2,6 @@
 #define TSYM_UNDEFINED_H
 
 #include "base.h"
-#include "baseptr.h"
 
 namespace tsym {
     class Undefined : public Base {

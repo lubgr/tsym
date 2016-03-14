@@ -2,7 +2,6 @@
 #define TSYM_POWER_H
 
 #include "base.h"
-#include "number.h"
 
 namespace tsym {
     class Power : public Base {

@@ -2,7 +2,6 @@
 #define TSYM_PRODUCT_H
 
 #include "base.h"
-#include "baseptr.h"
 
 namespace tsym {
     class Product : public Base {

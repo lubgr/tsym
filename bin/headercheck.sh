@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 CC=g++
-CFLAGS="-pedantic -Wall -I include -I src"
+CFLAGS="-pedantic -Wall -Wextra -Werror=conversion -I include -I src -I build"
 
 headers=`ls include/*.h src/*.h`
 
@@ -34,8 +34,8 @@ for header in $headers; do
 
     cp $header $origh
 
-    nstart=`awk '/#define +.*_H$/ {print NR + 1}' $header`
-    nend=`awk '/#endif *$/ {print NR - 1}' $header`
+    nstart=`awk '/#define +.*_H$/ {print NR + 1; exit}' $header`
+    nend=`awk '/#endif *$/ {print NR - 1; exit}' $header`
 
     for n in `seq $nstart $nend`; do
         if sed -n ${n}p $header | grep '^ *$' >/dev/null; then
