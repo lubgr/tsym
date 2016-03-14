@@ -2,8 +2,6 @@
 #define TSYM_CONSTANT_H
 
 #include "base.h"
-#include "baseptr.h"
-#include "number.h"
 
 namespace tsym {
     class Constant : public Base {
@@ -32,8 +30,6 @@ namespace tsym {
             Constant(const Constant& other);
             Constant& operator = (const Constant& other);
             ~Constant();
-
-            std::string getName(Type type) const;
 
             const Type type;
             const Name constantName;

@@ -1,5 +1,4 @@
 
-#include "CppUTest/CommandLineTestRunner.h"
 #include "printer.h"
 #include "numeric.h"
 #include "logarithm.h"
@@ -10,6 +9,7 @@
 #ifdef USE_TRLOG
 #include "trlog/trlog.h"
 #endif
+#include "CppUTest/CommandLineTestRunner.h"
 
 void initConstructOnFirstUse()
     /* This initialization ensures that CppUTest doesn't spot a memory leak for the first test cases

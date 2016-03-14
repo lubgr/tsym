@@ -2,7 +2,6 @@
 #define TSYM_UNDEFINED_H
 
 #include "base.h"
-#include "baseptr.h"
 
 namespace tsym {
     class Undefined : public Base {
@@ -17,9 +16,11 @@ namespace tsym {
             BasePtr diffWrtSymbol(const BasePtr& symbol) const;
             std::string typeStr() const;
 
-            /* Returns always false: */
+            /* Returns always true: */
             bool isDifferent(const BasePtr& other) const;
+            bool has(const BasePtr& other) const;
             BasePtr subst(const BasePtr& from, const BasePtr& to) const;
+            int degree(const BasePtr& variable) const;
 
             bool isUndefined() const;
 

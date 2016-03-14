@@ -3,7 +3,6 @@
 
 #include <vector>
 #include "base.h"
-#include "baseptr.h"
 #include "baseptrlist.h"
 
 namespace tsym {

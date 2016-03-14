@@ -152,7 +152,12 @@ tsym::Number tsym::Product::numericEval() const
 
 tsym::Fraction tsym::Product::normal(SymbolMap& map) const
 {
-    const Fraction unCanceled(normalAndSplitIntoFraction(map));
+    Fraction unCanceled;
+
+    if (expand()->isZero())
+        return Fraction(Numeric::zero());
+
+    unCanceled = normalAndSplitIntoFraction(map);
 
     return unCanceled.cancel();
 }

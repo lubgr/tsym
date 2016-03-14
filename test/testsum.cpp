@@ -9,6 +9,7 @@
 #include "power.h"
 #include "constant.h"
 #include "trigonometric.h"
+#include "logarithm.h"
 #include "cpputest.h"
 
 using namespace tsym;
@@ -433,6 +434,30 @@ TEST(Sum, sumOfEqualFunctionsDifferentArguments)
     CHECK_EQUAL(sinB, res->operands().back());
 }
 
+TEST(Sum, sumOfLogarithmDifferentArguments)
+    /* No simplification of log(2) + log(3). */
+{
+    const BasePtr logTwo = Logarithm::create(two);
+    const BasePtr logThree = Logarithm::create(three);
+    const BasePtr sum = Sum::create(logTwo, logThree);
+
+    CHECK(sum->isSum());
+    CHECK_EQUAL(logTwo, sum->operands().front());
+    CHECK_EQUAL(logThree, sum->operands().back());
+}
+
+TEST(Sum, sumOfLogarithmNoSimplification)
+    /* No simplification of log(a) - log(b). */
+{
+    const BasePtr logA = Logarithm::create(a);
+    const BasePtr minusLogB = Product::minus(Logarithm::create(b));
+    const BasePtr sum = Sum::create(logA, minusLogB);
+
+    CHECK(sum->isSum());
+    CHECK_EQUAL(logA, sum->operands().front());
+    CHECK_EQUAL(minusLogB, sum->operands().back());
+}
+
 TEST(Sum, simpleNumericEvaluation)
     /* Numeric evaluation of sqrt(2) + e. */
 {
@@ -461,20 +486,7 @@ TEST(Sum, numericEvaluation)
     CHECK_EQUAL(expected, res->numericEval());
 }
 
-TEST_GROUP(SumNoMemLeakCheck)
-{
-    void setup()
-    {
-        MemoryLeakWarningPlugin::turnOffNewDeleteOverloads();
-    }
-
-    void teardown()
-    {
-        MemoryLeakWarningPlugin::turnOnNewDeleteOverloads();
-    }
-};
-
-TEST(SumNoMemLeakCheck, intOverflowByCollection)
+TEST(Sum, intOverflowByCollection)
     /* Large integer coefficients of the same symbol may lead to an integer overflow. */
 {
     const Int maxInt = Int::max();

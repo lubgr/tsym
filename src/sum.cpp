@@ -85,8 +85,6 @@ tsym::Number tsym::Sum::numericEval() const
     BasePtrList::const_iterator it;
     Number res(0);
 
-    assert(isNumericallyEvaluable());
-
     for (it = ops.begin(); it != ops.end(); ++it)
         res += (*it)->numericEval();
 
@@ -96,6 +94,9 @@ tsym::Number tsym::Sum::numericEval() const
 tsym::Fraction tsym::Sum::normal(SymbolMap& map) const
 {
     std::vector<Fraction> fractions;
+
+    if (expand()->isZero())
+        return Fraction(Numeric::zero());
 
     for (BasePtrList::const_iterator it = ops.begin(); it != ops.end(); ++it)
         fractions.push_back((*it)->normal(map));

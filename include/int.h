@@ -44,8 +44,8 @@ namespace tsym {
             static Int min();
 
         private:
-            bool warnOverflow(const char * operationName) const;
-            bool warnOverflow(const char * operationName, const Int& operand) const;
+            bool warnOverflow(const char *operationName) const;
+            bool warnOverflow(const char *operationName, const Int& operand) const;
             Int createOverflowed() const;
             Int nonTrivialPower(const Int& exp) const;
 

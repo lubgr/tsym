@@ -7,6 +7,7 @@
 #include "sum.h"
 #include "numeric.h"
 #include "logging.h"
+#include "constant.h"
 #include "numtrigosimpl.h"
 #include "symbolmap.h"
 
@@ -111,8 +112,75 @@ tsym::BasePtr tsym::Trigonometric::createFromTrigo(Type type, const BasePtr& arg
 
     if (isOtherTheInverse(type, otherType))
         return other->arg;
+    else if (isThisTheInverse(type, otherType) && arg->isNumericallyEvaluable())
+        /* If the argument lies in an invalid range for the inner trigonometric function, the result
+         * has been Undefined in the first place, thus no additional checks necessary here. */
+        return shiftArgIntoRange(type, other->arg);
     else
         return createFromTrigoNoInverse(type, arg);
+}
+
+bool tsym::Trigonometric::isOtherTheInverse(Type type, Type otherType)
+    /* Doesn't return true for a general pair of e.g. asin - sin, the first type must be the
+     * non-inverse part. */
+{
+    if (type == SIN)
+        return otherType == ASIN;
+    else if (type == COS)
+        return otherType == ACOS;
+    else if (type == TAN)
+        return otherType == ATAN;
+    else
+        return false;
+}
+
+bool tsym::Trigonometric::isThisTheInverse(Type type, Type otherType)
+{
+    return isOtherTheInverse(otherType, type);
+}
+
+tsym::BasePtr tsym::Trigonometric::shiftArgIntoRange(Type type, BasePtr arg)
+    /* Asin(sin(...)), acos(cos(...)) and atan(tan(...)) are handled here, where the argument is
+     * numerically evaluable. First, the argument is shifted into or closely above the range of
+     * definition of the non-inverse trigonometric function (which is [-pi/2, pi/2] for sine and
+     * tangent and [0, pi] for the cosine) by addition/subtraction of 2*pi. If the resulting
+     * argument lies within this range, it is returned. Otherwise, it is subtracted from the double
+     * of the interval and in case of atan(tan(...)) premultiplied by -1. */
+{
+    const BasePtr two(Numeric::create(2));
+    const BasePtr twoPi(Product::create(two, Constant::createPi()));
+    BasePtr interval[2];
+    BasePtr endFactor;
+
+    defineIntervalAndEndFactor(type, interval, endFactor);
+
+    while (arg->numericEval() >= interval[1]->numericEval())
+        arg = Sum::create(arg, Product::minus(twoPi));
+
+    while (arg->numericEval() < interval[0]->numericEval())
+        arg = Sum::create(arg, twoPi);
+
+    if (arg->numericEval() >= interval[1]->numericEval())
+        arg = Sum::create(Product::create(endFactor, two, interval[1]),
+                Product::minus(endFactor, arg));
+
+    return arg;
+}
+
+void tsym::Trigonometric::defineIntervalAndEndFactor(Type type, BasePtr *interval, BasePtr& factor)
+{
+    const BasePtr pi(Constant::createPi());
+    const BasePtr piHalf(Product::create(pi, Numeric::create(1, 2)));
+
+    if (type == ASIN || type == ATAN) {
+        interval[0] = Product::minus(piHalf);
+        interval[1] = piHalf;
+    } else {
+        interval[0] = Numeric::zero();
+        interval[1] = pi;
+    }
+
+    factor = type == ATAN ? Numeric::mOne() : Numeric::one();
 }
 
 tsym::BasePtr tsym::Trigonometric::createFromTrigoNoInverse(Type type, const BasePtr& arg)
@@ -135,18 +203,6 @@ tsym::BasePtr tsym::Trigonometric::createFromTrigoNoInverse(Type type, const Bas
         return Fraction(aux1, other->arg).eval();
     else
         return BasePtr(new Trigonometric(arg, type));
-}
-
-bool tsym::Trigonometric::isOtherTheInverse(Type type, Type otherType)
-{
-    if (type == SIN)
-        return otherType == ASIN;
-    else if (type == COS)
-        return otherType == ACOS;
-    else if (type == TAN)
-        return otherType == ATAN;
-    else
-        return false;
 }
 
 std::string tsym::Trigonometric::getStr(Type type)

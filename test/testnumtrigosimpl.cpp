@@ -43,7 +43,11 @@ TEST_GROUP(NumTrigoSimpl)
         nts.compute();
 
         CHECK(nts.hasSimplifiedResult());
-        CHECK_EQUAL(expected, nts.get());
+        if (expected->isUndefined()) {
+            CHECK(nts.get()->isUndefined());
+        } else {
+            CHECK_EQUAL(expected, nts.get());
+        }
     }
 
     void checkInverse(const BasePtr& expectedAsin, const BasePtr& expectedAcos,
@@ -69,7 +73,7 @@ TEST_GROUP(NumTrigoSimpl)
 
         disableLog();
         /* Requesting the result should give an Undefined. */
-        CHECK_EQUAL(Undefined::create(), nts.get());
+        CHECK(nts.get()->isUndefined());
         enableLog();
     }
 };

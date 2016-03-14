@@ -2,8 +2,6 @@
 #define TSYM_NUMERIC_H
 
 #include "base.h"
-#include "baseptr.h"
-#include "number.h"
 #include "undefined.h"
 
 namespace tsym {

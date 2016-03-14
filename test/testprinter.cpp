@@ -481,8 +481,8 @@ TEST(Printer, negProductOfEqualExpPowers)
 
 TEST(Printer, productOfFunctions)
 {
-    const std::string expectedFrac("a*atan(1/sqrt(17))*cos(c*d)*sin(a*b)^2*tan(a*b)");
-    const std::string expectedNoFrac("a*atan(17^(-1/2))*cos(c*d)*sin(a*b)^2*tan(a*b)");
+    const std::string expectedFrac("a*atan(1/sqrt(17))*cos(c*d)*sin(a*b)^3/cos(a*b)");
+    const std::string expectedNoFrac("a*atan(17^(-1/2))*cos(a*b)^(-1)*cos(c*d)*sin(a*b)^3");
     BasePtrList fac;
     BasePtr product;
 

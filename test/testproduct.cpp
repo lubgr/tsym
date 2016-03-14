@@ -911,3 +911,198 @@ TEST(Product, numPowEqualDenomExpToOverflow)
     CHECK_EQUAL(pow1, result->operands().front());
     CHECK_EQUAL(pow2, result->operands().back());
 }
+
+TEST(Product, sineOverCosineSameArgument)
+    /* Sin(2 + a + b)/cos(2 + a + b) = tan(2 + a + b). */
+{
+    const BasePtr arg = Sum::create(a, b, two);
+    const BasePtr sin = Trigonometric::createSin(arg);
+    const BasePtr cos = Trigonometric::createCos(arg);
+    const BasePtr res = Product::create(sin, Power::oneOver(cos));
+    const BasePtr expected = Trigonometric::createTan(arg);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Product, sineOverCosineDifferentArgument)
+    /* No simplification of sin(3*a*b)/cos(a + b). */
+{
+    const BasePtr sin = Trigonometric::createSin(Product::create(three, a, b));
+    const BasePtr cos = Trigonometric::createCos(Sum::create(a, b));
+    const BasePtr res = Product::create(sin, Power::oneOver(cos));
+
+    CHECK(res->isProduct());
+    CHECK_EQUAL(Power::oneOver(cos), res->operands().front());
+    CHECK_EQUAL(sin, res->operands().back());
+}
+
+TEST(Product, cosineOverSineSameArgument)
+    /* Cos(10)/sin(10) = tan(10). */
+{
+    const BasePtr sin = Trigonometric::createSin(ten);
+    const BasePtr cos = Trigonometric::createCos(ten);
+    const BasePtr res = Product::create(cos, Power::oneOver(sin));
+    const BasePtr expected = Power::oneOver(Trigonometric::createTan(ten));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Product, cosineOverSineDifferentArgument)
+    /* No simplification of cos(7)/sin(4). */
+{
+    const BasePtr sin = Trigonometric::createSin(four);
+    const BasePtr cos = Trigonometric::createCos(seven);
+    const BasePtr res = Product::create(cos, Power::oneOver(sin));
+
+    CHECK(res->isProduct());
+    CHECK_EQUAL(cos, res->operands().front());
+    CHECK_EQUAL(Power::oneOver(sin), res->operands().back());
+}
+
+TEST(Product, sinOverTanSameNumericalArgument)
+    /* Sin(7^(2/3))/tan(7^(2/3)) = cos(7^(2/3)). */
+{
+    const BasePtr arg = Power::create(seven, Numeric::create(2, 3));
+    const BasePtr sin = Trigonometric::createSin(arg);
+    const BasePtr cos = Trigonometric::createCos(arg);
+    const BasePtr tan = Trigonometric::createTan(arg);
+    BasePtr res;
+
+    res = Product::create(sin, Power::oneOver(tan));
+
+    CHECK_EQUAL(cos, res);
+}
+
+TEST(Product, tanTimesCosSameArgument)
+    /* Tan(a + b)*cos(a + b) = sin(a + b). */
+{
+    const BasePtr arg = Sum::create(a, b);
+    const BasePtr tan = Trigonometric::createTan(arg);
+    const BasePtr cos = Trigonometric::createCos(arg);
+    const BasePtr sin = Trigonometric::createSin(arg);
+    const BasePtr res = Product::create(tan, cos);
+
+    CHECK_EQUAL(sin, res);
+}
+
+TEST(Product, tanTimesCosDifferentArgument)
+    /* No simplification of tan(sqrt(2))*cos(a). */
+{
+    const BasePtr tan = Trigonometric::createTan(Power::sqrt(two));
+    const BasePtr cos = Trigonometric::createCos(a);
+    const BasePtr res = Product::create(tan, cos);
+
+    CHECK(res->isProduct());
+    CHECK_EQUAL(cos, res->operands().front());
+    CHECK_EQUAL(tan, res->operands().back());
+}
+
+TEST(Product, tanTimesCosWithNumExpSameArgument)
+    /* Tan(a)^(2/3)*cos(a)^(-1/2) = sin(a)^(2/3)*cos(a)(-7/6). */
+{
+    const BasePtr tan = Trigonometric::createTan(a);
+    const BasePtr cos = Trigonometric::createCos(a);
+    const BasePtr sin = Trigonometric::createSin(a);
+    const BasePtr res = Product::create(Power::create(tan, Numeric::create(2, 3)),
+                Power::create(cos, Numeric::create(-1, 2)));
+    const BasePtr expected = Product::create(Power::create(sin, Numeric::create(2, 3)),
+                Power::create(cos, Numeric::create(-7, 6)));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Product, sinOverCosineWithExpTimesCosine)
+    /* Sin(a)^(5/7)*cos(a)^(-2/3)*cos(a) = sin(a)^(5/7)*cos(a)^(1/3). This simplification is however
+     * not related to the handling of the relation sin(...)/cos(...) = tan(...), but due to the
+     * equal base cos(a). */
+{
+    const BasePtr sinPow = Power::create(Trigonometric::createSin(a), Numeric::create(5, 7));
+    const BasePtr cos = Trigonometric::createCos(a);
+    const BasePtr cosPow = Power::create(cos, Numeric::create(-2, 3));
+    const BasePtr res = Product::create(sinPow, cosPow, cos);
+    const BasePtr expected = Product::create(sinPow, Power::create(cos, Numeric::create(1, 3)));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Product, sinSquareOverCosSameArg)
+    /* Sin^2(a)/cos(a) = sin(a)*tan(a). */
+{
+    const BasePtr sin = Trigonometric::createSin(a);
+    const BasePtr sinSquare = Product::create(sin, sin);
+    const BasePtr res = Product::create(sinSquare, Power::oneOver(Trigonometric::createCos(a)));
+    const BasePtr expected = Product::create(sin, Trigonometric::createTan(a));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Product, sqrtTanTimesCosSameArg)
+    /* Sqrt(tan(a))*cos(a) = sqrt(sin(a))*sqrt(cos(a)). */
+{
+    const BasePtr sin = Trigonometric::createSin(a);
+    const BasePtr cos = Trigonometric::createCos(a);
+    const BasePtr tan = Trigonometric::createTan(a);
+    const BasePtr res = Product::create(Power::sqrt(tan), cos);
+    const BasePtr expected = Power::sqrt(Product::create(sin, cos));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Product, mixedTrigonometricFunctions01)
+    /* Sin(a)*cos(b)*tan(a)^(1/3)*sin(b)^(-2)*cos(a)^3 =
+     * 1/tan(b)*sin(b)^(-1)*sin(a)^(4/3)*cos(a)^(8/3). */
+{
+    const BasePtr sinA = Trigonometric::createSin(a);
+    const BasePtr cosB = Trigonometric::createCos(b);
+    const BasePtr tanA = Trigonometric::createTan(a);
+    const BasePtr sinB = Trigonometric::createSin(b);
+    const BasePtr cosA = Trigonometric::createCos(a);
+    BasePtrList factors;
+    BasePtr expected;
+    BasePtr res;
+
+    factors.push_back(sinA);
+    factors.push_back(cosB);
+    factors.push_back(Power::create(tanA, Numeric::create(1, 3)));
+    factors.push_back(Power::create(sinB, Numeric::create(-2)));
+    factors.push_back(Power::create(cosA, three));
+
+    res = Product::create(factors);
+
+    factors.clear();
+    factors.push_back(Power::oneOver(Trigonometric::createTan(b)));
+    factors.push_back(Power::oneOver(sinB));
+    factors.push_back(Power::create(sinA, Numeric::create(4, 3)));
+    factors.push_back(Power::create(cosA, Numeric::create(8, 3)));
+
+    expected = Product::create(factors);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Product, mixedTrigonometricFunctions02)
+    /* (1/Cos(a/b))*tan(a/b)*cos(b/a)*sin(a/b)/sin(b/a) = tan^2(a/b)/tan(b/a). */
+{
+    const BasePtr aB = Product::create(a, Power::oneOver(b));
+    const BasePtr tanAb = Trigonometric::createTan(aB);
+    const BasePtr bA = Power::oneOver(aB);
+    BasePtrList factors;
+    BasePtr expected;
+    BasePtr res;
+
+    factors.push_back(Power::oneOver(Trigonometric::createCos(aB)));
+    factors.push_back(tanAb);
+    factors.push_back(Trigonometric::createCos(bA));
+    factors.push_back(Trigonometric::createSin(aB));
+    factors.push_back(Power::oneOver(Trigonometric::createSin(bA)));
+
+    res = Product::create(factors);
+
+    factors.clear();
+    factors.push_back(Power::create(tanAb, two));
+    factors.push_back(Power::oneOver(Trigonometric::createTan(bA)));
+
+    expected = Product::create(factors);
+
+    CHECK_EQUAL(expected, res);
+}

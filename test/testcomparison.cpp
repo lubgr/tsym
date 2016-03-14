@@ -54,7 +54,9 @@ TEST(Comparison, differentNumerics)
 TEST(Comparison, twoUndefined)
     /* Comparing undefined  doesn't make sense, this shall always return false. */
 {
+    disableLog();
     CHECK(!undefined->isEqual(undefined));
+    enableLog();
 }
 
 TEST(Comparison, equalPowers)

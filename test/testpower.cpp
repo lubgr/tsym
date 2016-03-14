@@ -96,10 +96,12 @@ TEST(Power, exponentFraction)
 
 TEST(Power, largeBaseIntegerExp)
 {
-    const BasePtr base = Numeric::create(211344);
+    const long maxLong = std::numeric_limits<long>::max();
+    const long lBase = (long)std::sqrt((double)(maxLong - 2));
+    const BasePtr base = Numeric::create(Int(lBase));
     const BasePtr pow = Power::create(base, two);
 
-    CHECK_EQUAL(Numeric::create(Int(211344l*211344l)), pow);
+    CHECK_EQUAL(Numeric::create(Int(lBase*lBase)), pow);
 }
 
 TEST(Power, largeBaseIntegerExpIntOverflow)
@@ -451,6 +453,18 @@ TEST(Power, identity)
 
     CHECK(res->isSymbol());
     CHECK_EQUAL(expected, res->name());
+}
+
+TEST(Power, powerWithPowerExp)
+{
+    const BasePtr exp = Power::create(Sum::create(a, b), two);
+    const BasePtr res = Power::create(a, exp);
+
+    CHECK(res->isPower());
+    CHECK(res->exp()->isPower());
+
+    CHECK_EQUAL(a, res->base());
+    CHECK_EQUAL(exp, res->exp());
 }
 
 TEST(Power, multiplySymbolExp)

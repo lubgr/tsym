@@ -8,9 +8,13 @@ using namespace tsym;
 TEST_GROUP(Int)
 {
     Int overflowed;
+    long maxInt;
+    long maxLong;
 
     void setup()
     {
+        maxInt = (long)std::numeric_limits<int>::max();
+        maxLong = std::numeric_limits<long>::max();
         overflowed = 2*Int::max();
     }
 };
@@ -36,10 +40,9 @@ TEST(Int, changeOfSign)
 
 TEST(Int, constructFromMaxLong)
 {
-    const long max = std::numeric_limits<long>::max();
-    Int n(max);
+    Int n(maxLong);
 
-    CHECK_EQUAL(max, n);
+    CHECK_EQUAL(maxLong, n);
 }
 
 TEST(Int, constructFromMinLong)
@@ -211,7 +214,7 @@ TEST(Int, sign)
     CHECK_EQUAL(1, pos.sign());
 }
 
-TEST(Int, toPrimitiveInt)
+TEST(Int, toPrimitiveInt01)
 {
     const int orig = 12345;
     const Int n(orig);
@@ -220,32 +223,47 @@ TEST(Int, toPrimitiveInt)
     CHECK_EQUAL(orig, n.toInt());
 }
 
-TEST(Int, toPrimitiveIntFails)
+TEST(Int, toPrimitiveInt02)
 {
-    const int maxInt = std::numeric_limits<int>::max();
-    const long orig = maxInt + 2349556l;
-    const Int pos(orig);
-    const Int neg(-orig);
+    long value = maxInt - 2;
     int maxRes;
     int minRes;
+    Int pos;
+    Int neg;
+
+    if (maxInt < maxLong)
+        value += 2349556l;
+
+    pos = Int(value);
+    neg = Int(-value);
 
     disableLog();
     maxRes = pos.toInt();
     minRes = neg.toInt();
     enableLog();
 
-    CHECK_EQUAL(maxInt, maxRes);
-    CHECK_EQUAL(-maxInt, minRes);
+    if (maxInt < maxLong) {
+        CHECK_EQUAL(maxInt, maxRes);
+        CHECK_EQUAL(-maxInt, minRes);
+    } else {
+        CHECK_EQUAL(value, maxRes);
+        CHECK_EQUAL(-value, minRes);
+    }
 }
 
 TEST(Int, toPrimitiveLong)
 {
-    const long orig = std::numeric_limits<int>::max() + 1234556l;
-    const Int n(orig);
+    Int n;
 
-    CHECK(!n.fitsIntoInt());
-    CHECK(n.fitsIntoLong());
-    CHECK_EQUAL(orig, n.toLong());
+    if (maxInt < maxLong) {
+        n = Int(maxInt + 123456l);
+        CHECK(!n.fitsIntoInt());
+        CHECK(n.fitsIntoLong());
+    } else {
+        n = Int(maxLong);
+        CHECK(n.fitsIntoInt());
+        CHECK(n.fitsIntoLong());
+    }
 }
 
 TEST(Int, toPrimitiveLongFails)

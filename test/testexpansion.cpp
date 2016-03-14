@@ -15,12 +15,14 @@ TEST_GROUP(Expansion)
     BasePtr abSum;
     BasePtr cdSum;
     BasePtr abProduct;
+    BasePtr i;
 
     void setup()
     {
         abSum = Sum::create(a, b);
         cdSum = Sum::create(c, d);
         abProduct = Product::create(a, b);
+        i = Symbol::create("i");
     }
 
     BasePtr getProduct(const BasePtr& f1, const BasePtr& f2,
@@ -64,7 +66,7 @@ TEST(Expansion, trivialUndefined)
     const BasePtr orig = Undefined::create();
     const BasePtr expanded = orig->expand();
 
-    CHECK_EQUAL(orig, expanded);
+    CHECK(expanded->isUndefined());
 }
 
 TEST(Expansion, trivialConstant)
@@ -329,6 +331,8 @@ TEST(Expansion, sumPowerOfThree)
     summands.push_back(Product::create(three, b, b, c));
     summands.push_back(Product::create(three, a, a, c));
     summands.push_back(Product::create(six, a, b, c));
+
+    expected = Sum::create(summands);
 
     result = orig->expand();
 

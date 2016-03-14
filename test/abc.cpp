@@ -9,7 +9,6 @@ const tsym::BasePtr e(tsym::Symbol::create("e"));
 const tsym::BasePtr f(tsym::Symbol::create("f"));
 const tsym::BasePtr g(tsym::Symbol::create("g"));
 const tsym::BasePtr h(tsym::Symbol::create("h"));
-const tsym::BasePtr i(tsym::Symbol::create("i"));
 
 const tsym::BasePtr zero(tsym::Numeric::zero());
 const tsym::BasePtr one(tsym::Numeric::one());

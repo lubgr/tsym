@@ -3,7 +3,10 @@
 *.gcno
 *.swp
 doc/coverage/*
-doc/log
+!doc/coverage/.gitkeep
+doc/log/*
+!doc/log/.gitkeep
 build/*
+!build/.gitkeep
 bin/runtests
 .gdb_history

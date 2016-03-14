@@ -21,7 +21,7 @@ TEST(Fraction, constructionWithoutParameter)
 {
     const Fraction frac;
 
-    CHECK_EQUAL(Undefined::create(), frac.num());
+    CHECK(frac.num()->isUndefined());
     CHECK_EQUAL(one, frac.denom());
 }
 
@@ -77,7 +77,7 @@ TEST(Fraction, cancelZeroDenominator)
     result = frac.cancel();
     enableLog();
 
-    CHECK_EQUAL(Undefined::create(), result.num());
+    CHECK(result.num()->isUndefined());
     CHECK_EQUAL(one, result.denom());
 }
 
@@ -90,5 +90,5 @@ TEST(Fraction, evalZeroDenominator)
     result = frac.eval();
     enableLog();
 
-    CHECK_EQUAL(Undefined::create(), result);
+    CHECK(result->isUndefined());
 }

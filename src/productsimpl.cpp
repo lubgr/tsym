@@ -8,33 +8,148 @@
 #include "order.h"
 #include "symbol.h"
 #include "numpowersimpl.h"
+#include "trigonometric.h"
 #include "logging.h"
 
-tsym::BasePtrList tsym::ProductSimpl::simplify(const BasePtrList& factors)
+tsym::BasePtrList tsym::ProductSimpl::simplify(const BasePtrList& origFactors)
 {
-    /* We need to extract the factors of included powers at this point, due to the handling of
-     * numeric powers. This differs from Cohen's algorithm. */
-    BasePtrList fac(extractProducts(factors));
+    BasePtrList factors(origFactors);
 
-    if (fac.size() == 2)
-        return simplTwoFactors(fac);
+    prepare(factors);
+
+    if (factors.size() == 2)
+        return simplTwoFactors(factors);
     else
-        return simplNFactors(fac);
+        return simplNFactors(factors);
 }
 
-tsym::BasePtrList tsym::ProductSimpl::extractProducts(const BasePtrList& orig)
+void tsym::ProductSimpl::prepare(BasePtrList& fac)
+    /* We need to extract the factors of included powers at this point, due to the handling of
+     * numeric powers. This differs from Cohen's algorithm. */
 {
-    BasePtrList::const_iterator it;
-    BasePtrList factors;
+    extractProducts(fac);
+    contractTrigonometrics(fac);
+}
 
-    for (it = orig.begin(); it != orig.end(); ++it)
-        if ((*it)->isProduct())
-            factors.insert(factors.begin(), (*it)->operands().begin(),
-                    (*it)->operands().end());
+void tsym::ProductSimpl::extractProducts(BasePtrList& u)
+{
+    BasePtrList::iterator it(u.begin());
+
+    while (it != u.end()) {
+        if ((*it)->isProduct()) {
+            u.insert(it, (*it)->operands().begin(), (*it)->operands().end());
+            it = u.erase(it);
+        } else
+            ++it;
+    }
+}
+
+void tsym::ProductSimpl::contractTrigonometrics(BasePtrList& u)
+{
+    contract(u, &ProductSimpl::areContractableTrigFctPowers, &ProductSimpl::contractTrigFctPowers);
+}
+
+void tsym::ProductSimpl::contract(BasePtrList& u,
+        bool (ProductSimpl::*check) (const BasePtr& f1, const BasePtr& f2),
+        BasePtrList (ProductSimpl::*simpl)(const BasePtr& f1, const BasePtr& f2))
+    /* This method is somewhat compliated, as it operates on the given list, possibly modifying it,
+     * while checking for possible contraction of two list items. If that is the case, they are
+     * simplified with the result being a BasePtrList with one or two items, that have to be
+     * inserted (only if it differs from the input). The two original items must be erased from the
+     * list. This method calls itself recursively, whenever a change to the given BasePtrList u was
+     * made, to ensure correct simplification of every possible combination of factors. */
+{
+    BasePtrList::iterator it1(u.begin());
+    BasePtrList::iterator it2;
+    bool hasChanged = false;
+    BasePtrList res;
+    bool found;
+
+    while (it1 != u.end()) {
+        for (found = false, it2 = it1, ++it2; it2 != u.end(); ++it2)
+            if ((this->*(check))(*it1, *it2)) {
+                res = (this->*(simpl))(*it1, *it2);
+
+                if (res.size() == 2 && res.front()->isEqual(*it1) && res.back()->isEqual(*it2))
+                    continue;
+
+                it1 = u.erase(it1);
+                u.insert(it1, res.begin(), res.end());
+                std::advance(it1, -res.size());
+                u.erase(it2);
+                it2 = it1;
+
+                hasChanged = found = true;
+            }
+
+        if (!found)
+            ++it1;
+    }
+
+    if (hasChanged)
+        contract(u, check, simpl);
+}
+
+bool tsym::ProductSimpl::isContractableTrigFctPower(const BasePtr& pow)
+{
+    static Name trigoNames[3] = { Name("sin"), Name("cos"), Name("tan") };
+    const Name& name(pow->base()->name());
+
+    if (pow->base()->isFunction() && pow->exp()->isNumericallyEvaluable())
+        return name == trigoNames[0] || name == trigoNames[1] || name == trigoNames[2];
+
+    return false;
+}
+
+tsym::BasePtrList tsym::ProductSimpl::contractTrigFctPowers(const BasePtr& f1, const BasePtr& f2)
+    /* At this point, f1 and f2 are (possibly powers of) trigonometric function with identical
+     * arguments. */
+{
+    const BasePtr newArg(f1->base()->operands().front());
+    const BasePtr sin(Symbol::createTmpSymbol());
+    const BasePtr cos(Symbol::createTmpSymbol());
+    BasePtr r1(trigFunctionPowerReplacement(f1, sin, cos));
+    BasePtr r2(trigFunctionPowerReplacement(f2, sin, cos));
+    BasePtrList res;
+    BasePtr newExp;
+    BasePtr exp1;
+    BasePtr exp2;
+
+    res = simplTwoFactors(r1, r2);
+
+    exp1 = res.front()->exp();
+    exp2 = res.back()->exp();
+
+    if (res.size() == 2 && exp1->isEqual(Product::minus(exp2))) {
+        /* A combination of sin and cos should lead to tan or 1/tan. */
+        if (res.front()->base()->isEqual(cos))
+            newExp = Product::minus(exp1);
         else
-            factors.push_back(*it);
+            newExp = exp1;
 
-    return factors;
+        return BasePtrList(Power::create(Trigonometric::createTan(newArg), newExp));
+    }
+
+    res = res.subst(sin, Trigonometric::createSin(newArg)).subst(cos,
+            Trigonometric::createCos(newArg));
+
+    if (order::doPermute(res.front(), res.back()))
+        return BasePtrList(res.back(), res.front());
+    else
+        return res;
+}
+
+tsym::BasePtr tsym::ProductSimpl::trigFunctionPowerReplacement(const BasePtr& pow,
+        const BasePtr& sin, const BasePtr& cos)
+{
+    if (pow->base()->name() == Name("sin"))
+        return Power::create(sin, pow->exp());
+    else if (pow->base()->name() == Name("cos"))
+        return Power::create(cos, pow->exp());
+
+    assert(pow->base()->name() == Name("tan"));
+
+    return Power::create(Product::create(sin, Power::oneOver(cos)), pow->exp());
 }
 
 tsym::BasePtrList tsym::ProductSimpl::simplTwoFactors(const BasePtrList& u)
@@ -226,6 +341,16 @@ tsym::BasePtrList tsym::ProductSimpl::simplTwoEqualBases(const BasePtr& f1, cons
     return BasePtrList(Power::create(f1->base(), newExp));
 }
 
+bool tsym::ProductSimpl::areContractableTrigFctPowers(const BasePtr& f1, const BasePtr& f2)
+    /* Returns true for Powers with numerically evaluable exponents and bases that are trigonometric
+     * functions of the same argument. */
+{
+    if (isContractableTrigFctPower(f1) && isContractableTrigFctPower(f2))
+        return f1->base()->operands().front()->isEqual(f2->base()->operands().front());
+    else
+        return false;
+}
+
 bool tsym::ProductSimpl::areNumPowersWithEqualExp(const BasePtr& f1, const BasePtr& f2)
 {
     BasePtr exp1;
@@ -338,13 +463,11 @@ tsym::Int tsym::ProductSimpl::evalDenomExpNumerator(const BasePtr& numPow)
     return evalExpNumerator(base, exp);
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplNFactors(const BasePtrList& u)
+tsym::BasePtrList tsym::ProductSimpl::simplNFactors(BasePtrList u)
 {
-    BasePtrList uCopy(u);
+    prepareConst(u);
 
-    prepareConst(uCopy);
-
-    return simplPreparedFactors(uCopy);
+    return simplPreparedFactors(u);
 }
 
 void tsym::ProductSimpl::prepareConst(BasePtrList& u)
@@ -357,10 +480,9 @@ void tsym::ProductSimpl::prepareConst(BasePtrList& u)
 {
     contractNumerics(u);
     contractNumPowWithEqualBases(u);
-    contractNumPowViaExp(u, &ProductSimpl::areNumPowersWithEqualExp,
-            &ProductSimpl::simplTwoEqualExp);
-    contractNumPowViaExp(u, &ProductSimpl::areNumPowersWithEqualExpDenom,
-            &ProductSimpl::simplTwoEqualExpDenom);
+
+    contract(u, &ProductSimpl::areNumPowersWithEqualExp, &ProductSimpl::simplTwoEqualExp);
+    contract(u, &ProductSimpl::areNumPowersWithEqualExpDenom, &ProductSimpl::simplTwoEqualExpDenom);
 }
 
 void tsym::ProductSimpl::contractNumerics(BasePtrList& u)
@@ -391,33 +513,6 @@ void tsym::ProductSimpl::contractNumPowWithEqualBases(BasePtrList& u)
                     *it1 = simplTwoEqualBases(*it1, *it2).front();
                     it2 = u.erase(it2);
                 }
-}
-
-void tsym::ProductSimpl::contractNumPowViaExp(BasePtrList& u,
-        bool (ProductSimpl::*check) (const BasePtr& f1, const BasePtr& f2),
-        BasePtrList (ProductSimpl::*simpl)(const BasePtr& f1, const BasePtr& f2))
-{
-    BasePtrList::iterator it1(u.begin());
-    BasePtrList::iterator it2;
-    BasePtrList res;
-    bool found;
-
-    while (it1 != u.end()) {
-        for (found = false, it2 = it1, ++it2; it2 != u.end(); ++it2)
-            if ((this->*(check))(*it1, *it2)) {
-                res = (this->*(simpl))(*it1, *it2);
-
-                it1 = u.erase(it1);
-                u.insert(it1, res.begin(), res.end());
-                it2 = --u.erase(it2);
-                it1 = it2;
-
-                found = true;
-            }
-
-        if (!found)
-            ++it1;
-    }
 }
 
 tsym::BasePtrList tsym::ProductSimpl::simplPreparedFactors(const BasePtrList& u)

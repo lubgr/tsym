@@ -34,7 +34,7 @@ TEST(Undefined, numericTerm)
 
 TEST(Undefined, nonNumericTerm)
 {
-    CHECK_EQUAL(undefined, undefined->nonNumericTerm());
+    CHECK(undefined->nonNumericTerm()->isUndefined());
 }
 
 TEST(Undefined, constTerm)
@@ -44,7 +44,7 @@ TEST(Undefined, constTerm)
 
 TEST(Undefined, nonConstTerm)
 {
-    CHECK_EQUAL(undefined, undefined->nonConstTerm());
+    CHECK(undefined->nonConstTerm()->isUndefined());
 }
 
 TEST(Undefined, numericEvaluability)
@@ -55,4 +55,19 @@ TEST(Undefined, numericEvaluability)
 TEST(Undefined, numericEvaluation)
 {
     CHECK(undefined->numericEval().isUndefined());
+}
+
+TEST(Undefined, equalityOtherUndefined)
+{
+    const BasePtr otherUndefined = Undefined::create();
+
+    disableLog();
+
+    CHECK(!undefined->isEqual(undefined));
+    CHECK(!undefined->isEqual(otherUndefined));
+
+    CHECK(undefined->isDifferent(undefined));
+    CHECK(undefined->isDifferent(otherUndefined));
+
+    enableLog();
 }
