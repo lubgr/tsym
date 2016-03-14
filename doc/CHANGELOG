@@ -1,0 +1,34 @@
+v.02
+
+* A parser has been added to construct expressions from strings. The top-level
+  interface can be found in the StringToVar class, while a backend uses lex/yacc
+  and intermediate adapter functions. Numerics, all Functions implemented,
+  Symbols with limited super-/subscript naming schemes etc. can be parsed.
+
+* Better handling of trigonometric and inverse trigonometric functions:
+  automatric simplification as fractions, e.g. sin(a)/cos(a) = tan(a) plus a fix
+  of inverse trigonometric functions of trigonometric functions for function
+  arguments, that can be numerically evaluated.
+
+* Fix (portability) issues in several development utility scripts and for
+  compilation, testing or code generation on 32bit machines.
+
+* Additional build/version information in auto-generated header. Headers don't
+  depend on NDEBUG macro anymore.
+
+* Minor fixes for static destruction order problems, trivial gcd cases, CppUTest
+  compatibility (mainly reported memory leaks), makefile enhancements, fixes of
+  the meaningless comparisons between two Undefined expressions.
+
+v.01
+
+* Basic setup of computer algebra algorithms for automatic simplification, gcd
+  computation and solutions of linear equations. Algorithms specific to computer
+  algebra are implemented following Cohen, Computer Algebra and Symbolic
+  Computation [2003], though some details like the automatic simplification of
+  numeric powers are different.
+
+* Small set of API classes. Var, Number, Int, Vector, Matrix as basic types,
+  where Var is supposed to be the general purpose expression type (symbols,
+  numeric types, functions...). In addition, some common functions and constants
+  in the tsym namespace, e.g. sqrt, sin/cos, Pi etc.
