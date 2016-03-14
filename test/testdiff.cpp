@@ -243,8 +243,8 @@ TEST(Diff, mixedTerm02)
     const BasePtr logArg = Trigonometric::createSin(sinArg);
     const BasePtr orig = Product::create(abc, Logarithm::create(logArg));
     const BasePtr result = orig->diff(a);
-    const BasePtr term1 = Product::create(a, b, c, Power::oneOver(logArg));
-    const BasePtr term2 = Trigonometric::createCos(sinArg);
+    const BasePtr term1 = Product::create(a, b, c);
+    const BasePtr term2 = Power::oneOver(Trigonometric::createTan(sinArg));
     const BasePtr term3 = Sum::create(Power::oneOver(a),
             Product::create(four, Power::create(a, three), sqrtTwo, b));
     const BasePtr summand1 = Product::create(term1, term2, term3);
