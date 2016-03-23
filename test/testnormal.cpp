@@ -358,3 +358,31 @@ TEST(Normal, trigoPowerSumComposite)
 
     CHECK_EQUAL(orig, result);
 }
+
+TEST(Normal, tanToSinOverCos)
+    /* 1/cos(a) + tan(a) becomes (1 + sin(a))/cos(a). */
+{
+    const BasePtr cosA = Trigonometric::createCos(a);
+    const BasePtr orig = Sum::create(Power::oneOver(cosA), Trigonometric::createTan(a));
+    const BasePtr result = orig->normal();
+    const BasePtr expected = Product::create(Sum::create(one, Trigonometric::createSin(a)),
+            Power::oneOver(cosA));
+
+    CHECK_EQUAL(expected, result);
+}
+
+TEST(Normal, tanInDenominator)
+    /* cos(a)/(12*b) + a*b/tan(a) becomes (12*a*b^2 + sin(a))/(12*b*tan(a)). */
+{
+    const BasePtr twelveB = Product::create(Numeric::create(12), b);
+    const BasePtr sinA = Trigonometric::createSin(a);
+    const BasePtr cosA = Trigonometric::createCos(a);
+    const BasePtr tanA = Trigonometric::createTan(a);
+    const BasePtr orig = Sum::create(Product::create(cosA, Power::oneOver(twelveB)),
+            Product::create(a, b, Power::oneOver(tanA)));
+    const BasePtr expected = Product::create(Sum::create(sinA, Product::create(twelveB, a, b)),
+            Power::oneOver(Product::create(twelveB, tanA)));
+    const BasePtr result = orig->normal();
+
+    CHECK_EQUAL(expected, result);
+}
