@@ -15,7 +15,7 @@ namespace tsym {
             BasePtr replaceTmpSymbolsBackFrom(const BasePtr& ptr);
 
         private:
-            const BasePtr *getExisting(const BasePtr& ptr);
+            const BasePtr *getExisting(const BasePtr& orig);
 
             struct CompareSymbols {
                 bool operator () (const BasePtr& lhs, const BasePtr& rhs) const

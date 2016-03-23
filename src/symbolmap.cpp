@@ -29,13 +29,20 @@ const tsym::BasePtr *tsym::SymbolMap::getExisting(const BasePtr& ptr)
     return NULL;
 }
 
-tsym::BasePtr tsym::SymbolMap::replaceTmpSymbolsBackFrom(const BasePtr& ptr)
+tsym::BasePtr tsym::SymbolMap::replaceTmpSymbolsBackFrom(const BasePtr& orig)
 {
     std::map<BasePtr, BasePtr>::const_iterator it;
-    BasePtr result(ptr);
+    BasePtr result(orig);
 
     for (it = map.begin(); it != map.end(); ++it)
         result = result->subst(it->first, it->second);
 
-    return result;
+    if (result->isUndefined())
+        /* Catch this in advance to avoid a possible comparison with an Undefined instance: */
+        return result;
+    else if (result->isDifferent(orig))
+        /* There might be nested replacements by temporary symbols. */
+        return replaceTmpSymbolsBackFrom(result);
+    else
+        return result;
 }

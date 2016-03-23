@@ -332,3 +332,16 @@ TEST(Normal, logarithmicFunction)
 
     CHECK_EQUAL(orig, result);
 }
+
+TEST(Normal, trigoPowerSumComposite)
+    /* -2*a*sin(a^2)/sqrt(1 - cos(a^2)^2) doesn't change. */
+{
+    const BasePtr aSquare = Power::create(a, two);
+    const BasePtr cosASquare = Trigonometric::createCos(aSquare);
+    const BasePtr orig = Product::minus(two, a, Trigonometric::createSin(aSquare),
+            Power::create(Sum::create(one, Product::minus(cosASquare, cosASquare)),
+                Numeric::create(-1, 2)));
+    const BasePtr result = orig->normal();
+
+    CHECK_EQUAL(orig, result);
+}
