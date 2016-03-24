@@ -337,6 +337,7 @@ std::pair<tsym::BasePtrList, tsym::BasePtrList> tsym::Printer::getProductFrac(
 {
     std::pair<BasePtrList, BasePtrList> frac;
     BasePtrList::const_iterator it;
+    Number fracFactor;
     BasePtr base;
     BasePtr exp;
 
@@ -352,6 +353,15 @@ std::pair<tsym::BasePtrList, tsym::BasePtrList> tsym::Printer::getProductFrac(
         } else
             frac.first.push_back(*it);
     }
+
+    if (frac.first.empty() || frac.second.size() <= 1 || !frac.first.front()->isNumeric())
+        return frac;
+
+    /* Adjust the previous logic and move factors like 2/3 to numerator/denominator. */
+    fracFactor = frac.first.pop_front()->numericEval();
+
+    frac.first.push_front(Numeric::create(fracFactor.numerator()));
+    frac.second.push_front(Numeric::create(fracFactor.denominator()));
 
     return frac;
 }
