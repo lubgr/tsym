@@ -1,3 +1,20 @@
+
+import sys
+import glob
+
+# The std::list type can be named std::__cxx11::list, in this case the stl-pretty-printer provided
+# by the gcc package (usually located in /usr/share/gcc*/python/libstdcxx/v*/printers.py) doesn't
+# return the correct printer ('StdListPrinter') upon type lookup, and the raw data for the list is
+# printed. To fix this behavior, the stl-pretty-printers are manually loaded and added for plain
+# lists and tsym::BasePtrList wrappers.
+
+searchPath = glob.glob('/usr/share/gcc*/python')
+if len(searchPath) == 1:
+    sys.path.insert(0, searchPath[0])
+    from libstdcxx.v6.printers import register_libstdcxx_printers, StdListPrinter
+else:
+    gdb.write('Couldn\'t find path to include libstd++ pretty printers\n')
+
 class IntPrinter:
     def __init__(self, val):
         self.val = val
@@ -34,16 +51,25 @@ class VarPrinter:
         prettyStr = self.val['basePtr']
         return prettyStr
 
+def lookupVariations(base):
+    base = 'tsym::' + base
+    return [ base, 'const ' + base, 'const ' + base + ' &' ]
+
 def lookup(val):
     typeStr = str(val.type)
-    if typeStr in ['tsym::BasePtr', 'const tsym::BasePtr', 'const tsym::BasePtr &']:
+
+    if typeStr in lookupVariations('BasePtr'):
         return BasePtrPrinter(val)
-    elif typeStr in ['tsym::Var', 'const tsym::Var', 'const tsym::Var &']:
+    if typeStr in lookupVariations('Var'):
         return VarPrinter(val)
-    elif typeStr in ['tsym::Number', 'const tsym::Number', 'const tsym::Number &']:
+    elif typeStr in lookupVariations('tsym::Number'):
         return NumberPrinter(val)
-    elif typeStr in ['tsym::Int', 'const tsym::Int', 'const tsym::Int &']:
+    elif typeStr in lookupVariations('tsym::Int'):
         return IntPrinter(val)
+    elif typeStr in lookupVariations('BasePtrList'):
+        return StdListPrinter('std::__cxx11::list', val['list'])
+    elif 'std::__cxx11::list' in typeStr:
+        return StdListPrinter('std::__cxx11::list', val)
     return None
 
 gdb.pretty_printers.append(lookup)
