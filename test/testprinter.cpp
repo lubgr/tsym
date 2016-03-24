@@ -205,6 +205,32 @@ TEST(Printer, powerOfSymbolAndNegInt)
     CHECK_EQUAL(expected, printer.getStr());
 }
 
+TEST(Printer, powerOfSymbolAndMinusOne)
+{
+    const std::string expectedFrac("1/a");
+    const std::string expectedNoFrac("a^(-1)");
+    const BasePtr pow = Power::create(a, Numeric::mOne());
+
+    printer.set(pow);
+
+    CHECK_EQUAL(expectedFrac, printer.getStr());
+
+    printer.disableFractions();
+    printer.set(pow);
+
+    CHECK_EQUAL(expectedNoFrac, printer.getStr());
+}
+
+TEST(Printer, powerOfProductAndMinusOne)
+{
+    const std::string expected("1/(2*a*b)");
+    const BasePtr pow = Power::create(Product::create(two, a, b), Numeric::mOne());
+
+    printer.set(pow);
+
+    CHECK_EQUAL(expected, printer.getStr());
+}
+
 TEST(Printer, powerOfSymbolAndPosFrac)
 {
     const std::string expected("a^(1/4)");

@@ -203,6 +203,9 @@ bool tsym::Printer::isPositiveInt(const BasePtr& ptr) const
 
 void tsym::Printer::printExponent(const BasePtr& exp)
 {
+    if (exp->isOne())
+        return;
+
     stream << "^";
 
     if (needsExpParentheses(exp))
