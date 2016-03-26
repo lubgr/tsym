@@ -365,6 +365,22 @@ TEST(StringToVar, sinWrongSpelling)
     checkFailure(expected, stv, 16);
 }
 
+TEST(StringToVar, asinOfProduct)
+{
+    const Var expected = tsym::asin(a*b*c);
+    const StringToVar stv("asin(a*b*c)");
+
+    checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, acosResolvableArg)
+{
+    const Var expected = tsym::Pi/6;
+    const StringToVar stv("acos(sqrt(3)/2)");
+
+    checkSuccess(expected, stv);
+}
+
 TEST(StringToVar, sqrtTwo)
 {
     const StringToVar stv("sqrt(2)");

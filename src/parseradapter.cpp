@@ -180,13 +180,6 @@ void *tsym_parserAdapter_createEuler()
     return toVoid(eulerConstant);
 }
 
-void *tsym_parserAdapter_createUndefined()
-{
-    const BasePtr undefined(Undefined::create());
-
-    return toVoid(undefined);
-}
-
 void *tsym_parserAdapter_createSum(const void *summand1, const void *summand2)
 {
     return create(Sum::create, summand1, summand2);
