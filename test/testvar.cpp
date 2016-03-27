@@ -751,6 +751,21 @@ TEST(Var, acosOfCosOfThreePiFourth)
     CHECK_EQUAL(expected, res);
 }
 
+TEST(Var, atan2OfResolvableArgs)
+{
+    const Var res(atan2(Number(-123, 28), Number(-123, 28)));
+
+    CHECK_EQUAL(225*Pi/180, res);
+}
+
+TEST(Var, atan2OfNonResolvableNumericallyEvaluableArgs)
+{
+    const Var res(atan2(sqrtSix, sqrtThree));
+
+    CHECK_EQUAL("Function", res.type());
+    CHECK_EQUAL("atan2", res.name());
+}
+
 TEST(Var, diffOfSum)
 {
     const Var sum(2*pow(a, 3) + a*b);

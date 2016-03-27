@@ -24,6 +24,7 @@ namespace tsym {
     Var asin(const Var& arg);
     Var acos(const Var& arg);
     Var atan(const Var& arg);
+    Var atan2(const Var& y, const Var& x);
 
     extern const Var Pi;
     extern const Var e;

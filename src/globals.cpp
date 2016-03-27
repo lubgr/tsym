@@ -54,3 +54,8 @@ tsym::Var tsym::atan(const Var& arg)
 {
     return Var(Trigonometric::createAtan(arg.getBasePtr()));
 }
+
+tsym::Var tsym::atan2(const Var& y, const Var& x)
+{
+    return Var(Trigonometric::createAtan2(y.getBasePtr(), x.getBasePtr()));
+}
