@@ -154,6 +154,21 @@ TEST(Subst, asinToUndefined)
     CHECK(res->isUndefined());
 }
 
+TEST(Subst, atan2ToPiFourth)
+    /* Atan(b, a) = Pi/4 for b = 2 and a = 2. */
+{
+    const BasePtr orig = Trigonometric::createAtan2(b, a);
+    const BasePtr firstSubst = orig->subst(b, two);
+    const BasePtr expected = Product::create(Numeric::create(1, 4), pi);
+    BasePtr secondSubst;
+
+    CHECK(firstSubst->isFunction());
+
+    secondSubst = firstSubst->subst(a, two);
+
+    CHECK_EQUAL(expected, secondSubst);
+}
+
 TEST(Subst, logToLog)
     /* Log(a) = log(b) for a = b. */
 {

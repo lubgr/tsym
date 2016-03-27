@@ -124,6 +124,16 @@ TEST(Printer, function)
     CHECK_EQUAL(expected, printer.getStr());
 }
 
+TEST(Printer, functionWithMoreThanOneArgument)
+{
+    const std::string expected("atan2(2*a, b)");
+    const BasePtr atan2 = Trigonometric::createAtan2(Product::create(two, a), b);
+
+    printer.set(atan2);
+
+    CHECK_EQUAL(expected, printer.getStr());
+}
+
 TEST(Printer, symbol)
 {
     const std::string expected("abcde");

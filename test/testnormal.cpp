@@ -305,6 +305,19 @@ TEST(Normal, sumWithNumPowerOfFractions)
     CHECK_EQUAL(expected, result);
 }
 
+TEST(Normal, atan2NormalizeFunctionArgs)
+{
+    const BasePtr orig = Trigonometric::createAtan2(Sum::create(b, argToZero), a);
+    const BasePtr result = orig->normal();
+    const Name expectedFctName("atan2");
+
+    CHECK(result->isFunction());
+    CHECK_EQUAL(expectedFctName, result->name());
+
+    CHECK_EQUAL(b, result->operands().front());
+    CHECK_EQUAL(a, result->operands().back());
+}
+
 TEST(Normal, trigonometricFunctionArgToZero)
 {
     const BasePtr orig = Trigonometric::createSin(argToZero);

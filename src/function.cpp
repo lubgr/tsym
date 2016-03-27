@@ -2,9 +2,8 @@
 #include "numeric.h"
 #include "function.h"
 
-tsym::Function::Function(const BasePtr& arg, const std::string& name) :
-    Base(BasePtrList(arg)),
-    arg(ops.front()),
+tsym::Function::Function(const BasePtrList& args, const std::string& name) :
+    Base(args),
     functionName(name)
 {}
 

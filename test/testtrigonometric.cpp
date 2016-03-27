@@ -6,6 +6,7 @@
 #include "sum.h"
 #include "constant.h"
 #include "product.h"
+#include "logarithm.h"
 #include "trigonometric.h"
 
 using namespace tsym;
@@ -99,6 +100,14 @@ TEST(Trigonometric, atanFunctionName)
     CHECK_EQUAL(expected, atan->name());
 }
 
+TEST(Trigonometric, atan2FunctionName)
+{
+    const BasePtr atan = Trigonometric::createAtan2(b, a);
+    const Name expected("atan2");
+
+    CHECK_EQUAL(expected, atan->name());
+}
+
 TEST(Trigonometric, trivialEquality)
 {
     CHECK(sinA->isEqual(sinA));
@@ -147,11 +156,131 @@ TEST(Trigonometric, tan240Degree)
     CHECK_EQUAL(sqrtThree, res);
 }
 
+TEST(Trigonometric, atan2Order)
+{
+    const BasePtr atan2Ab = Trigonometric::createAtan2(a, b);
+    const BasePtr atan2Ba = Trigonometric::createAtan2(b, a);
+
+    CHECK_EQUAL(a, atan2Ab->operands().front());
+    CHECK_EQUAL(a, atan2Ba->operands().back());
+
+    CHECK_EQUAL(b, atan2Ab->operands().back());
+    CHECK_EQUAL(b, atan2Ba->operands().front());
+}
+
+TEST(Trigonometric, atan2XZeroNonEvaluable)
+{
+    const BasePtr res = Trigonometric::createAtan2(a, zero);
+
+    CHECK(res->isFunction());
+    CHECK_EQUAL(a, res->operands().front());
+    CHECK_EQUAL(zero, res->operands().back());
+}
+
+TEST(Trigonometric, atan2FirstQuadrantResolvable)
+{
+    const BasePtr arg = Product::create(Numeric::create(25, 180), pi);
+    const BasePtr result = Trigonometric::createAtan2(Trigonometric::createSin(arg),
+            Trigonometric::createCos(arg));
+
+    CHECK_EQUAL(arg, result);
+}
+
+TEST(Trigonometric, atan2SecondQuadrantResolvable)
+{
+    const BasePtr result = Trigonometric::createAtan2(one, Numeric::mOne());
+    const BasePtr expected = Product::create(pi, Numeric::create(3, 4));
+
+    CHECK_EQUAL(expected, result);
+}
+
+TEST(Trigonometric, atan2ThirdQuadrantResolvable)
+{
+    const BasePtr y = Product::create(Numeric::create(-3), Sum::create(one, sqrtTwo));
+    const BasePtr result = Trigonometric::createAtan2(y, Numeric::create(-3));
+    const BasePtr expected = Product::create(Numeric::create(11, 8), pi);
+
+    CHECK_EQUAL(expected, result);
+}
+
+TEST(Trigonometric, atan2FourthQuadrantNonResolvable)
+{
+    const BasePtr result = Trigonometric::createAtan2(one, Numeric::create(-2));
+
+    CHECK(result->isFunction());
+    CHECK_EQUAL(one, result->operands().front());
+    CHECK_EQUAL(Numeric::create(-2), result->operands().back());
+}
+
+TEST(Trigonometric, atan2FourthQuadrantResolvable)
+{
+    const BasePtr sqrtFive = Power::sqrt(five);
+    const BasePtr result = Trigonometric::createAtan2(Product::minus(sqrtFive), sqrtFive);
+    const BasePtr expected = Product::create(pi, Numeric::create(7, 4));
+
+    CHECK_EQUAL(expected, result);
+}
+
+TEST(Trigonometric, atan2XZeroEvaluable)
+{
+    const BasePtr negativeX = Trigonometric::createAtan2(Product::minus(two, sqrtTwo), zero);
+    const BasePtr positiveX = Trigonometric::createAtan2(sqrtTwo, zero);
+
+    CHECK_EQUAL(Product::create(Numeric::create(1, 2), pi), positiveX);
+    CHECK_EQUAL(Product::create(Numeric::create(3, 2), pi), negativeX);
+}
+
+TEST(Trigonometric, pureNumericAtan2WithRangeCorretion)
+{
+    const double numX = -1.2345678;
+    const double numY = -12.987654;
+    const BasePtr x = Numeric::create(numX);
+    const BasePtr y = Numeric::create(numY);
+    const BasePtr result = Trigonometric::createAtan2(y, x);
+    const BasePtr expected = Numeric::create(std::atan2(numY, numX) + 2.0*M_PI);
+
+    CHECK_EQUAL(expected, result);
+}
+
+TEST(Trigonometric, pureNumericAtan2NoRangeCorretion)
+{
+    const double numX = 1.2345678;
+    const double numY = 7.6543456;
+    const BasePtr x = Numeric::create(numX);
+    const BasePtr y = Numeric::create(numY);
+    const BasePtr result = Trigonometric::createAtan2(y, x);
+    const BasePtr expected = Numeric::create(std::atan2(numY, numX));
+
+    CHECK_EQUAL(expected, result);
+}
+
+TEST(Trigonometric, illegalAtan2)
+{
+    BasePtr res;
+
+    disableLog();
+    res = Trigonometric::createAtan2(zero, zero);
+    enableLog();
+
+    CHECK(res->isUndefined());
+}
+
 TEST(Trigonometric, undefinedArg)
 {
     const BasePtr sin = Trigonometric::createSin(undefined);
 
     CHECK(sin->isUndefined());
+}
+
+TEST(Trigonometric, undefinedArgAtan)
+{
+    BasePtr res = Trigonometric::createAtan2(undefined, a);
+
+    CHECK(res->isUndefined());
+
+    res = Trigonometric::createAtan2(a, undefined);
+
+    CHECK(res->isUndefined());
 }
 
 TEST(Trigonometric, sinOfAsin)
@@ -170,12 +299,23 @@ TEST(Trigonometric, cosOfAcos)
     CHECK_EQUAL(a, res);
 }
 
-TEST(Trigonometric, tanOfAan)
+TEST(Trigonometric, tanOfAtan)
 {
     const BasePtr atan = Trigonometric::createAtan(a);
     const BasePtr res = Trigonometric::createTan(atan);
 
     CHECK_EQUAL(a, res);
+}
+
+TEST(Trigonometric, atanOfTan)
+{
+    const BasePtr tan = Trigonometric::createTan(a);
+    const BasePtr atan = Trigonometric::createAtan(tan);
+    const Name expected("atan");
+
+    CHECK(atan->isFunction());
+    CHECK_EQUAL(expected, atan->name());
+    CHECK_EQUAL(tan, atan->operands().front());
 }
 
 TEST(Trigonometric, sinOfCos)
@@ -420,6 +560,49 @@ TEST(Trigonometric, tanOfAcos)
     CHECK_EQUAL(expected, res);
 }
 
+TEST(Trigonometric, atan2OfSinCos)
+    /* Atan2(sin(a), cos(a)) isn't simplified. */
+{
+    const BasePtr cosA = Trigonometric::createCos(a);
+    const BasePtr res = Trigonometric::createAtan2(sinA, cosA);
+
+    CHECK(res->isFunction());
+    CHECK_EQUAL(sinA, res->operands().front());
+    CHECK_EQUAL(cosA, res->operands().back());
+}
+
+TEST(Trigonometric, tanOfAtan2)
+    /* Tan(atan2(b, a)) = b/a. */
+{
+    const BasePtr atan2 = Trigonometric::createAtan2(b, a);
+    const BasePtr result = Trigonometric::createTan(atan2);
+    const BasePtr expected = Product::create(b, Power::oneOver(a));
+
+    CHECK_EQUAL(expected, result);
+}
+
+TEST(Trigonometric, cosOfAtan2)
+    /* Cos(atan2(b, a)) = a/sqrt(a^2 + b^2). */
+{
+    const BasePtr atan2 = Trigonometric::createAtan2(b, a);
+    const BasePtr result = Trigonometric::createCos(atan2);
+    const BasePtr expected = Product::create(a, Power::create(Sum::create(aSquare,
+                    Power::create(b, two)), Numeric::create(-1, 2)));
+
+    CHECK_EQUAL(expected, result);
+}
+
+TEST(Trigonometric, sinOfAtan2)
+    /* Sin(atan2(b, a)) = b/sqrt(a^2 + b^2). */
+{
+    const BasePtr atan2 = Trigonometric::createAtan2(b, a);
+    const BasePtr result = Trigonometric::createSin(atan2);
+    const BasePtr expected = Product::create(b, Power::create(Sum::create(aSquare,
+                    Power::create(b, two)), Numeric::create(-1, 2)));
+
+    CHECK_EQUAL(expected, result);
+}
+
 TEST(Trigonometric, numEvalPossibilityRequest)
 {
     const BasePtr sin = Trigonometric::createSin(eight);
@@ -477,7 +660,25 @@ TEST(Trigonometric, numericEvaluation)
     CHECK_EQUAL(std::atan(dArg), fct->numericEval());
 }
 
+TEST(Trigonometric, numericEvaluationAtan2)
+{
+    const BasePtr atan2 = Trigonometric::createAtan2(sqrtTwo, five);
+
+    CHECK_EQUAL(std::atan2(std::sqrt(2.0), 5), atan2->numericEval());
+}
+
 TEST(Trigonometric, illegalNumericEvaluation)
 {
     CHECK(sinA->numericEval().isUndefined());
+}
+
+TEST(Trigonometric, sinOfLogarithm)
+{
+    const BasePtr log = Logarithm::create(a);
+    const BasePtr result = Trigonometric::createSin(log);
+    const Name expectedSinName("sin");
+
+    CHECK(result->isFunction());
+    CHECK_EQUAL(expectedSinName, result->name());
+    CHECK_EQUAL(log, result->operands().front());
 }

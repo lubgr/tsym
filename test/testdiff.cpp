@@ -189,12 +189,12 @@ TEST(Diff, asinOfCosOfPower)
 }
 
 TEST(Diff, acosOfSum)
-    /* d/da(acos(a + 2*a^2 + c)) = -(4*a + 1)/sqrt(1 - (a + 2*a^2 + c)^2). */
+    /* d/da(acos(a + 2*a^2 + c)) = (-4*a - 1)/sqrt(1 - (a + 2*a^2 + c)^2). */
 {
     const BasePtr arg = Sum::create(a, Product::create(two, a, a), c);
     const BasePtr acos = Trigonometric::createAcos(arg);
     const BasePtr result = acos->diff(a);
-    const BasePtr expected = Product::minus(Sum::create(one, Product::create(four, a)),
+    const BasePtr expected = Product::create(Sum::create(Numeric::mOne(), Product::minus(four, a)),
             Power::create(Sum::create(one, Product::minus(Power::create(arg, two))),
                 Numeric::create(-1, 2)));
 
@@ -208,6 +208,17 @@ TEST(Diff, atanOfPower)
     const BasePtr result = atan->diff(a);
     const BasePtr expected = Product::create(ten, Power::create(a, nine),
             Power::oneOver(Sum::create(one, Power::create(a, Numeric::create(20)))));
+
+    CHECK_EQUAL(expected, result);
+}
+
+TEST(Diff, atan2OfSymbols)
+    /* d/da(atan2(b, a)) = -b/(a^2 + b^2). */
+{
+    const BasePtr atan2 = Trigonometric::createAtan2(b, a);
+    const BasePtr result = atan2->diff(a);
+    const BasePtr expected = Product::minus(b, Power::oneOver(Sum::create(Power::create(a, two),
+                    Power::create(b, two))));
 
     CHECK_EQUAL(expected, result);
 }
@@ -242,14 +253,15 @@ TEST(Diff, mixedTerm02)
             Logarithm::create(Product::create(sinTwo, a)));
     const BasePtr logArg = Trigonometric::createSin(sinArg);
     const BasePtr orig = Product::create(abc, Logarithm::create(logArg));
-    const BasePtr result = orig->diff(a);
-    const BasePtr term1 = Product::create(a, b, c);
-    const BasePtr term2 = Power::oneOver(Trigonometric::createTan(sinArg));
-    const BasePtr term3 = Sum::create(Power::oneOver(a),
-            Product::create(four, Power::create(a, three), sqrtTwo, b));
-    const BasePtr summand1 = Product::create(term1, term2, term3);
+    const BasePtr bTimesCos = Product::create(b, Trigonometric::createCos(sinArg));
+    const BasePtr numSummand1 = Trigonometric::createCos(sinArg);
+    const BasePtr numSummand2 = Product::create(four, sqrtTwo, aToTheFour, bTimesCos);
+    const BasePtr expectedNum = Product::create(b, c, Sum::create(numSummand1, numSummand2));
+    const BasePtr expectedDenom = Trigonometric::createSin(sinArg);
+    const BasePtr summand1 = Product::create(expectedNum, Power::oneOver(expectedDenom));
     const BasePtr summand2 = Product::create(b, c, Logarithm::create(logArg));
     const BasePtr expected = Sum::create(summand1, summand2);
+    const BasePtr result = orig->diff(a);
 
     CHECK_EQUAL(expected, result);
 }

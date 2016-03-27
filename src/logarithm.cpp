@@ -21,7 +21,8 @@ namespace tsym {
 }
 
 tsym::Logarithm::Logarithm(const BasePtr& arg) :
-    Function(arg, "log")
+    Function(BasePtrList(arg), "log"),
+    arg(ops.front())
 {}
 
 tsym::Logarithm::~Logarithm() {}

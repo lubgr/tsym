@@ -383,7 +383,19 @@ void tsym::Printer::printProduct(const BasePtrList& factors)
 
 void tsym::Printer::printFunction(const BasePtr& ptr)
 {
-    stream << ptr->name().plain() << "(" << ptr->operands().front() << ")";
+    const BasePtrList& ops(ptr->operands());
+    BasePtrList::const_iterator it;
+
+    stream << ptr->name().plain() << "(";
+
+    for (it = ops.begin(); it != ops.end(); ++it) {
+        stream << *it;
+
+        if (it != --ops.end())
+            stream << ", ";
+    }
+
+    stream << ")";
 }
 
 void tsym::Printer::printConstant(const BasePtr& ptr)

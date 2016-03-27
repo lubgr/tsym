@@ -28,13 +28,10 @@ namespace tsym {
             const Name& name() const;
 
         protected:
-            Function(const BasePtr& arg, const std::string& name);
+            Function(const BasePtrList& args, const std::string& name);
             Function(const Function& other);
             Function& operator = (const Function& other);
             virtual ~Function();
-
-        protected:
-            const BasePtr& arg;
 
         private:
             const Name functionName;

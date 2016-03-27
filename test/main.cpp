@@ -2,6 +2,7 @@
 #include "printer.h"
 #include "numeric.h"
 #include "logarithm.h"
+#include "trigonometric.h"
 #include "constant.h"
 #include "poly.h"
 #include "name.h"
@@ -28,6 +29,8 @@ void initConstructOnFirstUse()
     tsym::Numeric::mOne();
 
     tsym::Logarithm::create(tsym::Constant::createE());
+
+    tsym::Trigonometric::createAtan2(zero, two);
 
     tsym::poly::gcd(tsym::Numeric::one(), tsym::Numeric::one());
 }
