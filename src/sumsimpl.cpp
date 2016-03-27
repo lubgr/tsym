@@ -93,6 +93,8 @@ tsym::BasePtrList tsym::SumSimpl::simplTwoSummandsWithoutSum(const BasePtr& s1, 
         /* Num. powers aren't prefactors now, for e.g. 2*sqrt(2) + sqrt(2) = 3*sqrt(2). Constants
          * still play the same role as symbols. */
         return simplEqualNonNumericTerms(s1, s2);
+    else if (haveContractableSinCos(s1, s2))
+        return BasePtrList(s1->constTerm());
     else if (order::doPermute(s1, s2))
         return BasePtrList(s2, s1);
     else
@@ -157,6 +159,50 @@ tsym::BasePtrList tsym::SumSimpl::simplEqualNonNumericTerms(const BasePtr& s1, c
         return BasePtrList();
     else
         return BasePtrList(product);
+}
+
+bool tsym::SumSimpl::haveContractableSinCos(const BasePtr& s1, const BasePtr& s2)
+{
+    const BasePtr nonConst1(s1->nonConstTerm());
+    const BasePtr nonConst2(s2->nonConstTerm());
+    const BasePtr const1(s1->constTerm());
+    const BasePtr const2(s2->constTerm());
+
+    if (const1->isEqual(const2) && areSinAndCosSquare(nonConst1, nonConst2))
+        return haveEqualFirstOperands(nonConst1, nonConst2);
+    else
+        return false;
+}
+
+bool tsym::SumSimpl::areSinAndCosSquare(const BasePtr& s1, const BasePtr& s2)
+{
+    if (!s1->isPower() || !s2->isPower())
+        return false;
+    else if (!s1->exp()->isNumericallyEvaluable() || !s2->exp()->isNumericallyEvaluable())
+        return false;
+    else if (s1->exp()->numericEval() == 2 && s2->exp()->numericEval() == 2)
+        return areSinAndCos(s1->base(), s2->base());
+    else
+        return false;
+}
+
+bool tsym::SumSimpl::areSinAndCos(const BasePtr& s1, const BasePtr& s2)
+{
+    const Name sin("sin");
+    const Name cos("cos");
+
+    if (!s1->isFunction() || !s2->isFunction())
+        return false;
+    else
+        return (s1->name() == sin && s2->name() == cos) || (s1->name() == cos && s2->name() == sin);
+}
+
+bool tsym::SumSimpl::haveEqualFirstOperands(const BasePtr& pow1, const BasePtr& pow2)
+{
+    const BasePtr arg1(pow1->base()->operands().front());
+    const BasePtr arg2(pow2->base()->operands().front());
+
+    return arg1->isEqual(arg2) || arg1->normal()->isEqual(arg2->normal());
 }
 
 tsym::BasePtrList tsym::SumSimpl::simplNSummands(const BasePtrList& u)

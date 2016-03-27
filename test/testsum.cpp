@@ -16,12 +16,16 @@ using namespace tsym;
 
 TEST_GROUP(Sum)
 {
+    BasePtr sinA;
+    BasePtr cosA;
     BasePtr sqrtTwo;
     BasePtr sqrtThree;
     BasePtr pi;
 
     void setup()
     {
+        sinA = Trigonometric::createSin(a);
+        cosA = Trigonometric::createCos(a);
         sqrtTwo = Power::sqrt(two);
         sqrtThree = Power::sqrt(three);
         pi = Constant::createPi();
@@ -415,9 +419,8 @@ TEST(Sum, noCollectionOfPiNumericPowCoeff)
 TEST(Sum, sumOfEqualFunctionsEqualArgs)
     /* sin(a) + 2*sin(a) = 3*sin(a). */
 {
-    const BasePtr sin = Trigonometric::createSin(a);
-    const BasePtr expected = Product::create(three, sin);
-    const BasePtr res = Sum::create(sin, Product::create(two, sin));
+    const BasePtr expected = Product::create(three, sinA);
+    const BasePtr res = Sum::create(sinA, Product::create(two, sinA));
 
     CHECK_EQUAL(expected, res);
 }
@@ -425,7 +428,6 @@ TEST(Sum, sumOfEqualFunctionsEqualArgs)
 TEST(Sum, sumOfEqualFunctionsDifferentArguments)
     /* No simplification of sin(a) + sin(b). */
 {
-    const BasePtr sinA = Trigonometric::createSin(a);
     const BasePtr sinB = Trigonometric::createSin(b);
     const BasePtr res = Sum::create(sinA, sinB);
 
@@ -500,4 +502,57 @@ TEST(Sum, intOverflowByCollection)
     enableLog();
 
     CHECK_EQUAL(expected, res);
+}
+
+TEST(Sum, contractableSinCosSquareWithoutPrefactor)
+    /* sin(a)^2 + cos(a)^2 = 1. */
+{
+    const BasePtr result = Sum::create(Power::create(sinA, two), Power::create(cosA, two));
+
+    CHECK(result->isOne());
+}
+
+TEST(Sum, contractableSinCosSquarePrefactorMinusOne)
+{
+    const BasePtr result = Sum::create(Product::minus(Power::create(sinA, two)),
+            Product::minus(Power::create(cosA, two)));
+
+    CHECK_EQUAL(Numeric::mOne(), result);
+}
+
+TEST(Sum, contractableSinCosSquareNegNumericPrefactor)
+{
+    const BasePtr fac = Numeric::create(-17, 18);
+    const BasePtr result = Sum::create(Product::create(fac, Power::create(sinA, two)),
+            Product::create(fac, Power::create(cosA, two)));
+
+    CHECK_EQUAL(fac, result);
+}
+
+TEST(Sum, contractableSinCosSquarePosNumPowPrefactor)
+{
+    const BasePtr fac = Power::create(Numeric::create(12), Numeric::create(1, 5));
+    const BasePtr result = Sum::create(Product::create(fac, Power::create(cosA, two)),
+            Product::create(fac, Power::create(sinA, two)));
+
+    CHECK_EQUAL(fac, result);
+}
+
+TEST(Sum, contractableSinCosSquareNegNumPowPrefactor)
+{
+    const BasePtr result = Sum::create(Product::create(sqrtThree, Power::create(cosA, two)),
+            Product::create(sqrtThree, Power::create(sinA, two)));
+
+    CHECK_EQUAL(sqrtThree, result);
+}
+
+TEST(Sum, nonContractableSinCosSquareNonEqualPrefactor)
+{
+    const BasePtr s1 = Product::create(three, Power::create(sinA, two));
+    const BasePtr s2 = Product::create(two, Power::create(cosA, two));
+    const BasePtr result = Sum::create(s1, s2);
+
+    CHECK(result->isSum());
+    CHECK_EQUAL(s2, result->operands().front());
+    CHECK_EQUAL(s1, result->operands().back());
 }

@@ -20,6 +20,10 @@ namespace tsym {
             BasePtrList simplEqualNonConstTerms(const BasePtr& s1, const BasePtr& s2);
             bool haveEqualNonNumericTerms(const BasePtr& s1, const BasePtr& s2);
             BasePtrList simplEqualNonNumericTerms(const BasePtr& s1, const BasePtr& s2);
+            bool haveContractableSinCos(const BasePtr& s1, const BasePtr& s2);
+            bool areSinAndCosSquare(const BasePtr& s1, const BasePtr& s2);
+            bool areSinAndCos(const BasePtr& s1, const BasePtr& s2);
+            bool haveEqualFirstOperands(const BasePtr& pow1, const BasePtr& pow2);
             BasePtrList simplNSummands(const BasePtrList& u);
     };
 }
