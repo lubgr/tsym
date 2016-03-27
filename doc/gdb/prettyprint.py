@@ -62,9 +62,9 @@ def lookup(val):
         return BasePtrPrinter(val)
     if typeStr in lookupVariations('Var'):
         return VarPrinter(val)
-    elif typeStr in lookupVariations('tsym::Number'):
+    elif typeStr in lookupVariations('Number'):
         return NumberPrinter(val)
-    elif typeStr in lookupVariations('tsym::Int'):
+    elif typeStr in lookupVariations('Int'):
         return IntPrinter(val)
     elif typeStr in lookupVariations('BasePtrList'):
         return StdListPrinter('std::__cxx11::list', val['list'])
