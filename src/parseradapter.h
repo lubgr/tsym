@@ -42,6 +42,7 @@ extern "C" {
     void *tsym_parserAdapter_createAsine(const void *arg);
     void *tsym_parserAdapter_createAcosine(const void *arg);
     void *tsym_parserAdapter_createAtangent(const void *arg);
+    void *tsym_parserAdapter_createAtangent2(const void *arg1, const void *arg2);
     void *tsym_parserAdapter_createLogarithm(const void *arg);
     void *tsym_parserAdapter_createSquareRoot(const void *arg);
     void tsym_parserAdapter_deletePtrs(void *ptr1, void *ptr2);

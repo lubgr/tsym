@@ -15,7 +15,7 @@
 %token DOUBLE
 %token SYMBOL
 %token LONG_RANGE DOUBLE_RANGE
-%token SIN COS TAN ASIN ACOS ATAN
+%token SIN COS TAN ASIN ACOS ATAN ATAN2
 %token SQRT
 %token LOG
 %token PI EULER
@@ -104,6 +104,7 @@ textual: SYMBOL {
     | EULER {
         result = $$ = tsym_parserAdapter_createEuler();
     }
+    ;
 
 function: SIN '(' expr ')' {
         result = $$ = tsym_parserAdapter_createSine($3);
@@ -128,6 +129,11 @@ function: SIN '(' expr ')' {
     | ATAN '(' expr ')' {
         result = $$ = tsym_parserAdapter_createAtangent($3);
         tsym_parserAdapter_deletePtr($3);
+    }
+    | ATAN2 '(' expr ',' expr ')' {
+        result = $$ = tsym_parserAdapter_createAtangent2($3, $5);
+        tsym_parserAdapter_deletePtr($3);
+        tsym_parserAdapter_deletePtr($5);
     }
     | LOG '(' expr ')' {
         result = $$ = tsym_parserAdapter_createLogarithm($3);

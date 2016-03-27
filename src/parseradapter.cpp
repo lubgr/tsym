@@ -250,6 +250,14 @@ void *tsym_parserAdapter_createAtangent(const void *arg)
     return create(Trigonometric::createAtan, arg);
 }
 
+void *tsym_parserAdapter_createAtangent2(const void *arg1, const void *arg2)
+{
+    const BasePtr *castedArg1(fromVoid(arg1));
+    const BasePtr *castedArg2(fromVoid(arg2));
+
+    return toVoid(Trigonometric::createAtan2(*castedArg1, *castedArg2));
+}
+
 void *tsym_parserAdapter_createLogarithm(const void *arg)
 {
     return create(Logarithm::create, arg);

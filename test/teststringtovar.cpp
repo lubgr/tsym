@@ -381,6 +381,22 @@ TEST(StringToVar, acosResolvableArg)
     checkSuccess(expected, stv);
 }
 
+TEST(StringToVar, atan2OfSymbols)
+{
+    const Var expected = tsym::atan2(b, a);
+    const StringToVar stv("atan2(b, a)");
+
+    checkSuccess(expected, stv);
+}
+
+TEST(StringToVar, atan2Resolvable)
+{
+    const Var expected(5*Pi/4);
+    const StringToVar stv("atan2(-sqrt(10), -sqrt(10))");
+
+    checkSuccess(expected, stv);
+}
+
 TEST(StringToVar, sqrtTwo)
 {
     const StringToVar stv("sqrt(2)");
@@ -551,6 +567,25 @@ TEST(StringToVar, unrecognizedTokensInsideParentheses)
     enableLog();
 
     checkFailure(expected, stv, 1);
+}
+
+TEST(StringToVar, symbolsAndComma)
+{
+    const Var expected = a;
+    disableLog();
+    const StringToVar stv("a,b,c,,d");
+    enableLog();
+
+    checkFailure(expected, stv, 1);
+}
+
+TEST(StringToVar, onlyCommaSigns)
+{
+    disableLog();
+    const StringToVar stv(",,,");
+    enableLog();
+
+    checkTotalFailure(stv, 0);
 }
 
 TEST(StringToVar, emptyParenthesesAfterValidExpressionInProduct)

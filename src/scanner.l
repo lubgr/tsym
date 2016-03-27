@@ -92,6 +92,11 @@ EXPONENT [eE][-+]?[0-9]+
     return ATAN;
 }
 
+[Aa][Tt][Aa][Nn]2 {
+    updateColumnCount();
+    return ATAN2;
+}
+
 [Ll][Oo][Gg] {
     updateColumnCount();
     return LOG;
@@ -122,7 +127,7 @@ EXPONENT [eE][-+]?[0-9]+
     updateColumnCount();
 }
 
-[-+()/*^] {
+[-+()/*^,] {
     updateColumnCount();
     return *yytext;
 }
