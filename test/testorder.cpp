@@ -393,3 +393,25 @@ TEST(Order, functionAndSum)
     CHECK(order::doPermute(sin, sum));
     CHECK(order::isCorrect(sum, sin));
 }
+
+TEST(Order, numericFraction)
+{
+    const BasePtr n = Numeric::create(1, 3);
+
+    CHECK(order::isCorrect(n, n));
+}
+
+TEST(Order, numericPower)
+{
+    const BasePtr pow = Power::create(two, Numeric::create(1, 3));
+
+    CHECK(order::isCorrect(pow, pow));
+}
+
+TEST(Order, equalTrigonometricFunction)
+{
+    const BasePtr arg = Power::create(seven, Numeric::create(2, 3));
+    const BasePtr cos = Trigonometric::createCos(arg);
+
+    CHECK(order::isCorrect(cos, cos));
+}

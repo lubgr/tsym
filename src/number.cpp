@@ -467,9 +467,12 @@ bool tsym::Number::lessThan(const Number& rhs) const
 {
     if (isThisOrOtherUndefined(rhs))
         return false;
-    else if (areBothRational(rhs))
-        if (num < rhs.num && denom >= rhs.denom)
+    else if (areBothRational(rhs)) {
+        if (num == rhs.num && denom == rhs.denom)
+            return false;
+        else if (num < rhs.num && denom >= rhs.denom)
             return true;
+    }
 
     return toDouble() < rhs.toDouble();
 }

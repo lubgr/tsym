@@ -199,6 +199,14 @@ TEST(Rational, lessThan)
     CHECK(a <= b);
 }
 
+TEST(Rational, lessThanForEqualFraction)
+{
+    const Number oneThird(1, 3);
+
+    CHECK(!(oneThird < oneThird));
+    CHECK(!(oneThird > oneThird));
+}
+
 TEST(Rational, absValue)
 {
     const Number positive(2, 3);
