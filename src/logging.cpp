@@ -36,40 +36,53 @@ namespace tsym {
     logging::Level logging::verbosity = WARNING;
 
     namespace {
-        std::ostream& stream(logging::Level level)
+        tsym::logging::Stream stream(logging::Level level)
         {
-            static std::stringstream nullStream;
-
-            if (level > logging::verbosity) {
-                nullStream.str("");
-                return nullStream;
-            } else
-                return std::clog;
+            if (level == logging::FATAL)
+                return logging::Stream(false, true);
+            else if (level > logging::verbosity)
+                return logging::Stream(true, false);
+            else
+                return logging::Stream(false, false);
         }
     }
 }
 
-std::ostream& tsym::logging::debug()
+tsym::logging::Stream::Stream(bool nullStream, bool exit) :
+    isNullStream(nullStream),
+    exitAfterMessage(exit)
+{}
+
+tsym::logging::Stream::~Stream()
+{
+    if (!isNullStream)
+        std::clog << std::endl;
+
+    if (exitAfterMessage)
+        std::exit(1);
+}
+
+tsym::logging::Stream tsym::logging::debug()
 {
     return stream(DEBUG);
 }
 
-std::ostream& tsym::logging::info()
+tsym::logging::Stream tsym::logging::info()
 {
     return stream(INFO);
 }
 
-std::ostream& tsym::logging::warning()
+tsym::logging::Stream tsym::logging::warning()
 {
     return stream(WARNING);
 }
 
-std::ostream& tsym::logging::error()
+tsym::logging::Stream tsym::logging::error()
 {
     return stream(ERROR);
 }
 
-std::ostream& tsym::logging::fatal()
+tsym::logging::Stream tsym::logging::fatal()
 {
     return stream(FATAL);
 }

@@ -18,17 +18,35 @@ namespace tsym {
 
 #else
 
-#include <sstream>
+#include <cstdlib>
 #include <iostream>
 
 namespace tsym {
     namespace logging {
-        std::ostream& debug();
-        std::ostream& info();
-        std::ostream& warning();
-        std::ostream& error();
-        /* The program doesn't exit within this function: */
-        std::ostream& fatal();
+        class Stream {
+            /* Simplistic logging stream that forwards stream operators to std::clog. */
+            public:
+                Stream(bool nullStream, bool exit);
+                ~Stream();
+
+                template<class T> const Stream& operator << (const T& rhs) const
+                {
+                    if (!isNullStream)
+                        std::clog << rhs;
+
+                    return *this;
+                }
+
+            private:
+                bool isNullStream;
+                bool exitAfterMessage;
+        };
+
+        Stream debug();
+        Stream info();
+        Stream warning();
+        Stream error();
+        Stream fatal();
 
         enum Level { FATAL = 0, ERROR, WARNING, INFO, DEBUG };
         extern Level verbosity;
