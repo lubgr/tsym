@@ -157,7 +157,7 @@ void yyerror(char *s)
     foundSyntaxError = 1;
 
     if (strcmp(s, "syntax error") != 0)
-        tsym_parserAdapter_logParsingError(s, yytext);
+        tsym_parserAdapter_logParsingError(s, yylval.stringVal);
     else
         tsym_parserAdapter_logParsingError("Yacc: found syntax error", "");
 }
