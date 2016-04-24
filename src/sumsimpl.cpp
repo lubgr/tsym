@@ -134,10 +134,12 @@ tsym::BasePtrList tsym::SumSimpl::simplEqualNonConstTerms(const BasePtr& s1, con
 {
     const BasePtr sum(Sum::create(s1->constTerm(), s2->constTerm()));
 
-    if (sum->isSum())
-        return BasePtrList(s1, s2);
-    else
+    if (!sum->isSum())
         return BasePtrList(Product::create(sum, s1->nonConstTerm()));
+    else if (order::doPermute(s1, s2))
+        return BasePtrList(s2, s1);
+    else
+        return BasePtrList(s1, s2);
 }
 
 bool tsym::SumSimpl::haveEqualNonNumericTerms(const BasePtr& s1, const BasePtr& s2)

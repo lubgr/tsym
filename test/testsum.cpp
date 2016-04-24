@@ -144,6 +144,15 @@ TEST(Sum, rearrangeFiveSymbols)
     CHECK_EQUAL(e, *++it);
 }
 
+TEST(Sum, orderingOfMixedTerms)
+    /* a - sqrt(2)*a is equal to -a*sqrt(2) + a. */
+{
+    const BasePtr result1 = Sum::create(a, Product::minus(sqrtTwo, a));
+    const BasePtr result2 = Sum::create(Product::minus(sqrtTwo, a), a);
+
+    CHECK_EQUAL(result1, result2);
+}
+
 TEST(Sum, collectSymbols)
     /* a + a = 2*a. */
 {
