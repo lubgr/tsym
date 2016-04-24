@@ -369,8 +369,16 @@ std::pair<tsym::BasePtrList, tsym::BasePtrList> tsym::Printer::getProductFrac(
 void tsym::Printer::printProduct(const BasePtrList& factors)
 {
     const unsigned productPrec = prec(typeid(Product));
+    BasePtrList::const_iterator it = factors.begin();
 
-    for (BasePtrList::const_iterator it = factors.begin(); it != factors.end(); ++it) {
+    if ((*it)->isOne() && factors.size() > 1)
+        ++it;
+    else if ((*it)->isEqual(Numeric::mOne()) && factors.size() > 1) {
+        stream << "-";
+        ++it;
+    }
+
+    for (; it != factors.end(); ++it) {
         if (prec(*it) < productPrec)
             printInParentheses(*it);
         else

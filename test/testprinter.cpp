@@ -241,6 +241,28 @@ TEST(Printer, powerOfProductAndMinusOne)
     CHECK_EQUAL(expected, printer.getStr());
 }
 
+TEST(Printer, omitFirstNumeratorFactorIfOne)
+{
+    const std::string expected("c/(2*a*b)");
+    const BasePtr product = Product::create(c,
+            Power::create(Product::create(two, a, b), Numeric::mOne()));
+
+    printer.set(product);
+
+    CHECK_EQUAL(expected, printer.getStr());
+}
+
+TEST(Printer, omitFirstNumeratorFactorIfMinusOne)
+{
+    const std::string expected("-c/(2*a*b)");
+    const BasePtr product = Product::minus(c,
+            Power::create(Product::create(two, a, b), Numeric::mOne()));
+
+    printer.set(product);
+
+    CHECK_EQUAL(expected, printer.getStr());
+}
+
 TEST(Printer, powerOfSymbolAndPosFrac)
 {
     const std::string expected("a^(1/4)");
@@ -648,6 +670,7 @@ TEST(Printer, emptyVector)
 {
     const std::string expected("[ ]");
     Vector v;
+    Printer printer(v);
 
     printer.set(v);
 
