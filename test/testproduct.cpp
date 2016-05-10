@@ -111,6 +111,68 @@ TEST(Product, numberTimesResolvableNumPow)
     CHECK_EQUAL(expected, res);
 }
 
+TEST(Product, resolvableNumPowNegativeBase)
+    /* 2*(-1)*2^(-1/2) = -sqrt(2). */
+{
+    const BasePtr expected = Product::minus(sqrtTwo);
+    BasePtrList factors;
+    BasePtr res;
+
+    factors.push_back(two);
+    factors.push_back(Product::minus(Power::create(two, Numeric::create(-1, 2))));
+
+    res = Product::create(factors);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Product, resolvableNumPowNegativeNumericFactor)
+    /* (-2)*2^(-1/2) = -sqrt(2). */
+{
+    const BasePtr expected = Product::minus(sqrtTwo);
+    BasePtrList factors;
+    BasePtr res;
+
+    factors.push_back(Numeric::create(-2));
+    factors.push_back(Power::create(two, Numeric::create(-1, 2)));
+
+    res = Product::create(factors);
+
+    CHECK_EQUAL(expected, res);
+}
+TEST(Product, resolvableNumPowNegativeNumericFractionFactor)
+    /* b*(-1/2)*sqrt(2)*a = -2^(-1/2)*a*b. */
+{
+    const BasePtr expected = Product::minus(a, b, Power::create(two, Numeric::create(-1, 2)));
+    BasePtrList factors;
+    BasePtr res;
+
+    factors.push_back(b);
+    factors.push_back(Numeric::create(-1, 2));
+    factors.push_back(sqrtTwo);
+    factors.push_back(a);
+
+    res = Product::create(factors);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Product, resolvableNumPowMixedWithSymbol)
+    /* 2*a*(-1)*2^(-1/2) = -sqrt(2)*a. */
+{
+    const BasePtr expected = Product::minus(sqrtTwo, a);
+    BasePtrList factors;
+    BasePtr res;
+
+    factors.push_back(two);
+    factors.push_back(a);
+    factors.push_back(Product::minus(Power::create(two, Numeric::create(-1, 2))));
+
+    res = Product::create(factors);
+
+    CHECK_EQUAL(expected, res);
+}
+
 TEST(Product, constantTimesNumeric)
     /* Pi*2 = 2*Pi. */
 {
@@ -308,10 +370,10 @@ TEST(Product, contractionOfNumerics)
 }
 
 TEST(Product, contractionOfConstPowers)
-    /* 3/2*(1/3)^(1/3)*sqrt(2/3) = sqrt(3/2)*3^(-1/3). */
+    /* 3/2*(1/3)^(1/3)*sqrt(2/3) = 3^(2/3)/sqrt(6). */
 {
-    const BasePtr expected = Product::create(Power::sqrt(Numeric::create(3, 2)),
-            Power::create(three, Numeric::create(-1, 3)));
+    const BasePtr expected = Product::create(Power::create(three, Numeric::create(2, 3)),
+            Power::create(six, Numeric::create(-1, 2)));
     BasePtrList fac;
     BasePtr res;
 
@@ -326,10 +388,10 @@ TEST(Product, contractionOfConstPowers)
 
 TEST(Product, preSortingOfConstPowers)
     /* The same as before, but without presorted ordering. 3/2*sqrt(2/3)*(1/3)^(1/3) =
-     * sqrt(3/2)*3^(-1/3). */
+     * 3^(2/3)/sqrt(6). */
 {
-    const BasePtr expected = Product::create(Power::sqrt(Numeric::create(3, 2)),
-            Power::create(three, Numeric::create(-1, 3)));
+    const BasePtr expected = Product::create(Power::create(three, Numeric::create(2, 3)),
+            Power::create(six, Numeric::create(-1, 2)));
     BasePtrList fac;
     BasePtr res;
 

@@ -65,7 +65,10 @@ namespace tsym {
             BasePtrList simplNFactors(BasePtrList u);
             void prepareConst(BasePtrList& u);
             void contractNumerics(BasePtrList& u);
-            void contractNumPowWithEqualBases(BasePtrList& u);
+            void contractConst(BasePtrList& u);
+            bool areTwoContractableConst(const BasePtr& f1, const BasePtr& f2);
+            void contractTwoConst(BasePtrList::iterator& it1, BasePtrList::iterator& it2,
+                    BasePtrList& u);
             BasePtrList simplPreparedFactors(const BasePtrList& u);
             BasePtrList simplNPreparedFactors(const BasePtrList& u);
     };

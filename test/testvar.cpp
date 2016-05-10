@@ -508,9 +508,9 @@ TEST(Var, constProductsEqualBaseAfterExtraction)
 
 TEST(Var, orderingOfLargeProductOfConstants)
     /* 5*(2/9)*sqrt(3)*2^(1/5)*sqrt(17)*(10/11)*sqrt(2)*sqrt(7)*4^(1/5)*17^(2/3)*(1/4)*sqrt(7) =
-     * 350/33*2^(1/10)*sqrt(17/3)*17^(2/3). */
+     * 25/33*2^(3/5)*17^(2/3)*sqrt(1666/3). */
 {
-    const Var expected(Number(350, 33)*pow(2, Var(1, 10))*sqrt(Var(17, 3))* pow(17, Var(2, 3)));
+    const Var expected(Number(25, 33)*pow(2, Var(3, 5))*pow(17, Var(2, 3))*sqrt(Var(1666, 3)));
     Var res;
 
     res = 5*Var(2, 9)*sqrt(3)*pow(2, Var(1, 5))*sqrt(17)*Var(10, 11)

@@ -273,6 +273,15 @@ TEST(Subst, powerExpanedBySubst)
     CHECK_EQUAL(expected, res);
 }
 
+TEST(Subst, numPowerSimplInSubstitution)
+{
+    const BasePtr orig = Product::create(two, a, Trigonometric::createCos(b));
+    const BasePtr result = orig->subst(b, Product::create(Numeric::create(5, 4), pi));
+    const BasePtr expected = Product::minus(Power::sqrt(two), a);
+
+    CHECK_EQUAL(expected, result);
+}
+
 TEST(Subst, mixedTerm)
     /* 2*sqrt(3)*(a + b + sqrt(3))*(c + d)/a = 4*17^(1/3)*a + 2*17^(1/3)*b
      * for sqrt(3) = a and c + d = 17^(1/3). */

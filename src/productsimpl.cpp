@@ -210,7 +210,7 @@ tsym::BasePtrList tsym::ProductSimpl::mergeNonEmpty(const BasePtrList& p, const 
     else if (res.isEqual(q1p1))
         return BasePtrList(q1, merge(p, qRest));
 
-    logging::error() << "ProductSimpl: Error merging non-empty lists: " << p << " " << q << "!";
+    logging::error() << "ProductSimpl: Error merging " << p1 << " and " << q1 << " to " << res;
 
     return BasePtrList();
 }
@@ -478,8 +478,9 @@ void tsym::ProductSimpl::prepareConst(BasePtrList& u)
      * is provided (in the example: it could be necessary to shift the integer 3 to the beginning of
      * the factor list to contract it with another integer). */
 {
+    u.sort(order::doPermute);
     contractNumerics(u);
-    contractNumPowWithEqualBases(u);
+    contractConst(u);
 
     contract(u, &ProductSimpl::areNumPowersWithEqualExp, &ProductSimpl::simplTwoEqualExp);
     contract(u, &ProductSimpl::areNumPowersWithEqualExpDenom, &ProductSimpl::simplTwoEqualExpDenom);
@@ -501,18 +502,41 @@ void tsym::ProductSimpl::contractNumerics(BasePtrList& u)
         u.push_front(Numeric::create(n));
 }
 
-void tsym::ProductSimpl::contractNumPowWithEqualBases(BasePtrList& u)
+void tsym::ProductSimpl::contractConst(BasePtrList& u)
 {
-    BasePtrList::iterator it1;
-    BasePtrList::iterator it2;
+    for (BasePtrList::iterator it1 = u.begin(); it1 != u.end(); ++it1)
+            for (BasePtrList::iterator it2 = it1; it2 != u.end(); ++it2)
+                if (it1 == it2)
+                    continue;
+                else if (areTwoContractableConst(*it1, *it2))
+                    contractTwoConst(it1, it2, u);
+}
 
-    for (it1 = u.begin(); it1 != u.end(); ++it1)
-        if ((*it1)->isNumericPower())
-            for (it2 = it1; it2 != u.end(); ++it2)
-                if (it2 != it1 && haveEqualBases(*it1, *it2)) {
-                    *it1 = simplTwoEqualBases(*it1, *it2).front();
-                    it2 = u.erase(it2);
-                }
+bool tsym::ProductSimpl::areTwoContractableConst(const BasePtr& f1, const BasePtr& f2)
+{
+    if (!f1->isConst())
+        return false;
+    else if (!f2->isConst())
+        return false;
+    else if (f1->isNumeric() || f1->isNumericPower())
+        return f2->isNumeric() || f2->isNumericPower();
+    else
+        return false;
+}
+
+void tsym::ProductSimpl::contractTwoConst(BasePtrList::iterator& it1,
+    BasePtrList::iterator& it2, BasePtrList& u)
+{
+    const BasePtrList res(simplTwoConst(*it1, *it2));
+
+    if (res.size() == 1) {
+        *it1 = res.front();
+        it2 = u.erase(it2);
+    } else if (res.size() == 2) {
+        *it1 = res.front();
+        *it2 = res.back();
+    } else
+        logging::error() << "Error contracting " << *it1 << " and " << *it2 << " to " << res;
 }
 
 tsym::BasePtrList tsym::ProductSimpl::simplPreparedFactors(const BasePtrList& u)
