@@ -1,4 +1,5 @@
 
+#include <algorithm>
 #include "var.h"
 #include "symbol.h"
 #include "numeric.h"
@@ -158,15 +159,43 @@ const std::string& tsym::Var::superscript() const
     return basePtr->name().getSuperscript();
 }
 
-std::list<tsym::Var> tsym::Var::operands() const
+std::vector<tsym::Var> tsym::Var::operands() const
 {
     BasePtrList::const_iterator it;
-    std::list<Var> ops;
+    std::vector<Var> ops;
 
     for (it = basePtr->operands().begin(); it != basePtr->operands().end(); ++it)
         ops.push_back(Var(*it));
 
     return ops;
+}
+
+std::vector<tsym::Var> tsym::Var::collectSymbols() const
+{
+    std::vector<Var> symbols;
+
+    collectSymbols(basePtr, symbols);
+
+    return symbols;
+}
+
+void tsym::Var::collectSymbols(const BasePtr& ptr, std::vector<Var>& symbols) const
+{
+    BasePtrList::const_iterator it;
+
+    if (ptr->isSymbol())
+        insertSymbolIfNotPresent(ptr, symbols);
+    else
+        for (it = ptr->operands().begin(); it != ptr->operands().end(); ++it)
+            collectSymbols(*it, symbols);
+}
+
+void tsym::Var::insertSymbolIfNotPresent(const BasePtr& symbol, std::vector<Var>& symbols) const
+{
+    const Var term(symbol);
+
+    if (std::find(symbols.begin(), symbols.end(), term) == symbols.end())
+        symbols.push_back(term);
 }
 
 const tsym::BasePtr& tsym::Var::getBasePtr() const

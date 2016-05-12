@@ -1,7 +1,7 @@
 #ifndef TSYM_VAR_H
 #define TSYM_VAR_H
 
-#include <list>
+#include <vector>
 #include "baseptr.h"
 #include "number.h"
 
@@ -46,10 +46,14 @@ namespace tsym {
             /* Return the sub-/superscript of a Symbol or an empty string: */
             const std::string& subscript() const;
             const std::string& superscript() const;
-            std::list<Var> operands() const;
+            std::vector<Var> operands() const;
+            std::vector<Var> collectSymbols() const;
             const BasePtr& getBasePtr() const;
 
         private:
+            void collectSymbols(const BasePtr& ptr, std::vector<Var>& symbols) const;
+            void insertSymbolIfNotPresent(const BasePtr& symbol, std::vector<Var>& symbols) const;
+
             BasePtr basePtr;
     };
 

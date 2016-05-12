@@ -1,5 +1,6 @@
 
 #include <sstream>
+#include <algorithm>
 #include "cpputest.h"
 #include "var.h"
 #include "globals.h"
@@ -781,6 +782,55 @@ TEST(Var, normalToZero)
 
     CHECK(sum.expand().isZero());
     CHECK(sum.normal().isZero());
+}
+
+TEST(Var, collectSymbolsFromSymbol)
+{
+    CHECK_EQUAL(1, a.collectSymbols().size());
+    CHECK_EQUAL(a, a.collectSymbols()[0]);
+}
+
+TEST(Var, collectSymbolsFromNumber)
+{
+    const Var n(2, 3);
+
+    CHECK(n.collectSymbols().empty());
+}
+
+TEST(Var, collectSymbolsFromMixedTerm)
+{
+    const Var term(a*b + b/3 + 2*c*d*d + c*c*c - tsym::log(e + 12*tsym::Pi));
+    const std::vector<Var> result(term.collectSymbols());
+
+    CHECK_EQUAL(5, result.size());
+    CHECK_EQUAL(b, result[0]);
+    CHECK_EQUAL(a, result[1]);
+    CHECK_EQUAL(c, result[2]);
+    CHECK_EQUAL(d, result[3]);
+    CHECK_EQUAL(e, result[4]);
+}
+
+TEST(Var, collectSymbolsFromPower)
+{
+    const Var term(tsym::pow(a + b, a*d*(2 + tsym::Pi*e*tsym::e)));
+    const std::vector<Var> result(term.collectSymbols());
+
+    CHECK_EQUAL(4, result.size());
+    CHECK(std::find(result.begin(), result.end(), a) != result.end());
+    CHECK(std::find(result.begin(), result.end(), b) != result.end());
+    CHECK(std::find(result.begin(), result.end(), d) != result.end());
+    CHECK(std::find(result.begin(), result.end(), e) != result.end());
+}
+
+TEST(Var, collectSymbolsFromFunction)
+{
+    const Var term(tsym::asin(a) + tsym::log(tsym::Pi*b) - tsym::tan(c));
+    const std::vector<Var> result(term.collectSymbols());
+
+    CHECK_EQUAL(3, result.size());
+    CHECK(std::find(result.begin(), result.end(), a) != result.end());
+    CHECK(std::find(result.begin(), result.end(), b) != result.end());
+    CHECK(std::find(result.begin(), result.end(), c) != result.end());
 }
 
 TEST(Var, printerOperator)
