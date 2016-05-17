@@ -281,7 +281,7 @@ tsym::BasePtr tsym::Trigonometric::simplAtan2(const BasePtr& y, const BasePtr& x
     if (numTrigo.hasSimplifiedResult())
         return shiftAtanResultIntoRange(numTrigo.get(), increment);
     else
-        return BasePtr(new Trigonometric(BasePtrList(y, x), ATAN2));
+        return BasePtr(new Trigonometric(BasePtrList(atan2Arg), ATAN));
 }
 
 tsym::BasePtr tsym::Trigonometric::shiftAtanResultIntoRange(BasePtr result, BasePtr summand)

@@ -208,8 +208,8 @@ TEST(Trigonometric, atan2FourthQuadrantNonResolvable)
     const BasePtr result = Trigonometric::createAtan2(one, Numeric::create(-2));
 
     CHECK(result->isFunction());
-    CHECK_EQUAL(one, result->operands().front());
-    CHECK_EQUAL(Numeric::create(-2), result->operands().back());
+    CHECK_EQUAL(1, result->operands().size());
+    CHECK_EQUAL(Numeric::create(-1, 2), result->operands().front());
 }
 
 TEST(Trigonometric, atan2FourthQuadrantResolvable)
