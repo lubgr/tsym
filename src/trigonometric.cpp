@@ -90,15 +90,50 @@ tsym::BasePtr tsym::Trigonometric::create(Type type, const BasePtr& arg)
         return arg;
     else if (arg->isFunction())
         return createFromFunction(type, arg);
+    else if (doesSymmetryApply(arg))
+        return createBySymmetry(type, arg);
     else if (arg->isNumericallyEvaluable())
         return createNumerically(type, arg);
     else
         return BasePtr(new Trigonometric(BasePtrList(arg), type));
 }
 
+bool tsym::Trigonometric::doesSymmetryApply(const BasePtr& arg)
+{
+    if (arg->isSum())
+        return haveAllNegativePrefactors(arg->operands());
+    else if (arg->isProduct())
+        return arg->expand()->constTerm()->numericEval() < 0;
+    else
+        return false;
+}
+
+bool tsym::Trigonometric::haveAllNegativePrefactors(const BasePtrList& operands)
+{
+    for (BasePtrList::const_iterator it = operands.begin(); it != operands.end(); ++it)
+        if ((*it)->constTerm()->numericEval() > 0)
+            return false;
+
+    return true;
+}
+
+tsym::BasePtr tsym::Trigonometric::createBySymmetry(Type type, const BasePtr& negativeArg)
+{
+    const BasePtr positiveArg(Product::minus(negativeArg));
+
+    if (type == COS)
+        return create(type, positiveArg);
+    else if (type == ACOS)
+        return Sum::create(timesPi(1), Product::minus(create(type, positiveArg)));
+    else
+        return Product::minus(create(type, positiveArg));
+}
+
 tsym::BasePtr tsym::Trigonometric::createNumerically(Type type, const BasePtr& arg)
 {
     NumTrigoSimpl numTrigo;
+
+    assert(arg->isNumericallyEvaluable());
 
     numTrigo.setType(type);
     numTrigo.setArg(arg);
@@ -106,8 +141,25 @@ tsym::BasePtr tsym::Trigonometric::createNumerically(Type type, const BasePtr& a
 
     if (numTrigo.hasSimplifiedResult())
         return numTrigo.get();
+    else if (arg->numericEval() < 0)
+        return createNumericallyBySymmetry(type, arg);
     else
         return BasePtr(new Trigonometric(BasePtrList(arg), type));
+}
+
+tsym::BasePtr tsym::Trigonometric::createNumericallyBySymmetry(Type type, const BasePtr& arg)
+    /* Here, the final BasePtr has to be created directly, i.e., not by entering the create(...)
+     * cycle again, as this can cause infinite loops. */
+{
+    const BasePtr positiveArg(Product::minus(arg));
+    const BasePtr shiftedResult(new Trigonometric(BasePtrList(positiveArg), type));
+
+    if (type == COS)
+        return shiftedResult;
+    else if (type == ACOS)
+        return Sum::create(timesPi(1), Product::minus(shiftedResult));
+    else
+        return Product::minus(shiftedResult);
 }
 
 tsym::BasePtr tsym::Trigonometric::createFromFunction(Type type, const BasePtr& arg)
@@ -280,6 +332,8 @@ tsym::BasePtr tsym::Trigonometric::simplAtan2(const BasePtr& y, const BasePtr& x
 
     if (numTrigo.hasSimplifiedResult())
         return shiftAtanResultIntoRange(numTrigo.get(), increment);
+    else if (atan2Arg->numericEval() < 0)
+        return createBySymmetry(ATAN, atan2Arg);
     else
         return BasePtr(new Trigonometric(BasePtrList(atan2Arg), ATAN));
 }

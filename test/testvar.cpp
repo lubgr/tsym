@@ -764,7 +764,9 @@ TEST(Var, atan2OfNonResolvableNumericallyEvaluableArgs)
     const Var res(atan2(sqrtSix, sqrtThree));
 
     CHECK_EQUAL("Function", res.type());
-    CHECK_EQUAL("atan2", res.name());
+    CHECK_EQUAL("atan", res.name());
+    CHECK_EQUAL(1, res.operands().size());
+    CHECK_EQUAL(sqrtTwo, res.operands().front());
 }
 
 TEST(Var, diffOfSum)

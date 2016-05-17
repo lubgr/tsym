@@ -37,7 +37,11 @@ namespace tsym {
             ~Trigonometric();
 
             static BasePtr create(Type type, const BasePtr& arg);
+            static bool doesSymmetryApply(const BasePtr& arg);
+            static bool haveAllNegativePrefactors(const BasePtrList& operands);
+            static BasePtr createBySymmetry(Type type, const BasePtr& negativeArg);
             static BasePtr createNumerically(Type type, const BasePtr& arg);
+            static BasePtr createNumericallyBySymmetry(Type type, const BasePtr& arg);
             static BasePtr createFromFunction(Type type, const BasePtr& arg);
             static const Trigonometric *tryCast(const BasePtr& arg);
             static BasePtr createFromTrigo(Type type, const BasePtr& arg);

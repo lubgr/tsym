@@ -205,11 +205,10 @@ TEST(Trigonometric, atan2ThirdQuadrantResolvable)
 
 TEST(Trigonometric, atan2FourthQuadrantNonResolvable)
 {
+    const BasePtr expected = Product::minus(Trigonometric::createAtan(Numeric::create(1, 2)));
     const BasePtr result = Trigonometric::createAtan2(one, Numeric::create(-2));
 
-    CHECK(result->isFunction());
-    CHECK_EQUAL(1, result->operands().size());
-    CHECK_EQUAL(Numeric::create(-1, 2), result->operands().front());
+    CHECK_EQUAL(expected, result);
 }
 
 TEST(Trigonometric, atan2FourthQuadrantResolvable)
@@ -291,6 +290,35 @@ TEST(Trigonometric, sinOfAsin)
     CHECK_EQUAL(a, res);
 }
 
+TEST(Trigonometric, sinOfNegativeSum)
+{
+    const BasePtr arg = Sum::create(Product::minus(a, b, c),
+            Product::create(Numeric::create(-7,8), a),
+            Product::minus(a, Trigonometric::createCos(b)));
+    const BasePtr expected = Product::minus(Trigonometric::createSin(Product::minus(arg)));
+    const BasePtr res = Trigonometric::createSin(arg);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, sinOfNegativeProduct)
+{
+    const BasePtr arg = Product::create(Numeric::create(-1, 5),
+            Power::create(two, Numeric::create(1, 3)), a);
+    const BasePtr res = Trigonometric::createSin(arg);
+    const BasePtr expected = Product::minus(Trigonometric::createSin(Product::minus(arg)));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, sinOfMinusAsin)
+{
+    const BasePtr mAsin = Product::minus(Trigonometric::createAsin(a));
+    const BasePtr res = Trigonometric::createSin(mAsin);
+
+    CHECK_EQUAL(Product::minus(a), res);
+}
+
 TEST(Trigonometric, cosOfAcos)
 {
     const BasePtr acos = Trigonometric::createAcos(a);
@@ -299,12 +327,85 @@ TEST(Trigonometric, cosOfAcos)
     CHECK_EQUAL(a, res);
 }
 
+TEST(Trigonometric, cosOfNegativeNumericArg)
+{
+    const BasePtr res = Trigonometric::createCos(Numeric::create(-2));
+    const BasePtr expected = Trigonometric::createCos(two);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, cosOfNegativeProduct)
+{
+    const BasePtr arg = Product::minus(a, b, Trigonometric::createAtan(Sum::create(a, b)));
+    const BasePtr res = Trigonometric::createCos(arg);
+    const BasePtr expected = Trigonometric::createCos(Product::minus(arg));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, cosOfMinusAcos)
+{
+    const BasePtr arg = Sum::create(a, Product::create(two, b));
+    const BasePtr mAcos = Product::minus(Trigonometric::createAcos(arg));
+    const BasePtr res = Trigonometric::createCos(mAcos);
+
+    CHECK_EQUAL(arg, res);
+}
+
 TEST(Trigonometric, tanOfAtan)
 {
     const BasePtr atan = Trigonometric::createAtan(a);
     const BasePtr res = Trigonometric::createTan(atan);
 
     CHECK_EQUAL(a, res);
+}
+
+TEST(Trigonometric, tanOfSimpleNegativeProduct)
+{
+    const BasePtr expected = Product::minus(Trigonometric::createTan(a));
+    const BasePtr arg = Product::minus(a);
+    const BasePtr res = Trigonometric::createTan(arg);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, atanOfNegSimpleProduct)
+{
+    const BasePtr expected = Product::minus(Trigonometric::createAtan(a));
+    const BasePtr res = Trigonometric::createAtan(Product::minus(a));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, atanOfNegSum)
+{
+    const BasePtr arg = Sum::create(Product::minus(two, a, b, c),
+            Product::create(Numeric::create(-7, 11), sqrtTwo),
+            Product::minus(Logarithm::create(Sum::create(Numeric::create(-2, 3), a))));
+    const BasePtr expected = Product::minus(Trigonometric::createAtan(Product::minus(arg)));
+    const BasePtr res = Trigonometric::createAtan(arg);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, tanOfMinusAtan)
+{
+    const BasePtr mAtan = Product::minus(Trigonometric::createAtan(a));
+    const BasePtr res = Trigonometric::createTan(mAtan);
+
+    CHECK_EQUAL(Product::minus(a), res);
+}
+
+TEST(Trigonometric, tanOfMinusAsin)
+    /* Tan(-asin(a)) = -a/sqrt(1 - a^2). */
+{
+    const BasePtr expected = Product::minus(a,
+            Power::create(Sum::create(one, Product::minus(a, a)), minusHalf));
+    const BasePtr mAsin = Product::minus(Trigonometric::createAsin(a));
+    const BasePtr res = Trigonometric::createTan(mAsin);
+
+    CHECK_EQUAL(expected, res);
 }
 
 TEST(Trigonometric, atanOfTan)
@@ -345,6 +446,38 @@ TEST(Trigonometric, asinOfSin)
 
     CHECK(arg->isFunction());
     CHECK_EQUAL(a, arg->operands().front());
+}
+
+TEST(Trigonometric, asinOfMinusSin)
+    /* Asin(-sin(a)) = -asin(sin(a)). */
+{
+    const BasePtr expected = Product::minus(Trigonometric::createAsin(Trigonometric::createSin(a)));
+    const BasePtr minusSin = Product::minus(Trigonometric::createSin(a));
+    const BasePtr res = Trigonometric::createAsin(minusSin);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, acosOfCos)
+    /* Acos(cos(a)) isn't simplified. */
+{
+    const BasePtr res = Trigonometric::createAcos(Trigonometric::createCos(a));
+
+    CHECK(res->isFunction());
+    CHECK_EQUAL(1, res->operands().size());
+    CHECK_EQUAL(Trigonometric::createCos(a), res->operands().front());
+}
+
+TEST(Trigonometric, acosOfMinusCos)
+    /* Acos(-cos(a)) = pi - acos(cos(a)). */
+{
+    const BasePtr expected = Sum::create(pi,
+            Product::minus(Trigonometric::createAcos(Trigonometric::createCos(a))));
+    const BasePtr minusCos = Product::minus(Trigonometric::createCos(a));
+    const BasePtr res = Trigonometric::createAcos(minusCos);
+    BasePtr arg;
+
+    CHECK_EQUAL(expected, res);
 }
 
 TEST(Trigonometric, asinOfSinOfNumEvalNoShift)
@@ -409,6 +542,15 @@ TEST(Trigonometric, asinOfSinOfNumEvalPosShift2)
     CHECK_EQUAL(expected, res);
 }
 
+TEST(Trigonometric, asinOfMinusAsinNumEval)
+    /* Asin(-sin(1/2)) = -1/2. */
+{
+    const BasePtr mSin = Product::minus(Trigonometric::createSin(Numeric::create(1, 2)));
+    const BasePtr res = Trigonometric::createAsin(mSin);
+
+    CHECK_EQUAL(Numeric::create(-1, 2), res);
+}
+
 TEST(Trigonometric, atanOfTanNumEvalNoShift)
     /* Atan(tan(1/2)) = 1/2. */
 {
@@ -444,6 +586,15 @@ TEST(Trigonometric, atanOfTanNumEvalWithPosShift)
     const BasePtr expected = Sum::create(Product::create(Numeric::create(19, 21), pi), sqrt);
 
     CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, atanOfMinusTanNumEval)
+    /* Atan(-tan(-1/2)) = 1/2. */
+{
+    const BasePtr mTan = Product::minus(Trigonometric::createTan(Numeric::create(-1, 2)));
+    const BasePtr res = Trigonometric::createAtan(mTan);
+
+    CHECK_EQUAL(Numeric::create(1, 2), res);
 }
 
 TEST(Trigonometric, acosOfCosNumEvalNoShift)
@@ -501,6 +652,15 @@ TEST(Trigonometric, acosOfCosNumEvalPosShiftAndCorrection)
     const BasePtr expected = Sum::create(sqrt, Product::minus(pi));
 
     CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, acosOfNegativeCosNumEvalWithShift)
+    /* Acos(-cos(1/2)) = pi - 1/2. */
+{
+    const BasePtr arg = Product::minus(Trigonometric::createCos(Numeric::create(1, 2)));
+    const BasePtr res = Trigonometric::createAcos(arg);
+
+    CHECK_EQUAL(Sum::create(pi, Numeric::create(-1, 2)), res);
 }
 
 TEST(Trigonometric, sinOfAcos)
@@ -569,6 +729,45 @@ TEST(Trigonometric, atan2OfSinCos)
     CHECK(res->isFunction());
     CHECK_EQUAL(sinA, res->operands().front());
     CHECK_EQUAL(cosA, res->operands().back());
+}
+
+TEST(Trigonometric, atan2OfNumericsNotResolvableArg)
+    /* Atan2(2/3, 7/11) = atan(22/21). */
+{
+    const BasePtr res = Trigonometric::createAtan2(Numeric::create(2, 3), Numeric::create(7, 11));
+    const BasePtr expected = Trigonometric::createAtan(Numeric::create(22, 21));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, atan2OfNumEvaluableNotResolvable)
+{
+    const BasePtr y = Logarithm::create(Trigonometric::createTan(Numeric::create(1, 2)));
+    const BasePtr x = Sum::create(Product::create(sqrtTwo, Constant::createE()), five,
+            Trigonometric::createCos(two));
+    const BasePtr res = Trigonometric::createAtan2(y, x);
+    const BasePtr expected = Trigonometric::createAtan(Product::create(y, Power::oneOver(x)));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, atan2OfNegNumEvaluableArg)
+{
+    const BasePtr res = Trigonometric::createAtan2(Numeric::create(-2, 3), seven);
+    const BasePtr expected = Product::minus(Trigonometric::createAtan(Numeric::create(2, 21)));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Trigonometric, atan2OfNegSymbolicArg)
+    /* No symmetry simplification should apply, as the argument(s) aren't clearly positive or
+     * negative. */
+{
+    const BasePtr res = Trigonometric::createAtan2(Product::minus(a), b);
+
+    CHECK(res->isFunction());
+    CHECK_EQUAL(Product::minus(a), res->operands().front());
+    CHECK_EQUAL(b, res->operands().back());
 }
 
 TEST(Trigonometric, tanOfAtan2)
