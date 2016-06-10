@@ -98,6 +98,16 @@ std::string tsym::Numeric::typeStr() const
     return "Numeric";
 }
 
+bool tsym::Numeric::isPositive() const
+{
+    return number > 0;
+}
+
+bool tsym::Numeric::isNegative() const
+{
+    return number < 0;
+}
+
 bool tsym::Numeric::isNumericallyEvaluable() const
 {
     return true;

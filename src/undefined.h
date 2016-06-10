@@ -15,6 +15,8 @@ namespace tsym {
             Fraction normal(SymbolMap&) const;
             BasePtr diffWrtSymbol(const BasePtr& symbol) const;
             std::string typeStr() const;
+            bool isPositive() const;
+            bool isNegative() const;
 
             /* Returns always true: */
             bool isDifferent(const BasePtr& other) const;

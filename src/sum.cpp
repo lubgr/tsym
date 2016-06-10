@@ -150,6 +150,62 @@ std::string tsym::Sum::typeStr() const
     return "Sum";
 }
 
+bool tsym::Sum::isPositive() const
+{
+    return sign() == 1;
+}
+
+bool tsym::Sum::isNegative() const
+{
+    return sign() == -1;
+}
+
+int tsym::Sum::sign() const
+{
+    const int numericSign = signOfNumericParts();
+    const int sumOfSigns = numericSign + signOfSymbolicParts();
+
+    if (numericSign == 0)
+        return sumOfSigns;
+    else if (sumOfSigns > 1)
+        return 1;
+    else if (sumOfSigns < -1)
+        return -1;
+    else
+        return 0;
+}
+
+int tsym::Sum::signOfNumericParts() const
+{
+    Number numericPart(0);
+
+    for (BasePtrList::const_iterator it = ops.begin(); it != ops.end(); ++it)
+        if ((*it)->isNumericallyEvaluable())
+            numericPart += (*it)->numericEval();
+
+    if (numericPart.isZero())
+        return 0;
+    else
+        return numericPart > 0 ? 1 : -1;
+}
+
+int tsym::Sum::signOfSymbolicParts() const
+{
+    int symbolicSign = 0;
+
+    for (BasePtrList::const_iterator it = ops.begin(); it != ops.end(); ++it)
+        if ((*it)->isNumericallyEvaluable())
+            continue;
+        else if ((*it)->isPositive() && symbolicSign >= 0)
+            symbolicSign = 1;
+        else if ((*it)->isNegative() && symbolicSign <= 0)
+            symbolicSign = -1;
+        else
+            return 0;
+
+    return symbolicSign;
+}
+
 bool tsym::Sum::isSum() const
 {
     return true;

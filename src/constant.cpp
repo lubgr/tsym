@@ -63,6 +63,16 @@ std::string tsym::Constant::typeStr() const
     return "Constant";
 }
 
+bool tsym::Constant::isPositive() const
+{
+    return true;
+}
+
+bool tsym::Constant::isNegative() const
+{
+    return false;
+}
+
 bool tsym::Constant::isNumericallyEvaluable() const
 {
     return true;

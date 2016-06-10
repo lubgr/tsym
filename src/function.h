@@ -14,6 +14,8 @@ namespace tsym {
             virtual Fraction normal(SymbolMap& map) const = 0;
             virtual BasePtr diffWrtSymbol(const BasePtr& symbol) const = 0;
             virtual BasePtr subst(const BasePtr& from, const BasePtr& to) const = 0;
+            virtual bool isPositive() const = 0;
+            virtual bool isNegative() const = 0;
 
             /* Implentations of pure virtual methods of Base. */
             bool isEqual(const BasePtr& other) const;

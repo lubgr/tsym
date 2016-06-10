@@ -29,6 +29,13 @@ TEST(Comparison, equalSymbols)
     CHECK(a->isEqual(a));
 }
 
+TEST(Comparison, symbolsEqualNameOnePositive)
+{
+    const BasePtr aPos = Symbol::createPositive("a");
+
+    CHECK(!a->isEqual(aPos));
+}
+
 TEST(Comparison, equalConstants)
 {
     const BasePtr pi = Constant::createPi();

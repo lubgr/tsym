@@ -46,6 +46,16 @@ std::string tsym::Undefined::typeStr() const
     return "Undefined";
 }
 
+bool tsym::Undefined::isPositive() const
+{
+    return false;
+}
+
+bool tsym::Undefined::isNegative() const
+{
+    return false;
+}
+
 bool tsym::Undefined::isUndefined() const
 {
     return true;

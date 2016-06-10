@@ -22,6 +22,8 @@ namespace tsym {
             Fraction normal(SymbolMap& map) const;
             BasePtr diffWrtSymbol(const BasePtr& symbol) const;
             std::string typeStr() const;
+            bool isPositive() const;
+            bool isNegative() const;
 
             /* Overridden methods from Base. */
             bool isPower() const;
@@ -43,6 +45,7 @@ namespace tsym {
             static bool isNumericLessThanZero(const BasePtr& ptr);
             static BasePtr createNonTrivial(const BasePtr& base, const BasePtr& exponent);
             bool isInteger(const BasePtr& ptr) const;
+            bool isExponentRationalNumeric() const;
             BasePtr expandIntegerExponent() const;
             BasePtr expandSumBaseIntExp() const;
 

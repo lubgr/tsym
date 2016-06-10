@@ -6,9 +6,12 @@
 
 namespace tsym {
     class Symbol : public Base {
+        /* Symbols are compared by their name and a their positive flag. */
         public:
             static BasePtr create(const std::string& name);
             static BasePtr create(const Name& name);
+            static BasePtr createPositive(const std::string& name);
+            static BasePtr createPositive(const Name& name);
             static BasePtr createTmpSymbol();
 
             /* Implentations of pure virtual methods of Base. */
@@ -18,20 +21,24 @@ namespace tsym {
             Fraction normal(SymbolMap&) const;
             BasePtr diffWrtSymbol(const BasePtr& symbol) const;
             std::string typeStr() const;
+            bool isPositive() const;
+            bool isNegative() const;
 
             /* Overridden methods from Base. */
             bool isSymbol() const;
             const Name& name() const;
 
         private:
-            explicit Symbol(const Name& name);
+            Symbol(const Name& name, bool positive);
             Symbol(const Symbol& other);
             Symbol& operator = (const Symbol& other);
             ~Symbol();
 
             static Name getTmpName();
+            bool isEqualOtherSymbol(const BasePtr& other) const;
 
             const Name symbolName;
+            const bool positive;
     };
 }
 

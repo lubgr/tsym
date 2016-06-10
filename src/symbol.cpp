@@ -4,8 +4,9 @@
 #include "numeric.h"
 #include "symbolregistry.h"
 
-tsym::Symbol::Symbol(const Name& name) :
-    symbolName(name)
+tsym::Symbol::Symbol(const Name& name, bool positive) :
+    symbolName(name),
+    positive(positive)
 {}
 
 tsym::Symbol::~Symbol() {}
@@ -17,14 +18,24 @@ tsym::BasePtr tsym::Symbol::create(const std::string& name)
 
 tsym::BasePtr tsym::Symbol::create(const Name& name)
 {
-    return BasePtr(new Symbol(name));
+    return BasePtr(new Symbol(name, false));
+}
+
+tsym::BasePtr tsym::Symbol::createPositive(const std::string& name)
+{
+    return createPositive(Name(name));
+}
+
+tsym::BasePtr tsym::Symbol::createPositive(const Name& name)
+{
+    return BasePtr(new Symbol(name, true));
 }
 
 tsym::BasePtr tsym::Symbol::createTmpSymbol()
 {
     const Name name(getTmpName());
 
-    return BasePtr(new Symbol(name));
+    return BasePtr(new Symbol(name, false));
 }
 
 tsym::Name tsym::Symbol::getTmpName()
@@ -45,7 +56,15 @@ tsym::Name tsym::Symbol::getTmpName()
 bool tsym::Symbol::isEqual(const BasePtr& other) const
 {
     if (other->isSymbol())
-        return symbolName == other->name();
+        return isEqualOtherSymbol(other);
+    else
+        return false;
+}
+
+bool tsym::Symbol::isEqualOtherSymbol(const BasePtr& other) const
+{
+    if (symbolName == other->name())
+        return positive == other->isPositive();
     else
         return false;
 }
@@ -73,6 +92,16 @@ tsym::BasePtr tsym::Symbol::diffWrtSymbol(const BasePtr& symbol) const
 std::string tsym::Symbol::typeStr() const
 {
     return "Symbol";
+}
+
+bool tsym::Symbol::isPositive() const
+{
+    return positive;
+}
+
+bool tsym::Symbol::isNegative() const
+{
+    return false;
 }
 
 bool tsym::Symbol::isSymbol() const

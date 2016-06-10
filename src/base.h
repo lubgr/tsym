@@ -36,6 +36,9 @@ namespace tsym {
             virtual Fraction normal(SymbolMap& map) const = 0;
             virtual BasePtr diffWrtSymbol(const BasePtr& symbol) const = 0;
             virtual std::string typeStr() const = 0;
+            /* If unclear or zero, the following two methods shall return false: */
+            virtual bool isPositive() const = 0;
+            virtual bool isNegative() const = 0;
 
             virtual bool isZero() const;
             virtual bool isOne() const;

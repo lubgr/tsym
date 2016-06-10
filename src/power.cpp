@@ -131,6 +131,28 @@ std::string tsym::Power::typeStr() const
     return "Power";
 }
 
+bool tsym::Power::isPositive() const
+{
+    if (baseRef->isPositive())
+        return true;
+    else if (isExponentRationalNumeric())
+        return expRef->numericEval().numerator() % 2 == 0;
+    else
+        return false;
+}
+
+bool tsym::Power::isNegative() const
+{
+    /* Currently, negative powers are always resolved as e.g. (-a)^(1/3) = (-1)*a^(1/3) for product
+     * bases or (-2)^(1/3) = (-1)*2^(1/3) for numeric powers. */
+    return false;
+}
+
+bool tsym::Power::isExponentRationalNumeric() const
+{
+    return expRef->isNumericallyEvaluable() && expRef->numericEval().isRational();
+}
+
 bool tsym::Power::isPower() const
 {
     return true;

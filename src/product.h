@@ -24,6 +24,8 @@ namespace tsym {
             Fraction normal(SymbolMap& map) const;
             BasePtr diffWrtSymbol(const BasePtr& symbol) const;
             std::string typeStr() const;
+            bool isPositive() const;
+            bool isNegative() const;
 
             /* Overridden methods from Base. */
             bool isProduct() const;
@@ -44,6 +46,7 @@ namespace tsym {
 
             static BasePtr createSimplifiedProduct(const BasePtrList& factors);
             static bool needsExpansion(const BasePtrList& factors);
+            int sign() const;
             Fraction normalAndSplitIntoFraction(SymbolMap& map) const;
             BasePtr coeffFactorMatch(const BasePtr& variable, int exp) const;
     };

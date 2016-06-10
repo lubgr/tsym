@@ -502,3 +502,19 @@ tsym::BasePtr tsym::Trigonometric::subst(const BasePtr& from, const BasePtr& to)
     else
         return create(type, arg1->subst(from, to));
 }
+
+bool tsym::Trigonometric::isPositive() const
+{
+    if (type == ATAN)
+        return arg1->isPositive();
+    else
+        return isNumericallyEvaluable() ? numericEval() > 0 : false;
+}
+
+bool tsym::Trigonometric::isNegative() const
+{
+    if (type == ATAN)
+        return arg1->isNegative();
+    else
+        return isNumericallyEvaluable() ? numericEval() < 0 : false;
+}

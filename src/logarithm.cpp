@@ -124,3 +124,13 @@ tsym::BasePtr tsym::Logarithm::subst(const BasePtr& from, const BasePtr& to) con
     else
         return create(arg->subst(from, to));
 }
+
+bool tsym::Logarithm::isPositive() const
+{
+    return isNumericallyEvaluable() ? numericEval() > 0 : false;
+}
+
+bool tsym::Logarithm::isNegative() const
+{
+    return isNumericallyEvaluable() ? numericEval() < 0 : false;
+}

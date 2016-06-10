@@ -21,6 +21,8 @@ namespace tsym {
             Fraction normal(SymbolMap& map) const;
             BasePtr diffWrtSymbol(const BasePtr& symbol) const;
             std::string typeStr() const;
+            bool isPositive() const;
+            bool isNegative() const;
 
             /* Overridden methods from Base. */
             bool isSum() const;
@@ -37,6 +39,9 @@ namespace tsym {
 
             static BasePtr createSimplifiedSum(const BasePtrList& summands);
             Fraction toCommonDenom(const std::vector<Fraction>& operands) const;
+            int sign() const;
+            int signOfNumericParts() const;
+            int signOfSymbolicParts() const;
             BasePtr coeffOverSummands(const BasePtr& variable, int exp) const;
     };
 }

@@ -29,6 +29,8 @@ namespace tsym {
             Fraction normal(SymbolMap& map) const;
             BasePtr diffWrtSymbol(const BasePtr& symbol) const;
             BasePtr subst(const BasePtr& from, const BasePtr& to) const;
+            bool isPositive() const;
+            bool isNegative() const;
 
         private:
             Trigonometric(const BasePtrList& args, Type type);

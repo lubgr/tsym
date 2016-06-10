@@ -204,6 +204,31 @@ std::string tsym::Product::typeStr() const
     return "Product";
 }
 
+bool tsym::Product::isPositive() const
+{
+    return sign() == 1;
+}
+
+bool tsym::Product::isNegative() const
+{
+    return sign() == -1;
+}
+
+int tsym::Product::sign() const
+{
+    int result = 1;
+
+    for (BasePtrList::const_iterator it = ops.begin(); it != ops.end(); ++it)
+        if ((*it)->isPositive())
+            continue;
+        else if ((*it)->isNegative())
+            result *= -1;
+        else
+            return 0;
+
+    return result;
+}
+
 bool tsym::Product::isProduct() const
 {
     return true;
