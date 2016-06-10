@@ -55,7 +55,7 @@ namespace tsym {
             const Int& denominator() const;
             double toDouble() const;
             Number abs() const;
-            /* Returns -1 or 1 (for 0, it return 1): */
+            /* Returns -1 or 1 (for 0, it returns 1): */
             int sign() const;
 
             static Number Sqrt(const Number& base);
