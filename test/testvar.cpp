@@ -65,6 +65,14 @@ TEST(Var, subAndSuperScript)
     CHECK_EQUAL("c", var.superscript());
 }
 
+TEST(Var, constructPositiveSymbol)
+{
+    const Var aPos("a", true);
+
+    CHECK(aPos.isPositive());
+    CHECK(!a.isPositive());
+}
+
 TEST(Var, numberType)
 {
     CHECK_EQUAL("Numeric", one.type());
@@ -784,6 +792,26 @@ TEST(Var, normalToZero)
 
     CHECK(sum.expand().isZero());
     CHECK(sum.normal().isZero());
+}
+
+TEST(Var, negativeVar)
+{
+    const Var aPos("a", true);
+    const Var bPos("b", true, "1");
+    Var res;
+
+    res = -aPos*bPos + 2 - 3*Pi;
+
+    CHECK(!res.isPositive());
+    CHECK(res.isNegative());
+}
+
+TEST(Var, comparisonPosAndNonPosSymbols)
+{
+    const Var aPos("a", true, "1", "2");
+    const Var aNonPos("a", false, "1", "2");
+
+    CHECK(aPos != aNonPos);
 }
 
 TEST(Var, collectSymbolsFromSymbol)

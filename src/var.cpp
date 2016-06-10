@@ -35,6 +35,17 @@ tsym::Var::Var(const char *name, const char *subscript, const char *superscript)
     basePtr(Symbol::create(Name(name, subscript, superscript)))
 {}
 
+tsym::Var::Var(const char *name, bool positiveSymbol, const char *subscript,
+        const char *superscript)
+{
+    const Name symbolName(name, subscript, superscript);
+
+    if (positiveSymbol)
+        basePtr = Symbol::createPositive(symbolName);
+    else
+        basePtr = Symbol::create(symbolName);
+}
+
 tsym::Var::Var(const BasePtr& ptr) :
     basePtr(ptr)
 {}
@@ -126,6 +137,16 @@ bool tsym::Var::has(const Var& other) const
 bool tsym::Var::isZero() const
 {
     return basePtr->isZero();
+}
+
+bool tsym::Var::isPositive() const
+{
+    return basePtr->isPositive();
+}
+
+bool tsym::Var::isNegative() const
+{
+    return basePtr->isNegative();
 }
 
 bool tsym::Var::isNumericallyEvaluable() const

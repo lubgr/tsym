@@ -15,6 +15,8 @@ namespace tsym {
             Var(const Number& number);
             explicit Var(const char *name, const char *subscript = "",
                     const char *superscript = "");
+            Var(const char *name, bool positiveSymbol, const char *subscript = "",
+                    const char *superscript = "");
             explicit Var(const BasePtr& ptr);
 
             Var& operator += (const Var& rhs);
@@ -36,6 +38,8 @@ namespace tsym {
             bool equal(const Var& other) const;
             bool has(const Var& other) const;
             bool isZero() const;
+            bool isPositive() const;
+            bool isNegative() const;
             bool isNumericallyEvaluable() const;
             Number numericEval() const;
             /* Returns "Symbol", "Numeric", "Constant", "Undefined", "Function", "Sum", "Product" or
