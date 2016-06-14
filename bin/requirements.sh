@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-NECESSARY_EXEC="git make g++ grep lex yacc bash"
+NECESSARY_EXEC="git make scons g++ grep lex yacc bash"
 NECESSARY_LDFLAGS="-lCppUTest -lstdc++ -lm"
 NECESSARY_HEADERS="CppUTest/TestHarness.h CppUTest/SimpleString.h"
 

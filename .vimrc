@@ -17,6 +17,14 @@ call add(g:UltiSnipsSnippetDirectories, getcwd()."/doc/ultisnips")
 
 set path=bin/**,doc/**,include/**,src/**,test/**
 
+set shellpipe=2>&1\ \|
+            \while\ read\ line;
+            \do\ mod=`echo\ $line\ \|
+            \sed\ -e\ 's/build\\/debug/src/g'\ -e\ 's/build\\/test-debug/test/g'`;
+            \echo\ $mod\ >>\ %s;
+            \echo\ $line;
+            \done
+
 func! AlternateImplVSplit()
     let currentFile = expand('%:t')
 

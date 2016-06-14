@@ -19,6 +19,6 @@ fi
 
 rm -f ${TARGETDIR}/*
 
-gcovr -r src/ build/ --sort-percentage --html --html-details -o ${TARGETDIR}/coverage.html
+gcovr -r build/debug/src/ --sort-percentage --html --html-details -o ${TARGETDIR}/coverage.html
 
 echo "Generated test coverage statistics in ${TARGETDIR}"

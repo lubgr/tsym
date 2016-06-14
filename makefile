@@ -1,9 +1,10 @@
 
-BUILD = build
+BUILD = build/make
 COMMON = -pedantic -Wall -Wextra -fPIC
 COVERAGE = -fprofile-arcs -ftest-coverage
+CXXSTD ?= c++98
 
-CXXFLAGS = $(COMMON) -Werror=conversion -O0 -g3 -ggdb -I include -I src -I build
+CXXFLAGS = $(COMMON) -std=$(CXXSTD) -Werror=conversion -O0 -g3 -ggdb -I include -I src -I $(BUILD)
 CFLAGS = $(COMMON) -Wno-sign-compare -Wno-unused-label -Wno-unused-function -O0 -I $(BUILD) -I src
 YFLAGS = -d
 LDLIBS = -lCppUTest -ltsym -lstdc++ -lm
@@ -19,13 +20,14 @@ CFLAGS += $(USE_TRLOG)
 LDLIBS += $(LD_TRLOG)
 
 release: COMMON += -O2 -DNDEBUG
-release: CXXFLAGS = $(COMMON) -Werror=conversion $(USE_TRLOG) -I include -I src -I build
+release: CXXFLAGS = $(COMMON) -std=$(CXXSTD) -Werror=conversion $(USE_TRLOG) \
+    -I include -I src -I $(BUILD)
 release: CFLAGS = $(COMMON) -Wno-sign-compare -Wno-unused-label -Wno-unused-function $(USE_TRLOG) \
     -I $(BUILD) -I src
 release: NO_DEBUG_STRINGS = 1
 release: COVERAGE =
 
-VERSION = build/version.h
+VERSION = $(BUILD)/version.h
 INSTALL_PREFIX = /usr/local
 
 MAJOR = $(shell git describe --abbrev=0 --tags | cut -b 2)
@@ -33,7 +35,7 @@ MINOR = $(shell git describe --abbrev=0 --tags | cut -b 4)
 
 LIB_BASENAME = libtsym
 LIB_NAME = $(LIB_BASENAME).$(MAJOR).$(MINOR).so
-TEST_EXEC = bin/runtests
+TEST_EXEC = bin/tests-make
 
 LIB_TARGET = $(BUILD)/$(LIB_NAME)
 LIB_SRC = $(wildcard src/*.cpp)
@@ -71,7 +73,7 @@ $(BUILD)/%.c: src/%.y
 
 $(LIB_SRC) $(TEST_SRC): $(VERSION)
 
-$(VERSION):
+$(VERSION): $(BUILD)
 	@echo generate $(VERSION)
 	@echo "#define TSYM_VERSION_MAJOR $(MAJOR)" > $(VERSION)
 	@echo "#define TSYM_VERSION_MINOR $(MINOR)" >> $(VERSION)
@@ -87,6 +89,8 @@ $(VERSION):
 	@echo "#define TSYM_BUILD_OS \"$(shell uname -mro)\"" >> $(VERSION)
 	@echo "#define TSYM_BUILD_DATE \"$(shell date +'%d. %b. %Y, %R %Z')\"" >> $(VERSION)
 
+$(BUILD):
+	mkdir $(BUILD)
 
 install: lib
 	install -m 644 -Dt $(INSTALL_PREFIX)/include/tsym $(VERSION) include/*
@@ -103,6 +107,5 @@ test: $(TEST_EXEC)
 clean:
 	$(RM) $(BUILD)/*
 	$(RM) $(TEST_EXEC)
-	$(RM) doc/coverage/*
 
 .PHONY: default clean release lib test tests install uninstall
