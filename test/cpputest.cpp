@@ -18,7 +18,7 @@ bool operator != (const BasePtr& lhs, const BasePtr& rhs)
 
 void disableLog()
 {
-#ifdef USE_TRLOG
+#ifdef TSYM_USE_TRLOG
     trlog::appendToCerr(trlog::FATAL, trlog::PRINT_LEVEL);
 #else
     logging::verbosity = logging::FATAL;
@@ -27,7 +27,7 @@ void disableLog()
 
 void enableLog()
 {
-#ifdef USE_TRLOG
+#ifdef TSYM_USE_TRLOG
     trlog::appendToCerr(trlog::WARNING, trlog::PRINT_LEVEL);
 #else
     logging::verbosity = logging::WARNING;

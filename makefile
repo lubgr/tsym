@@ -10,7 +10,7 @@ LDLIBS = -lCppUTest -ltsym -lstdc++ -lm
 LDFLAGS = -L $(BUILD)
 
 ifneq ($(TRLOG), NO)
-    USE_TRLOG = -DUSE_TRLOG
+    USE_TRLOG = -DTSYM_USE_TRLOG
     LD_TRLOG = -ltrlog
 endif
 

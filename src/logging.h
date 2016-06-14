@@ -1,7 +1,9 @@
 #ifndef TSYM_LOGGING_H
 #define TSYM_LOGGING_H
 
-#ifdef USE_TRLOG
+#include "version.h"
+
+#ifdef TSYM_USE_TRLOG
 
 #include "trlog/trlog.h"
 

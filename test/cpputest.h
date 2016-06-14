@@ -9,6 +9,7 @@
 #include <string>
 #include "CppUTest/TestHarness.h"
 #include "CppUTest/SimpleString.h"
+#include "version.h"
 #include "logging.h"
 
 /* Function necessary for using the CHECK_EQUAL macro of CppUTest, i.e. for printing out error
@@ -39,7 +40,7 @@ void enableLog();
 /* Add logging output before each test case, if compiled against the trlog library. If that's not
  * the case, all log messages are printed to stderr/stdout and the same behavior can be achieved by
  * passing a -v option to the test runner. */
-#ifdef USE_TRLOG
+#ifdef TSYM_USE_TRLOG
 
 #define CPPUTEST_CONCAT(str) #str
 #define CPPUTEST_QUOTE(str) CPPUTEST_CONCAT(str)

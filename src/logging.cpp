@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include "logging.h"
 
-#ifdef USE_TRLOG
+#ifdef TSYM_USE_TRLOG
 
 trlog::Stream tsym::logging::debug()
 {
