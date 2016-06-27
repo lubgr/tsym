@@ -1,7 +1,7 @@
 
 #include <sstream>
-#include "cpputest.h"
 #include "vector.h"
+#include "cpputest.h"
 
 using namespace tsym;
 

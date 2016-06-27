@@ -1,7 +1,7 @@
 
-#include "cpputest.h"
 #include "numeric.h"
 #include "abc.h"
+#include "cpputest.h"
 
 using namespace tsym;
 

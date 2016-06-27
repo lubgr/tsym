@@ -1,6 +1,6 @@
 
-#include "cpputest.h"
 #include "name.h"
+#include "cpputest.h"
 
 using namespace tsym;
 

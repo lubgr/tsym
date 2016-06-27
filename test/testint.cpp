@@ -1,7 +1,7 @@
 
 #include <limits>
-#include "cpputest.h"
 #include "int.h"
+#include "cpputest.h"
 
 using namespace tsym;
 

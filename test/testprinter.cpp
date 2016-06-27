@@ -1,5 +1,4 @@
 
-#include "cpputest.h"
 #include "abc.h"
 #include "printer.h"
 #include "symbol.h"
@@ -11,6 +10,7 @@
 #include "sum.h"
 #include "vector.h"
 #include "matrix.h"
+#include "cpputest.h"
 
 using namespace tsym;
 

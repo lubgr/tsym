@@ -1,6 +1,6 @@
 
-#include "cpputest.h"
 #include "primefac.h"
+#include "cpputest.h"
 
 using namespace tsym;
 

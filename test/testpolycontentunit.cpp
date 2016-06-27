@@ -1,10 +1,10 @@
 
-#include "cpputest.h"
 #include "abc.h"
 #include "poly.h"
 #include "product.h"
 #include "power.h"
 #include "sum.h"
+#include "cpputest.h"
 
 using namespace tsym;
 

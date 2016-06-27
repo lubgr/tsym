@@ -1,9 +1,9 @@
 
 #include <sstream>
-#include "cpputest.h"
 #include "matrix.h"
 #include "globals.h"
 #include "logging.h"
+#include "cpputest.h"
 
 using namespace tsym;
 

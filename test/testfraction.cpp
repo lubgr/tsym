@@ -1,9 +1,9 @@
 
-#include "cpputest.h"
 #include "abc.h"
 #include "fraction.h"
 #include "power.h"
 #include "product.h"
+#include "cpputest.h"
 
 using namespace tsym;
 

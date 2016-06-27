@@ -1,5 +1,4 @@
 
-#include "cpputest.h"
 #include "abc.h"
 #include "powernormal.h"
 #include "constant.h"
@@ -7,6 +6,7 @@
 #include "sum.h"
 #include "product.h"
 #include "trigonometric.h"
+#include "cpputest.h"
 
 using namespace tsym;
 

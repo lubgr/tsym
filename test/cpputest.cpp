@@ -1,8 +1,8 @@
 
 #include <sstream>
-#include "cpputest.h"
 #include "base.h"
 #include "logging.h"
+#include "cpputest.h"
 
 using namespace tsym;
 

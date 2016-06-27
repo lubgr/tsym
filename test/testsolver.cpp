@@ -1,11 +1,11 @@
 
-#include "cpputest.h"
 #include "abc.h"
 #include "globals.h"
 #include "matrix.h"
 #include "vector.h"
 #include "solver.h"
 #include "logging.h"
+#include "cpputest.h"
 
 using namespace tsym;
 

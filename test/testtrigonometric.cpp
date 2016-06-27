@@ -1,6 +1,5 @@
 
 #include <cmath>
-#include "cpputest.h"
 #include "abc.h"
 #include "power.h"
 #include "sum.h"
@@ -8,6 +7,7 @@
 #include "product.h"
 #include "logarithm.h"
 #include "trigonometric.h"
+#include "cpputest.h"
 
 using namespace tsym;
 

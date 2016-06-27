@@ -1,8 +1,8 @@
 
 #include <cassert>
-#include "cpputest.h"
 #include "symbolregistry.h"
 #include "symbol.h"
+#include "cpputest.h"
 
 using namespace tsym;
 

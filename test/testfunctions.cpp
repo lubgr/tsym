@@ -1,7 +1,7 @@
 
 #include <cmath>
-#include "cpputest.h"
 #include "globals.h"
+#include "cpputest.h"
 
 using namespace tsym;
 
