@@ -152,12 +152,12 @@ std::string tsym::Sum::typeStr() const
 
 bool tsym::Sum::isPositive() const
 {
-    return sign() == 1;
+    return isNumericallyEvaluable() ? numericEval() > 0 : sign() == 1;
 }
 
 bool tsym::Sum::isNegative() const
 {
-    return sign() == -1;
+    return isNumericallyEvaluable() ? numericEval() < 0 : sign() == -1;
 }
 
 int tsym::Sum::sign() const

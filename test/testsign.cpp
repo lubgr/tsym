@@ -158,9 +158,16 @@ TEST(Sign, sumNumericallyEvaluableToZero)
     checkUnclear(sum);
 }
 
-TEST(Sign, simplePositiveSum)
+TEST(Sign, simplePosSum01)
 {
     const BasePtr sum = Sum::create(aPos, bPos, sqrtTwo, cPos);
+
+    checkPos(sum);
+}
+
+TEST(Sign, simplePosSum02)
+{
+    const BasePtr sum = Sum::create(two, pi, Product::minus(Constant::createE()));
 
     checkPos(sum);
 }
@@ -176,6 +183,13 @@ TEST(Sign, simpleNegativeSum02)
 {
     const BasePtr sum = Sum::create(Product::minus(aPos), Numeric::create(-2, 3),
             Product::minus(two, pi));
+
+    checkNeg(sum);
+}
+
+TEST(Sign, simpleNegativeSum03)
+{
+    const BasePtr sum = Sum::create(two, Product::minus(pi));
 
     checkNeg(sum);
 }
