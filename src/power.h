@@ -42,7 +42,6 @@ namespace tsym {
             ~Power();
 
             static BasePtr createNotUndefined(const BasePtr& base, const BasePtr& exponent);
-            static bool isNumericLessThanZero(const BasePtr& ptr);
             static BasePtr createNonTrivial(const BasePtr& base, const BasePtr& exponent);
             bool isInteger(const BasePtr& ptr) const;
             bool isExponentRationalNumeric() const;

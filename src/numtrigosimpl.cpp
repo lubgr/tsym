@@ -171,7 +171,7 @@ void tsym::NumTrigoSimpl::adjustArgRange()
     const BasePtr twoPi(timesPi(2, 1));
 
     /* The argument is a multiple of Pi, and it is shifted into 0 <= arg < 2*Pi. */
-    while (arg->numericEval() < 0)
+    while (arg->isNegative())
         arg = Sum::create(arg, twoPi);
 
     while (arg->numericEval() >= twoPi->numericEval())

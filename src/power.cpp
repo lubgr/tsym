@@ -44,7 +44,7 @@ tsym::BasePtr tsym::Power::createNotUndefined(const BasePtr& base, const BasePtr
     /* Handle trivial cases first. */
     if (exponent->isZero() || base->isOne())
         return Numeric::one();
-    else if (base->isZero() && isNumericLessThanZero(exponent)) {
+    else if (base->isZero() && exponent->isNegative()) {
         logging::warning() << "Division by zero during Power creation!";
         return Undefined::create();
     } else if (base->isZero())
@@ -53,11 +53,6 @@ tsym::BasePtr tsym::Power::createNotUndefined(const BasePtr& base, const BasePtr
         return base;
 
     return createNonTrivial(base, exponent);
-}
-
-bool tsym::Power::isNumericLessThanZero(const BasePtr& ptr)
-{
-    return ptr->isNumeric() && ptr->numericEval() < 0;
 }
 
 tsym::BasePtr tsym::Power::createNonTrivial(const BasePtr& base, const BasePtr& exponent)

@@ -103,7 +103,7 @@ bool tsym::Trigonometric::doesSymmetryApply(const BasePtr& arg)
     if (arg->isSum())
         return haveAllNegativePrefactors(arg->operands());
     else if (arg->isProduct())
-        return arg->expand()->constTerm()->numericEval() < 0;
+        return arg->expand()->constTerm()->isNegative();
     else
         return false;
 }
@@ -111,7 +111,7 @@ bool tsym::Trigonometric::doesSymmetryApply(const BasePtr& arg)
 bool tsym::Trigonometric::haveAllNegativePrefactors(const BasePtrList& operands)
 {
     for (BasePtrList::const_iterator it = operands.begin(); it != operands.end(); ++it)
-        if ((*it)->constTerm()->numericEval() > 0)
+        if ((*it)->constTerm()->isPositive())
             return false;
 
     return true;
@@ -141,7 +141,7 @@ tsym::BasePtr tsym::Trigonometric::createNumerically(Type type, const BasePtr& a
 
     if (numTrigo.hasSimplifiedResult())
         return numTrigo.get();
-    else if (arg->numericEval() < 0)
+    else if (arg->isNegative())
         return createNumericallyBySymmetry(type, arg);
     else
         return BasePtr(new Trigonometric(BasePtrList(arg), type));
@@ -332,7 +332,7 @@ tsym::BasePtr tsym::Trigonometric::simplAtan2(const BasePtr& y, const BasePtr& x
 
     if (numTrigo.hasSimplifiedResult())
         return shiftAtanResultIntoRange(numTrigo.get(), increment);
-    else if (atan2Arg->numericEval() < 0)
+    else if (atan2Arg->isNegative())
         return createBySymmetry(ATAN, atan2Arg);
     else
         return BasePtr(new Trigonometric(BasePtrList(atan2Arg), ATAN));
@@ -351,7 +351,7 @@ tsym::BasePtr tsym::Trigonometric::shiftAtanResultIntoRange(BasePtr result, Base
 
     result = Sum::create(result, summand);
 
-    while (result->numericEval() < 0)
+    while (result->isNegative())
         result = Sum::create(result, increment);
 
     while (result->numericEval() >= increment->numericEval())

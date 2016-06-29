@@ -20,6 +20,7 @@ const double TOL = 1.e-10;
 
 TEST_GROUP(Power)
 {
+    BasePtr aPos;
     BasePtr half;
     BasePtr oneThird;
     BasePtr minusHalf;
@@ -30,6 +31,7 @@ TEST_GROUP(Power)
 
     void setup()
     {
+        aPos = Symbol::createPositive("a");
         half = Numeric::create(1, 2);
         oneThird = Numeric::create(1, 3);
         minusHalf = Numeric::create(-1, 2);
@@ -444,6 +446,35 @@ TEST(Power, zeroExponent)
 
     CHECK(res->isNumeric());
     CHECK_EQUAL(1, res->numericEval());
+}
+
+TEST(Power, zeroBaseToPosExponent)
+    /* 0^a = 0 with a > 0. */
+{
+    const BasePtr res = Power::create(zero, aPos);
+
+    CHECK(res->isZero());
+}
+
+TEST(Power, zeroBaseToUnclearExponent)
+    /* 0^a = 0. */
+{
+    const BasePtr res = Power::create(zero, a);
+
+    CHECK(res->isZero());
+}
+
+TEST(Power, zeroBaseToNegExponent)
+    /* 0^(-a) with a > 0 is Undefined. */
+{
+    const BasePtr exp = Product::minus(aPos);
+    BasePtr res;
+
+    disableLog();
+    res = Power::create(zero, exp);
+    enableLog();
+
+    CHECK(res->isUndefined());
 }
 
 TEST(Power, identity)

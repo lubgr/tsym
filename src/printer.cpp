@@ -163,7 +163,7 @@ void tsym::Printer::printPower(const BasePtr& base, const BasePtr& exp)
 
 bool tsym::Printer::isNegativeNumeric(const BasePtr& ptr) const
 {
-    return ptr->isNumeric() && ptr->numericEval() < 0;
+    return ptr->isNumeric() && ptr->isNegative();
 }
 
 tsym::BasePtr tsym::Printer::toggleSign(const BasePtr& numeric) const
@@ -287,7 +287,7 @@ bool tsym::Printer::isProductWithNegativeNumeric(const BasePtr& ptr)
     first = ptr->operands().front();
 
     if (first->isNumeric())
-        return first->numericEval() < 0;
+        return first->isNegative();
 
     return false;
 }
