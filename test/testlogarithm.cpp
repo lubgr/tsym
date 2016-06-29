@@ -93,6 +93,18 @@ TEST(Logarithm, logOfValidNumericallyEvaluable)
     CHECK_EQUAL(arg, result->operands().front());
 }
 
+TEST(Logarithm, logOfNegativeArgument)
+{
+    const BasePtr aPos = Symbol::createPositive("a");
+    BasePtr log;
+
+    disableLog();
+    log = Logarithm::create(Product::minus(aPos));
+    enableLog();
+
+    CHECK(log->isUndefined());
+}
+
 TEST(Logarithm, logOfInvalidNumericallyEvaluableEqualZero)
 {
     const BasePtr arg = Sum::create(e, Numeric::create(-M_E));

@@ -226,9 +226,25 @@ TEST(Sign, logarithmArgLessThanOne)
     checkNeg(log);
 }
 
-TEST(Sign, positiveButNumericallyNonEvaluableLogArg)
+TEST(Sign, posButNumericallyNonEvaluableLogArgGreaterOne)
 {
     const BasePtr arg = Sum::create(Product::create(Constant::createE(), nine, sqrtTwo), aPos);
+    const BasePtr log = Logarithm::create(arg);
+
+    checkPos(log);
+}
+
+TEST(Sign, posButNumericallyNonEvaluableLogArgSmallerOne)
+{
+    const BasePtr arg = Sum::create(Numeric::create(0.987654321), Product::minus(aPos));
+    const BasePtr log = Logarithm::create(arg);
+
+    checkNeg(log);
+}
+
+TEST(Sign, unclearLogArg)
+{
+    const BasePtr arg = Sum::create(Numeric::create(0.987654321), aPos);
     const BasePtr log = Logarithm::create(arg);
 
     checkUnclear(log);

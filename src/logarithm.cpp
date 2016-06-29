@@ -3,6 +3,7 @@
 #include "logarithm.h"
 #include "undefined.h"
 #include "constant.h"
+#include "sum.h"
 #include "product.h"
 #include "power.h"
 #include "numeric.h"
@@ -55,8 +56,10 @@ bool tsym::Logarithm::isInvalidArg(const BasePtr& arg)
         /* Catches log(e^(-n)) with n being a large Numeric, which would numerically be evaluated to
          * zero and thus resulting in an Undefined return value. */
         ;
+    else if (arg->isNegative())
+        invalid = true;
     else if (arg->isNumericallyEvaluable())
-        invalid = arg->numericEval() <= 0;
+        invalid = arg->numericEval().isZero();
 
     if (invalid)
         logging::warning() << "Logarithm: invalid argument " << arg;
@@ -127,10 +130,17 @@ tsym::BasePtr tsym::Logarithm::subst(const BasePtr& from, const BasePtr& to) con
 
 bool tsym::Logarithm::isPositive() const
 {
-    return isNumericallyEvaluable() ? numericEval() > 0 : false;
+    return checkSign(&Base::isPositive);
+}
+
+bool tsym::Logarithm::checkSign(bool (Base::*method)() const) const
+{
+    const BasePtr argMinusOne(Sum::create(arg, Numeric::mOne()));
+
+    return ((*argMinusOne).*method)();
 }
 
 bool tsym::Logarithm::isNegative() const
 {
-    return isNumericallyEvaluable() ? numericEval() < 0 : false;
+    return checkSign(&Base::isNegative);
 }

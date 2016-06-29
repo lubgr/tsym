@@ -29,6 +29,7 @@ namespace tsym {
             static BasePtr createFromPower(const BasePtr& arg);
 
             Number checkedNumericEval() const;
+            bool checkSign(bool (Base::*method)() const) const;
 
             const BasePtr& arg;
     };
