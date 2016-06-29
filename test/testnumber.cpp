@@ -220,7 +220,7 @@ TEST(Rational, zeroSign)
 {
     const Number zero(0);
 
-    CHECK_EQUAL(1, zero.sign());
+    CHECK_EQUAL(0, zero.sign());
 }
 
 TEST(Rational, positiveSign)

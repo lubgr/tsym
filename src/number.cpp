@@ -548,7 +548,10 @@ tsym::Number tsym::Number::abs() const
 
 int tsym::Number::sign() const
 {
-    return *this < 0 ? -1 : 1;
+    if (isZero())
+        return 0;
+    else
+        return *this < 0 ? -1 : 1;
 }
 
 tsym::Number tsym::Number::Sqrt(const Number& base)

@@ -173,7 +173,9 @@ int tsym::poly::unit(const BasePtr& polynomial, const BasePtr& x)
     const BasePtr expanded(polynomial->expand());
     const BasePtr lCoeff(expanded->leadingCoeff(x));
 
-    if (lCoeff->isNumeric())
+    if (lCoeff->isZero())
+        return 1;
+    else if (lCoeff->isNumeric())
         return lCoeff->numericEval().sign();
     else
         return unitFromNonNumeric(lCoeff);
