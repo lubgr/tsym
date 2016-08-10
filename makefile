@@ -1,13 +1,13 @@
 
 BUILD = build/make
+CXXSTD ?= c++98
 COMMON = -pedantic -Wall -Wextra -fPIC
 COVERAGE = -fprofile-arcs -ftest-coverage
-CXXSTD ?= c++98
 
-CXXFLAGS = $(COMMON) -std=$(CXXSTD) -Werror=conversion -O0 -g3 -ggdb -I include -I src -I $(BUILD)
-CFLAGS = $(COMMON) -Wno-sign-compare -Wno-unused-label -Wno-unused-function -O0 -I $(BUILD) -I src
+CXXFLAGS += $(COMMON) -std=$(CXXSTD) -Werror=conversion -O0 -g3 -ggdb -I include -I src -I $(BUILD)
+CFLAGS += $(COMMON) -Wno-sign-compare -Wno-unused-label -Wno-unused-function -O0 -I $(BUILD) -I src
 YFLAGS = -d
-LDLIBS = -lCppUTest -ltsym -lstdc++ -lm
+LDLIBS = -lCppUTest -ltsym
 LDFLAGS = -L $(BUILD)
 
 ifneq ($(TRLOG), NO)
@@ -20,22 +20,22 @@ CFLAGS += $(USE_TRLOG)
 LDLIBS += $(LD_TRLOG)
 
 release: COMMON += -O2 -DNDEBUG
-release: CXXFLAGS = $(COMMON) -std=$(CXXSTD) -Werror=conversion $(USE_TRLOG) \
+release: CXXFLAGS += $(COMMON)  -std=$(CXXSTD) -Werror=conversion $(USE_TRLOG) \
     -I include -I src -I $(BUILD)
-release: CFLAGS = $(COMMON) -Wno-sign-compare -Wno-unused-label -Wno-unused-function $(USE_TRLOG) \
+release: CFLAGS += $(COMMON) -Wno-sign-compare -Wno-unused-label -Wno-unused-function $(USE_TRLOG) \
     -I $(BUILD) -I src
 release: NO_DEBUG_STRINGS = 1
 release: COVERAGE =
 
 VERSION = $(BUILD)/version.h
-INSTALL_PREFIX = /usr/local
+PREFIX ?= /usr/local
 
 MAJOR = $(shell git describe --abbrev=0 --tags | cut -b 2)
 MINOR = $(shell git describe --abbrev=0 --tags | cut -b 4)
 
 LIB_BASENAME = libtsym
 LIB_NAME = $(LIB_BASENAME).$(MAJOR).$(MINOR).so
-TEST_EXEC = bin/tests-make
+TEST_EXEC = bin/runtests-make
 
 LIB_TARGET = $(BUILD)/$(LIB_NAME)
 LIB_SRC = $(wildcard src/*.cpp)
@@ -79,7 +79,7 @@ $(VERSION): $(BUILD)
 	@echo "#define TSYM_VERSION_MINOR $(MINOR)" >> $(VERSION)
 	@echo "#define TSYM_COMMIT \"$(shell git describe)\"" >> $(VERSION)
 	@echo "#define TSYM_BRANCH \"$(shell git branch | grep '^\*' | cut -b3-)\"" >> $(VERSION)
-	@test -n "$(NO_DEBUG_STRINGS)" ||  echo "#define TSYM_DEBUG_STRINGS" >> $(VERSION)
+	@test -n "$(NO_DEBUG_STRINGS)" || echo "#define TSYM_DEBUG_STRINGS" >> $(VERSION)
 	@echo "#define TSYM_CPP_COMPILER \"`$(CXX) --version | head -n 1`\"" >> $(VERSION)
 	@echo "#define TSYM_CPP_FLAGS \"$(CXXFLAGS)\"" >> $(VERSION)
 	@echo "#define TSYM_C_COMPILER \"`$(CC) --version | head -n 1`\"" >> $(VERSION)
@@ -93,13 +93,13 @@ $(BUILD):
 	mkdir $(BUILD)
 
 install: lib
-	install -m 644 -Dt $(INSTALL_PREFIX)/include/tsym $(VERSION) include/*
-	install -m 644 $(LIB_TARGET) $(INSTALL_PREFIX)/lib/
-	ln -sf $(INSTALL_PREFIX)/lib/$(LIB_NAME) $(INSTALL_PREFIX)/lib/$(LIB_BASENAME).so
+	install -m 644 -Dt $(DESTDIR)$(PREFIX)/include/tsym $(VERSION) include/*
+	install -m 644 -Dt $(DESTDIR)$(PREFIX)/lib/ $(LIB_TARGET)
+	ln -sf $(LIB_NAME) $(DESTDIR)$(PREFIX)/lib/$(LIB_BASENAME).so
 
 uninstall:
-	rm -f $(INSTALL_PREFIX)/lib/$(LIB_BASENAME).*
-	rm -rf $(INSTALL_PREFIX)/include/tsym
+	rm -f $(DESTDIR)$(PREFIX)/lib/$(LIB_BASENAME).*
+	rm -rf $(DESTDIR)$(PREFIX)/include/tsym
 
 test: $(TEST_EXEC)
 	@$(TEST_EXEC)
