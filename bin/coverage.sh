@@ -1,24 +1,23 @@
 #!/usr/bin/env bash
 
-TARGETDIR=doc/coverage
+TARGETDIR=build/coverage
+INDEX=${TARGETDIR}/index.html
+SRCDIR=build/debug
 
-if [ -z "`find . -iname '*.gcna' -or -iname '*.gcno' 2> /dev/null`" ]; then
-    echo "No gcov files found (*.gcna, *.gcno)!"
+if [ -z "`find ${SRCDIR} -iname '*.gcna' -or -iname '*.gcno' 2> /dev/null`" ]; then
+    echo "No gcov files found (*.gcna, *.gcno) in ${SRCDIR}!"
     exit 1
 fi
 
 if ! which gcovr &> /dev/null; then
-    echo "Gcovr script not found in \$PATH!"
+    echo "gcovr not found in \$PATH!"
     exit 1
 fi
 
-if [ ! -d $TARGETDIR ]; then
-    "Directory $TARGETDIR for HTML output not found."
-    exit 1
-fi
+test -d $TARGETDIR || mkdir -p ${TARGETDIR}
 
 rm -f ${TARGETDIR}/*
 
-gcovr -r build/debug/src/ --sort-percentage --html --html-details -o ${TARGETDIR}/coverage.html
+gcovr -r  ${SRCDIR} --sort-percentage --html --html-details -o ${INDEX}
 
-echo "Generated test coverage statistics in ${TARGETDIR}"
+echo "Test coverage statistics written to file://${PWD}/${INDEX}"
