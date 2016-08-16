@@ -64,27 +64,28 @@ def deinstall(prefix, headerDir):
 
 def install(prefix, headerTargetDir, libSrcFile, headerSrcDir):
     versionHeader = os.path.join(headerSrcDir, 'version.h')
+    dirs = [prefix, os.path.join(prefix, 'include'), os.path.join(prefix, 'lib'), headerTargetDir]
 
     for requiredFile in [versionHeader, libSrcFile]:
         if not os.path.exists(requiredFile):
             raise Errors.StopError('%s not found.' % requiredFile)
 
-    for directory in [os.path.join(prefix, 'include'), os.path.join(prefix, 'lib'), headerTargetDir]:
+    for directory in dirs:
         if not os.path.exists(directory):
             os.mkdir(directory)
-            sys.stdout.write('Create directory %s\n' % directory)
             os.chmod(directory, 0755)
+            sys.stdout.write('Create directory %s\n' % directory)
 
     for header in glob.glob(os.path.join('include', '*.h')) + [versionHeader]:
         targetHeader = os.path.join(headerTargetDir, os.path.basename(header))
         shutil.copyfile(header, targetHeader)
-        sys.stdout.write('Install %s to %s\n' % (header, headerTargetDir))
         os.chmod(targetHeader, 0644)
+        sys.stdout.write('Install %s to %s\n' % (header, headerTargetDir))
 
     libPath = os.path.join(prefix, 'lib', 'libtsym' + Environment().subst('$SHLIBSUFFIX'))
     shutil.copyfile(libSrcFile, libPath)
-    sys.stdout.write('Install %s as %s\n' % (libSrcFile, libPath))
     os.chmod(libPath, 0755)
+    sys.stdout.write('Install %s as %s\n' % (libSrcFile, libPath))
 
 def getVersion(program):
     pattern = re.compile(r'\d\.\d(\.\d)?')
