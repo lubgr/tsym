@@ -1,0 +1,39 @@
+# Maintainer: Lukas Böger <dev [at] lboeger [dot] de>
+
+pkgname=tsym-git
+pkgver=0.0
+pkgrel=1
+
+pkgdesc="A tiny symbolic C++ library"
+arch=('i686' 'x86_64')
+license=('custom')
+
+options=('!strip')
+
+source=("${pkgname%-git}::git+file://${PWD}/../..")
+md5sums=('SKIP')
+
+makedepends=('git' 'scons' 'trlog')
+provides=(${pkgname%-git})
+conflicts=(${pkgname%-git})
+
+pkgver() {
+    cd "${srcdir}/${pkgname%-git}"
+
+    git log -1 --pretty=format:'%h'
+}
+
+build() {
+    cd "${srcdir}/${pkgname%-git}"
+
+    scons --no-tests
+}
+
+package() {
+    cd "${srcdir}/${pkgname%-git}"
+
+    scons --prefix="${pkgdir}/usr" install
+
+    install -m644 -D doc/LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+}
+

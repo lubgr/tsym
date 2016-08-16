@@ -63,10 +63,11 @@ def deinstall(prefix, headerDir):
         pass
 
 def install(prefix, headerTargetDir, libSrcFile, headerSrcDir):
-    if not os.path.exists(libSrcFile):
-        raise Errors.StopError('Shared library %s not found.' % libSrcFile)
+    versionHeader = os.path.join(headerSrcDir, 'version.h')
 
-    deinstall(prefix, headerTargetDir)
+    for requiredFile in [versionHeader, libSrcFile]:
+        if not os.path.exists(requiredFile):
+            raise Errors.StopError('%s not found.' % requiredFile)
 
     for directory in [os.path.join(prefix, 'include'), os.path.join(prefix, 'lib'), headerTargetDir]:
         if not os.path.exists(directory):
@@ -74,7 +75,7 @@ def install(prefix, headerTargetDir, libSrcFile, headerSrcDir):
             sys.stdout.write('Create directory %s\n' % directory)
             os.chmod(directory, 0755)
 
-    for header in glob.glob(os.path.join('include', '*.h')) + [os.path.join(headerSrcDir, 'version.h')]:
+    for header in glob.glob(os.path.join('include', '*.h')) + [versionHeader]:
         targetHeader = os.path.join(headerTargetDir, os.path.basename(header))
         shutil.copyfile(header, targetHeader)
         sys.stdout.write('Install %s to %s\n' % (header, headerTargetDir))
