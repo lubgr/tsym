@@ -10,6 +10,12 @@ import sys
 import os
 import re
 
+NAME = 'tsym'
+LIBNAME = 'lib%s' % NAME
+DEFAULT_PREFIX = '/usr/local'
+DEFAULT_BUILDDIR = 'build'
+TEST_EXEC = './bin/runtests'
+
 def git(*args):
     return subprocess.check_output(['git'] + list(args))
 
@@ -38,32 +44,30 @@ def writeVersionHeader(target, source, env):
     if env['WITH_DEBUG_STRINGS']:
         info.append(('DEBUG_STRINGS', None))
 
-    if env['USE_TRLOG']:
+    if GetOption('useTrlog'):
         info.append(('USE_TRLOG', None))
 
     with open(str(target[0]), 'w') as fp:
         for pair in info:
-            line = '#define TSYM_' + pair[0]
+            line = '#define %s_' % NAME.upper() + pair[0]
             line += ' "%s"\n' % str(pair[1]) if pair[1] else '\n'
             fp.write(line)
 
-def deinstall(prefix, headerDir):
-    for existingHeader in glob.glob(os.path.join(headerDir, '*.h')):
-        os.remove(existingHeader)
-        sys.stdout.write('Remove %s\n' % existingHeader)
+def deinstall(prefix):
+    headerDir = os.path.join(prefix, 'include', NAME)
 
-    for lib in glob.glob(os.path.join(prefix, 'lib/libtsym.*')):
+    for lib in glob.glob(os.path.join(prefix, 'lib', LIBNAME + '*')):
         os.remove(lib)
         sys.stdout.write('Remove %s\n' % lib)
 
     try:
-        os.rmdir(headerDir)
-        sys.stdout.write('Remove directory %s\n' % headerDir)
-    except OSError:
+        shutil.rmtree(headerDir)
+        sys.stdout.write('Recursively remove directory %s\n' % headerDir)
+    except:
         pass
 
-def install(prefix, headerTargetDir, libSrcFile, headerSrcDir):
-    versionHeader = os.path.join(headerSrcDir, 'version.h')
+def install(prefix, libSrcFile, versionHeader):
+    headerTargetDir = os.path.join(prefix, 'include', NAME)
     dirs = [prefix, os.path.join(prefix, 'include'), os.path.join(prefix, 'lib'), headerTargetDir]
 
     for requiredFile in [versionHeader, libSrcFile]:
@@ -82,7 +86,7 @@ def install(prefix, headerTargetDir, libSrcFile, headerSrcDir):
         os.chmod(targetHeader, 0644)
         sys.stdout.write('Install %s to %s\n' % (header, headerTargetDir))
 
-    libPath = os.path.join(prefix, 'lib', 'libtsym' + Environment().subst('$SHLIBSUFFIX'))
+    libPath = os.path.join(prefix, 'lib', LIBNAME + Environment().subst('$SHLIBSUFFIX'))
     shutil.copyfile(libSrcFile, libPath)
     os.chmod(libPath, 0755)
     sys.stdout.write('Install %s as %s\n' % (libSrcFile, libPath))
@@ -93,138 +97,102 @@ def getVersion(program):
     match = pattern.search(output.split('\n')[0])
     return match.group()
 
-def getDefaultCompiler():
-    default = Environment()
-    defaultCc = (default['CC'], getVersion(default['CC']))
-    defaultCxx = (default['CXX'], getVersion(default['CXX']))
-
-    return defaultCc, defaultCxx
-
-defaultCc, defaultCxx = getDefaultCompiler()
-defaultPrefix = '/usr/local'
+def buildDir(self, *paths):
+    return os.path.join(self['BUILD_DIR'], *paths)
 
 SetOption('num_jobs', 4)
 AddOption('--without-trlog', dest = 'useTrlog', action = 'store_false', default = True)
-AddOption('--no-tests', dest = 'buildTests', action = 'store_false', default = True)
-AddOption('--release', dest = 'releaseSelected', action = 'store_true', default = False)
-AddOption('--cc', dest = 'cCompiler', nargs = 1, action = 'store', default = defaultCc[0])
-AddOption('--cxx', dest = 'cppCompiler', nargs = 1, action = 'store', default = defaultCxx[0])
-AddOption('--std', dest = 'cppStandard', nargs = 1, action = 'store', default = 'c++98')
-AddOption('--prefix', dest = 'prefix', nargs = 1, action = 'store', default = defaultPrefix)
+AddOption('--no-coverage', dest = 'withCoverage', action = 'store_false', default = True)
+AddOption('--release', dest = 'release', action = 'store_true', default = False)
+AddOption('--prefix', dest = 'prefix', nargs = 1, action = 'store', default = DEFAULT_PREFIX)
+AddOption('--builddir', dest = 'buildDir', nargs = 1, action = 'store', default = DEFAULT_BUILDDIR)
 
-class Container(object): pass
+release = GetOption('release') and not 'CFLAGS' in os.environ and not 'CXXFLAGS' in os.environ
+withCoverage = False if release or 'CXXFLAGS' in os.environ else GetOption('withCoverage')
 
-lib = Container()
-test = Container()
-build = Container()
+env = Environment(BUILD_DIR = GetOption('buildDir'))
 
-lib.debug = Environment(BUILD_DIR = 'build/debug')
-lib.release = Environment(BUILD_DIR = 'build/release')
-test.debug = Environment(BUILD_DIR = 'build/test-debug')
-test.release = Environment(BUILD_DIR = 'build/test-release')
+env.AddMethod(buildDir)
 
-for env in (lib.debug, lib.release, test.debug, test.release):
-    env.Append(CCFLAGS = ['-pedantic', '-Wall', '-Wextra'], CPPPATH = ['include', 'src'])
-    env.Replace(CC = GetOption('cCompiler'), CXX = GetOption('cppCompiler'))
-    env['USE_TRLOG'] = GetOption('useTrlog')
-    env.Append(CXXFLAGS = '-std=' + GetOption('cppStandard'))
-    env.Replace(CVERSION = getVersion(GetOption('cCompiler')))
-    env.Replace(CXXVERSION = getVersion(GetOption('cppCompiler')))
+env.Append(CPPPATH = ['include'])
+env.Append(CFLAGS = ['-pedantic', '-Wall', '-Wextra', '-Wno-sign-compare', '-Wno-unused-label',
+    '-Wno-unused-function', '-Wno-unneeded-internal-declaration'])
+env.Append(CXXFLAGS = ['-pedantic', '-Wall', '-Wextra', '-Werror=conversion'])
 
-for env in (lib.debug, lib.release):
-    env.Append(CXXFLAGS = '-Werror=conversion')
-    env.Append(CFLAGS = ['-Wno-sign-compare', '-Wno-unused-label', '-Wno-unused-function',
-        '-Wno-unneeded-internal-declaration'])
-    env.Append(BUILDERS = {'LibHeader': Builder(action = writeVersionHeader)})
+if release:
+    env.Append(CFLAGS = '-O2', CXXFLAGS = '-O2', CPPDEFINES = 'NDEBUG')
+else:
+    env.Append(CFLAGS = ['-O0', '-g3', '-ggdb'], CXXFLAGS = ['-O0', '-g3', '-ggdb'])
 
-    env.VariantDir(env['BUILD_DIR'], 'src')
-    env.Append(CPPPATH = env['BUILD_DIR'])
-    env.LibHeader(os.path.join(env['BUILD_DIR'], 'version.h'), None)
+for key in ('CC', 'CXX', 'CFLAGS', 'CXXFLAGS'):
+    if key in os.environ.keys():
+        env[key] = os.environ.get(key)
 
-    env.Append(YACCFLAGS = '-d')
-    scanner = os.path.join(env['BUILD_DIR'], 'scanner.c')
-    parser = os.path.join(env['BUILD_DIR'], 'parser.c')
+libEnv = env.Clone()
+testEnv = env.Clone()
+build = {}
 
-    env.CFile(scanner, 'src/scanner.l')
-    env.CFile(parser, 'src/parser.y')
+libEnv.Replace(BUILD_DIR = env.buildDir('src'))
+testEnv.Replace(BUILD_DIR = env.buildDir('test'))
 
-    env.Append(SRC = Glob(os.path.join(env['BUILD_DIR'], '*.cpp')) + [scanner, parser])
+libEnv.VariantDir(libEnv.buildDir(), 'src')
+libEnv.Append(WITH_DEBUG_STRINGS = not release)
+libEnv.Append(CPPPATH = libEnv.buildDir())
+libEnv.Append(YACCFLAGS = '-d')
+libEnv.Append(BUILDERS = {'LibHeader': Builder(action = writeVersionHeader)})
+versionHeader = libEnv.LibHeader(libEnv.buildDir('version.h'), None)
+scanner = libEnv.buildDir('scanner.c')
+parser = libEnv.buildDir('parser.c')
+libEnv.CFile(scanner, 'src/scanner.l')
+libEnv.CFile(parser, 'src/parser.y')
 
-for env in (test.debug, test.release):
-    env.Append(LIBS = ['CppUTest', 'stdc++', 'm'], LIBPATH = 'build', RPATH = 'build')
-    if env['USE_TRLOG']:
-        env.Append(LIBS = 'trlog')
-    env.VariantDir(env['BUILD_DIR'], 'test')
-    env.Append(SRC = Glob(os.path.join(env['BUILD_DIR'], '*.cpp')))
+testEnv.VariantDir(testEnv.buildDir(), 'test')
+testEnv.Append(CPPPATH = [libEnv.buildDir(), testEnv.buildDir()])
+testEnv.Append(LIBS = ['CppUTest', 'tsym'])
+testEnv.Append(RPATH = env.buildDir())
 
-lib.debug.Append(CCFLAGS = ['-O0', '-g3', '-ggdb'], WITH_DEBUG_STRINGS = True)
-lib.release.Append(CCFLAGS = '-O2', CPPDEFINES = 'NDEBUG', WITH_DEBUG_STRINGS = False)
+if GetOption('useTrlog'):
+    testEnv.Append(LIBS = 'trlog')
 
-branch, major, minor, commit = getRepoInfo()
-debugLibName = 'tsym-' + branch
+libTarget = libEnv.SharedLibrary(env.buildDir(LIBNAME),
+    Glob(libEnv.buildDir('*.cpp')) + [scanner, parser])
 
-build.debug = lib.debug.SharedLibrary(os.path.join('build', debugLibName), lib.debug['SRC'])
-build.release = lib.release.SharedLibrary('build/libtsym', lib.release['SRC'])
+if withCoverage:
+    libEnv.Append(CXXFLAGS = '--coverage')
+    libEnv.AppendUnique(LIBS = 'gcov')
+    Clean(libTarget, Glob(libEnv.buildDir('*.gcno')) + Glob(libEnv.buildDir('*.gcda')))
 
-test.debug.Append(CCFLAGS = ['-O0', '-g3', '-ggdb'], CPPPATH = lib.debug['BUILD_DIR'],
-        LIBS = debugLibName)
-test.release.Append(CPPPATH = lib.release['BUILD_DIR'], LIBS = 'tsym')
-
-if lib.debug['CXX'].startswith('g++') and 'freebsd' not in platform.system().lower():
-    lib.debug.Append(LIBS = 'gcov', CXXFLAGS = ['-fprofile-arcs',  '-ftest-coverage'])
-    Clean(build.debug, Glob(os.path.join(lib.debug['BUILD_DIR'], '*.gcno')) +
-        Glob(os.path.join(lib.debug['BUILD_DIR'], '*.gcda')))
-
-if GetOption('buildTests'):
-    build.debug += test.debug.Program('bin/tests-debug', test.debug['SRC'] + build.debug)
-    build.release += test.release.Program('bin/tests-release', test.release['SRC'] + build.release)
+testTarget = testEnv.Program(TEST_EXEC, Glob(testEnv.buildDir('*.cpp')))
 
 prefix = GetOption('prefix')
-headerDir = os.path.join(prefix, 'include/tsym')
-
-if GetOption('releaseSelected'):
-    installSrcLib, installHeaderSrcDir = str(build.release[0]), lib.release['BUILD_DIR']
-else:
-    installSrcLib, installHeaderSrcDir = str(build.debug[0]), lib.debug['BUILD_DIR']
 
 if 'install' in COMMAND_LINE_TARGETS:
-    install(prefix, headerDir, installSrcLib, installHeaderSrcDir)
+    install(prefix, str(libTarget[0]), str(versionHeader[0]))
 elif 'deinstall' in COMMAND_LINE_TARGETS:
-    deinstall(prefix, headerDir)
+    deinstall(prefix)
 
-if GetOption('releaseSelected'):
-    Default(build.release)
-else:
-    Default(build.debug)
-
-Alias('debug', build.debug)
-Alias('release', build.release)
-Alias('all', build.debug + build.release)
+Default([libTarget, testTarget])
+Alias('lib', libTarget)
+Alias('test', testTarget)
 Alias('install', None)
 Alias('deinstall', None)
 
 Help("""
 Build targets control:\n                                                                             
-    [none]           debug build
-    'debug'          debug build
-    'release'        release build
-    'all'            debug and release build
-    'install'        install debug or release build
+    [none]           shared library and unit tests
+    'lib'            shared library
+    'test'           unit tests only
+    'install'        install library and header files
     'deinstall'      deinstall all libs and headers
 
 Local options:\n
-    --without-trlog  don't use trlog library
-    --no-tests       don't compile unit tests
-    --release        select release for build or install
-    --cc=CC          C compiler to use (default %s %s)
-    --cxx=CXX        C++ compiler to use (default %s %s)
-                     (test coverage only with g++)
-    --std=YY         C++ standard to use
+    --release        select default release compiler flags, strip debug helpers
+    --no-coverage    don't add test coverage flags (only with default flags)
+    --without-trlog  don't use the trlog library
     --prefix=dir     installation location (default %s)
+    --builddir=dir   build directory (default %s)
 
-For debug builds, the library name is always 'tsym-branch',
-and for release builds 'tsym'. Installing a build always
-results in a library name 'tsym' that can be linked
-against.
-""" % (defaultCc[0], defaultCc[1], defaultCxx[0], defaultCxx[1], defaultPrefix),
-append = False)
+Compiler and compiler flags:\n
+    Environment variables CC, CXX, CFLAGS and CXXFLAGS are taken into account.
+    In their absence, defaults are provided (debug or release).
+""" % (DEFAULT_PREFIX, DEFAULT_BUILDDIR), append = False)

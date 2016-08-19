@@ -4,7 +4,8 @@ PKGDIR=build/arch
 PKGPATTERN='tsym-git-*-*-*.pkg.tar.xz'
 
 if test -d ${PKGDIR}; then
-    rm -f ${PKGDIR}/${PKGPATTERN}
+    rm -rf ${PKGDIR}/{${PKGPATTERN},pkg,src}
+
 else
     mkdir ${PKGDIR}
 fi
@@ -15,6 +16,8 @@ cd ${PKGDIR}
 
 makepkg -fsr
 
-cmd="sudo pacman -U ${PKGDIR}/`ls ${PKGPATTERN}`"
+echo "Install via:"
 
-echo -e "Install via:\n${cmd}"
+for pkg in `ls ${PKGPATTERN}`; do
+    echo "sudo pacman -U ${PKGDIR}/${pkg}"
+done

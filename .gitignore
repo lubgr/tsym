@@ -1,5 +1,4 @@
-bin/tests-debug
-bin/tests-release
+bin/runtests
 bin/runtests-make
 build/*
 !build/.gitkeep

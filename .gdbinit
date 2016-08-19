@@ -1,6 +1,6 @@
 
-printf "load bin/tests-debug\n"
-file bin/tests-debug
+printf "load bin/runtests\n"
+file bin/runtests
 
 printf "source doc/gdb/prettyprint.py\n"
 source doc/gdb/prettyprint.py

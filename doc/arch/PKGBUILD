@@ -20,19 +20,25 @@ conflicts=(${pkgname%-git})
 pkgver() {
     cd "${srcdir}/${pkgname%-git}"
 
+    echo -n 'g'
+
     git log -1 --pretty=format:'%h'
 }
 
 build() {
     cd "${srcdir}/${pkgname%-git}"
 
-    scons --no-tests
+    unset CC CXX CFLAGS CXXFLAGS
+
+    scons --no-coverage lib
 }
 
 package() {
     cd "${srcdir}/${pkgname%-git}"
 
-    scons --prefix="${pkgdir}/usr" install
+    unset CC CXX CFLAGS CXXFLAGS
+
+    scons --no-coverage --prefix="${pkgdir}/usr" install
 
     install -m644 -D doc/LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }

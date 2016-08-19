@@ -2,10 +2,10 @@
 
 TARGETDIR=build/coverage
 INDEX=${TARGETDIR}/index.html
-SRCDIR=build/debug
+SRCDIR=build/src
 
-if [ -z "`find ${SRCDIR} -iname '*.gcna' -or -iname '*.gcno' 2> /dev/null`" ]; then
-    echo "No gcov files found (*.gcna, *.gcno) in ${SRCDIR}!"
+if [ -z "`find ${SRCDIR} -iname '*.gcda' -or -iname '*.gcno' 2> /dev/null`" ]; then
+    echo "No gcov files found (*.gcda, *.gcno) in ${SRCDIR}!"
     exit 1
 fi
 
