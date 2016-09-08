@@ -1,5 +1,4 @@
 bin/runtests
-bin/runtests-make
 build/*
 !build/.gitkeep
 doc/log/*
