@@ -7,7 +7,7 @@
 #include "poly.h"
 #include "name.h"
 #include "abc.h"
-#include "version.h"
+#include "config.h"
 #ifdef TSYM_USE_TRLOG
 #include "trlog/trlog.h"
 #endif

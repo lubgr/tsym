@@ -1,3 +1,2 @@
--I include
 -I src
--I build
+-I build/src

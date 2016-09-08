@@ -1,12 +1,7 @@
 
 from SCons import Errors
 import subprocess
-import platform
-import shutil
 import time
-import glob
-import stat
-import sys
 import os
 import re
 
@@ -14,7 +9,47 @@ NAME = 'tsym'
 LIBNAME = 'lib%s' % NAME
 DEFAULT_PREFIX = '/usr/local'
 DEFAULT_BUILDDIR = 'build'
-TEST_EXEC = './bin/runtests'
+TEST_EXEC = 'runtests'
+PUBLIC_HEADER = ['baseptr', 'globals', 'int', 'matrix', 'number', 'solver', 'stringtovar', 'var',
+        'vector', 'config', 'buildinfo']
+
+def publicHeaderList():
+    def path(header):
+        return os.path.join(GetOption('buildDir'), 'src', header + '.h')
+
+    return  [path(header) for header in PUBLIC_HEADER]
+
+def includeGuard(fp, filename = ''):
+    if not filename:
+        fp.write('\n#endif\n')
+    else:
+        baseFilename = os.path.splitext(os.path.basename(filename))[0]
+        token = ('%s_%s_H' % (NAME, baseFilename)).upper()
+        fp.write('#ifndef %s\n#define %s\n\n' % (token, token))
+
+def writeLibHeader(target, source, env):
+    filename = str(target[0])
+
+    with open(filename, 'w') as fp:
+        includeGuard(fp, filename)
+
+        for header in publicHeaderList():
+            fp.write('#include "%s"\n' % os.path.basename(header))
+
+        includeGuard(fp)
+
+def writeConfigHeader(target, source, env):
+    filename = str(target[0])
+
+    with open(filename, 'w') as fp:
+        includeGuard(fp, filename)
+
+        if env['WITH_DEBUG_STRINGS']:
+            fp.write('#define %s_%s\n' % (NAME.upper(), 'DEBUG_STRINGS'))
+        if GetOption('useTrlog'):
+            fp.write('#define %s_%s\n' % (NAME.upper(), 'USE_TRLOG'))
+
+        includeGuard(fp)
 
 def git(*args):
     return subprocess.check_output(['git'] + list(args))
@@ -30,8 +65,11 @@ def getRepoInfo():
         major, minor = 0, 0
     return branch, major, minor, commit
 
-def writeVersionHeader(target, source, env):
+def writeBuildInfoHeader(target, source, env):
     branch, major, minor, commit = getRepoInfo()
+    timeStr = time.strftime("%H:%M, %a %b %d, %Y", time.localtime())
+    filename = str(target[0])
+
     info = [('VERSION_MAJOR %d' % major, None), ('VERSION_MINOR %d' % minor, None),
             ('COMMIT', commit), ('BRANCH', branch),
             ('CPP_COMPILER', env['CXX'] + ' ' + env['CXXVERSION']),
@@ -39,73 +77,32 @@ def writeVersionHeader(target, source, env):
             ('C_COMPILER', env['CC'] + ' ' + env['CCVERSION']),
             ('C_FLAGS', env['CCFLAGS'] + env['CFLAGS']),
             ('PARSER_GENERATOR', env['YACC']), ('LEXICAL_ANALYZER', env['LEX']),
-            ('BUILD_OS', ' '.join(os.uname())), ('BUILD_DATE', time.ctime())]
-
-    if env['WITH_DEBUG_STRINGS']:
-        info.append(('DEBUG_STRINGS', None))
-
-    if GetOption('useTrlog'):
-        info.append(('USE_TRLOG', None))
+            ('BUILD_OS', ' '.join(os.uname())), ('BUILD_DATE', timeStr)]
 
     with open(str(target[0]), 'w') as fp:
+        includeGuard(fp, filename)
+
         for pair in info:
             line = '#define %s_' % NAME.upper() + pair[0]
             line += ' "%s"\n' % str(pair[1]) if pair[1] else '\n'
             fp.write(line)
 
-def deinstall(prefix):
-    headerDir = os.path.join(prefix, 'include', NAME)
-
-    for lib in glob.glob(os.path.join(prefix, 'lib', LIBNAME + '*')):
-        os.remove(lib)
-        sys.stdout.write('Remove %s\n' % lib)
-
-    try:
-        shutil.rmtree(headerDir)
-        sys.stdout.write('Recursively remove directory %s\n' % headerDir)
-    except:
-        pass
-
-def install(prefix, libSrcFile, versionHeader):
-    headerTargetDir = os.path.join(prefix, 'include', NAME)
-    dirs = [prefix, os.path.join(prefix, 'include'), os.path.join(prefix, 'lib'), headerTargetDir]
-
-    for requiredFile in [versionHeader, libSrcFile]:
-        if not os.path.exists(requiredFile):
-            raise Errors.StopError('%s not found.' % requiredFile)
-
-    for directory in dirs:
-        if not os.path.exists(directory):
-            os.mkdir(directory)
-            os.chmod(directory, 0755)
-            sys.stdout.write('Create directory %s\n' % directory)
-
-    for header in glob.glob(os.path.join('include', '*.h')) + [versionHeader]:
-        targetHeader = os.path.join(headerTargetDir, os.path.basename(header))
-        shutil.copyfile(header, targetHeader)
-        os.chmod(targetHeader, 0644)
-        sys.stdout.write('Install %s to %s\n' % (header, headerTargetDir))
-
-    libPath = os.path.join(prefix, 'lib', LIBNAME + Environment().subst('$SHLIBSUFFIX'))
-    shutil.copyfile(libSrcFile, libPath)
-    os.chmod(libPath, 0755)
-    sys.stdout.write('Install %s as %s\n' % (libSrcFile, libPath))
-
-def getVersion(program):
-    pattern = re.compile(r'\d\.\d(\.\d)?')
-    output = subprocess.check_output([program, '--version'])
-    match = pattern.search(output.split('\n')[0])
-    return match.group()
+        includeGuard(fp)
 
 def buildDir(self, *paths):
     return os.path.join(self['BUILD_DIR'], *paths)
+
+def libExistance(target, source, env):
+    libFilename = str(env['LIBTARGET'][0])
+    if not os.path.isfile(libFilename):
+        raise Errors.StopError('%s not found. Compile it with/before the tests.' % libFilename)
 
 SetOption('num_jobs', 4)
 AddOption('--without-trlog', dest = 'useTrlog', action = 'store_false', default = True)
 AddOption('--no-coverage', dest = 'withCoverage', action = 'store_false', default = True)
 AddOption('--release', dest = 'release', action = 'store_true', default = False)
-AddOption('--prefix', dest = 'prefix', nargs = 1, action = 'store', default = DEFAULT_PREFIX)
-AddOption('--builddir', dest = 'buildDir', nargs = 1, action = 'store', default = DEFAULT_BUILDDIR)
+AddOption('--prefix', dest = 'prefix', nargs = 1, default = DEFAULT_PREFIX)
+AddOption('--builddir', dest = 'buildDir', nargs = 1, default = DEFAULT_BUILDDIR)
 
 release = GetOption('release') and not 'CFLAGS' in os.environ and not 'CXXFLAGS' in os.environ
 withCoverage = False if release or 'CXXFLAGS' in os.environ else GetOption('withCoverage')
@@ -114,10 +111,9 @@ env = Environment(BUILD_DIR = GetOption('buildDir'))
 
 env.AddMethod(buildDir)
 
-env.Append(CPPPATH = ['include'])
 env.Append(CFLAGS = ['-pedantic', '-Wall', '-Wextra', '-Wno-sign-compare', '-Wno-unused-label',
     '-Wno-unused-function', '-Wno-unneeded-internal-declaration'])
-env.Append(CXXFLAGS = ['-pedantic', '-Wall', '-Wextra', '-Werror=conversion'])
+env.Append(CXXFLAGS = ['-std=c++98', '-pedantic', '-Wall', '-Wextra', '-Werror=conversion'])
 
 if release:
     env.Append(CFLAGS = '-O2', CXXFLAGS = '-O2', CPPDEFINES = 'NDEBUG')
@@ -130,17 +126,25 @@ for key in ('CC', 'CXX', 'CFLAGS', 'CXXFLAGS'):
 
 libEnv = env.Clone()
 testEnv = env.Clone()
-build = {}
 
 libEnv.Replace(BUILD_DIR = env.buildDir('src'))
 testEnv.Replace(BUILD_DIR = env.buildDir('test'))
+
+libEnv.Append(BUILDERS = {
+    'ConfigHeader': Builder(action = writeConfigHeader),
+    'BuildInfo': Builder(action = writeBuildInfoHeader),
+    'LibHeader': Builder(action = writeLibHeader)
+    })
 
 libEnv.VariantDir(libEnv.buildDir(), 'src')
 libEnv.Append(WITH_DEBUG_STRINGS = not release)
 libEnv.Append(CPPPATH = libEnv.buildDir())
 libEnv.Append(YACCFLAGS = '-d')
-libEnv.Append(BUILDERS = {'LibHeader': Builder(action = writeVersionHeader)})
-versionHeader = libEnv.LibHeader(libEnv.buildDir('version.h'), None)
+
+configHeader = libEnv.ConfigHeader(libEnv.buildDir('config.h'), None)
+buildInfoHeader = libEnv.BuildInfo(libEnv.buildDir('buildinfo.h'), None)
+libHeader = libEnv.LibHeader(libEnv.buildDir('%s.h' % NAME), None)
+
 scanner = libEnv.buildDir('scanner.c')
 parser = libEnv.buildDir('parser.c')
 libEnv.CFile(scanner, 'src/scanner.l')
@@ -150,6 +154,7 @@ testEnv.VariantDir(testEnv.buildDir(), 'test')
 testEnv.Append(CPPPATH = [libEnv.buildDir(), testEnv.buildDir()])
 testEnv.Append(LIBS = ['CppUTest', 'tsym'])
 testEnv.Append(RPATH = env.buildDir())
+testEnv.Append(LIBPATH = env.buildDir())
 
 if GetOption('useTrlog'):
     testEnv.Append(LIBS = 'trlog')
@@ -162,28 +167,44 @@ if withCoverage:
     libEnv.AppendUnique(LIBS = 'gcov')
     Clean(libTarget, Glob(libEnv.buildDir('*.gcno')) + Glob(libEnv.buildDir('*.gcda')))
 
-testTarget = testEnv.Program(TEST_EXEC, Glob(testEnv.buildDir('*.cpp')))
+testTarget = testEnv.Program(env.buildDir(TEST_EXEC), Glob(testEnv.buildDir('*.cpp')))
 
-prefix = GetOption('prefix')
+# The following lines ensures that library and tests can be built with different CXXFLAGS. Due to
+# the hard-coded removal of the dependency, its local existance has to be checked, otherwise the
+# test executable might be linked against a globally installed version of the library.
+testEnv.Append(LIBTARGET = libTarget)
+testEnv.Ignore(testTarget, testEnv['LIBTARGET'])
+testEnv.AddPreAction(testTarget, libExistance)
 
-if 'install' in COMMAND_LINE_TARGETS:
-    install(prefix, str(libTarget[0]), str(versionHeader[0]))
-elif 'deinstall' in COMMAND_LINE_TARGETS:
-    deinstall(prefix)
+includeDir = os.path.join(GetOption('prefix'), 'include')
+headerTargetDir = os.path.join(includeDir, NAME)
+libDir = os.path.join(GetOption('prefix'), 'lib')
+libPath = os.path.join(libDir, LIBNAME + Environment().subst('$SHLIBSUFFIX'))
 
-Default([libTarget, testTarget])
-Alias('lib', libTarget)
+installLib = libEnv.InstallAs(libPath, libTarget)
+installHeader = libEnv.Install(headerTargetDir, [publicHeaderList(), libHeader])
+
+for target in installHeader:
+    libEnv.AddPostAction(target, Chmod('$TARGET', 0644))
+for target in [GetOption('prefix'), headerTargetDir, libDir, includeDir, installLib]:
+    libEnv.AddPostAction(target, Chmod('$TARGET', 0755))
+
+uninstall = libEnv.Command('uninstall', None, Delete(FindInstalledFiles()))
+libEnv.AddPostAction(uninstall, Delete(headerTargetDir))
+
+Default([libTarget, testTarget, buildInfoHeader])
+AlwaysBuild([configHeader, buildInfoHeader])
+Alias('lib', [libTarget, buildInfoHeader])
 Alias('test', testTarget)
-Alias('install', None)
-Alias('deinstall', None)
+Alias('install', [installHeader, installLib])
 
 Help("""
-Build targets control:\n                                                                             
+Build targets control:\n
     [none]           shared library and unit tests
     'lib'            shared library
     'test'           unit tests only
-    'install'        install library and header files
-    'deinstall'      deinstall all libs and headers
+    'install'        install library and headers
+    'uninstall'      deinstall library and headers
 
 Local options:\n
     --release        select default release compiler flags, strip debug helpers

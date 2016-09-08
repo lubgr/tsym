@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-files=`ls include/*.h src/*.h src/*.cpp test/*.h test/*.cpp`
 formatstr="%-40s%s\n"
 
-for file in $files; do
+for file in {test,src}/{*.h,*.cpp}; do
+    echo $file
     for line in `gawk '{if (length > 100) print NR}' $file`; do
         printf $formatstr "$file +$line" "line > 100 chars"
     done

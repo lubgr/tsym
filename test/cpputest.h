@@ -9,7 +9,7 @@
 #include <string>
 #include "CppUTest/TestHarness.h"
 #include "CppUTest/SimpleString.h"
-#include "version.h"
+#include "config.h"
 #include "logging.h"
 
 /* Function necessary for using the CHECK_EQUAL macro of CppUTest, i.e. for printing out error

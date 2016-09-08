@@ -2,7 +2,7 @@
 #define TSYM_BASEPTR_H
 
 #include <string>
-#include "version.h"
+#include "config.h"
 
 namespace tsym { class Base; }
 

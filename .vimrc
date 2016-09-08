@@ -13,9 +13,9 @@ autocmd BufNewFile *.{h,hpp} call <SID>insertIncludeGuard()
 
 map <F10> :argadd `git ls-files '*.h' '*.cpp'`
 
-call add(g:UltiSnipsSnippetDirectories, getcwd()."/doc/ultisnips")
+call add(g:UltiSnipsSnippetDirectories, getcwd() . '/doc/ultisnips')
 
-set path=bin/**,doc/**,include/**,src/**,test/**
+set path=bin/**,doc/**,src/**,test/**
 
 set shellpipe=2>&1\ \|
             \while\ read\ line;
