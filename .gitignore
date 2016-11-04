@@ -6,3 +6,5 @@ doc/log/*
 .gdb_history
 .sconsign.dblite
 *.swp
+.tags
+.clang*
