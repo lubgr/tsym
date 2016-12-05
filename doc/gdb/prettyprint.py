@@ -8,9 +8,9 @@ import glob
 # printed. To fix this behavior, the stl-pretty-printers are manually loaded and added for plain
 # lists and tsym::BasePtrList wrappers.
 
-searchPath = glob.glob('/usr/share/gcc*/python')
-if len(searchPath) == 1:
-    sys.path.insert(0, searchPath[0])
+searchPath = glob.glob('/usr/share/gcc-*/python')
+if len(searchPath) > 0:
+    sys.path.insert(0, searchPath[-1])
     from libstdcxx.v6.printers import register_libstdcxx_printers, StdListPrinter
 else:
     gdb.write('Couldn\'t find path to include libstd++ pretty printers\n')
