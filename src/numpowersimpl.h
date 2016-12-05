@@ -44,7 +44,8 @@ namespace tsym {
             const Number& get(const Number& component);
             void computeAndSetFlag();
             void compute();
-            void setToOrig();
+            void initFromOrig();
+            void setUndefined();
             void computeNonRational();
             void computeRational();
             void computeNegOrPosExp();
@@ -55,7 +56,6 @@ namespace tsym {
             void shiftNegPreFac();
             void computeAllPos();
             bool hasUndefinedComponents() const;
-            void setUndefined();
             void computeAllPosAndDefined();
             bool areValuesSmallEnough() const;
             void cancel();

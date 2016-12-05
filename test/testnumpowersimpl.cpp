@@ -48,6 +48,12 @@ TEST_GROUP(NumPowerSimpl)
             DOUBLES_EQUAL(expected.toDouble(), given.toDouble(), TOL);
         }
     }
+
+    bool isUndefined()
+    {
+        return nps.getNewBase().isUndefined() && nps.getNewExp().isUndefined() &&
+            nps.getPreFactor().isUndefined();
+    }
 };
 
 TEST(NumPowerSimpl, doubleBase)
@@ -196,34 +202,50 @@ TEST(NumPowerSimpl, negPreFactorResolvablePow)
     check(1, -6, 1);
 }
 
-TEST(NumPowerSimpl, negativeBase)
-    /* 12*(-7)^(1/3) = (-12)*7^(1/3). */
+TEST(NumPowerSimpl, positiveBaseNegativePrefactor)
+    /* (-12(*7^(1/3) = (-12)*7^(1/3). */
 {
-    nps.setPower(-7, third);
-    nps.setPreFac(12);
+    nps.setPower(7, third);
+    nps.setPreFac(-12);
 
     check(-12, 7, third);
 }
 
-TEST(NumPowerSimpl, negativePreFactorNegativeBase)
-    /* (-9)*(-3)^(-1/5) = 3*3^(4/5). */
+TEST(NumPowerSimpl, negativePreFactorPositiveBase)
+    /* (-9)*3^(-1/5) = 3*3^(4/5). */
 {
     const Number exp(-1, 5);
 
-    nps.setPower(-3, exp);
+    nps.setPower(3, exp);
     nps.setPreFac(-9);
 
-    check(3, 3, Number(4, 5));
+    check(-3, 3, Number(4, 5));
 }
 
-TEST(NumPowerSimpl, negativeBaseToPositive)
-    /* (-3)^(2/5) = 3^(2/5). */
+TEST(NumPowerSimpl, negativeBaseFracExponentToUndefined)
+    /* (-3)^(2/5) is undefined. */
 {
     const Number exp(2, 5);
 
     nps.setPower(-3, exp);
 
-    check(1, 3, exp);
+    CHECK(isUndefined());
+}
+
+TEST(NumPowerSimpl, negativeBaseDoubleExpToUndefined)
+    /* (-3/2)^(1.2345678) is undefined. */
+{
+    nps.setPower(Number(-3, 2), 1.2345678);
+
+    CHECK(isUndefined());
+}
+
+TEST(NumPowerSimpl, negativeDoubleBaseFracExpToUndefined)
+    /* (-0.12345678)^(2/5) is undefined. */
+{
+    nps.setPower(-0.12345678, Number(2, 5));
+
+    CHECK(isUndefined());
 }
 
 TEST(NumPowerSimpl, undefinedBase)
@@ -236,9 +258,7 @@ TEST(NumPowerSimpl, undefinedBase)
 
     nps.setPower(base, half);
 
-    CHECK(nps.getNewBase().isUndefined());
-    CHECK(nps.getNewExp().isUndefined());
-    CHECK(nps.getPreFactor().isUndefined());
+    CHECK(isUndefined());
 }
 
 TEST(NumPowerSimpl, undefinedExp)
@@ -253,9 +273,7 @@ TEST(NumPowerSimpl, undefinedExp)
     nps.setPower(13, exp);
     nps.setPreFac(-5);
 
-    CHECK(nps.getNewBase().isUndefined());
-    CHECK(nps.getNewExp().isUndefined());
-    CHECK(nps.getPreFactor().isUndefined());
+    CHECK(isUndefined());
 }
 
 TEST(NumPowerSimpl, undefinedPreFactor)
@@ -270,9 +288,7 @@ TEST(NumPowerSimpl, undefinedPreFactor)
     nps.setPower(17, half);
     nps.setPreFac(preFac);
 
-    CHECK(nps.getNewBase().isUndefined());
-    CHECK(nps.getNewExp().isUndefined());
-    CHECK(nps.getPreFactor().isUndefined());
+    CHECK(isUndefined());
 }
 
 TEST(NumPowerSimpl, allOne)

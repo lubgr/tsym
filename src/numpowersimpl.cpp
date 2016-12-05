@@ -73,20 +73,29 @@ void tsym::NumPowerSimpl::computeAndSetFlag()
 
 void tsym::NumPowerSimpl::compute()
 {
-    setToOrig();
+    initFromOrig();
 
-    if (origBase.isDouble() || origExp.isDouble())
+    if (newBase < 0 && !newExp.isInt())
+        setUndefined();
+    else if (newBase.isDouble() || newExp.isDouble())
         computeNonRational();
     else
         computeRational();
 }
 
-void tsym::NumPowerSimpl::setToOrig()
+void tsym::NumPowerSimpl::initFromOrig()
 {
     newBase = origBase;
     newExp = origExp;
     preFac = origPreFac;
     isPreFacNegative = false;
+}
+
+void tsym::NumPowerSimpl::setUndefined()
+{
+    newBase = Number::createUndefined();
+    newExp = newBase;
+    preFac = newBase;
 }
 
 void tsym::NumPowerSimpl::computeNonRational()
@@ -178,20 +187,6 @@ void tsym::NumPowerSimpl::computeAllPos()
 bool tsym::NumPowerSimpl::hasUndefinedComponents() const
 {
     return newBase.isUndefined() || newExp.isUndefined() || preFac.isUndefined();
-}
-
-void tsym::NumPowerSimpl::setUndefined()
-{
-    if (newBase.isUndefined()) {
-        newExp = newBase;
-        preFac = newBase;
-    } else if (newExp.isUndefined()) {
-        newBase = newExp;
-        preFac = newExp;
-    } else if (preFac.isUndefined()) {
-        newBase = preFac;
-        newExp = preFac;
-    }
 }
 
 void tsym::NumPowerSimpl::computeAllPosAndDefined()
@@ -299,7 +294,7 @@ void tsym::NumPowerSimpl::processIntOverflow()
     if (!preFac.isDouble() || origPreFac.isDouble())
         return;
 
-    setToOrig();
+    initFromOrig();
     computeNonRational();
 }
 
