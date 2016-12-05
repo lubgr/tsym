@@ -294,7 +294,13 @@ TEST(NumberPower, baseMinusOne)
     CHECK(res.isUndefined());
 
     res = Number::Pow(-1, third);
-    CHECK_EQUAL(-1, res);
+    CHECK(res.isUndefined());
+
+    res = Number::Pow(-1, Number(4, 3));
+    CHECK(res.isUndefined());
+
+    res = Number::Pow(-1, Number(3, 4));
+    CHECK(res.isUndefined());
 }
 
 TEST(NumberPower, baseZero)
@@ -443,14 +449,30 @@ TEST(NumberPower, irrationalBaseFracRoot)
     CHECK_EQUAL(expected, res);
 }
 
+TEST(NumberPower, negBaseFractionExpOddDenominator)
+    /* (-4)^(2/3) is undefined. */
+{
+    Number res = Number::Pow(-4, Number(2, 3));
+
+    CHECK(res.isUndefined());
+}
+
+TEST(NumberPower, negBaseFractionExpEvenDenominator)
+    /* (-4/9)^(3/4) is undefined. */
+{
+    Number res = Number::Pow(Number(-4, 9), Number(3, 4));
+
+    CHECK(res.isUndefined());
+}
+
 TEST(NumberPower, negativeBaseFractionExp)
-    /* (-8)^(1/3) = -2. */
+    /* (-8)^(1/3) is undefined. */
 {
     Number res(-8);
 
     res = res.toThe(Number(1, 3));
 
-    CHECK_EQUAL(-2, res);
+    CHECK(res.isUndefined());
 }
 
 TEST(NumberPower, negativeBaseIntExp)

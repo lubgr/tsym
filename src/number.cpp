@@ -1,5 +1,6 @@
 
 #include <cmath>
+#include <cassert>
 #include <iostream>
 #include <limits>
 #include "number.h"
@@ -303,6 +304,9 @@ bool tsym::Number::processTrivialPowers(const Number& exponent, Number& result) 
     } else if (exponent.isZero()) {
         result = Number(1);
         return true;
+    } else if (lessThan(0) && !exponent.isInt()) {
+        result = createUndefined();
+        return true;
     } else if (*this == -1) {
         result = computeMinusOneToThe(exponent);
         return true;
@@ -313,16 +317,9 @@ bool tsym::Number::processTrivialPowers(const Number& exponent, Number& result) 
 
 tsym::Number tsym::Number::computeMinusOneToThe(const Number& exponent) const
 {
-    const Int two(2);
+    assert(!(exponent.isDouble() || exponent.isFrac()));
 
-    if (exponent.isDouble())
-        return createUndefined();
-    else if (exponent.num % two == 0)
-        return Number(1);
-    else if (exponent.denom % two == 0 && num == -1)
-        return createUndefined();
-    else
-        return Number(-1);
+    return exponent.num % 2 == 0 ? 1 : -1;
 }
 
 bool tsym::Number::processNegBase(const Number& exponent, Number& result) const
@@ -332,12 +329,9 @@ bool tsym::Number::processNegBase(const Number& exponent, Number& result) const
     if (*this > 0)
         return false;
 
-    preFac = preFac.toThe(exponent);
+    assert(exponent.isInt());
 
-    if (preFac.isUndefined()) {
-        result = createUndefined();
-        return true;
-    }
+    preFac = preFac.toThe(exponent);
 
     result = this->abs().toThe(exponent)*preFac;
 
