@@ -26,7 +26,7 @@ namespace tsym {
             void clear();
             void push_front(const BasePtr& ptr);
             void push_back(const BasePtr& ptr);
-            /* Pop elements and return that element. This differs from the standard list. */
+            /* Pop elements and return that element. This differs from the standard list: */
             BasePtr pop_front();
             BasePtr pop_back();
             void insert(iterator pos, const_iterator first, const_iterator last);
@@ -52,7 +52,7 @@ namespace tsym {
             bool isEqual(const BasePtrList& other) const;
             bool isDifferent(const BasePtrList& other) const;
             bool has(const BasePtr& element) const;
-            /* Returns a list identical to the current one, but with the first element removed. */
+            /* Returns a list identical to the current one, but with the first element removed: */
             BasePtrList rest() const;
             bool hasUndefinedElements() const;
             bool hasZeroElements() const;
@@ -63,7 +63,7 @@ namespace tsym {
              * are considered as constant items. */
             BasePtrList getConstElements() const;
             BasePtrList getNonConstElements() const;
-            /* Takes elements as factors of a product and expands them. */
+            /* Takes elements as factors of a product and expands them: */
             BasePtr expandAsProduct() const;
             BasePtrList subst(const BasePtr& from, const BasePtr& to) const;
 
