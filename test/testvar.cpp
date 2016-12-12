@@ -290,14 +290,34 @@ TEST(Var, productDividedByNumber)
     CHECK_EQUAL(3*b*c, 12*c*b/4);
 }
 
-TEST(Var, multiplicationOfExp)
+TEST(Var, multiplicationOfExpPosSymbol)
 {
-    const Var expected(pow(a, Var(10, 3)));
-    Var pow(a);
+    const Var aPos("a", true);
+    const Var expected(pow(aPos, Var(10, 3)));
+    Var pow(aPos);
 
     pow = pow.toThe(2);
     pow = pow.toThe(5);
     pow = pow.toThe(Number(1, 3));
+
+    CHECK_EQUAL(expected, pow);
+}
+
+TEST(Var, noMultiplicationOfExpUnclearSymbol)
+{
+    Var res(pow(a, Number(1, 3)));
+
+    res = res.toThe(3);
+
+    CHECK_EQUAL("Power", res.type());
+}
+
+TEST(Var, multiplicationOfExpUnclearSymbol)
+{
+    const Var expected(pow(a, Number(-2, 3)));
+    Var pow(1/a);
+
+    pow = pow.toThe(Number(2, 3));
 
     CHECK_EQUAL(expected, pow);
 }
@@ -460,6 +480,46 @@ TEST(Var, productOfTwoConstantSums)
 
     CHECK_EQUAL("Sum", res.type());
     CHECK_EQUAL(6 + 3*sqrtTwo + 2*sqrtThree + sqrtSix, res);
+}
+
+TEST(Var, minusOneSquare)
+    /* (-1)^2 = 1. */
+{
+    const Var res = pow(Var(-1), 2);
+
+    CHECK_EQUAL(1, res);
+}
+
+TEST(Var, minusOneCubic)
+    /* (-1)^3 = -1. */
+{
+    const Var res = pow(Var(-1), 3);
+
+    CHECK_EQUAL(-1, res);
+}
+
+TEST(Var, numPowerToUndefined)
+    /* (-1)^(1/3) is undefined. */
+{
+    const Var res = pow(Var(-1), Var(1, 3));
+
+    CHECK_EQUAL("Undefined", res.type());
+}
+
+TEST(Var, numPowerToUndefinedEvenDenomExp)
+    /* (-1)^(5/4) is undefined. */
+{
+    const Var res = pow(Var(-1), Var(4, 5));
+
+    CHECK_EQUAL("Undefined", res.type());
+}
+
+TEST(Var, numPowerToUndefinedFractionBase)
+    /* (-1/2)^(1/2) is undefined. */
+{
+    const Var res = sqrt(Var(-1, 2));
+
+    CHECK_EQUAL("Undefined", res.type());
 }
 
 TEST(Var, simpleNumericPowerSimplification)

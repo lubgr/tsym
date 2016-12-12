@@ -131,9 +131,7 @@ TEST(Solver, singularMatrix)
     CHECK(!solver.hasSolution());
 }
 
-TEST(Solver, nonSolvableSystem)
-    /* The system of equations is solved successfully, but normalization doesn't find the truly
-     * simplified expressions. */
+TEST(Solver, linearSystemDim2)
 {
     Matrix A(3, 3);
     Vector rhs(3);
@@ -155,17 +153,14 @@ TEST(Solver, nonSolvableSystem)
 
     CHECK(solver.hasSolution());
 
-    disableLog();
     x = solver.solve();
-    enableLog();
 
-    /* The left hand side values are the true solution, but aren't obtained by normalization. */
-    CHECK(d != x(0));
-    CHECK(a/4 != x(1));
-    CHECK(pow(b, cos(b)) != x(2));
+    CHECK_EQUAL(d, x(0));
+    CHECK_EQUAL(a/4, x(1));
+    CHECK_EQUAL(pow(b, cos(b)), x(2));
 }
 
-TEST(Solver, solvableLinearSystemDim3)
+TEST(Solver, linearSystemDim3)
 {
     Matrix A(3, 3);
     Vector rhs(3);

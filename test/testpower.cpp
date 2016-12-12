@@ -21,22 +21,26 @@ const double TOL = 1.e-10;
 TEST_GROUP(Power)
 {
     BasePtr aPos;
+    BasePtr bPos;
     BasePtr half;
     BasePtr oneThird;
     BasePtr minusHalf;
     BasePtr sqrtTwo;
     BasePtr undefPtr;
+    BasePtr pi;
     Int maxInt;
     Int defaultPrimeFacLimit;
 
     void setup()
     {
         aPos = Symbol::createPositive("a");
+        bPos = Symbol::createPositive("b");
         half = Numeric::create(1, 2);
         oneThird = Numeric::create(1, 3);
         minusHalf = Numeric::create(-1, 2);
         sqrtTwo = Power::sqrt(two);
         undefPtr = Undefined::create();
+        pi = Constant::createPi();
         maxInt = Int::max();
         defaultPrimeFacLimit = NumPowerSimpl::getMaxPrimeResolution();
     }
@@ -440,12 +444,186 @@ TEST(Power, unresolvableExpFrac)
     DOUBLES_EQUAL(std::pow(7.0, 1.0/3.0), pow->numericEval().toDouble(), TOL);
 }
 
+TEST(Power, negFractionBaseWithNegFractionExp)
+{
+    const BasePtr res = Power::create(minusHalf, half);
+
+    CHECK(res->isUndefined());
+}
+
+TEST(Power, negFractionBaseWithPosFractionExp)
+{
+    const BasePtr res = Power::create(minusHalf, minusHalf);
+
+    CHECK(res->isUndefined());
+}
+
+TEST(Power, negNumericBasePosNumericExp)
+{
+    const BasePtr res = Power::create(minusHalf, Numeric::create(9.87654321));
+    CHECK(res->isUndefined());
+}
+
+TEST(Power, negNumericBaseNegNumericExp)
+{
+    const BasePtr res = Power::create(minusHalf, Numeric::create(-1.23456789));
+
+    CHECK(res->isUndefined());
+}
+
+TEST(Power, unclearBaseExponentContractionBothFractionsOddDenom)
+    /* (a^(2/3))^(4/5) = a^(8/15) for a neither positive nor negative. */
+{
+    const BasePtr expected = Power::create(a, Numeric::create(8, 15));
+    const BasePtr res = Power::create(Power::create(a, Numeric::create(2, 3)),
+            Numeric::create(4, 5));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Power, unclearBaseExponentContractionBothFractionsEvenDenom)
+    /* (a^(1/8))^(3/10) = a^(3/80). */
+{
+    const BasePtr expected = Power::create(a, Numeric::create(3, 80));
+    const BasePtr res = Power::create(Power::create(a, Numeric::create(1, 8)),
+            Numeric::create(3, 10));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Power, unclearBaseExponentContractionBothFractions)
+    /* (a^(1/2))^(1/3) = a^(1/6) for a neither positive nor negative. */
+{
+    const BasePtr expected = Power::create(a, Numeric::create(1, 6));
+    const BasePtr res = Power::create(Power::create(a, half), oneThird);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Power, unclearBaseExponentContractionWithInteger)
+    /* (a^(1/6))^3 = sqrt(a) for a neither positive nor negative. */
+{
+    const BasePtr res = Power::create(Power::create(a, Numeric::create(1, 6)), three);
+    const BasePtr expected = Power::sqrt(a);
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Power, unclearBaseExpContraction)
+    /* (a^7)^(1/4) = a^(7/4). This works because a is assumed to be real, not possibly complex (this
+     * is different in most CAS). */
+{
+    const BasePtr res = Power::create(Power::create(a, seven), Numeric::create(1, 4));
+    const BasePtr expected = Power::create(a, Numeric::create(7, 4));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Power, negBaseSymbolicExp)
+    /* ((-a - b)^c)^2 isn't simplified. */
+{
+    const BasePtr base = Sum::create(Product::minus(aPos), Product::minus(bPos));
+    const BasePtr res = Power::create(Power::create(base, c), two);
+
+    CHECK(res->isPower());
+    CHECK_EQUAL(two, res->exp());
+
+    CHECK(res->base()->isPower());
+    CHECK_EQUAL(c, res->base()->exp());
+    CHECK_EQUAL(base, res->base()->base());
+}
+
+TEST(Power, unclearProductBaseFractionExp)
+    /* (a*b)^(2/3) can't be simplified, because a*b could be > 0 with a, b < 0. */
+{
+    const BasePtr exp = Numeric::create(2, 3);
+    const BasePtr res = Power::create(Product::create(a, b), exp);
+
+    CHECK(res->isPower());
+    CHECK_EQUAL(Product::create(a, b), res->base());
+    CHECK_EQUAL(exp, res->exp());
+}
+
+TEST(Power, extractAllFactorsOfProductBase)
+    /* (a*b*c*d*e*pi)^8 = a^8*b^8*c^8*d^8*e^8*pi^8. */
+{
+    BasePtrList::const_iterator it;
+    BasePtrList factors;
+    BasePtr res;
+
+    factors.push_back(a);
+    factors.push_back(b);
+    factors.push_back(c);
+    factors.push_back(d);
+    factors.push_back(e);
+    factors.push_back(pi);
+
+    res = Power::create(Product::create(factors), eight);
+
+    CHECK(res->isProduct());
+
+    for (it = res->operands().begin(); it != res->operands().end(); ++it) {
+        CHECK((*it)->isPower());
+        CHECK_EQUAL(eight, (*it)->exp());
+    }
+}
+
+TEST(Power, extractPositiveFactorsOfProductBase)
+    /* (a*b*c*d*e*pi)^(2/3) = a^(2/3)*b^(2/3)*pi^(2/3)*(c*d*e)^(2/3) for a, b, > 0. */
+{
+    const BasePtr exp = Numeric::create(2, 3);
+    const BasePtr expected[] = { Power::create(pi, exp), Power::create(aPos, exp),
+        Power::create(bPos, exp), Power::create(Product::create(c, d, e), exp) };
+    BasePtrList::const_iterator it;
+    BasePtrList factors;
+    BasePtr res;
+
+    factors.push_back(aPos);
+    factors.push_back(bPos);
+    factors.push_back(c);
+    factors.push_back(d);
+    factors.push_back(e);
+    factors.push_back(pi);
+
+    res = Power::create(Product::create(factors), exp);
+
+    CHECK(res->isProduct());
+
+    factors = res->operands();
+
+    for (int i = 0; i < 4; ++i) {
+        res = factors.pop_front();
+
+        CHECK_EQUAL(expected[i], res);
+    }
+}
+
+TEST(Power, negProductBaseFractionExp)
+    /* (-a*b)^(2/3) is undefined for a, b > 0. */
+{
+    const BasePtr base = Product::create(Numeric::mOne(), aPos, bPos);
+    const BasePtr res = Power::create(base, Numeric::create(2, 3));
+
+    CHECK(res->isUndefined());
+}
+
 TEST(Power, zeroExponent)
 {
     const BasePtr res = Power::create(a, zero);
 
     CHECK(res->isNumeric());
     CHECK_EQUAL(1, res->numericEval());
+}
+
+TEST(Power, symbolicPowerBaseSymbolExp)
+    /* (a^b)^c isn't simplified. */
+{
+    const BasePtr base = Power::create(a, b);
+    const BasePtr res = Power::create(base, c);
+
+    CHECK(res->isPower());
+    CHECK_EQUAL(base, res->base());
+    CHECK_EQUAL(c, res->exp());
 }
 
 TEST(Power, zeroBaseToPosExponent)
@@ -559,26 +737,60 @@ TEST(Power, wrongDoubleEvaluationRequest)
 }
 
 TEST(Power, multiplyExponentsByCreation)
+    /* ((a^2)^3)^1 = a^6. */
 {
     const BasePtr pow1 = Power::create(a, two);
     const BasePtr pow2 = Power::create(pow1, three);
     const BasePtr res = Power::create(pow2, one);
 
     CHECK(res->isPower());
-    CHECK_EQUAL(a, res->operands().front());
-    CHECK_EQUAL(six, res->operands().back());
+    CHECK_EQUAL(a, res->base());
+    CHECK_EQUAL(six, res->exp());
 }
 
-TEST(Power, oneExpByMultiplicationByCreation)
-    /* (a^2)^(1/2) = a. */
+TEST(Power, squareOfSymbolSquareRoot)
+    /* (sqrt(a))^2 isn't simplified, if the sign of a is unknown. */
 {
-    const BasePtr pow1 = Power::create(a, two);
-    const BasePtr res = Power::sqrt(pow1);
-    const Name expected("a");
+    const BasePtr res = Power::create(Power::sqrt(a), two);
 
-    /* (a^2)^(1/2) should be 'a' upon creation, thus, a symbol. */
-    CHECK(res->isSymbol());
-    CHECK_EQUAL(expected, res->name());
+    CHECK(res->isPower());
+    CHECK_EQUAL(two, res->exp());
+    CHECK_EQUAL(Power::sqrt(a), res->base());
+}
+
+TEST(Power, squareOfPosSymbolSquareRoot)
+    /* (sqrt(a))^2 = a for positive a. */
+{
+    const BasePtr res = Power::create(Power::sqrt(aPos), two);
+
+    CHECK_EQUAL(aPos, res);
+}
+
+TEST(Power, squareRootOfPosSymbolSquare)
+    /* sqrt(a^2) = a for positive a. */
+{
+    const BasePtr res = Power::sqrt(Power::create(aPos, two));
+
+    CHECK_EQUAL(aPos, res);
+}
+
+TEST(Power, powerOfNegSymbolSquare)
+    /* ((-a - b)^2)^(-1/2) = (a + b)^(-1) for positive a, b. */
+{
+    const BasePtr base = Sum::create(Product::minus(aPos), Product::minus(bPos));
+    const BasePtr res = Power::create(Power::create(base, two), minusHalf);
+
+    CHECK_EQUAL(Power::oneOver(Sum::create(aPos, bPos)), res);
+}
+
+TEST(Power, powerOfNegSymbolSumChangesSign)
+    /* ((-a - b)^2)^(1/6) = (a + b)^(1/3) for a, b, > 0. */
+{
+    const BasePtr base = Sum::create(Product::minus(aPos), Product::minus(bPos));
+    const BasePtr res = Power::create(Power::create(base, two), Numeric::create(1, 6));
+    const BasePtr expected = Power::create(Sum::create(aPos, bPos), oneThird);
+
+    CHECK_EQUAL(expected, res);
 }
 
 TEST(Power, applyExponentToProduct)
@@ -650,7 +862,6 @@ TEST(Power, constantBase)
     /* No simplification of Pi^(a + b). */
 {
     const BasePtr exp = Sum::create(a, b);
-    const BasePtr pi = Constant::createPi();
     const BasePtr res = Power::create(pi, exp);
 
     CHECK_EQUAL(exp, res->exp());
@@ -660,7 +871,6 @@ TEST(Power, constantBase)
 TEST(Power, numericBaseConstantExp)
     /* No simplification of 2^Pi. */
 {
-    const BasePtr pi = Constant::createPi();
     const BasePtr res = Power::create(two, pi);
 
     CHECK_EQUAL(pi, res->exp());
@@ -668,13 +878,12 @@ TEST(Power, numericBaseConstantExp)
 }
 
 TEST(Power, productBaseConstantExp)
-    /* (a*b)^Pi = a^Pi*b^Pi. */
+    /* (a*b)^Pi = a^Pi*b^Pi for a > 0, b unclear. */
 {
-    const BasePtr pi = Constant::createPi();
-    const BasePtr res = Power::create(Product::create(a, b), pi);
+    const BasePtr res = Power::create(Product::create(aPos, b), pi);
 
     CHECK(res->isProduct());
-    CHECK_EQUAL(Power::create(a, pi), res->operands().front());
+    CHECK_EQUAL(Power::create(aPos, pi), res->operands().front());
     CHECK_EQUAL(Power::create(b, pi), res->operands().back());
 }
 
@@ -696,4 +905,115 @@ TEST(Power, eulerBaseLogExp)
     const BasePtr result = Power::create(Constant::createE(), Logarithm::create(arg));
 
     CHECK_EQUAL(arg, result);
+}
+
+TEST(Power, negativePowByOddExp)
+    /* (-aPos)^(3/5) is undefined. */
+{
+    const BasePtr pow = Power::create(Product::minus(aPos), Numeric::create(3, 5));
+
+    CHECK(pow->isUndefined());
+}
+
+TEST(Power, unclearSymbolBaseLeftUnchanged)
+{
+    const BasePtr base = Power::create(a, oneThird);
+    const BasePtr res = Power::create(base, three);
+
+    CHECK(res->isPower());
+    CHECK_EQUAL(three, res->exp());
+    CHECK_EQUAL(base, res->base());
+}
+
+TEST(Power, squareRootOfNegBaseSquared)
+    /* ((-a - b)^2)^(-1/2) = (a + b)^(-1). */
+{
+    const BasePtr arg = Sum::create(Product::minus(aPos), Product::minus(bPos));
+    const BasePtr base = Power::create(arg, two);
+    const BasePtr res = Power::create(base, minusHalf);
+
+    CHECK_EQUAL(Power::oneOver(Sum::create(aPos, bPos)), res);
+}
+
+TEST(Power, negativeBaseOfPowerToTheOneThird)
+    /* ((-a - b)^2)^(1/3) = (a + b)^(2/3). */
+{
+    const BasePtr arg = Product::minus(Sum::create(aPos, bPos));
+    const BasePtr res = Power::create(Power::create(arg, two), oneThird);
+    const BasePtr expected = Power::create(Sum::create(aPos, bPos), Numeric::create(2, 3));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Power, unclearBaseDoubleExpContraction)
+    /* The exponents of (a^(0.123456789))^1.23456789 are contracted. */
+{
+    const BasePtr e1 = Numeric::create(0.123456789);
+    const BasePtr e2 = Numeric::create(1.23456789);
+    const BasePtr res = Power::create(Power::create(a, e1), e2);
+    const BasePtr expected = Power::create(a, Product::create(e1, e2));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Power, unclearBaseExpContractionWithConstantFirstExp)
+    /* (a^pi)^3 = a^(3*pi). */
+{
+    const BasePtr res = Power::create(Power::create(a, pi), three);
+    const BasePtr expected = Power::create(a, Product::create(three, pi));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Power, unclearBaseExpContractionWithConstantSecondExp)
+    /* (a^3)^(-pi) = a^(-3*pi). */
+{
+    const BasePtr res = Power::create(Power::create(a, three), pi);
+    const BasePtr expected = Power::create(a, Product::create(three, pi));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Power, unclearBaseExpContractionWithConstantFirstExpSecondEvenInt)
+    /* ((-a)^pi)^(-8) = (-a)^(-8*pi). */
+{
+    const BasePtr base = Product::minus(a);
+    const BasePtr res = Power::create(Power::create(base, pi), Numeric::create(-8));
+    const BasePtr expected = Power::create(base, Product::minus(eight, pi));
+
+    CHECK_EQUAL(expected, res);
+}
+
+TEST(Power, unclearBaseNoExpContractionWithConstantSecondExp)
+    /* (a^8)^pi isn't simplified. */
+{
+    const BasePtr res = Power::create(Power::create(a, eight), pi);
+
+    CHECK(res->isPower());
+    CHECK_EQUAL(pi, res->exp());
+
+    CHECK(res->base()->isPower());
+    CHECK_EQUAL(eight, res->base()->exp());
+    CHECK_EQUAL(a, res->base()->base());
+}
+
+TEST(Power, unclearBaseNoExpContractionWithSymbolSecondExp)
+    /* (a^(1/4))^b isn't simplified because a^(1/4) can be Undefined, while b = 4 is possible. */
+{
+    const BasePtr res = Power::create(Power::create(a, Numeric::create(1, 4)), b);
+
+    CHECK(res->isPower());
+    CHECK_EQUAL(b, res->exp());
+
+    CHECK(res->base()->isPower());
+    CHECK_EQUAL(Numeric::create(1, 4), res->base()->exp());
+    CHECK_EQUAL(a, res->base()->base());
+}
+
+TEST(Power, numericallyEvaluableExpToUndefined)
+    /* (-2)^pi is Undefined. */
+{
+    const BasePtr res = Power::create(Numeric::create(-2), pi);
+
+    CHECK(res->isUndefined());
 }

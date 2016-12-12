@@ -1060,11 +1060,11 @@ TEST(Product, tanTimesCosDifferentArgument)
 }
 
 TEST(Product, tanTimesCosWithNumExpSameArgument)
-    /* Tan(a)^(2/3)*cos(a)^(-1/2) = sin(a)^(2/3)*cos(a)(-7/6). */
+    /* Tan(1)^(2/3)*cos(1)^(-1/2) = sin(1)^(2/3)*cos(1)(-7/6). */
 {
-    const BasePtr tan = Trigonometric::createTan(a);
-    const BasePtr cos = Trigonometric::createCos(a);
-    const BasePtr sin = Trigonometric::createSin(a);
+    const BasePtr tan = Trigonometric::createTan(one);
+    const BasePtr cos = Trigonometric::createCos(one);
+    const BasePtr sin = Trigonometric::createSin(one);
     const BasePtr res = Product::create(Power::create(tan, Numeric::create(2, 3)),
                 Power::create(cos, Numeric::create(-1, 2)));
     const BasePtr expected = Product::create(Power::create(sin, Numeric::create(2, 3)),
@@ -1074,9 +1074,8 @@ TEST(Product, tanTimesCosWithNumExpSameArgument)
 }
 
 TEST(Product, sinOverCosineWithExpTimesCosine)
-    /* Sin(a)^(5/7)*cos(a)^(-2/3)*cos(a) = sin(a)^(5/7)*cos(a)^(1/3). This simplification is however
-     * not related to the handling of the relation sin(...)/cos(...) = tan(...), but due to the
-     * equal base cos(a). */
+    /* Sin(a)^(5/7)*cos(a)^(-2/3)*cos(a) = sin(a)^(5/7)*cos(a)^(1/3). This simplification is not
+     * related to the handling of sin(...)/cos(...) = tan(...), but due to the equal base cos(a). */
 {
     const BasePtr sinPow = Power::create(Trigonometric::createSin(a), Numeric::create(5, 7));
     const BasePtr cos = Trigonometric::createCos(a);
@@ -1098,27 +1097,40 @@ TEST(Product, sinSquareOverCosSameArg)
     CHECK_EQUAL(expected, res);
 }
 
-TEST(Product, sqrtTanTimesCosSameArg)
-    /* Sqrt(tan(a))*cos(a) = sqrt(sin(a))*sqrt(cos(a)). */
+TEST(Product, sqrtTanTimesCosPositiveSameArg)
+    /* Sqrt(tan(1))*cos(1) = sqrt(sin(1))*sqrt(cos(1)). */
 {
-    const BasePtr sin = Trigonometric::createSin(a);
-    const BasePtr cos = Trigonometric::createCos(a);
-    const BasePtr tan = Trigonometric::createTan(a);
+    const BasePtr sin = Trigonometric::createSin(one);
+    const BasePtr cos = Trigonometric::createCos(one);
+    const BasePtr tan = Trigonometric::createTan(one);
     const BasePtr res = Product::create(Power::sqrt(tan), cos);
     const BasePtr expected = Power::sqrt(Product::create(sin, cos));
 
     CHECK_EQUAL(expected, res);
 }
 
+TEST(Product, sqrtTanTimesCosSameArg)
+    /* Sqrt(tan(a))*cos(a) can't be simplified because sin(a), cos(a) are neither < 0 nor > 0. */
+{
+    const BasePtr cos = Trigonometric::createCos(a);
+    const BasePtr sqrtTan = Power::sqrt(Trigonometric::createTan(a));
+    const BasePtr res = Product::create(sqrtTan, cos);
+
+    CHECK(res->isProduct());
+    CHECK_EQUAL(2, res->operands().size());
+    CHECK_EQUAL(cos, res->operands().front());
+    CHECK_EQUAL(sqrtTan, res->operands().back());
+}
+
 TEST(Product, mixedTrigonometricFunctions01)
     /* Sin(a)*cos(b)*tan(a)^(1/3)*sin(b)^(-2)*cos(a)^3 =
-     * 1/tan(b)*sin(b)^(-1)*sin(a)^(4/3)*cos(a)^(8/3). */
+     * 1/tan(b)*sin(b)^(-1)*sin(a)^(4/3)*cos(a)^(8/3). for a = 1/2, b = 2. */
 {
-    const BasePtr sinA = Trigonometric::createSin(a);
-    const BasePtr cosB = Trigonometric::createCos(b);
-    const BasePtr tanA = Trigonometric::createTan(a);
-    const BasePtr sinB = Trigonometric::createSin(b);
-    const BasePtr cosA = Trigonometric::createCos(a);
+    const BasePtr sinA = Trigonometric::createSin(half);
+    const BasePtr cosB = Trigonometric::createCos(two);
+    const BasePtr tanA = Trigonometric::createTan(half);
+    const BasePtr sinB = Trigonometric::createSin(two);
+    const BasePtr cosA = Trigonometric::createCos(half);
     BasePtrList factors;
     BasePtr expected;
     BasePtr res;
@@ -1132,7 +1144,7 @@ TEST(Product, mixedTrigonometricFunctions01)
     res = Product::create(factors);
 
     factors.clear();
-    factors.push_back(Power::oneOver(Trigonometric::createTan(b)));
+    factors.push_back(Power::oneOver(Trigonometric::createTan(two)));
     factors.push_back(Power::oneOver(sinB));
     factors.push_back(Power::create(sinA, Numeric::create(4, 3)));
     factors.push_back(Power::create(cosA, Numeric::create(8, 3)));

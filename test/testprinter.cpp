@@ -241,6 +241,20 @@ TEST(Printer, powerOfProductAndMinusOne)
     CHECK_EQUAL(expected, printer.getStr());
 }
 
+TEST(Printer, powerOfPowerOfPowerOfPower)
+{
+    const std::string expected("(((a^b)^c)^(-1/4*pi))^d");
+    const BasePtr pow1 = Power::create(a, b);
+    const BasePtr pow2 = Power::create(pow1, c);
+    const BasePtr pow3 = Power::create(pow2, Product::create(Numeric::create(-1, 4),
+                Constant::createPi()));
+    const BasePtr pow4 = Power::create(pow3, d);
+
+    printer.set(pow4);
+
+    CHECK_EQUAL(expected, printer.getStr());
+}
+
 TEST(Printer, omitFirstNumeratorFactorIfOne)
 {
     const std::string expected("c/(2*a*b)");
@@ -275,7 +289,7 @@ TEST(Printer, powerOfSymbolAndPosFrac)
 
 TEST(Printer, sqrtPower)
 {
-    const std::string expected("sqrt(a)*sqrt(b)");
+    const std::string expected("sqrt(a*b)");
     const BasePtr pow = Power::sqrt(Product::create(a, b));
 
     printer.set(pow);
@@ -287,14 +301,15 @@ TEST(Printer, oneOverSqrtPower)
 {
     const std::string expectedNoFrac("a^(-1/2)*b^(-1/2)");
     const std::string expectedFrac("1/(sqrt(a)*sqrt(b))");
-    const BasePtr pow = Power::create(Product::create(a, b), Numeric::create(-1, 2));
+    const BasePtr exp = Numeric::create(-1, 2);
+    const BasePtr product = Product::create(Power::create(a, exp), Power::create(b, exp));
 
-    printer.set(pow);
+    printer.set(product);
 
     CHECK_EQUAL(expectedFrac, printer.getStr());
 
     printer.disableFractions();
-    printer.set(pow);
+    printer.set(product);
 
     CHECK_EQUAL(expectedNoFrac, printer.getStr());
 }

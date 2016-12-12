@@ -311,26 +311,10 @@ TEST(Sign, posPowerWithPositiveBase)
     checkPos(pow);
 }
 
-TEST(Sign, negativePowByOddExp)
-    /* (-a)^(3/5) = (-1)*a^(3/5)< 0. */
-{
-    const BasePtr pow = Power::create(Product::minus(aPos), Numeric::create(3, 5));
-
-    checkNeg(pow);
-}
-
 TEST(Sign, posPowerWithNegativeBase)
     /* (-pi)^2 = (-1)^2*pi^2 = pi^2 > 0. */
 {
     const BasePtr pow = Power::create(Product::minus(pi), two);
-
-    checkPos(pow);
-}
-
-TEST(Sign, positivePowByEvenExpNumerator)
-    /* (-a)^(4/5) = (-1)^(4/5)*a^(4/5) = a^(4/5) > 0. */
-{
-    const BasePtr pow = Power::create(Product::minus(aPos), Numeric::create(4, 5));
 
     checkPos(pow);
 }

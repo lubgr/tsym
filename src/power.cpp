@@ -175,8 +175,8 @@ tsym::BasePtr tsym::Power::expandIntegerExponent() const
 {
     if (baseRef->isSum())
         return expandSumBaseIntExp();
-    else if (baseRef->isProduct() || baseRef->isPower())
-        /* Should have been resolved during standard power simplification. */
+    else if (baseRef->isProduct())
+        /* Should have been resolved during standard product simplification. */
         logging::error() << "Illegal power expression, base: " << baseRef << ", exp.: " << expRef;
 
     return Power::create(baseRef, expRef);

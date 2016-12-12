@@ -802,6 +802,26 @@ TEST(Trigonometric, sinOfAtan2)
     CHECK_EQUAL(expected, result);
 }
 
+TEST(Trigonometric, sinOfAtan2NegDeltaYOnly)
+    /* Sin(atan2(-a, 0)) = -1 for positive a. */
+{
+    const BasePtr minusA = Product::minus(Symbol::createPositive("a"));
+    const BasePtr res = Trigonometric::createSin(Trigonometric::createAtan2(minusA, zero));
+
+    CHECK_EQUAL(Numeric::mOne(), res);
+}
+
+TEST(Trigonometric, sinOfAtan2NegDeltaYSumOnly)
+    /* Sin(atan2(-a - b, 0)) = -1 for positive a and b. */
+{
+    const BasePtr minusA = Product::minus(Symbol::createPositive("a"));
+    const BasePtr minusB = Product::minus(Symbol::createPositive("b"));
+    const BasePtr arg = Sum::create(minusA, minusB);
+    const BasePtr res = Trigonometric::createSin(Trigonometric::createAtan2(arg, zero));
+
+    CHECK_EQUAL(Numeric::mOne(), res);
+}
+
 TEST(Trigonometric, numEvalPossibilityRequest)
 {
     const BasePtr sin = Trigonometric::createSin(eight);
