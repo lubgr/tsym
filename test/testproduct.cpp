@@ -1180,3 +1180,25 @@ TEST(Product, mixedTrigonometricFunctions02)
 
     CHECK_EQUAL(expected, res);
 }
+
+TEST(Product, noSumOfExpUnclearBasePowers)
+    /* sqrt(a)*sqrt(a) can't be simplified to a because a could be < 0. */
+{
+    const BasePtr sqrtA = Power::sqrt(a);
+    const BasePtr res = Product::create(sqrtA, sqrtA);
+
+    CHECK(res->isProduct());
+    CHECK_EQUAL(2, res->operands().size());
+    CHECK_EQUAL(sqrtA, res->operands().front());
+    CHECK_EQUAL(sqrtA, res->operands().back());
+}
+
+TEST(Product, sumOfExpUnclearBasePowers)
+    /* a^2*a^(3/4) = a^(11/4). */
+{
+    const BasePtr res = Product::create(Power::create(a, two), Power::create(a,
+                Numeric::create(3, 4)));
+    const BasePtr expected = Power::create(a, Numeric::create(11, 4));
+
+    CHECK_EQUAL(expected, res);
+}

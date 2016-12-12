@@ -10,6 +10,20 @@
 #include "numpowersimpl.h"
 #include "logging.h"
 
+namespace tsym {
+    namespace {
+        bool isFraction(const BasePtr& arg)
+        {
+            return arg->isNumeric() && arg->numericEval().isFrac();
+        }
+
+        bool isInteger(const BasePtr& arg)
+        {
+            return arg->isNumeric() && arg->numericEval().isInt();
+        }
+    }
+}
+
 tsym::BasePtrList tsym::ProductSimpl::simplify(const BasePtrList& origFactors)
 {
     BasePtrList factors(origFactors);
@@ -346,9 +360,20 @@ bool tsym::ProductSimpl::haveEqualBases(const BasePtr& f1, const BasePtr& f2)
 
 tsym::BasePtrList tsym::ProductSimpl::simplTwoEqualBases(const BasePtr& f1, const BasePtr& f2)
 {
-    const BasePtr newExp(Sum::create(f1->exp(), f2->exp()));
+    const BasePtr newBase(f1->base());
+    const BasePtr e1(f1->exp());
+    const BasePtr e2(f2->exp());
+    const BasePtr newExp(Sum::create(e1, e2));
 
-    return BasePtrList(Power::create(f1->base(), newExp));
+    if (newBase->isPositive() || newBase->isNegative())
+        /* If base < 0, both exponents can't be part of an undefined power expressions (fraction or
+         * double exponent), thus the addition of exponents must be valid, too. */
+        ;
+    else if (isFraction(e1) && isFraction(e2) && isInteger(newExp))
+        /* Exponent addition would hide the fact that the power factors could be undefined. */
+        return BasePtrList(f1, f2);
+
+    return BasePtrList(Power::create(newBase, newExp));
 }
 
 bool tsym::ProductSimpl::areContractableTrigFctPowers(const BasePtr& f1, const BasePtr& f2)
