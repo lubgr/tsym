@@ -12,7 +12,7 @@ namespace tsym {
             static BasePtr create(const Name& name);
             static BasePtr createPositive(const std::string& name);
             static BasePtr createPositive(const Name& name);
-            static BasePtr createTmpSymbol();
+            static BasePtr createTmpSymbol(bool positive = false);
 
             /* Implentations of pure virtual methods of Base. */
             bool isEqual(const BasePtr& other) const;

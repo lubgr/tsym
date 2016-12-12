@@ -8,7 +8,6 @@
 #include "order.h"
 #include "symbol.h"
 #include "numpowersimpl.h"
-#include "trigonometric.h"
 #include "logging.h"
 
 tsym::BasePtrList tsym::ProductSimpl::simplify(const BasePtrList& origFactors)
@@ -106,8 +105,8 @@ tsym::BasePtrList tsym::ProductSimpl::contractTrigFctPowers(const BasePtr& f1, c
      * arguments. */
 {
     const BasePtr newArg(f1->base()->operands().front());
-    const BasePtr sin(Symbol::createTmpSymbol());
-    const BasePtr cos(Symbol::createTmpSymbol());
+    const BasePtr sin(trigSymbReplacement(Trigonometric::SIN, newArg));
+    const BasePtr cos(trigSymbReplacement(Trigonometric::COS, newArg));
     BasePtr r1(trigFunctionPowerReplacement(f1, sin, cos));
     BasePtr r2(trigFunctionPowerReplacement(f2, sin, cos));
     BasePtrList res;
@@ -137,6 +136,17 @@ tsym::BasePtrList tsym::ProductSimpl::contractTrigFctPowers(const BasePtr& f1, c
         return BasePtrList(res.back(), res.front());
     else
         return res;
+}
+
+tsym::BasePtr tsym::ProductSimpl::trigSymbReplacement(Trigonometric::Type type, const BasePtr& arg)
+{
+    const BasePtr signTest(type == Trigonometric::SIN ? Trigonometric::createSin(arg) :
+            Trigonometric::createCos(arg));
+    const bool isPositive = signTest->isPositive();
+
+    assert(type == Trigonometric::SIN || type == Trigonometric::COS);
+
+    return Symbol::createTmpSymbol(isPositive);
 }
 
 tsym::BasePtr tsym::ProductSimpl::trigFunctionPowerReplacement(const BasePtr& pow,

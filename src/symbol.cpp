@@ -31,11 +31,11 @@ tsym::BasePtr tsym::Symbol::createPositive(const Name& name)
     return BasePtr(new Symbol(name, true));
 }
 
-tsym::BasePtr tsym::Symbol::createTmpSymbol()
+tsym::BasePtr tsym::Symbol::createTmpSymbol(bool positive)
 {
     const Name name(getTmpName());
 
-    return BasePtr(new Symbol(name, false));
+    return BasePtr(new Symbol(name, positive));
 }
 
 tsym::Name tsym::Symbol::getTmpName()

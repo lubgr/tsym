@@ -4,6 +4,7 @@
 #include "baseptr.h"
 #include "baseptrlist.h"
 #include "number.h"
+#include "trigonometric.h"
 
 namespace tsym {
     /* Automatic simplification of a product of a number of factors according to Cohen, Computer
@@ -35,6 +36,7 @@ namespace tsym {
             bool areContractableTrigFctPowers(const BasePtr& f1, const BasePtr& f2);
             bool isContractableTrigFctPower(const BasePtr& pow);
             BasePtrList contractTrigFctPowers(const BasePtr& f1, const BasePtr& f2);
+            BasePtr trigSymbReplacement(Trigonometric::Type type, const BasePtr& arg);
             BasePtr trigFunctionPowerReplacement(const BasePtr& pow, const BasePtr& sin,
                     const BasePtr& cos);
 

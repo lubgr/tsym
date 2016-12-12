@@ -21,7 +21,7 @@ namespace tsym {
             static BasePtr createAtan(const BasePtr& arg);
             static BasePtr createAtan2(const BasePtr& y, const BasePtr& x);
 
-            /* This enum is accessed from NumTrigoSimpl and is thus public: */
+            /* Accessed from NumTrigoSimpl, ProductSimpl and possibly more (thus public): */
             enum Type { SIN, COS, TAN, ASIN, ACOS, ATAN, ATAN2 };
 
             /* Implentations of pure virtual methods of Base. */
