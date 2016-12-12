@@ -799,7 +799,7 @@ TEST(Power, applyExponentToProduct)
     const BasePtr bSquare = Power::create(b, two);
     const BasePtr product = Product::create(a, bSquare);
     const BasePtr res = Power::create(product, three);
-    std::list<BasePtr>::const_iterator it;
+    BasePtrList::const_iterator it;
     BasePtr fac;
 
     CHECK(res->isProduct());
