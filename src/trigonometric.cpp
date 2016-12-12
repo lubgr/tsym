@@ -278,17 +278,17 @@ tsym::BasePtr tsym::Trigonometric::createFromTrigoNoInverse(Type type, const Bas
     if ((type == SIN && otherType == ACOS) || (type == COS && otherType == ASIN))
         return aux1;
     else if (type == SIN && otherType == ATAN)
-        return Fraction(other->arg1, aux2).eval();
+        return Fraction(other->arg1, aux2).eval()->normal();
     else if (type == SIN && otherType == ATAN2)
-        return Fraction(other->arg1, aux3).eval();
+        return Fraction(other->arg1, aux3).eval()->normal();
     else if (type == COS && otherType == ATAN)
-        return Fraction(one, aux2).eval();
+        return Fraction(one, aux2).eval()->normal();
     else if (type == COS && otherType == ATAN2)
-        return Fraction(other->arg2, aux3).eval();
+        return Fraction(other->arg2, aux3).eval()->normal();
     else if (type == TAN && otherType == ASIN)
-        return Fraction(other->arg1, aux1).eval();
+        return Fraction(other->arg1, aux1).eval()->normal();
     else if (type == TAN && otherType == ACOS)
-        return Fraction(aux1, other->arg1).eval();
+        return Fraction(aux1, other->arg1).eval()->normal();
     else
         return BasePtr(new Trigonometric(BasePtrList(arg), type));
 }
