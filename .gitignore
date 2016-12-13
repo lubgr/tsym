@@ -1,10 +1,11 @@
 bin/runtests
 build/*
 !build/.gitkeep
-doc/log/*
-!doc/log/.gitkeep
-.gdb_history
+misc/test-logfiles/*
+!misc/test-logfiles/.gitkeep
+.gdb*
 .sconsign.dblite
 *.swp
 .tags
 .clang*
+.vimrc

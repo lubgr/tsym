@@ -40,6 +40,6 @@ package() {
 
     scons --no-coverage --prefix="${pkgdir}/usr" install
 
-    install -m644 -D doc/LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+    install -m644 -D LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
 

@@ -41,8 +41,8 @@ int main(int argc, char** argv)
     tsym::Printer::disableFractions();
 
     trlog::appendToCerr(trlog::WARNING, trlog::PRINT_LEVEL);
-    trlog::appendToNewFile("doc/log/info.log", trlog::INFO);
-    trlog::appendToNewFile("doc/log/debug.log", trlog::DEBUG);
+    trlog::appendToNewFile("misc/test-logfiles/info.log", trlog::INFO);
+    trlog::appendToNewFile("misc/test-logfiles/debug.log", trlog::DEBUG);
 
     return CommandLineTestRunner::RunAllTests(argc, argv);
 }
