@@ -8,9 +8,7 @@
 #include "name.h"
 #include "abc.h"
 #include "config.h"
-#ifdef TSYM_USE_TRLOG
 #include "trlog/trlog.h"
-#endif
 #include "CppUTest/CommandLineTestRunner.h"
 
 void initConstructOnFirstUse()
@@ -42,11 +40,9 @@ int main(int argc, char** argv)
 
     tsym::Printer::disableFractions();
 
-#ifdef TSYM_USE_TRLOG
     trlog::appendToCerr(trlog::WARNING, trlog::PRINT_LEVEL);
     trlog::appendToNewFile("doc/log/info.log", trlog::INFO);
     trlog::appendToNewFile("doc/log/debug.log", trlog::DEBUG);
-#endif
 
     return CommandLineTestRunner::RunAllTests(argc, argv);
 }

@@ -1,10 +1,6 @@
 #ifndef TSYM_LOGGING_H
 #define TSYM_LOGGING_H
 
-#include "config.h"
-
-#ifdef TSYM_USE_TRLOG
-
 #include "trlog/trlog.h"
 
 namespace tsym {
@@ -17,44 +13,5 @@ namespace tsym {
         trlog::Stream fatal();
     }
 }
-
-#else
-
-#include <cstdlib>
-#include <iostream>
-
-namespace tsym {
-    namespace logging {
-        class Stream {
-            /* Simplistic logging stream that forwards stream operators to std::clog. */
-            public:
-                Stream(bool nullStream, bool exit);
-                ~Stream();
-
-                template<class T> const Stream& operator << (const T& rhs) const
-                {
-                    if (!isNullStream)
-                        std::clog << rhs;
-
-                    return *this;
-                }
-
-            private:
-                bool isNullStream;
-                bool exitAfterMessage;
-        };
-
-        Stream debug();
-        Stream info();
-        Stream warning();
-        Stream error();
-        Stream fatal();
-
-        enum Level { FATAL = 0, ERROR, WARNING, INFO, DEBUG };
-        extern Level verbosity;
-    }
-}
-
-#endif
 
 #endif

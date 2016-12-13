@@ -9,7 +9,6 @@
 #include <string>
 #include "CppUTest/TestHarness.h"
 #include "CppUTest/SimpleString.h"
-#include "config.h"
 #include "logging.h"
 
 /* Function necessary for using the CHECK_EQUAL macro of CppUTest, i.e. for printing out error
@@ -37,10 +36,7 @@ void enableLog();
  * TEST_GROUP, which do not have a constructor without arguments: */
 #define GROUP_CTOR(name) TEST_GROUP_CppUTestGroup ## name()
 
-/* Add logging output before each test case, if compiled against the trlog library. If that's not
- * the case, all log messages are printed to stderr/stdout and the same behavior can be achieved by
- * passing a -v option to the test runner. */
-#ifdef TSYM_USE_TRLOG
+/* Add logging output before each test case. */
 
 #define CPPUTEST_CONCAT(str) #str
 #define CPPUTEST_QUOTE(str) CPPUTEST_CONCAT(str)
@@ -68,6 +64,4 @@ TEST_##testGroup##_##testName##_TestShell_instance; \
 static TestInstaller TEST_##testGroup##_##testName##_Installer( \
     TEST_##testGroup##_##testName##_TestShell_instance, #testGroup, #testName, __FILE__,__LINE__); \
     void TEST_##testGroup##_##testName##_Test::testBody()
-#endif
-
 #endif

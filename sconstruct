@@ -46,8 +46,6 @@ def writeConfigHeader(target, source, env):
 
         if env['WITH_DEBUG_STRINGS']:
             fp.write('#define %s_%s\n' % (NAME.upper(), 'DEBUG_STRINGS'))
-        if GetOption('useTrlog'):
-            fp.write('#define %s_%s\n' % (NAME.upper(), 'USE_TRLOG'))
         if env['WITH_UTF8']:
             fp.write('#define %s_%s\n' % (NAME.upper(), 'WITH_UTF8'))
 
@@ -100,7 +98,6 @@ def libExistance(target, source, env):
         raise Errors.StopError('%s not found. Compile it with/before the tests.' % libFilename)
 
 SetOption('num_jobs', 4)
-AddOption('--without-trlog', dest = 'useTrlog', action = 'store_false', default = True)
 AddOption('--no-coverage', dest = 'withCoverage', action = 'store_false', default = True)
 AddOption('--release', dest = 'release', action = 'store_true', default = False)
 AddOption('--prefix', dest = 'prefix', nargs = 1, default = DEFAULT_PREFIX)
@@ -158,9 +155,7 @@ testEnv.Append(CPPPATH = [libEnv.buildDir(), testEnv.buildDir()])
 testEnv.Append(LIBS = ['CppUTest', 'tsym'])
 testEnv.Append(RPATH = env.buildDir())
 testEnv.Append(LIBPATH = env.buildDir())
-
-if GetOption('useTrlog'):
-    testEnv.Append(LIBS = 'trlog')
+testEnv.Append(LIBS = 'trlog')
 
 libTarget = libEnv.SharedLibrary(env.buildDir(LIBNAME),
     Glob(libEnv.buildDir('*.cpp')) + [scanner, parser])
@@ -212,7 +207,6 @@ Build targets control:\n
 Local options:\n
     --release        select default release compiler flags, strip debug helpers
     --no-coverage    don't add test coverage flags (only with default flags)
-    --without-trlog  don't use the trlog library
     --prefix=dir     installation location (default %s)
     --builddir=dir   build directory (default %s)
 
