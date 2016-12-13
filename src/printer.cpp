@@ -12,8 +12,16 @@
 #include "logarithm.h"
 #include "sum.h"
 #include "logging.h"
+#include "config.h"
 
 bool tsym::Printer::convertToFrac = true;
+
+bool tsym::Printer::withUtf8 =
+#ifdef TSYM_WITH_UTF8
+true;
+#else
+false;
+#endif
 
 tsym::Printer::Printer()
 {
@@ -112,6 +120,9 @@ void tsym::Printer::print(const BasePtr& ptr)
 void tsym::Printer::printSymbol(const BasePtr& ptr)
 {
     stream << ptr->name().plain();
+
+    if (ptr->isPositive() && withUtf8)
+        stream << "\u208A";
 }
 
 void tsym::Printer::printNumeric(const BasePtr& ptr)
@@ -500,6 +511,16 @@ void tsym::Printer::enableFractions()
 void tsym::Printer::disableFractions()
 {
     convertToFrac = false;
+}
+
+void tsym::Printer::enableUtf8()
+{
+    withUtf8 = true;
+}
+
+void tsym::Printer::disableUtf8()
+{
+    withUtf8 = false;
 }
 
 std::string tsym::Printer::getStr() const

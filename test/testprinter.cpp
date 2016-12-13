@@ -25,6 +25,7 @@ TEST_GROUP(Printer)
         stream.str("");
 
         printer.enableFractions();
+        printer.enableUtf8();
     }
 
     void teardown()
@@ -147,7 +148,39 @@ TEST(Printer, symbol)
     CHECK_EQUAL(expected, printer.getStr());
 }
 
-TEST(Printer, symbolAsVaression)
+TEST(Printer, positiveSymbol)
+{
+    const std::string expected("a\u208A");
+    const BasePtr aPos = Symbol::createPositive("a");
+
+    printer.set(aPos);
+
+    CHECK_EQUAL(expected, printer.getStr());
+}
+
+TEST(Printer, positiveSymbolWithSubAndSuperscript)
+{
+    const std::string expected("a_b_c\u208A");
+    const Name name("a", "b", "c");
+    const BasePtr aPos = Symbol::createPositive(name);
+
+    printer.set(aPos);
+
+    CHECK_EQUAL(expected, printer.getStr());
+}
+
+TEST(Printer, positiveSymbolUtf8Disabled)
+{
+    const BasePtr aPos = Symbol::createPositive("a");
+
+    printer.disableUtf8();
+
+    printer.set(aPos);
+
+    CHECK_EQUAL("a", printer.getStr());
+}
+
+TEST(Printer, symbolAsVar)
 {
     const std::string expected("a");
     const Var s("a");

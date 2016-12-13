@@ -14,13 +14,19 @@
 namespace tsym {
     class Printer {
         /* Generates a simple text form of the given argument, that can be obtained via the getStr()
-         * method. If desired, the use of fractions can be disabled (globally for alle Printer
-         * instances via a static method/member), per default, it is enabled. Using fractions means
-         * converting a product of powers into a fraction, if some power expressions have numeric,
-         * negative exponents, e.g. a*b^(-1) can be printed as a/b. Collection of powers with the
-         * same exponent isn't provided. Even if sqrt(a*b) may be more intuitive than
-         * sqrt(a)*sqrt(b), it obfuscates the actual data representation too much and causes other
-         * internal problems with the use of fractions. */
+         * method.
+         *
+         * If desired, the use of fractions can be disabled (globally for alle Printer instances via
+         * a static method/member), per default, it is enabled. Using fractions means converting a
+         * product of powers into a fraction, if some power expressions have numeric, negative
+         * exponents, e.g. a*b^(-1) can be printed as a/b. Collection of powers with the same
+         * exponent isn't provided. Even if sqrt(a*b) may be more intuitive than sqrt(a)*sqrt(b), it
+         * obfuscates the actual data representation too much and causes other internal problems
+         * with the use of fractions.
+         *
+         * There is a UTF8-encoded subscript plus-sign for positive symbols. Enabling or disabling
+         * this character can be achieved via the corresponding static method, and whether it's
+         * enabled by default depends on the configuration. */
         public:
             Printer();
             explicit Printer(const Var& var);
@@ -37,6 +43,8 @@ namespace tsym {
 
             static void enableFractions();
             static void disableFractions();
+            static void enableUtf8();
+            static void disableUtf8();
 
             std::string getStr() const;
             void print(std::ostream& stream);
@@ -75,6 +83,7 @@ namespace tsym {
 
             std::stringstream stream;
             static bool convertToFrac;
+            static bool withUtf8;
     };
 }
 

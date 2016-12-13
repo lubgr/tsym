@@ -48,6 +48,8 @@ def writeConfigHeader(target, source, env):
             fp.write('#define %s_%s\n' % (NAME.upper(), 'DEBUG_STRINGS'))
         if GetOption('useTrlog'):
             fp.write('#define %s_%s\n' % (NAME.upper(), 'USE_TRLOG'))
+        if env['WITH_UTF8']:
+            fp.write('#define %s_%s\n' % (NAME.upper(), 'WITH_UTF8'))
 
         includeGuard(fp)
 
@@ -138,6 +140,7 @@ libEnv.Append(BUILDERS = {
 
 libEnv.VariantDir(libEnv.buildDir(), 'src')
 libEnv.Append(WITH_DEBUG_STRINGS = not release)
+libEnv.Append(WITH_UTF8 = True)
 libEnv.Append(CPPPATH = libEnv.buildDir())
 libEnv.Append(YACCFLAGS = '-d')
 
