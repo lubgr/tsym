@@ -2,9 +2,13 @@
 #define TSYM_VAR_H
 
 #include <vector>
-#include "number.h"
+#include <utility>
+#include <string>
 
-namespace tsym { class BasePtr; }
+namespace tsym {
+    class BasePtr;
+    class Number;
+}
 
 namespace tsym {
     class Var {
@@ -44,24 +48,24 @@ namespace tsym {
             bool isZero() const;
             bool isPositive() const;
             bool isNegative() const;
-
-            bool isNumericallyEvaluable() const;
-            Number numericEval() const;
             /* Returns "Symbol", "Integer", "Fraction", "Double", "Constant", "Undefined",
              * "Function", "Sum", "Product" or "Power": */
             std::string type() const;
-
+            Var numerator() const;
+            Var denominator() const;
+            bool fitsIntoInt() const;
+            int toInt() const;
+            double toDouble() const;
             /* Returns names for Symbols, Functions and Constants, an empty string otherwise: */
             const std::string& name() const;
-            /* Return the sub-/superscript of a Symbol or an empty string: */
-            const std::string& subscript() const;
-            const std::string& superscript() const;
             std::vector<Var> operands() const;
             std::vector<Var> collectSymbols() const;
             const BasePtr& getBasePtr() const;
 
         private:
             std::string numericType() const;
+            bool isInteger() const;
+            std::pair<Var, Var> normalToFraction() const;
             void collectSymbols(const BasePtr& ptr, std::vector<Var>& symbols) const;
             void insertSymbolIfNotPresent(const BasePtr& symbol, std::vector<Var>& symbols) const;
 

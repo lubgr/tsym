@@ -1,5 +1,6 @@
 
 #include <sstream>
+#include "number.h"
 #include "matrix.h"
 #include "globals.h"
 #include "logging.h"
@@ -704,7 +705,7 @@ TEST(Matrix, largeNumericDet)
             A(i, j) = APtr[i][j];
 
     /* The tolerance shouldn't be too high here, because the resulting determinant is large. */
-    DOUBLES_EQUAL(expected.toDouble(), A.det().numericEval().toDouble(), 1.e-4);
+    DOUBLES_EQUAL(expected.toDouble(), A.det().toDouble(), 1.e-4);
 }
 
 TEST(Matrix, illegalDetRequestNonSquare)
@@ -928,8 +929,7 @@ TEST(Matrix, largeDoubleInverse)
 
     for (size_t i = 0; i < size; ++i)
         for (size_t j = 0; j < size; ++j)
-            DOUBLES_EQUAL(expected(i, j).numericEval().toDouble(),
-                    Ainv(i, j).numericEval().toDouble(), TOL);
+            DOUBLES_EQUAL(expected(i, j).toDouble(), Ainv(i, j).toDouble(), TOL);
 }
 
 TEST(Matrix, illegalInverseNonSquare)

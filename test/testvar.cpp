@@ -1,6 +1,8 @@
 
 #include <sstream>
+#include <limits>
 #include <algorithm>
+#include "number.h"
 #include "var.h"
 #include "globals.h"
 #include "cpputest.h"
@@ -60,9 +62,7 @@ TEST(Var, subAndSuperScript)
 {
     const Var var("a", "b", "c");
 
-    CHECK_EQUAL("a", var.name());
-    CHECK_EQUAL("b", var.subscript());
-    CHECK_EQUAL("c", var.superscript());
+    CHECK_EQUAL("a_b_c", var.name());
 }
 
 TEST(Var, constructPositiveSymbol)
@@ -82,21 +82,38 @@ TEST(Var, numberTypes)
 
 TEST(Var, numberRequest)
 {
-    const Number n(1);
+    CHECK_EQUAL(1, one.toInt());
+}
 
-    CHECK_EQUAL(n, one.numericEval());
+TEST(Var, fitsIntoInt)
+{
+    CHECK(three.fitsIntoInt());
+}
+
+TEST(Var, doesntFitIntoInt)
+{
+    Var large(std::numeric_limits<int>::max());
+
+    disableLog();
+    large = tsym::pow(large, large);
+    enableLog();
+
+    CHECK_FALSE(large.fitsIntoInt());
+}
+
+TEST(Var, toDouble)
+{
+    const Var frac(2, 3);
+
+    DOUBLES_EQUAL(2.0/3.0, frac.toDouble(), 1.e-10);
 }
 
 TEST(Var, illegalNumberRequest)
-    /* Requesting a number from a non-numeric expression should return an undefined Number. */
+    /* Requesting a number from a non-numeric expression should return zero. */
 {
-    CHECK(a.numericEval().isUndefined());
-}
-
-TEST(Var, numericalEvaluability)
-{
-    CHECK(three.isNumericallyEvaluable());
-    CHECK(!a.isNumericallyEvaluable());
+    disableLog();
+    CHECK_EQUAL(0, a.toInt());
+    enableLog();
 }
 
 TEST(Var, powerType)
@@ -164,6 +181,13 @@ TEST(Var, defaultAssignment)
     var = Var();
 
     CHECK(var.isZero());
+}
+
+TEST(Var, selfAssignment)
+{
+    a = a;
+
+    CHECK_EQUAL(a, a);
 }
 
 TEST(Var, equalityOfSymbols)
@@ -854,6 +878,22 @@ TEST(Var, normalToZero)
 
     CHECK(sum.expand().isZero());
     CHECK(sum.normal().isZero());
+}
+
+TEST(Var, getNumAndDenomFromFraction)
+{
+    const Var frac(2, 3);
+
+    CHECK_EQUAL(2, frac.numerator().toInt());
+    CHECK_EQUAL(3, frac.denominator().toInt());
+}
+
+TEST(Var, getNumAndDenomFromProduct)
+{
+    const Var res(a*b*b/(c*c));
+
+    CHECK_EQUAL(a*b*b, res.numerator());
+    CHECK_EQUAL(c*c, res.denominator());
 }
 
 TEST(Var, negativeVar)

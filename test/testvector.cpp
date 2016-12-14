@@ -1,5 +1,6 @@
 
 #include <sstream>
+#include "number.h"
 #include "vector.h"
 #include "cpputest.h"
 

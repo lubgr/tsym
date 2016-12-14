@@ -7,6 +7,8 @@
 #include "product.h"
 #include "power.h"
 #include "printer.h"
+#include "fraction.h"
+#include "symbolmap.h"
 #include "logging.h"
 
 tsym::Var::Var() :
@@ -182,17 +184,6 @@ bool tsym::Var::isNegative() const
     return (*rep)->isNegative();
 }
 
-bool tsym::Var::isNumericallyEvaluable() const
-{
-    return (*rep)->isNumericallyEvaluable();
-}
-
-tsym::Number tsym::Var::numericEval() const
-{
-    /* A check for numerical evaluability is performed inside of the method called. */
-    return (*rep)->numericEval();
-}
-
 std::string tsym::Var::type() const
 {
     if ((*rep)->isNumeric())
@@ -212,24 +203,68 @@ std::string tsym::Var::numericType() const
     else if (number.isFrac())
         return "Fraction";
 
+    /* This should never happened, as the BasePtr must be Undefined in the first place. */
     logging::error() << "Illegal number " << number << " in Var!";
 
     return "Undefined";
 }
 
+tsym::Var tsym::Var::numerator() const
+{
+    return normalToFraction().first;
+}
+
+std::pair<tsym::Var, tsym::Var> tsym::Var::normalToFraction() const
+{
+    Fraction normalizedFrac;
+    SymbolMap map;
+    BasePtr denom;
+    BasePtr num;
+
+    normalizedFrac = (*rep)->normal(map);
+
+    denom = map.replaceTmpSymbolsBackFrom(normalizedFrac.denom());
+    num = map.replaceTmpSymbolsBackFrom(normalizedFrac.num());
+
+    return std::make_pair(Var(num), Var(denom));
+}
+
+tsym::Var tsym::Var::denominator() const
+{
+    return normalToFraction().second;
+}
+
+bool tsym::Var::fitsIntoInt() const
+{
+    if (isInteger())
+        return (*rep)->numericEval().numerator().fitsIntoInt();
+    else
+        return false;
+}
+
+bool tsym::Var::isInteger() const
+{
+    return (*rep)->isNumeric() && (*rep)->numericEval().isInt();
+}
+
+int tsym::Var::toInt() const
+{
+    if (!isInteger())
+        logging::error() << "Requesting integer from " << type();
+
+    return (*rep)->numericEval().numerator().toInt();
+}
+
+double tsym::Var::toDouble() const
+{
+    assert((*rep)->isNumeric());
+
+    return (*rep)->numericEval().toDouble();
+}
+
 const std::string& tsym::Var::name() const
 {
-    return (*rep)->name().getName();
-}
-
-const std::string& tsym::Var::subscript() const
-{
-    return (*rep)->name().getSubscript();
-}
-
-const std::string& tsym::Var::superscript() const
-{
-    return (*rep)->name().getSuperscript();
+    return (*rep)->name().plain();
 }
 
 std::vector<tsym::Var> tsym::Var::operands() const

@@ -1,5 +1,6 @@
 
 #include <cmath>
+#include "number.h"
 #include "globals.h"
 #include "cpputest.h"
 
