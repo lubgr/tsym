@@ -48,7 +48,7 @@ class VarPrinter:
         self.val = val
 
     def to_string(self):
-        prettyStr = self.val['basePtr']
+        prettyStr = self.val['rep']['prettyStr']
         return prettyStr
 
 def lookupVariations(base):

@@ -92,20 +92,11 @@ TEST(Vector, assignAndRetainValues)
     CHECK_EQUAL(Number(1, 2)*c, vec(2));
 }
 
-TEST(Vector, retainValueOutOfRange)
-{
-    disableLog();
-    CHECK_EQUAL(0, abcVec(5));
-    enableLog();
-}
-
 TEST(Vector, valueOutOfRangeZeroSize)
 {
     const Vector constVec;
-    Vector vec(0);
 
     disableLog();
-    CHECK_EQUAL(0, vec(1));
     CHECK_EQUAL(0, constVec(0));
     enableLog();
 }
@@ -117,31 +108,6 @@ TEST(Vector, valueOutOfRangeZeroSizeConst)
     disableLog();
     CHECK_EQUAL(0, vec(6));
     enableLog();
-}
-
-TEST(Vector, retainValueOutOfRangeNegative)
-    /* Passing a negative int will result in a very high unsigned int by implicit conversion. */
-{
-    disableLog();
-    CHECK_EQUAL(0, abcVec((size_t)-1));
-    enableLog();
-}
-
-TEST(Vector, retainValueOutOfRangeTwice)
-    /* The non-const reference returned in this case a static member variable, it is thus possible
-     * to modify it. Should after a modification still return zero. */
-{
-    disableLog();
-    Var& res(abcVec(5));
-    enableLog();
-
-    res = a;
-
-    disableLog();
-    res = abcVec(5);
-    enableLog();
-
-    CHECK(res.isZero());
 }
 
 TEST(Vector, retainConstValueOutOfRange)

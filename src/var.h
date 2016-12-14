@@ -2,8 +2,9 @@
 #define TSYM_VAR_H
 
 #include <vector>
-#include "baseptr.h"
 #include "number.h"
+
+namespace tsym { class BasePtr; }
 
 namespace tsym {
     class Var {
@@ -18,6 +19,9 @@ namespace tsym {
             Var(const char *name, bool positiveSymbol, const char *subscript = "",
                     const char *superscript = "");
             explicit Var(const BasePtr& ptr);
+            Var(const Var& other);
+            const Var& operator = (const Var& rhs);
+            ~Var();
 
             Var& operator += (const Var& rhs);
             Var& operator -= (const Var& rhs);
@@ -58,7 +62,7 @@ namespace tsym {
             void collectSymbols(const BasePtr& ptr, std::vector<Var>& symbols) const;
             void insertSymbolIfNotPresent(const BasePtr& symbol, std::vector<Var>& symbols) const;
 
-            BasePtr basePtr;
+            BasePtr *rep;
     };
 
     bool operator == (const Var& lhs, const Var& rhs);

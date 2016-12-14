@@ -10,29 +10,29 @@
 #include "logging.h"
 
 tsym::Var::Var() :
-    basePtr(Numeric::zero())
+    rep(new BasePtr(Numeric::zero()))
 {}
 
 tsym::Var::Var(int value) :
-    basePtr(Numeric::create(value))
+    rep(new BasePtr(Numeric::create(value)))
 {}
 
 tsym::Var::Var(double value) :
-    basePtr(Numeric::create(value))
+    rep(new BasePtr(Numeric::create(value)))
 {}
 
 tsym::Var::Var(int numerator, int denominator) :
     /* Zero denominator is checked inside of the Numeric::create method. */
-    basePtr(Numeric::create(numerator, denominator))
+    rep(new BasePtr(Numeric::create(numerator, denominator)))
 {}
 
 tsym::Var::Var(const Number& number) :
     /* An undefined number is again checked inside of the Numeric::create method. */
-    basePtr(Numeric::create(number))
+    rep(new BasePtr(Numeric::create(number)))
 {}
 
 tsym::Var::Var(const char *name, const char *subscript, const char *superscript) :
-    basePtr(Symbol::create(Name(name, subscript, superscript)))
+    rep(new BasePtr(Symbol::create(Name(name, subscript, superscript))))
 {}
 
 tsym::Var::Var(const char *name, bool positiveSymbol, const char *subscript,
@@ -41,39 +41,76 @@ tsym::Var::Var(const char *name, bool positiveSymbol, const char *subscript,
     const Name symbolName(name, subscript, superscript);
 
     if (positiveSymbol)
-        basePtr = Symbol::createPositive(symbolName);
+        rep = new BasePtr(Symbol::createPositive(symbolName));
     else
-        basePtr = Symbol::create(symbolName);
+        rep = new BasePtr(Symbol::create(symbolName));
 }
 
 tsym::Var::Var(const BasePtr& ptr) :
-    basePtr(ptr)
+    rep(new BasePtr(ptr))
 {}
+
+tsym::Var::Var(const Var& other) :
+    rep(new BasePtr(*other.rep))
+{}
+
+const tsym::Var& tsym::Var::operator = (const Var& rhs)
+{
+    if (this == &rhs)
+        return *this;
+
+    delete rep;
+
+    rep = new BasePtr(*rhs.rep);
+
+    return *this;
+}
+
+tsym::Var::~Var()
+{
+    delete rep;
+}
 
 tsym::Var& tsym::Var::operator += (const Var& rhs)
 {
-    basePtr = Sum::create(basePtr, rhs.basePtr);
+    const BasePtr *ref(rep);
+
+    rep = new BasePtr(Sum::create(*rep, *rhs.rep));
+
+    delete ref;
 
     return *this;
 }
 
 tsym::Var& tsym::Var::operator -= (const Var& rhs)
 {
-    basePtr = Sum::create(basePtr, Product::minus(rhs.basePtr));
+    const BasePtr *ref(rep);
+
+    rep = new BasePtr(Sum::create(*rep, Product::minus(*rhs.rep)));
+
+    delete ref;
 
     return *this;
 }
 
 tsym::Var& tsym::Var::operator *= (const Var& rhs)
 {
-    basePtr = Product::create(basePtr, rhs.basePtr);
+    const BasePtr *ref(rep);
+
+    rep = new BasePtr(Product::create(*rep, *rhs.rep));
+
+    delete ref;
 
     return *this;
 }
 
 tsym::Var& tsym::Var::operator /= (const Var& rhs)
 {
-    basePtr = Product::create(basePtr, Power::oneOver(rhs.basePtr));
+    const BasePtr *ref(rep);
+
+    rep = new BasePtr(Product::create(*rep, Power::oneOver(*rhs.rep)));
+
+    delete ref;
 
     return *this;
 }
@@ -85,79 +122,75 @@ const tsym::Var& tsym::Var::operator + () const
 
 tsym::Var tsym::Var::operator - () const
 {
-    return Var(Product::minus(basePtr));
+    return Var(Product::minus(*rep));
 }
 
 tsym::Var tsym::Var::toThe(const Var& exponent) const
 {
-    Var res;
-
-    res.basePtr = Power::create(basePtr, exponent.basePtr);
-
-    return res;
+    return Var(Power::create(*rep, *exponent.rep));
 }
 
 tsym::Var tsym::Var::subst(const Var& from, const Var& to) const
 {
-    return Var(basePtr->subst(from.basePtr, to.basePtr));
+    return Var((*rep)->subst(*from.rep, *to.rep));
 }
 
 tsym::Var tsym::Var::expand() const
 {
-    return Var(basePtr->expand());
+    return Var((*rep)->expand());
 }
 
 tsym::Var tsym::Var::normal() const
 {
     const time_t start = time(NULL);
-    const BasePtr bp(basePtr->normal());
+    const BasePtr normalized((*rep)->normal());
 
-    if (!bp->isEqual(basePtr))
-        logging::info() << "Normalized " << basePtr << " to " << bp << " in " <<
+    if (!normalized->isEqual(*rep))
+        logging::debug() << "Normalized " << *rep << " to " << normalized << " in " <<
             difftime(time(NULL), start) << " s.";
 
-    return Var(bp);
+    return Var(normalized);
 }
 
 tsym::Var tsym::Var::diff(const Var& symbol) const
 {
-    return Var(basePtr->diff(symbol.basePtr));
+    return Var((*rep)->diff(*symbol.rep));
 }
 
 bool tsym::Var::equal(const Var& other) const
 {
-    return basePtr->isEqual(other.basePtr);
+    return (*rep)->isEqual(*other.rep);
 }
 
 bool tsym::Var::has(const Var& other) const
 {
-    return basePtr->has(other.basePtr);
+    return (*rep)->has(*other.rep);
 }
 
 bool tsym::Var::isZero() const
 {
-    return basePtr->isZero();
+    return (*rep)->isZero();
 }
 
 bool tsym::Var::isPositive() const
 {
-    return basePtr->isPositive();
+    return (*rep)->isPositive();
 }
 
 bool tsym::Var::isNegative() const
 {
-    return basePtr->isNegative();
+    return (*rep)->isNegative();
 }
 
 bool tsym::Var::isNumericallyEvaluable() const
 {
-    return basePtr->isNumericallyEvaluable();
+    return (*rep)->isNumericallyEvaluable();
 }
 
 tsym::Number tsym::Var::numericEval() const
 {
     /* A check for numerical evaluability is performed inside of the method called. */
-    return basePtr->numericEval();
+    return (*rep)->numericEval();
 }
 
 std::string tsym::Var::type() const
@@ -167,17 +200,17 @@ std::string tsym::Var::type() const
 
 const std::string& tsym::Var::name() const
 {
-    return basePtr->name().getName();
+    return (*rep)->name().getName();
 }
 
 const std::string& tsym::Var::subscript() const
 {
-    return basePtr->name().getSubscript();
+    return (*rep)->name().getSubscript();
 }
 
 const std::string& tsym::Var::superscript() const
 {
-    return basePtr->name().getSuperscript();
+    return (*rep)->name().getSuperscript();
 }
 
 std::vector<tsym::Var> tsym::Var::operands() const
@@ -185,7 +218,7 @@ std::vector<tsym::Var> tsym::Var::operands() const
     BasePtrList::const_iterator it;
     std::vector<Var> ops;
 
-    for (it = basePtr->operands().begin(); it != basePtr->operands().end(); ++it)
+    for (it = (*rep)->operands().begin(); it != (*rep)->operands().end(); ++it)
         ops.push_back(Var(*it));
 
     return ops;
@@ -195,7 +228,7 @@ std::vector<tsym::Var> tsym::Var::collectSymbols() const
 {
     std::vector<Var> symbols;
 
-    collectSymbols(basePtr, symbols);
+    collectSymbols(*rep, symbols);
 
     return symbols;
 }
@@ -221,7 +254,7 @@ void tsym::Var::insertSymbolIfNotPresent(const BasePtr& symbol, std::vector<Var>
 
 const tsym::BasePtr& tsym::Var::getBasePtr() const
 {
-    return basePtr;
+    return *rep;
 }
 
 bool tsym::operator == (const Var& lhs, const Var& rhs)

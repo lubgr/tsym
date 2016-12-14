@@ -108,31 +108,12 @@ TEST(Matrix, assignmentSmallerSize)
     checkMatrixM(otherM);
 }
 
-TEST(Matrix, retainIndexOutOfRange)
-{
-    disableLog();
-    /* Is supposed to return zero. */
-    CHECK_EQUAL(zero, m(5, 0));
-    enableLog();
-}
-
 TEST(Matrix, retainIndexOutOfRangeConst)
 {
     const Matrix constM(m);
 
     disableLog();
-    /* See above. */
     CHECK_EQUAL(zero, constM(5, 0));
-    enableLog();
-}
-
-TEST(Matrix, retainIndexOutOfRangeUnallocated)
-{
-    Matrix m;
-
-    disableLog();
-    /* Is supposed to return zero. */
-    CHECK_EQUAL(0, m(0, 0));
     enableLog();
 }
 
@@ -141,7 +122,6 @@ TEST(Matrix, retainIndexOutOfRangeUnallocatedConst)
     const Matrix m;
 
     disableLog();
-    /* See above. */
     CHECK_EQUAL(0, m(0, 0));
     enableLog();
 }

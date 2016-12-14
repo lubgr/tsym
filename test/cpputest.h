@@ -7,9 +7,9 @@
 
 #include <sstream>
 #include <string>
+#include "logging.h"
 #include "CppUTest/TestHarness.h"
 #include "CppUTest/SimpleString.h"
-#include "logging.h"
 
 /* Function necessary for using the CHECK_EQUAL macro of CppUTest, i.e. for printing out error
  * messages when tests with this assertion fail: */

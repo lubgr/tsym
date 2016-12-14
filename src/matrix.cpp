@@ -6,8 +6,6 @@
 #include "logging.h"
 #include "printer.h"
 
-/* Static constants for requests of an element with an index out of range, provided by construct on
- * first use. */
 namespace tsym {
     namespace {
         const Var& constZero()
