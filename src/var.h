@@ -13,14 +13,14 @@ namespace tsym {
 namespace tsym {
     class Var {
         public:
+            enum Sign { UNKNOWN = 0, POSITIVE };
+
             Var();
             Var(int value);
             Var(double value);
             Var(int numerator, int denominator);
             Var(const Number& number);
-            explicit Var(const char *name, const char *subscript = "",
-                    const char *superscript = "");
-            Var(const char *name, bool positiveSymbol, const char *subscript = "",
+            explicit Var(const char *name, Sign sign = UNKNOWN, const char *subscript = "",
                     const char *superscript = "");
             explicit Var(const BasePtr& ptr);
             Var(const Var& other);

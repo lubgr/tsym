@@ -60,14 +60,14 @@ TEST(Var, symbolType)
 
 TEST(Var, subAndSuperScript)
 {
-    const Var var("a", "b", "c");
+    const Var var("a", Var::UNKNOWN, "b", "c");
 
     CHECK_EQUAL("a_b_c", var.name());
 }
 
 TEST(Var, constructPositiveSymbol)
 {
-    const Var aPos("a", true);
+    const Var aPos("a", Var::POSITIVE);
 
     CHECK(aPos.isPositive());
     CHECK(!a.isPositive());
@@ -318,7 +318,7 @@ TEST(Var, productDividedByNumber)
 
 TEST(Var, multiplicationOfExpPosSymbol)
 {
-    const Var aPos("a", true);
+    const Var aPos("a", Var::POSITIVE);
     const Var expected(pow(aPos, Var(10, 3)));
     Var pow(aPos);
 
@@ -898,8 +898,8 @@ TEST(Var, getNumAndDenomFromProduct)
 
 TEST(Var, negativeVar)
 {
-    const Var aPos("a", true);
-    const Var bPos("b", true, "1");
+    const Var aPos("a", Var::POSITIVE);
+    const Var bPos("b", Var::POSITIVE, "1");
     Var res;
 
     res = -aPos*bPos + 2 - 3*Pi;
@@ -910,8 +910,8 @@ TEST(Var, negativeVar)
 
 TEST(Var, comparisonPosAndNonPosSymbols)
 {
-    const Var aPos("a", true, "1", "2");
-    const Var aNonPos("a", false, "1", "2");
+    const Var aPos("a", Var::POSITIVE, "1", "2");
+    const Var aNonPos("a", Var::UNKNOWN, "1", "2");
 
     CHECK(aPos != aNonPos);
 }

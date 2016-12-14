@@ -134,7 +134,7 @@ TEST(StringToVar, symbolWithEmptySubscriptInBraces)
 
 TEST(StringToVar, symbolWithLongSubscriptWithoutBraces)
 {
-    const Var expected("aBc123", "a");
+    const Var expected("aBc123", Var::UNKNOWN, "a");
     disableLog();
     const StringToVar stv("aBc123_abc");
     enableLog();
@@ -171,7 +171,7 @@ TEST(StringToVar, symbolWithUnrecognizedCharacterInSubscript)
 
 TEST(StringToVar, symbolWithSubscriptErrorInProduct)
 {
-    const Var expected("aBc123", "a");
+    const Var expected("aBc123", Var::UNKNOWN, "a");
     disableLog();
     const StringToVar stv("aBc123_abc*3*sin(a)");
     enableLog();
@@ -181,7 +181,7 @@ TEST(StringToVar, symbolWithSubscriptErrorInProduct)
 
 TEST(StringToVar, symbolWithSubscriptErrorRecovery)
 {
-    const Var expected = a*Var("aBc123", "a");
+    const Var expected = a*Var("aBc123", Var::UNKNOWN, "a");
     disableLog();
     const StringToVar stv("a*aBc123_abc*2");
     enableLog();

@@ -33,16 +33,12 @@ tsym::Var::Var(const Number& number) :
     rep(new BasePtr(Numeric::create(number)))
 {}
 
-tsym::Var::Var(const char *name, const char *subscript, const char *superscript) :
-    rep(new BasePtr(Symbol::create(Name(name, subscript, superscript))))
-{}
-
-tsym::Var::Var(const char *name, bool positiveSymbol, const char *subscript,
+tsym::Var::Var(const char *name, Var::Sign sign, const char *subscript,
         const char *superscript)
 {
     const Name symbolName(name, subscript, superscript);
 
-    if (positiveSymbol)
+    if (sign == Var::POSITIVE)
         rep = new BasePtr(Symbol::createPositive(symbolName));
     else
         rep = new BasePtr(Symbol::create(symbolName));
