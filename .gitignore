@@ -5,6 +5,7 @@ misc/test-logfiles/*
 !misc/test-logfiles/.gitkeep
 .gdb*
 .sconsign.dblite
+config.py
 *.swp
 .tags
 .clang*

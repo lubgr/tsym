@@ -30,7 +30,7 @@ build() {
 
     unset CC CXX CFLAGS CXXFLAGS
 
-    scons --no-coverage lib
+    scons DEBUG=1 lib
 }
 
 package() {
@@ -38,7 +38,9 @@ package() {
 
     unset CC CXX CFLAGS CXXFLAGS
 
-    scons --no-coverage --prefix="${pkgdir}/usr" install
+    mkdir "${pkgdir}/usr"
+
+    scons DEBUG=1 PREFIX="${pkgdir}/usr" install
 
     install -m644 -D LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }

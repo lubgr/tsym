@@ -8,14 +8,15 @@ import re
 NAME = 'tsym'
 LIBNAME = 'lib%s' % NAME
 DEFAULT_PREFIX = '/usr/local'
-DEFAULT_BUILDDIR = 'build'
+DEFAULT_BUILDDIR = './build'
 TEST_EXEC = 'runtests'
 PUBLIC_HEADER = ['baseptr', 'globals', 'int', 'matrix', 'number', 'solver', 'stringtovar', 'var',
         'vector', 'config', 'buildinfo']
+CONFIG_FILE = 'config.py'
 
 def publicHeaderList():
     def path(header):
-        return os.path.join(GetOption('buildDir'), 'src', header + '.h')
+        return os.path.join(env['BUILDDIR'], 'src', header + '.h')
 
     return  [path(header) for header in PUBLIC_HEADER]
 
@@ -44,9 +45,9 @@ def writeConfigHeader(target, source, env):
     with open(filename, 'w') as fp:
         includeGuard(fp, filename)
 
-        if env['WITH_DEBUG_STRINGS']:
+        if env['DEBUG']:
             fp.write('#define %s_%s\n' % (NAME.upper(), 'DEBUG_STRINGS'))
-        if env['WITH_UTF8']:
+        if env['UTF8']:
             fp.write('#define %s_%s\n' % (NAME.upper(), 'WITH_UTF8'))
 
         includeGuard(fp)
@@ -90,44 +91,65 @@ def writeBuildInfoHeader(target, source, env):
         includeGuard(fp)
 
 def buildDir(self, *paths):
-    return os.path.join(self['BUILD_DIR'], *paths)
+    return os.path.join(self['BUILDDIR'], *paths)
 
 def libExistance(target, source, env):
-    libFilename = str(env['LIBTARGET'][0])
-    if not os.path.isfile(libFilename):
-        raise Errors.StopError('%s not found. Compile it with/before the tests.' % libFilename)
+    filename = str(env['LIBTARGET'][0])
+    if not os.path.isfile(filename):
+        raise Errors.StopError('%s not found. Compile it before tests or installation.' % filename)
 
 SetOption('num_jobs', 4)
-AddOption('--no-coverage', dest = 'withCoverage', action = 'store_false', default = True)
-AddOption('--release', dest = 'release', action = 'store_true', default = False)
-AddOption('--prefix', dest = 'prefix', nargs = 1, default = DEFAULT_PREFIX)
-AddOption('--builddir', dest = 'buildDir', nargs = 1, default = DEFAULT_BUILDDIR)
 
-release = GetOption('release') and not 'CFLAGS' in os.environ and not 'CXXFLAGS' in os.environ
-withCoverage = False if release or 'CXXFLAGS' in os.environ else GetOption('withCoverage')
+variables = Variables(CONFIG_FILE)
+variables.AddVariables(
+        ('CXX', 'C++ compiler', Environment()['CXX']),
+        ('CXXFLAGS', 'C++ compiler flags'),
+        ('CC', 'C compiler', Environment()['CC']),
+        ('CFLAGS', 'C compiler flags'),
+        BoolVariable('RELEASE', 'Build with  predefined release flags', 1),
+        BoolVariable('DEBUG', 'Build with predefined debug flags (overrides RELEASE)', 0),
+        BoolVariable('COVERAGE', 'Add compiler flags for test coverage meta data', 0),
+        BoolVariable('UTF8', 'Enable utf-8 printing by default', 1),
+        PathVariable('BUILDDIR', 'Directory for compilation targets', DEFAULT_BUILDDIR),
+        PathVariable('PREFIX', 'Installation prefix', DEFAULT_PREFIX))
 
-env = Environment(BUILD_DIR = GetOption('buildDir'))
+env = Environment(variables = variables)
+
+if variables.unknown:
+    raise Errors.StopError('Variables %s are invalid' % ' '.join(variables.unknown.keys()))
+
+if env['DEBUG']:
+    env['RELEASE'] = False
+
+for key in ('CC', 'CXX', 'CFLAGS', 'CXXFLAGS'):
+    if key in os.environ.keys() and not key in env.Dictionary().keys():
+        env[key] = os.environ.get(key)
 
 env.AddMethod(buildDir)
 
-env.Append(CFLAGS = ['-pedantic', '-Wall', '-Wextra', '-Wno-sign-compare', '-Wno-unused-label',
-    '-Wno-unused-function', '-Wno-unneeded-internal-declaration'])
-env.Append(CXXFLAGS = ['-std=c++98', '-pedantic', '-Wall', '-Wextra', '-Werror=conversion'])
+if env['RELEASE']:
+    env.Append(CPPDEFINES = 'NDEBUG')
 
-if release:
-    env.Append(CFLAGS = '-O2', CXXFLAGS = '-O2', CPPDEFINES = 'NDEBUG')
-else:
-    env.Append(CFLAGS = ['-O0', '-g3', '-ggdb'], CXXFLAGS = ['-O0', '-g3', '-ggdb'])
+if not env['CFLAGS']:
+    env.Append(CFLAGS = ['-pedantic', '-Wall', '-Wextra', '-Wno-sign-compare', '-Wno-unused-label',
+        '-Wno-unused-function', '-Wno-unneeded-internal-declaration'])
+    if env['RELEASE']:
+        env.Append(CFLAGS = '-O2')
+    elif env['DEBUG']:
+        env.Append(CFLAGS = ['-O0', '-g3', '-ggdb'])
 
-for key in ('CC', 'CXX', 'CFLAGS', 'CXXFLAGS'):
-    if key in os.environ.keys():
-        env[key] = os.environ.get(key)
+if not env['CXXFLAGS']:
+    env.Append(CXXFLAGS = ['-std=c++98', '-pedantic', '-Wall', '-Wextra', '-Werror=conversion'])
+    if env['RELEASE']:
+        env.Append(CXXFLAGS = '-O2')
+    elif env['DEBUG']:
+        env.Append(CXXFLAGS = ['-O0', '-g3', '-ggdb'])
 
 libEnv = env.Clone()
 testEnv = env.Clone()
 
-libEnv.Replace(BUILD_DIR = env.buildDir('src'))
-testEnv.Replace(BUILD_DIR = env.buildDir('test'))
+libEnv.Replace(BUILDDIR = env.buildDir('src'))
+testEnv.Replace(BUILDDIR = env.buildDir('test'))
 
 libEnv.Append(BUILDERS = {
     'ConfigHeader': Builder(action = writeConfigHeader),
@@ -136,8 +158,6 @@ libEnv.Append(BUILDERS = {
     })
 
 libEnv.VariantDir(libEnv.buildDir(), 'src')
-libEnv.Append(WITH_DEBUG_STRINGS = not release)
-libEnv.Append(WITH_UTF8 = True)
 libEnv.Append(CPPPATH = libEnv.buildDir())
 libEnv.Append(YACCFLAGS = '-d')
 
@@ -152,16 +172,15 @@ libEnv.CFile(parser, 'src/parser.y')
 
 testEnv.VariantDir(testEnv.buildDir(), 'test')
 testEnv.Append(CPPPATH = [libEnv.buildDir(), testEnv.buildDir()])
-testEnv.Append(LIBS = ['CppUTest', 'tsym'])
+testEnv.Append(LIBS = ['CppUTest', 'tsym', 'trlog'])
 testEnv.Append(RPATH = env.buildDir())
 testEnv.Append(LIBPATH = env.buildDir())
-testEnv.Append(LIBS = 'trlog')
 
 libTarget = libEnv.SharedLibrary(env.buildDir(LIBNAME),
     Glob(libEnv.buildDir('*.cpp')) + [scanner, parser])
 
-if withCoverage:
-    libEnv.Append(CXXFLAGS = '--coverage')
+if libEnv['COVERAGE']:
+    libEnv.Append(CXXFLAGS = ['--coverage'])
     libEnv.AppendUnique(LIBS = 'gcov')
     Clean(libTarget, Glob(libEnv.buildDir('*.gcno')) + Glob(libEnv.buildDir('*.gcda')))
 
@@ -174,9 +193,9 @@ testEnv.Append(LIBTARGET = libTarget)
 testEnv.Ignore(testTarget, testEnv['LIBTARGET'])
 testEnv.AddPreAction(testTarget, libExistance)
 
-includeDir = os.path.join(GetOption('prefix'), 'include')
+includeDir = os.path.join(env['PREFIX'], 'include')
 headerTargetDir = os.path.join(includeDir, NAME)
-libDir = os.path.join(GetOption('prefix'), 'lib')
+libDir = os.path.join(env['PREFIX'], 'lib')
 libPath = os.path.join(libDir, LIBNAME + Environment().subst('$SHLIBSUFFIX'))
 
 installLib = libEnv.InstallAs(libPath, libTarget)
@@ -184,7 +203,7 @@ installHeader = libEnv.Install(headerTargetDir, [publicHeaderList(), libHeader])
 
 for target in installHeader:
     libEnv.AddPostAction(target, Chmod('$TARGET', 0644))
-for target in [GetOption('prefix'), headerTargetDir, libDir, includeDir, installLib]:
+for target in [env['PREFIX'], headerTargetDir, libDir, includeDir, installLib]:
     libEnv.AddPostAction(target, Chmod('$TARGET', 0755))
 
 uninstall = libEnv.Command('uninstall', None, Delete(FindInstalledFiles()))
@@ -197,20 +216,12 @@ Alias('test', testTarget)
 Alias('install', [installHeader, installLib])
 
 Help("""
-Build targets control:\n
+Build targets:\n
     [none]           shared library and unit tests
-    'lib'            shared library
+    'lib'            shared library only
     'test'           unit tests only
     'install'        install library and headers
     'uninstall'      deinstall library and headers
 
-Local options:\n
-    --release        select default release compiler flags, strip debug helpers
-    --no-coverage    don't add test coverage flags (only with default flags)
-    --prefix=dir     installation location (default %s)
-    --builddir=dir   build directory (default %s)
-
-Compiler and compiler flags:\n
-    Environment variables CC, CXX, CFLAGS and CXXFLAGS are taken into account.
-    In their absence, defaults are provided (debug or release).
-""" % (DEFAULT_PREFIX, DEFAULT_BUILDDIR), append = False)
+Build options, possibly set in %s, or by environment (compiler and their flags):
+%s""" % (CONFIG_FILE, variables.GenerateHelpText(env)), append = False)
