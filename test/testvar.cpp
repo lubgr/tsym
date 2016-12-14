@@ -73,9 +73,11 @@ TEST(Var, constructPositiveSymbol)
     CHECK(!a.isPositive());
 }
 
-TEST(Var, numberType)
+TEST(Var, numberTypes)
 {
-    CHECK_EQUAL("Numeric", one.type());
+    CHECK_EQUAL("Integer", one.type());
+    CHECK_EQUAL("Double", Var(1.23456789).type());
+    CHECK_EQUAL("Fraction", Var(3, 5).type());
 }
 
 TEST(Var, numberRequest)

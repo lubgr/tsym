@@ -44,11 +44,13 @@ namespace tsym {
             bool isZero() const;
             bool isPositive() const;
             bool isNegative() const;
+
             bool isNumericallyEvaluable() const;
             Number numericEval() const;
-            /* Returns "Symbol", "Numeric", "Constant", "Undefined", "Function", "Sum", "Product" or
-             * "Power": */
+            /* Returns "Symbol", "Integer", "Fraction", "Double", "Constant", "Undefined",
+             * "Function", "Sum", "Product" or "Power": */
             std::string type() const;
+
             /* Returns names for Symbols, Functions and Constants, an empty string otherwise: */
             const std::string& name() const;
             /* Return the sub-/superscript of a Symbol or an empty string: */
@@ -59,6 +61,7 @@ namespace tsym {
             const BasePtr& getBasePtr() const;
 
         private:
+            std::string numericType() const;
             void collectSymbols(const BasePtr& ptr, std::vector<Var>& symbols) const;
             void insertSymbolIfNotPresent(const BasePtr& symbol, std::vector<Var>& symbols) const;
 

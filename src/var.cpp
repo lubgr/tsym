@@ -195,7 +195,26 @@ tsym::Number tsym::Var::numericEval() const
 
 std::string tsym::Var::type() const
 {
-    return basePtr->typeStr();
+    if ((*rep)->isNumeric())
+        return numericType();
+    else
+        return (*rep)->typeStr();
+}
+
+std::string tsym::Var::numericType() const
+{
+    const Number number((*rep)->numericEval());
+
+    if (number.isInt())
+        return "Integer";
+    else if (number.isDouble())
+        return "Double";
+    else if (number.isFrac())
+        return "Fraction";
+
+    logging::error() << "Illegal number " << number << " in Var!";
+
+    return "Undefined";
 }
 
 const std::string& tsym::Var::name() const
