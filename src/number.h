@@ -2,7 +2,6 @@
 #define TSYM_NUMBER_H
 
 #include "int.h"
-#include "config.h"
 
 namespace tsym {
     class Number {

@@ -12,15 +12,14 @@
 #include "logarithm.h"
 #include "sum.h"
 #include "logging.h"
-#include "config.h"
 
 bool tsym::Printer::convertToFrac = true;
 
 bool tsym::Printer::withUtf8 =
-#ifdef TSYM_WITH_UTF8
-true;
-#else
+#ifdef TSYM_WITHOUT_UTF8
 false;
+#else
+true;
 #endif
 
 tsym::Printer::Printer()

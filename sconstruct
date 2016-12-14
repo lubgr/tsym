@@ -10,8 +10,7 @@ LIBNAME = 'lib%s' % NAME
 DEFAULT_PREFIX = '/usr/local'
 DEFAULT_BUILDDIR = './build'
 TEST_EXEC = 'runtests'
-PUBLIC_HEADER = ['baseptr', 'globals', 'int', 'matrix', 'number', 'solver', 'stringtovar', 'var',
-        'vector', 'config', 'buildinfo']
+PUBLIC_HEADER = ['globals', 'matrix', 'solver', 'stringtovar', 'var', 'vector', 'buildinfo']
 CONFIG_FILE = 'config.py'
 
 def publicHeaderList():
@@ -36,19 +35,6 @@ def writeLibHeader(target, source, env):
 
         for header in publicHeaderList():
             fp.write('#include "%s"\n' % os.path.basename(header))
-
-        includeGuard(fp)
-
-def writeConfigHeader(target, source, env):
-    filename = str(target[0])
-
-    with open(filename, 'w') as fp:
-        includeGuard(fp, filename)
-
-        if env['DEBUG']:
-            fp.write('#define %s_%s\n' % (NAME.upper(), 'DEBUG_STRINGS'))
-        if env['UTF8']:
-            fp.write('#define %s_%s\n' % (NAME.upper(), 'WITH_UTF8'))
 
         includeGuard(fp)
 
@@ -129,6 +115,11 @@ env.AddMethod(buildDir)
 
 if env['RELEASE']:
     env.Append(CPPDEFINES = 'NDEBUG')
+else:
+    env.Append(CPPDEFINES = [NAME.upper() + '_DEBUG_STRINGS'])
+
+if not env['UTF8']:
+    env.Append(CPPDEFINES = [NAME.upper() + '_WITHOUT_UTF8'])
 
 if not env['CFLAGS']:
     env.Append(CFLAGS = ['-pedantic', '-Wall', '-Wextra', '-Wno-sign-compare', '-Wno-unused-label',
@@ -152,7 +143,6 @@ libEnv.Replace(BUILDDIR = env.buildDir('src'))
 testEnv.Replace(BUILDDIR = env.buildDir('test'))
 
 libEnv.Append(BUILDERS = {
-    'ConfigHeader': Builder(action = writeConfigHeader),
     'BuildInfo': Builder(action = writeBuildInfoHeader),
     'LibHeader': Builder(action = writeLibHeader)
     })
@@ -161,7 +151,6 @@ libEnv.VariantDir(libEnv.buildDir(), 'src')
 libEnv.Append(CPPPATH = libEnv.buildDir())
 libEnv.Append(YACCFLAGS = '-d')
 
-configHeader = libEnv.ConfigHeader(libEnv.buildDir('config.h'), None)
 buildInfoHeader = libEnv.BuildInfo(libEnv.buildDir('buildinfo.h'), None)
 libHeader = libEnv.LibHeader(libEnv.buildDir('%s.h' % NAME), None)
 
@@ -210,7 +199,7 @@ uninstall = libEnv.Command('uninstall', None, Delete(FindInstalledFiles()))
 libEnv.AddPostAction(uninstall, Delete(headerTargetDir))
 
 Default([libTarget, testTarget, buildInfoHeader])
-AlwaysBuild([configHeader, buildInfoHeader])
+AlwaysBuild(buildInfoHeader)
 Alias('lib', [libTarget, buildInfoHeader])
 Alias('test', testTarget)
 Alias('install', [installHeader, installLib])

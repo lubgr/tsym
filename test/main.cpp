@@ -8,7 +8,6 @@
 #include "poly.h"
 #include "name.h"
 #include "abc.h"
-#include "config.h"
 #include "trlog/trlog.h"
 #include "CppUTest/CommandLineTestRunner.h"
 
