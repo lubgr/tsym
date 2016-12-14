@@ -706,7 +706,7 @@ TEST(Printer, vectorOfNumerics)
     Vector v(3);
 
     v(0) = 1;
-    v(1) = Number(2, 3);
+    v(1) = Var(2, 3);
     v(2) = -4;
 
     printer.set(v);
@@ -734,7 +734,7 @@ TEST(Printer, matrixOfMixedTypes)
     m(0, 1) = Var();
     m(0, 2) = Var("b");
     m(1, 0) = Var(2, 3)*Var("b");
-    m(1, 1) = Number(5, 8);
+    m(1, 1) = Var(5, 8);
     m(1, 2) = Var("c") + Var("d");
 
     printer.set(m);

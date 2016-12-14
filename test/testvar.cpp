@@ -270,7 +270,7 @@ TEST(Var, addSameSymbolAndNumbers)
 
 TEST(Var, addSameSymbolMultipledByFrac)
 {
-    CHECK_EQUAL(a, Number(1, 4)*a + Number(3, 4)*a);
+    CHECK_EQUAL(a, Var(1, 4)*a + Var(3, 4)*a);
 }
 
 TEST(Var, addSameSymbolMultipledByDoubleAndInt)
@@ -280,7 +280,7 @@ TEST(Var, addSameSymbolMultipledByDoubleAndInt)
 
 TEST(Var, productOfNumbersAndDifferentSymbols)
 {
-    CHECK_EQUAL(1.0581942857142859*a*b, 1.23456*a*b*Number(6, 7));
+    CHECK_EQUAL(1.0581942857142859*a*b, 1.23456*a*b*Var(6, 7));
 }
 
 TEST(Var, collectMultipleSymbolsInSum)
@@ -308,7 +308,7 @@ TEST(Var, divisionToPower)
 
 TEST(Var, divisionToFrac)
 {
-    CHECK_EQUAL(Number(1, 3)*a*b, a*b/3);
+    CHECK_EQUAL(Var(1, 3)*a*b, a*b/3);
 }
 
 TEST(Var, productDividedByNumber)
@@ -324,14 +324,14 @@ TEST(Var, multiplicationOfExpPosSymbol)
 
     pow = pow.toThe(2);
     pow = pow.toThe(5);
-    pow = pow.toThe(Number(1, 3));
+    pow = pow.toThe(Var(1, 3));
 
     CHECK_EQUAL(expected, pow);
 }
 
 TEST(Var, noMultiplicationOfExpUnclearSymbol)
 {
-    Var res(pow(a, Number(1, 3)));
+    Var res(pow(a, Var(1, 3)));
 
     res = res.toThe(3);
 
@@ -340,10 +340,10 @@ TEST(Var, noMultiplicationOfExpUnclearSymbol)
 
 TEST(Var, multiplicationOfExpUnclearSymbol)
 {
-    const Var expected(pow(a, Number(-2, 3)));
+    const Var expected(pow(a, Var(-2, 3)));
     Var pow(1/a);
 
-    pow = pow.toThe(Number(2, 3));
+    pow = pow.toThe(Var(2, 3));
 
     CHECK_EQUAL(expected, pow);
 }
@@ -561,10 +561,10 @@ TEST(Var, numericPowerSimplification)
     /* (9/11)^(-12/23)*2^(-12/23)*(1/7)^(12/23) = (126/11)^(-12/23). */
 {
     const Var exp(12, 23);
-    const Var expected(pow(Number(126, 11), -exp));
+    const Var expected(pow(Var(126, 11), -exp));
     Var res;
 
-    res = pow(Number(9, 11), -exp)*pow(2, -exp)*pow(Number(1, 7), exp);
+    res = pow(Var(9, 11), -exp)*pow(2, -exp)*pow(Var(1, 7), exp);
 
     CHECK_EQUAL(expected, res);
 }
@@ -605,7 +605,7 @@ TEST(Var, orderingOfLargeProductOfConstants)
     /* 5*(2/9)*sqrt(3)*2^(1/5)*sqrt(17)*(10/11)*sqrt(2)*sqrt(7)*4^(1/5)*17^(2/3)*(1/4)*sqrt(7) =
      * 25/33*2^(3/5)*17^(2/3)*sqrt(1666/3). */
 {
-    const Var expected(Number(25, 33)*pow(2, Var(3, 5))*pow(17, Var(2, 3))*sqrt(Var(1666, 3)));
+    const Var expected(Var(25, 33)*pow(2, Var(3, 5))*pow(17, Var(2, 3))*sqrt(Var(1666, 3)));
     Var res;
 
     res = 5*Var(2, 9)*sqrt(3)*pow(2, Var(1, 5))*sqrt(17)*Var(10, 11)
@@ -719,10 +719,10 @@ TEST(Var, largerSumWithEqualNonConstTerms)
 TEST(Var, sumWithNumericAndNumPowProducts)
     /* 2*sqrt(2)*a - 3/5*sqrt(2)*a = 7/5*sqrt(2)*a. */
 {
-    const Var expected(Number(7, 5)*sqrtTwo*a);
+    const Var expected(Var(7, 5)*sqrtTwo*a);
     Var res;
 
-    res = 2*sqrtTwo*a - Number(3, 5)*sqrtTwo*a;
+    res = 2*sqrtTwo*a - Var(3, 5)*sqrtTwo*a;
 
     CHECK_EQUAL(expected, res);
 }
@@ -806,17 +806,17 @@ TEST(Var, largeMixedTerm02)
 TEST(Var, largeMixedTerm03)
     /* (c*a*b*(d + e)^(d + e))/(a*e*d*(e + d))*14/15 = 14/15*(b*c)/(d*e)*(d + e)^(-1 + d + e). */
 {
-    const Var expected(Number(14, 15)*b*c*pow(d, -1)*pow(e, -1)*pow(d + e, -1 + d + e));
+    const Var expected(Var(14, 15)*b*c*pow(d, -1)*pow(e, -1)*pow(d + e, -1 + d + e));
     Var res;
 
-    res = (c*a*b*pow(d + e, d + e))/(a*e*d*(e + d))*Number(14, 15);
+    res = (c*a*b*pow(d + e, d + e))/(a*e*d*(e + d))*Var(14, 15);
 
     CHECK_EQUAL(expected, res);
 }
 
 TEST(Var, largeMixedTerm04)
 {
-    const Var expected((10 + sqrtTwo)*a + 100*pow(a, 2) + (3 + sqrtTwo)*b + 2*c + Number(13, 9)*d);
+    const Var expected((10 + sqrtTwo)*a + 100*pow(a, 2) + (3 + sqrtTwo)*b + 2*c + Var(13, 9)*d);
     Var res;
 
     res = (a + 2*b + 2*c) + (9*a + b + d) + sqrt(2)*(a + b) + 4*d/9 + 100*a*a;
@@ -848,7 +848,7 @@ TEST(Var, acosOfCosOfThreePiFourth)
 
 TEST(Var, atan2OfResolvableArgs)
 {
-    const Var res(atan2(Number(-123, 28), Number(-123, 28)));
+    const Var res(atan2(Var(-123, 28), Var(-123, 28)));
 
     CHECK_EQUAL(225*Pi/180, res);
 }

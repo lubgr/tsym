@@ -10,7 +10,7 @@ const tsym::Var tsym::e(tsym::Constant::createE());
 
 tsym::Var tsym::sqrt(const Var& base)
 {
-    const Number half(1, 2);
+    const Var half(1, 2);
 
     return pow(base, half);
 }

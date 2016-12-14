@@ -28,11 +28,6 @@ tsym::Var::Var(int numerator, int denominator) :
     rep(new BasePtr(Numeric::create(numerator, denominator)))
 {}
 
-tsym::Var::Var(const Number& number) :
-    /* An undefined number is again checked inside of the Numeric::create method. */
-    rep(new BasePtr(Numeric::create(number)))
-{}
-
 tsym::Var::Var(const char *name, Var::Sign sign, const char *subscript,
         const char *superscript)
 {

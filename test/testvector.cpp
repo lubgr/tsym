@@ -85,12 +85,12 @@ TEST(Vector, assignAndRetainValues)
 
     vec(0) = a;
     vec(1) = 2*b;
-    vec(2) = Number(1, 2)*c;
+    vec(2) = Var(1, 2)*c;
 
     CHECK(!vec.isZero());
     CHECK_EQUAL(a, vec(0));
     CHECK_EQUAL(2*b, vec(1));
-    CHECK_EQUAL(Number(1, 2)*c, vec(2));
+    CHECK_EQUAL(Var(1, 2)*c, vec(2));
 }
 
 TEST(Vector, valueOutOfRangeZeroSize)

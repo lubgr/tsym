@@ -5,10 +5,7 @@
 #include <utility>
 #include <string>
 
-namespace tsym {
-    class BasePtr;
-    class Number;
-}
+namespace tsym { class BasePtr; }
 
 namespace tsym {
     class Var {
@@ -19,7 +16,6 @@ namespace tsym {
             Var(int value);
             Var(double value);
             Var(int numerator, int denominator);
-            Var(const Number& number);
             explicit Var(const char *name, Sign sign = UNKNOWN, const char *subscript = "",
                     const char *superscript = "");
             explicit Var(const BasePtr& ptr);

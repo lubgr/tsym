@@ -10,13 +10,13 @@ TEST_GROUP(Functions)
 {
     Var a;
     Var b;
-    Number half;
+    Var half;
 
     void setup()
     {
         a = Var("a");
         b = Var("b");
-        half = Number(1, 2);
+        half = Var(1, 2);
     }
 };
 
@@ -70,7 +70,7 @@ TEST(Functions, powerWithNumericExp)
 
     res = pow(a, Var(1, 4));
 
-    expected = expected.toThe(Number(1, 4));
+    expected = expected.toThe(Var(1, 4));
 
     CHECK_EQUAL(expected, res);
 }
@@ -185,7 +185,7 @@ TEST(Functions, asinHalf)
 {
     Var res;
 
-    res = asin(Number(1, 2));
+    res = asin(half);
 
     CHECK_EQUAL(Pi/6, res);
 }
