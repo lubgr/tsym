@@ -2,17 +2,13 @@
 #define TSYM_FUNCTIONS_H
 
 #include "var.h"
+#include "vector.h"
+#include "matrix.h"
 
 namespace tsym {
-    /* Functions and constants being so central, that they are allowed to pollute the global
-     * namespace; namely trigonometric and power functions.
-     *
-     * The distinction between Sqrt/Pow functions for Var arguments/return values and their Number
-     * counterparts is meaningful due to the different handling of Number-only powers, as they are
-     * always numerically evaluated (in contrast to Var powers). Numeric power functions can be
-     * found as static methods of the Number class. An example is Number::Sqrt(2) = 1.41421...,
-     * while Sqrt(2) will deliver 2^(1/2) without numeric evaluation. The latter will be the desired
-     * kind evaluation in most situations. */
+    /* Functions and constants central, that they are allowed to pollute the global tsym namespace,
+     * i.e., common mathematical functions and constants, the interface for parsing expressions and
+     * a shortcut function for the solution of linear systems of equations. */
     Var sqrt(const Var& base);
     Var pow(const Var& base, const Var& exp);
 
@@ -25,6 +21,8 @@ namespace tsym {
     Var acos(const Var& arg);
     Var atan(const Var& arg);
     Var atan2(const Var& y, const Var& x);
+
+    bool solve(const Matrix& A, const Vector& b, Vector& x);
 
     bool stringToVar(const std::string& toBeParsed, Var& result);
 

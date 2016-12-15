@@ -574,8 +574,7 @@ TEST(Matrix, dependentLinearEqSetDim4)
     x = A.solve(rhs);
     enableLog();
 
-    CHECK_EQUAL(4, x.size());
-    CHECK(x.isZero());
+    CHECK_EQUAL(0, x.size());
 }
 
 TEST(Matrix, illegalLinearEqSetNonSquareMatrix)

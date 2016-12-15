@@ -62,6 +62,15 @@ tsym::Var tsym::atan2(const Var& y, const Var& x)
     return Var(Trigonometric::createAtan2(y.getBasePtr(), x.getBasePtr()));
 }
 
+bool tsym::solve(const Matrix& A, const Vector& b, Vector& x)
+{
+    /* Sanity checks for square matrix and matching, non-zero dimensions are performed in Matrix, no
+     * need to duplicate them here. */
+    x = A.solve(b);
+
+    return x.size() > 0;
+}
+
 bool tsym::stringToVar(const std::string& toBeParsed, Var& result)
 {
     std::vector<std::string>::const_iterator it;

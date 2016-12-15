@@ -251,13 +251,14 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
     PLU.compPartialPivots(&b);
     PLU.factorizeLU();
 
-    if (PLU.detFromLU().isZero())
-        logging::warning() << "System of eqn. with singular coeff. matrix! Return zero solution.";
-    else
+    if (PLU.detFromLU().isZero()) {
+        logging::warning() << "Can't solve system of equations with singular coefficient matrix!";
+        x = Vector();
+    } else {
         PLU.compXFromLU(x, b);
-
-    logging::info() << "Solved " << nRow << "-dim. system of equations in " <<
-        difftime(time(NULL), start) << " s.";
+        logging::info() << "Solved " << nRow << "-dim. system of equations in " <<
+            difftime(time(NULL), start) << " s.";
+    }
 
     return x;
 }

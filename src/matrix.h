@@ -6,7 +6,7 @@
 
 namespace tsym {
     class Matrix {
-        /* Wrapper class around memory management, that implements common matrix operations. */
+        /* Simple wrapper class around plain pointers, with some common matrix operations. */
         public:
             Matrix();
             Matrix(size_t nRow, size_t nCol);

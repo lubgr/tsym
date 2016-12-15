@@ -10,7 +10,7 @@ LIBNAME = 'lib%s' % NAME
 DEFAULT_PREFIX = '/usr/local'
 DEFAULT_BUILDDIR = './build'
 TEST_EXEC = 'runtests'
-PUBLIC_HEADER = ['globals', 'matrix', 'solver', 'var', 'vector', 'buildinfo']
+PUBLIC_HEADER = ['globals', 'matrix', 'var', 'vector', 'buildinfo']
 CONFIG_FILE = 'config.py'
 
 def publicHeaderList():
