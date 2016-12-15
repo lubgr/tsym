@@ -56,7 +56,7 @@ TEST_##testGroup##_##testName##_TestShell TEST_##testGroup##_##testName##_TestSh
 class TEST_##testGroup##_##testName##_Test : public TEST_GROUP_##CppUTestGroup##testGroup \
 { public: TEST_##testGroup##_##testName##_Test () : TEST_GROUP_##CppUTestGroup##testGroup () \
 { trlog::info("CppUTest") \
-    << "(" CPPUTEST_QUOTE(testGroup) << ") " << CPPUTEST_QUOTE(testName) << ":";}\
+    << "(" CPPUTEST_QUOTE(testGroup) << ") " << CPPUTEST_QUOTE(testName);}\
 void testBody(); }; \
 class TEST_##testGroup##_##testName##_TestShell : public UtestShell \
 { virtual Utest* createTest() _override { return new TEST_##testGroup##_##testName##_Test; } } \

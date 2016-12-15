@@ -18,10 +18,12 @@ bool operator != (const BasePtr& lhs, const BasePtr& rhs)
 
 void disableLog()
 {
+    trlog::info() << "Following warnings/errors are probably an intended part of testing";
     trlog::appendToCerr(trlog::FATAL, trlog::PRINT_LEVEL);
 }
 
 void enableLog()
 {
     trlog::appendToCerr(trlog::WARNING, trlog::PRINT_LEVEL);
+    trlog::info() << "Warnings/errors aren't intended from now on!";
 }

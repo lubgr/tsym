@@ -21,8 +21,9 @@ namespace tsym {
 
             if (success && tmp.getBasePtr()->isSymbol())
                 return tmp.getBasePtr()->name();
-            else if (success)
-                logging::error() << "Parsing a symbol from " << origName << " failed";
+
+            logging::error() << "Parsing a symbol from '" << origName << "' failed, result: "
+                << tmp << " (" << tmp.type() << "). Use '" << origName << "' as a symbol name";
 
             return Name(origName);
         }
