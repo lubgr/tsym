@@ -6,6 +6,9 @@
 namespace tsym {
     class Name {
         public:
+            /* A Name object with super- and subscript. The given string may be empty (this is what
+             * the default constructor does), because it can be queried for
+             * non-Symbol/-Function/-Constant types. */
             Name();
             explicit Name(const std::string& name);
             Name(const std::string& name, const std::string& subscript);
@@ -17,6 +20,7 @@ namespace tsym {
             const std::string& getSuperscript() const;
 
             const std::string& plain() const;
+            std::string unicode() const;
             std::string tex() const;
 
             bool equal(const Name& rhs) const;
@@ -24,6 +28,9 @@ namespace tsym {
 
         private:
             bool isGreekLetter() const;
+            size_t greekAlphabetIndex() const;
+            std::string unicodeForGreekLetter() const;
+            bool startsWithCapitalLetter() const;
             std::string getGreekTexLetter() const;
             std::string texAppendix(const std::string& term, const std::string& connection) const;
 

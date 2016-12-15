@@ -6,6 +6,15 @@ using namespace tsym;
 
 TEST_GROUP(Name) {};
 
+TEST(Name, emptyName)
+{
+    const Name empty("");
+
+    CHECK(empty.plain().empty());
+    CHECK(empty.unicode().empty());
+    CHECK(empty.tex().empty());
+}
+
 TEST(Name, simpleString)
 {
     const std::string varName("abc");

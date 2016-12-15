@@ -99,11 +99,15 @@ TEST(Printer, operatorWithNumber)
 
 TEST(Printer, pi)
 {
-    const std::string expected("pi");
+    printer.set(Constant::createPi());
+
+    CHECK_EQUAL("\u03c0", printer.getStr());
+
+    Printer::disableUtf8();
 
     printer.set(Constant::createPi());
 
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("pi", printer.getStr());
 }
 
 TEST(Printer, e)
@@ -180,6 +184,44 @@ TEST(Printer, positiveSymbolUtf8Disabled)
     CHECK_EQUAL("a", printer.getStr());
 }
 
+TEST(Printer, symbolGreekLetterWithAndWithoutUtf8)
+{
+    const BasePtr omega = Symbol::create("omega");
+
+    printer.set(omega);
+
+    CHECK_EQUAL("\u03C9", printer.getStr());
+
+    printer.disableUtf8();
+
+    printer.set(omega);
+
+    CHECK_EQUAL("omega", printer.getStr());
+}
+
+TEST(Printer, capitalOmega)
+{
+    const BasePtr omega = Symbol::create("Omega");
+
+    printer.set(omega);
+
+    CHECK_EQUAL("\u03a9", printer.getStr());
+}
+
+TEST(Printer, alpha)
+{
+    const BasePtr alpha = Symbol::create("alpha");
+    const BasePtr capitalAlpha = Symbol::create("Alpha");
+
+    printer.set(alpha);
+
+    CHECK_EQUAL("\u03B1", printer.getStr());
+
+    printer.set(capitalAlpha);
+
+    CHECK_EQUAL("\u0391", printer.getStr());
+}
+
 TEST(Printer, symbolAsVar)
 {
     const std::string expected("a");
@@ -192,7 +234,7 @@ TEST(Printer, symbolAsVar)
 
 TEST(Printer, sumWithConstantPi)
 {
-    const std::string expected("2 + pi + a + b");
+    const std::string expected("2 + \u03c0 + a + b");
     const BasePtr sum = Sum::create(two, a, b, Constant::createPi());
 
     printer.set(sum);
@@ -276,7 +318,7 @@ TEST(Printer, powerOfProductAndMinusOne)
 
 TEST(Printer, powerOfPowerOfPowerOfPower)
 {
-    const std::string expected("(((a^b)^c)^(-1/4*pi))^d");
+    const std::string expected("(((a^b)^c)^(-1/4*\u03c0))^d");
     const BasePtr pow1 = Power::create(a, b);
     const BasePtr pow2 = Power::create(pow1, c);
     const BasePtr pow3 = Power::create(pow2, Product::create(Numeric::create(-1, 4),
@@ -376,7 +418,7 @@ TEST(Printer, powerOfFraction)
 
 TEST(Printer, powerWithPiBase)
 {
-    const std::string expected("pi^(a + b)");
+    const std::string expected("\u03c0^(a + b)");
     const BasePtr pi = Constant::createPi();
     const BasePtr pow = Power::create(pi, Sum::create(a, b));
 
@@ -387,7 +429,7 @@ TEST(Printer, powerWithPiBase)
 
 TEST(Printer, powerWithPiExp)
 {
-    const std::string expected("(a + b)^pi");
+    const std::string expected("(a + b)^\u03c0");
     const BasePtr pi = Constant::createPi();
     const BasePtr pow = Power::create(Sum::create(a, b), pi);
 
@@ -541,7 +583,7 @@ TEST(Printer, negProductNonTrivialFactor)
 
 TEST(Printer, productWithConstantPi)
 {
-    const std::string expected("-2*pi*a*b");
+    const std::string expected("-2*\u03c0*a*b");
     BasePtrList fac;
     BasePtr product;
 

@@ -51,6 +51,57 @@ const std::string& tsym::Name::plain() const
     return plainText;
 }
 
+std::string tsym::Name::unicode() const
+{
+    if (!isGreekLetter())
+        return plain();
+    else
+        return unicodeForGreekLetter();
+}
+
+bool tsym::Name::isGreekLetter() const
+{
+    if (name.length() <= 1)
+        return false;
+    else
+        return greekAlphabetIndex() != (size_t) -1;
+}
+
+size_t tsym::Name::greekAlphabetIndex() const
+{
+    static const std::string alphabet[] = { "alpha", "beta", "gamma", "delta", "epsilon", "zeta",
+        "eta", "theta", "iota", "kappa", "lambda", "my", "ny", "xi", "omikron", "pi", "rho",
+        "sigma", "tau", "ypsilon", "phi", "chi", "psi", "omega" };
+    static const size_t nLetters = sizeof(alphabet)/sizeof(alphabet[0]);
+
+    for (size_t i = 0; i < nLetters; ++i)
+        if (name.substr(1).compare(alphabet[i].substr(1)) != 0)
+            continue;
+        else if (alphabet[i][0] == name[0] || alphabet[i][0] == (char)tolower(name[0]))
+            return i;
+
+    return (size_t) -1;
+}
+
+std::string tsym::Name::unicodeForGreekLetter() const
+{
+    const size_t index = greekAlphabetIndex();
+    const size_t shift = startsWithCapitalLetter() ? 0 : 24;
+    static const std::string alphabet[] = { "\u0391", "\u0392", "\u0393", "\u0394", "\u0395",
+        "\u0396", "\u0397", "\u0398", "\u0399", "\u039a", "\u039b", "\u039c", "\u039d", "\u039e",
+        "\u039f", "\u03a0", "\u03a1", "\u03a3", "\u03a4", "\u03a5", "\u03a6", "\u03a7", "\u03a8",
+        "\u03a9", "\u03b1", "\u03b2", "\u03b3", "\u03b4", "\u03b5", "\u03b6", "\u03b7", "\u03b8",
+        "\u03b9", "\u03ba", "\u03bb", "\u03bc", "\u03bd", "\u03be", "\u03bf", "\u03c0", "\u03c1",
+        "\u03c3", "\u03c4", "\u03c5", "\u03c6", "\u03c7", "\u03c8", "\u03c9" };
+
+    return alphabet[shift + index];
+}
+
+bool tsym::Name::startsWithCapitalLetter() const
+{
+    return (char)tolower(name[0]) != name[0];
+}
+
 std::string tsym::Name::tex() const
 {
     std::string result = isGreekLetter() ? getGreekTexLetter() : name;
@@ -59,25 +110,6 @@ std::string tsym::Name::tex() const
     result.append(texAppendix(superscript, "^"));
 
     return result;
-}
-
-bool tsym::Name::isGreekLetter() const
-{
-    static const std::string alphabet[] = { "alpha", "beta", "gamma", "delta", "epsilon", "zeta",
-        "eta", "theta", "iota", "kappa", "lambda", "my", "ny", "xi", "omikron", "pi", "rho",
-        "sigma", "tau", "ypsilon", "phi", "chi", "psi", "omega" };
-    static const size_t nLetters = sizeof(alphabet)/sizeof(alphabet[0]);
-
-    if (name.length() <= 1)
-        return false;
-
-    for (size_t i = 0; i < nLetters; ++i)
-        if (name.substr(1).compare(alphabet[i].substr(1)) != 0)
-            continue;
-        else if (alphabet[i][0] == name[0] || alphabet[i][0] == (char)tolower(name[0]))
-            return true;
-
-    return false;
 }
 
 std::string tsym::Name::getGreekTexLetter() const

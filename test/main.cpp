@@ -39,6 +39,8 @@ void initConstructOnFirstUse()
     emptyVec(1);
 }
 
+#include <cstdio>
+
 int main(int argc, char** argv)
 {
     initConstructOnFirstUse();

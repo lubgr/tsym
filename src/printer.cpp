@@ -109,7 +109,7 @@ void tsym::Printer::print(const BasePtr& ptr)
     else if (ptr->isFunction())
         printFunction(ptr);
     else if (ptr->isConstant())
-        printConstant(ptr);
+        printName(ptr);
     else if (ptr->isUndefined())
         stream << "Undefined";
     else
@@ -118,10 +118,18 @@ void tsym::Printer::print(const BasePtr& ptr)
 
 void tsym::Printer::printSymbol(const BasePtr& ptr)
 {
-    stream << ptr->name().plain();
+    printName(ptr);
 
     if (ptr->isPositive() && withUtf8)
         stream << "\u208A";
+}
+
+void tsym::Printer::printName(const BasePtr& ptr)
+{
+    if (withUtf8)
+        stream << ptr->name().unicode();
+    else
+        stream << ptr->name().plain();
 }
 
 void tsym::Printer::printNumeric(const BasePtr& ptr)
@@ -404,7 +412,9 @@ void tsym::Printer::printFunction(const BasePtr& ptr)
     const BasePtrList& ops(ptr->operands());
     BasePtrList::const_iterator it;
 
-    stream << ptr->name().plain() << "(";
+    printName(ptr);
+
+    stream << "(";
 
     for (it = ops.begin(); it != ops.end(); ++it) {
         stream << *it;
@@ -414,11 +424,6 @@ void tsym::Printer::printFunction(const BasePtr& ptr)
     }
 
     stream << ")";
-}
-
-void tsym::Printer::printConstant(const BasePtr& ptr)
-{
-    stream << ptr->name();
 }
 
 void tsym::Printer::print(const Vector& vector)

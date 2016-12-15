@@ -54,6 +54,7 @@ namespace tsym {
             void clearStream();
             void print(const BasePtr& ptr);
             void printSymbol(const BasePtr& ptr);
+            void printName(const BasePtr& ptr);
             void printNumeric(const BasePtr& ptr);
             void printNumber(const Number& n);
             void printPower(const BasePtr& ptr);
@@ -75,7 +76,6 @@ namespace tsym {
             std::pair<BasePtrList, BasePtrList> getProductFrac(const BasePtrList& origFactors);
             void printProduct(const BasePtrList& factors);
             void printFunction(const BasePtr& ptr);
-            void printConstant(const BasePtr& ptr);
             void print(const Vector& vector);
             int getMaxCharacters(const Vector& vector) const;
             void print(const Matrix& matrix);
