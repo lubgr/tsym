@@ -6,6 +6,9 @@
 #include "var.h"
 #include "globals.h"
 #include "cpputest.h"
+#include "baseptr.h"
+#include "base.h"
+#include "name.h"
 
 using namespace tsym;
 
@@ -58,11 +61,55 @@ TEST(Var, symbolType)
     CHECK_EQUAL("a", a.name());
 }
 
-TEST(Var, subAndSuperScript)
+TEST(Var, simpleSubcriptParsing)
 {
-    const Var var("a", Var::UNKNOWN, "b", "c");
+    const Var var("a_b");
+    const Name name(var.getBasePtr()->name());
 
-    CHECK_EQUAL("a_b_c", var.name());
+    CHECK_EQUAL("a_b", var.name());
+    CHECK_EQUAL("a", name.getName());
+    CHECK_EQUAL("b", name.getSubscript());
+    CHECK_EQUAL("", name.getSuperscript());
+}
+
+TEST(Var, subscriptParsing)
+{
+    const Var var("abc_{10}");
+    const Name name(var.getBasePtr()->name());
+
+    CHECK_EQUAL("abc", name.getName());
+    CHECK_EQUAL("10", name.getSubscript());
+    CHECK(name.getSuperscript().empty());
+}
+
+TEST(Var, parsingError)
+{
+    disableLog();
+    const Var var("Pi*2");
+    enableLog();
+
+    CHECK_EQUAL("Symbol", var.type());
+    CHECK_EQUAL("Pi*2", var.name());
+}
+
+TEST(Var, illegalCharacter)
+{
+    disableLog();
+    const Var illegal("Ä");
+    enableLog();
+
+    CHECK_EQUAL("Symbol", illegal.type());
+    CHECK_EQUAL("Ä", illegal.name());
+}
+
+TEST(Var, illegalSymbolName)
+{
+    disableLog();
+    const Var illegal("12345");
+    enableLog();
+
+    CHECK_EQUAL("Symbol", illegal.type());
+    CHECK_EQUAL("12345", illegal.name());
 }
 
 TEST(Var, constructPositiveSymbol)
@@ -899,7 +946,7 @@ TEST(Var, getNumAndDenomFromProduct)
 TEST(Var, negativeVar)
 {
     const Var aPos("a", Var::POSITIVE);
-    const Var bPos("b", Var::POSITIVE, "1");
+    const Var bPos("b", Var::POSITIVE);
     Var res;
 
     res = -aPos*bPos + 2 - 3*Pi;
@@ -910,8 +957,8 @@ TEST(Var, negativeVar)
 
 TEST(Var, comparisonPosAndNonPosSymbols)
 {
-    const Var aPos("a", Var::POSITIVE, "1", "2");
-    const Var aNonPos("a", Var::UNKNOWN, "1", "2");
+    const Var aPos("a_3", Var::POSITIVE);
+    const Var aNonPos("a_3");
 
     CHECK(aPos != aNonPos);
 }

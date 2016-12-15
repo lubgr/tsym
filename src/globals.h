@@ -26,6 +26,8 @@ namespace tsym {
     Var atan(const Var& arg);
     Var atan2(const Var& y, const Var& x);
 
+    bool stringToVar(const std::string& toBeParsed, Var& result);
+
     extern const Var Pi;
     extern const Var e;
 }

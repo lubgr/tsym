@@ -10,14 +10,18 @@ namespace tsym { class BasePtr; }
 namespace tsym {
     class Var {
         public:
-            enum Sign { UNKNOWN = 0, POSITIVE };
+            enum Sign { POSITIVE = 1 };
 
             Var();
             Var(int value);
             Var(double value);
             Var(int numerator, int denominator);
-            explicit Var(const char *name, Sign sign = UNKNOWN, const char *subscript = "",
-                    const char *superscript = "");
+            /* The next two constructors create symbols. Alphanumeric characters are valid, though
+             * the symbol name must not start with a digit. It can contain subscripts though: if
+             * it's only one character, a_1 is sufficient, for longer subscripts, use a_{10}. */
+            explicit Var(const char *name);
+            explicit Var(const char *name, Sign sign);
+            /* To be used only internally: */
             explicit Var(const BasePtr& ptr);
             Var(const Var& other);
             const Var& operator = (const Var& rhs);
@@ -38,7 +42,6 @@ namespace tsym {
             Var normal() const;
             /* The argument must be a Symbol: */
             Var diff(const Var& symbol) const;
-
             bool equal(const Var& other) const;
             bool has(const Var& other) const;
             bool isZero() const;

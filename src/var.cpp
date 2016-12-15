@@ -10,6 +10,24 @@
 #include "fraction.h"
 #include "symbolmap.h"
 #include "logging.h"
+#include "globals.h"
+
+namespace tsym {
+    namespace {
+        Name parseSymbolName(const char *origName)
+        {
+            Var tmp;
+            const bool success = stringToVar(origName, tmp);
+
+            if (success && tmp.getBasePtr()->isSymbol())
+                return tmp.getBasePtr()->name();
+            else if (success)
+                logging::error() << "Parsing a symbol from " << origName << " failed";
+
+            return Name(origName);
+        }
+    }
+}
 
 tsym::Var::Var() :
     rep(new BasePtr(Numeric::zero()))
@@ -28,15 +46,16 @@ tsym::Var::Var(int numerator, int denominator) :
     rep(new BasePtr(Numeric::create(numerator, denominator)))
 {}
 
-tsym::Var::Var(const char *name, Var::Sign sign, const char *subscript,
-        const char *superscript)
+tsym::Var::Var(const char *name)
 {
-    const Name symbolName(name, subscript, superscript);
+    rep = new BasePtr(Symbol::create(parseSymbolName(name)));
+}
 
-    if (sign == Var::POSITIVE)
-        rep = new BasePtr(Symbol::createPositive(symbolName));
-    else
-        rep = new BasePtr(Symbol::create(symbolName));
+tsym::Var::Var(const char *name, Var::Sign sign)
+{
+    assert(sign == Var::POSITIVE);
+
+    rep = new BasePtr(Symbol::createPositive(parseSymbolName(name)));
 }
 
 tsym::Var::Var(const BasePtr& ptr) :

@@ -209,3 +209,23 @@ TEST(Functions, atanMinusOneOverSqrtThree)
 
     CHECK_EQUAL(-Pi/6, res);
 }
+
+TEST(Functions, successfulParsing)
+{
+    const Var expected = a*b*tsym::sqrt(2)*tan(a);
+    Var result;
+    const bool success = stringToVar("a*b*sqrt(2)*tan(a)", result);
+
+    CHECK(success);
+    CHECK_EQUAL(expected, result);
+}
+
+TEST(Functions, parsingWithError)
+{
+    Var result;
+    disableLog();
+    const bool success = stringToVar("a*b*sqrt(2)*[[[tan(a)", result);
+    enableLog();
+
+    CHECK_FALSE(success);
+}

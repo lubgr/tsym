@@ -28,6 +28,14 @@ TEST_GROUP(StringToVar)
         d = Var("d");
     }
 
+    Var getSymbol(const char *name, const char *subscript = "", const char *superscript = "")
+    {
+        const Name symbolName(name, subscript, superscript);
+        const BasePtr symbol(Symbol::create(symbolName));
+
+        return Var(symbol);
+    }
+
     void checkSuccess(const Var& expected, const StringToVar& stv)
     {
         CHECK(stv.success());
@@ -134,7 +142,8 @@ TEST(StringToVar, symbolWithEmptySubscriptInBraces)
 
 TEST(StringToVar, symbolWithLongSubscriptWithoutBraces)
 {
-    const Var expected("aBc123", Var::UNKNOWN, "a");
+    const Var expected(getSymbol("aBc123", "a"));
+
     disableLog();
     const StringToVar stv("aBc123_abc");
     enableLog();
@@ -171,7 +180,7 @@ TEST(StringToVar, symbolWithUnrecognizedCharacterInSubscript)
 
 TEST(StringToVar, symbolWithSubscriptErrorInProduct)
 {
-    const Var expected("aBc123", Var::UNKNOWN, "a");
+    const Var expected(getSymbol("aBc123", "a"));
     disableLog();
     const StringToVar stv("aBc123_abc*3*sin(a)");
     enableLog();
@@ -181,7 +190,7 @@ TEST(StringToVar, symbolWithSubscriptErrorInProduct)
 
 TEST(StringToVar, symbolWithSubscriptErrorRecovery)
 {
-    const Var expected = a*Var("aBc123", Var::UNKNOWN, "a");
+    const Var expected = a*Var(getSymbol("aBc123", "a"));
     disableLog();
     const StringToVar stv("a*aBc123_abc*2");
     enableLog();

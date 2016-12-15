@@ -3,6 +3,8 @@
 #include "trigonometric.h"
 #include "logarithm.h"
 #include "constant.h"
+#include "stringtovar.h"
+#include "logging.h"
 
 const tsym::Var tsym::Pi(tsym::Constant::createPi());
 
@@ -58,4 +60,19 @@ tsym::Var tsym::atan(const Var& arg)
 tsym::Var tsym::atan2(const Var& y, const Var& x)
 {
     return Var(Trigonometric::createAtan2(y.getBasePtr(), x.getBasePtr()));
+}
+
+bool tsym::stringToVar(const std::string& toBeParsed, Var& result)
+{
+    std::vector<std::string>::const_iterator it;
+    const StringToVar stv(toBeParsed);
+
+    result = stv.get();
+
+    logging::info() << "Parsed \"" << toBeParsed << "\" with result: " << result;
+
+    for (it = stv.errorMessages().begin(); it != stv.errorMessages().end(); ++it)
+        logging::error() << *it;
+
+    return stv.success();
 }
