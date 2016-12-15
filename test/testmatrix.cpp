@@ -370,7 +370,10 @@ TEST(Matrix, matrixVectorProductDimensionCheck)
     const Vector result = lhs*rhs;
 
     CHECK_EQUAL(7, result.size());
-    CHECK(result.isZero());
+
+    for (size_t i = 0; i < 7; ++i) {
+        CHECK(result(i).isZero());
+    }
 }
 
 TEST(Matrix, multiplyMatrixAndVector)
@@ -422,7 +425,9 @@ TEST(Matrix, multiplyMatrixAndVectorWrongDimensions)
     enableLog();
 
     CHECK_EQUAL(3, res.size());
-    CHECK(res.isZero());
+    for (size_t i = 0; i < res.size(); ++i) {
+        CHECK(res(i).isZero());
+    }
 }
 
 TEST(Matrix, luDecompWithoutPivoting)

@@ -169,15 +169,6 @@ size_t tsym::Vector::size() const
     return dim;
 }
 
-bool tsym::Vector::isZero() const
-{
-    for (size_t i = 0; i < dim; i++)
-        if (!data[i].isZero())
-            return false;
-
-    return true;
-}
-
 bool tsym::Vector::equal(const Vector& other) const
 {
     if (dim != other.dim)

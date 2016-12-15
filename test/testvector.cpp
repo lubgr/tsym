@@ -40,7 +40,6 @@ TEST(Vector, emptyVector)
     const Vector vec;
 
     CHECK_EQUAL(0, vec.size());
-    CHECK(vec.isZero());
     CHECK(vec == Vector());
 }
 
@@ -49,7 +48,9 @@ TEST(Vector, initialState)
     const Vector vec(4);
 
     CHECK_EQUAL(4, vec.size());
-    CHECK(vec.isZero());
+    for (size_t i = 0; i < vec.size(); ++i) {
+        CHECK(vec(i).isZero());
+    }
 }
 
 TEST(Vector, simpleEquality)
@@ -87,7 +88,6 @@ TEST(Vector, assignAndRetainValues)
     vec(1) = 2*b;
     vec(2) = Var(1, 2)*c;
 
-    CHECK(!vec.isZero());
     CHECK_EQUAL(a, vec(0));
     CHECK_EQUAL(2*b, vec(1));
     CHECK_EQUAL(Var(1, 2)*c, vec(2));

@@ -21,6 +21,15 @@ namespace tsym {
 
             return nonConstZero;
         }
+
+        bool areAllItemsZero(const Vector& vec)
+        {
+            for (size_t i = 0; i < vec.size(); ++i)
+                if (!vec(i).isZero())
+                    return false;
+
+            return true;
+        }
     }
 }
 
@@ -302,7 +311,7 @@ void tsym::Matrix::compXFromLU(Vector& x, Vector& b) const
         for (size_t j = 0; j < i; ++j)
             b.data[i] -= data[i][j]*b.data[j];
 
-    assert(x.isZero());
+    assert(areAllItemsZero(x));
 
     for (size_t i = nRow - 1; i + 1 > 0; --i) {
         for (size_t j = i + 1; j < nCol; ++j) {

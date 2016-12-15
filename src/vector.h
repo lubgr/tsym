@@ -28,7 +28,6 @@ namespace tsym {
             Var dotProduct(const Vector& other) const;
 
             size_t size() const;
-            bool isZero() const;
             bool equal(const Vector& other) const;
 
             friend class Matrix;
