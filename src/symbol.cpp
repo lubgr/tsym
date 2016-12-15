@@ -18,7 +18,15 @@ tsym::BasePtr tsym::Symbol::create(const std::string& name)
 
 tsym::BasePtr tsym::Symbol::create(const Name& name)
 {
-    return BasePtr(new Symbol(name, false));
+    return create(name, false);
+}
+
+tsym::BasePtr tsym::Symbol::create(const Name& name, bool positive)
+{
+    if (name.getName().empty())
+        return Undefined::create();
+    else
+        return BasePtr(new Symbol(name, positive));
 }
 
 tsym::BasePtr tsym::Symbol::createPositive(const std::string& name)
@@ -28,7 +36,7 @@ tsym::BasePtr tsym::Symbol::createPositive(const std::string& name)
 
 tsym::BasePtr tsym::Symbol::createPositive(const Name& name)
 {
-    return BasePtr(new Symbol(name, true));
+    return create(name, true);
 }
 
 tsym::BasePtr tsym::Symbol::createTmpSymbol(bool positive)

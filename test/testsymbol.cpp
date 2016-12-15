@@ -29,3 +29,10 @@ TEST(Symbol, typeString)
 
     CHECK_EQUAL(expected, basePtr->typeStr());
 }
+
+TEST(Symbol, emptyName)
+{
+    const BasePtr undefined = Symbol::create("");
+
+    CHECK(undefined->isUndefined());
+}

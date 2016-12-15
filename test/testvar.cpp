@@ -61,6 +61,15 @@ TEST(Var, symbolType)
     CHECK_EQUAL("a", a.name());
 }
 
+TEST(Var, emptyStringCreation)
+{
+    disableLog();
+    const Var undefined("");
+    enableLog();
+
+    CHECK_EQUAL("Undefined", undefined.type());
+}
+
 TEST(Var, simpleSubcriptParsing)
 {
     const Var var("a_b");

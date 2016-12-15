@@ -34,6 +34,7 @@ namespace tsym {
             Symbol& operator = (const Symbol& other);
             ~Symbol();
 
+            static BasePtr create(const Name& name, bool positive);
             static Name getTmpName();
             bool isEqualOtherSymbol(const BasePtr& other) const;
 

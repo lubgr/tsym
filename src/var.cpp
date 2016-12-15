@@ -1,5 +1,6 @@
 
 #include <algorithm>
+#include <cstring>
 #include "var.h"
 #include "symbol.h"
 #include "numeric.h"
@@ -14,7 +15,7 @@
 
 namespace tsym {
     namespace {
-        Name parseSymbolName(const char *origName)
+        Name parseNonEmptySymbolName(const char *origName)
         {
             Var tmp;
             const bool success = stringToVar(origName, tmp);
@@ -26,6 +27,16 @@ namespace tsym {
                 << tmp << " (" << tmp.type() << "). Use '" << origName << "' as a symbol name";
 
             return Name(origName);
+        }
+
+        Name parseSymbolName(const char *origName)
+        {
+            if (strlen(origName) != 0)
+                return parseNonEmptySymbolName(origName);
+
+            logging::error() << "A symbol can't be instantiated with an empty string!";
+
+            return Name("");
         }
     }
 }
