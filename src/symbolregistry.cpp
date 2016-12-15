@@ -3,14 +3,18 @@
 #include <cassert>
 #include "symbol.h"
 #include "symbolregistry.h"
+#include "logging.h"
 
 namespace tsym {
     namespace {
-        std::map<Name, unsigned> *registry()
+        std::map<Name, unsigned> *registry(bool deleteIfEmpty = false)
         {
             static std::map<Name, unsigned> *symbols = NULL;
 
-            if (symbols == NULL)
+            if (symbols != NULL && symbols->empty() && deleteIfEmpty) {
+                delete symbols;
+                symbols = NULL;
+            } else if (symbols == NULL)
                 symbols = new std::map<Name, unsigned>();
 
             return symbols;
@@ -23,9 +27,10 @@ void tsym::SymbolRegistry::add(const BasePtr& symbol)
     std::map<Name, unsigned> *reg(registry());
     std::map<Name, unsigned>::iterator lookup(reg->find(symbol->name()));
 
-    if (lookup == reg->end())
+    if (lookup == reg->end()) {
         reg->insert(std::make_pair(symbol->name(), 1));
-    else
+        logging::info() << "Register new symbol: " << symbol->name();
+    } else
         ++lookup->second;
 }
 
@@ -36,11 +41,12 @@ void tsym::SymbolRegistry::remove(const BasePtr& symbol)
 
     assert(lookup != reg->end());
 
-    if (--lookup->second == 0)
+    if (--lookup->second == 0) {
+        logging::info() << "Deregister symbol: " << symbol->name();
         reg->erase(lookup);
+    }
 
-    if (reg->empty())
-        delete reg;
+    reg = registry(true);
 }
 
 unsigned tsym::SymbolRegistry::count(const Name& name)
