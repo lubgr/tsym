@@ -22,6 +22,7 @@ namespace tsym {
             return nonConstZero;
         }
 
+#ifndef NDEBUG
         bool areAllItemsZero(const Vector& vec)
         {
             for (size_t i = 0; i < vec.size(); ++i)
@@ -30,6 +31,7 @@ namespace tsym {
 
             return true;
         }
+#endif
     }
 }
 
