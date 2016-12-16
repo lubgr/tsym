@@ -2,7 +2,6 @@
 #define TSYM_VAR_H
 
 #include <vector>
-#include <utility>
 #include <string>
 
 namespace tsym { class BasePtr; }

@@ -1,7 +1,6 @@
 #ifndef TSYM_GCDSTRATEGY_H
 #define TSYM_GCDSTRATEGY_H
 
-#include "baseptr.h"
 #include "baseptrlist.h"
 #include "number.h"
 

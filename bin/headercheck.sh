@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 CC=g++
-CFLAGS="-pedantic -Wall -Wextra -Werror=conversion -I include -I src -I build"
+CFLAGS="-pedantic -Wall -Wextra -Werror=conversion -I src -I build/src"
 
-headers=`ls include/*.h src/*.h`
+headers=`ls src/*.h`
 
 if [ -z "$headers" ]; then
     echo "No header files found!"
@@ -26,7 +26,7 @@ echo "----------------------------------------------------"
 
 for header in $headers; do
     search=`echo $header | sed 's/.*\/\(.*\)\.h/\1\.cpp/'`
-    cppfile=`find . -iname "$search"`
+    cppfile=`find ./src -iname "$search"`
 
     if [ -z $cppfile ]; then
         continue

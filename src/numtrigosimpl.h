@@ -3,7 +3,6 @@
 
 #include <vector>
 #include "trigonometric.h"
-#include "number.h"
 
 namespace tsym {
     /* Simplification class for trigonometric functions with arguments, that can be evaluated to a

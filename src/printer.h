@@ -2,13 +2,9 @@
 #define TSYM_PRINTER_H
 
 #include <sstream>
-#include <vector>
 #include <typeinfo>
-#include "baseptr.h"
 #include "baseptrlist.h"
 #include "number.h"
-#include "var.h"
-#include "vector.h"
 #include "matrix.h"
 
 namespace tsym {

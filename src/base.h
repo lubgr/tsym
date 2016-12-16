@@ -1,7 +1,6 @@
 #ifndef TSYM_BASE_H
 #define TSYM_BASE_H
 
-#include <string>
 #include "number.h"
 #include "baseptrlist.h"
 #include "fraction.h"
