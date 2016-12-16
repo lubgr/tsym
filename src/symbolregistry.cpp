@@ -22,37 +22,37 @@ namespace tsym {
     }
 }
 
-void tsym::SymbolRegistry::add(const BasePtr& symbol)
+void tsym::SymbolRegistry::add(const Name& symbolName)
 {
     std::map<Name, unsigned> *reg(registry());
-    std::map<Name, unsigned>::iterator lookup(reg->find(symbol->name()));
+    std::map<Name, unsigned>::iterator lookup(reg->find(symbolName));
 
     if (lookup == reg->end()) {
-        reg->insert(std::make_pair(symbol->name(), 1));
-        logging::info() << "Register new symbol: " << symbol->name();
+        reg->insert(std::make_pair(symbolName, 1));
+        logging::info() << "Register new symbol: " << symbolName;
     } else
         ++lookup->second;
 }
 
-void tsym::SymbolRegistry::remove(const BasePtr& symbol)
+void tsym::SymbolRegistry::remove(const Name& symbolName)
 {
     std::map<Name, unsigned> *reg(registry());
-    std::map<Name, unsigned>::iterator lookup(reg->find(symbol->name()));
+    std::map<Name, unsigned>::iterator lookup(reg->find(symbolName));
 
     assert(lookup != reg->end());
 
     if (--lookup->second == 0) {
-        logging::info() << "Deregister symbol: " << symbol->name();
+        logging::info() << "Deregister symbol: " << symbolName;
         reg->erase(lookup);
     }
 
     reg = registry(true);
 }
 
-unsigned tsym::SymbolRegistry::count(const Name& name)
+unsigned tsym::SymbolRegistry::count(const Name& symbolName)
 {
     const std::map<Name, unsigned> *reg(registry());
-    const std::map<Name, unsigned>::const_iterator lookup(reg->find(name));
+    const std::map<Name, unsigned>::const_iterator lookup(reg->find(symbolName));
 
     if (lookup == reg->end())
         return 0;

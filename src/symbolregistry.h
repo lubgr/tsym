@@ -1,7 +1,6 @@
 #ifndef TSYM_SYMBOLREGISTRY_H
 #define TSYM_SYMBOLREGISTRY_H
 
-#include "baseptr.h"
 #include "name.h"
 
 namespace tsym {
@@ -14,8 +13,8 @@ namespace tsym {
         friend class BasePtr;
 
         private:
-            static void add(const BasePtr& symbol);
-            static void remove(const BasePtr& symbol);
+            static void add(const Name& symbolName);
+            static void remove(const Name& symbolName);
 
         public:
             static unsigned count(const Name& symbolName);

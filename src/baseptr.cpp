@@ -45,7 +45,7 @@ tsym::BasePtr::BasePtr(const Base *base) :
     #endif
 
     if (bp->isSymbol())
-        SymbolRegistry::add(*this);
+        SymbolRegistry::add(base->name());
 }
 
 tsym::BasePtr::BasePtr(const BasePtr& other) :
@@ -61,7 +61,7 @@ tsym::BasePtr::BasePtr(const BasePtr& other) :
     ++bp->refCount;
 
     if (bp->isSymbol())
-        SymbolRegistry::add(*this);
+        SymbolRegistry::add(bp->name());
 }
 
 const tsym::BasePtr& tsym::BasePtr::operator = (const BasePtr& other)
@@ -69,9 +69,9 @@ const tsym::BasePtr& tsym::BasePtr::operator = (const BasePtr& other)
     const Base* const old = bp;
 
     if (bp->isSymbol())
-        SymbolRegistry::remove(*this);
+        SymbolRegistry::remove(bp->name());
     if (other->isSymbol())
-        SymbolRegistry::add(other);
+        SymbolRegistry::add(other->name());
 
     bp = other.bp;
 
@@ -92,7 +92,7 @@ tsym::BasePtr::~BasePtr()
     --bp->refCount;
 
     if (bp->isSymbol())
-        SymbolRegistry::remove(*this);
+        SymbolRegistry::remove(bp->name());
 
     if (bp->refCount == 0)
         delete bp;
