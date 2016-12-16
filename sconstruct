@@ -39,7 +39,10 @@ def writeLibHeader(target, source, env):
         includeGuard(fp)
 
 def git(*args):
-    return subprocess.check_output(['git'] + list(args))
+    if os.path.isdir('.git'):
+        return subprocess.check_output(['git'] + list(args))
+    else:
+        return ''
 
 def getRepoInfo():
     branch = git('rev-parse', '--abbrev-ref', 'HEAD').strip()
@@ -53,11 +56,13 @@ def writeBuildInfoHeader(target, source, env):
     branch, commit, stable = getRepoInfo()
     timeStr = time.strftime("%H:%M, %a %b %d, %Y", time.localtime())
     filename = str(target[0])
+    info = []
 
-    info = [('COMMIT', commit), ('BRANCH', branch)]
+    if branch and commit:
+        info += [('COMMIT', commit), ('BRANCH', branch)]
 
-    if not stable:
-        info.append(('UNSTABLE', None))
+        if not stable:
+            info.append(('UNSTABLE', None))
 
     info += [('CPP_COMPILER', env['CXX'] + ' ' + env['CXXVERSION']),
             ('CPP_FLAGS', env['CCFLAGS'] + env['CXXFLAGS']),
