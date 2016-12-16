@@ -54,3 +54,35 @@ endfu
 
 command! LocalAV call AlternateImplVSplit()
 cabbrev av LocalAV
+
+function! GetTestCaseAndGroup()
+    let l:pattern = '^ *TEST *( *\([^ ]\+\) *, *\([^ ]\+\) *) *$'
+    let l:nLine = line('.')
+
+    while getline(l:nLine) !~ l:pattern
+        let l:nLine = l:nLine - 1
+        if l:nLine == 0
+            return ['', '']
+        endif
+    endwhile
+
+    let l:match = matchlist(getline(l:nLine), l:pattern)
+    return l:match[1:2]
+endfunction
+
+function! RunTestGroupCursorIsIn()
+    let l:group = GetTestCaseAndGroup()[0]
+    let l:cmd = '!runtests -c -sg ' . l:group
+    execute l:cmd
+endfunction
+
+function! RunTestCaseCursorIsIn()
+    let l:group = GetTestCaseAndGroup()[0]
+    let l:test = GetTestCaseAndGroup()[1]
+
+    let l:cmd = '!runtests -c -sg ' . l:group . ' -sn ' . l:test
+    execute l:cmd
+endfunction
+
+map <F11> :call RunTestCaseCursorIsIn()<CR>
+map <F12> :call RunTestGroupCursorIsIn()<CR>
