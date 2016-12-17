@@ -1,6 +1,5 @@
 bin/runtests
-build/*
-!build/.gitkeep
+build
 misc/test-logfiles/*
 !misc/test-logfiles/.gitkeep
 .gdb*

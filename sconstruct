@@ -101,8 +101,10 @@ variables.AddVariables(
         BoolVariable('DEBUG', 'Build with predefined debug flags (overrides RELEASE)', 0),
         BoolVariable('COVERAGE', 'Add compiler flags for test coverage meta data', 0),
         BoolVariable('UTF8', 'Enable utf-8 printing by default', 1),
-        PathVariable('BUILDDIR', 'Directory for compilation targets', DEFAULT_BUILDDIR),
-        PathVariable('PREFIX', 'Installation prefix', DEFAULT_PREFIX))
+        PathVariable('BUILDDIR', 'Directory for compilation targets', DEFAULT_BUILDDIR,
+            PathVariable.PathIsDirCreate),
+        PathVariable('PREFIX', 'Installation prefix', DEFAULT_PREFIX,
+            PathVariable.PathIsDirCreate))
 
 env = Environment(variables = variables)
 
@@ -113,8 +115,13 @@ if env['DEBUG']:
     env['RELEASE'] = False
 
 for key in ('CC', 'CXX', 'CFLAGS', 'CXXFLAGS'):
-    if key in os.environ.keys() and not key in env.Dictionary().keys():
+    if key in os.environ.keys() and not key in ARGUMENTS.keys():
         env[key] = os.environ.get(key)
+
+# Manual variables must be split into a list (e.g. "-O2 -march=native")
+for key in ('CFLAGS', 'CXXFLAGS'):
+    if isinstance(env[key], str):
+        env[key] = env[key].split()
 
 env.AddMethod(buildDir)
 
@@ -153,7 +160,6 @@ libEnv.Append(BUILDERS = {
     })
 
 libEnv.VariantDir(libEnv.buildDir(), 'src')
-libEnv.Append(CPPPATH = libEnv.buildDir())
 libEnv.Append(YACCFLAGS = '-d')
 
 buildInfoHeader = libEnv.BuildInfo(libEnv.buildDir('buildinfo.h'), None)
