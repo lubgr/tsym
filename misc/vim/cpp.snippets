@@ -49,11 +49,6 @@ snippet t
 tsym::
 endsnippet
 
-snippet ns "namespace tsym" b!
-namespace tsym {
-}
-endsnippet
-
 snippet pro "Product creation" w
 Product::create($1)$0
 endsnippet
@@ -102,4 +97,12 @@ endsnippet
 
 snippet tan "tangent" i
 Trigonometric::createTan($1)
+endsnippet
+
+snippet dis "disable logging" i
+disableLog();
+endsnippet
+
+snippet en "disable logging" i
+enableLog();
 endsnippet

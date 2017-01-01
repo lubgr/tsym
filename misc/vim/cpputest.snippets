@@ -1,9 +1,9 @@
 
-snippet group "CppUnit TEST_GROUP Macro" b
+snippet group "CppUTest TEST_GROUP Macro" b
 TEST_GROUP($1) {};
 endsnippet
 
-snippet test "CppUnit TEST Macro"
+snippet test "CppUTest TEST Macro"
 TEST(`!p
 import re
 
@@ -25,18 +25,10 @@ if not snip.c:
 }
 endsnippet
 
-snippet eq "CppUnit CHECK_EQUAL Macro"
-CHECK_EQUAL($1, $2);$0
+snippet eq "CppUTest CHECK_EQUAL Macro"
+CHECK_EQUAL($1, $2);
 endsnippet
 
-snippet ch "CppUnit CHECK Macro" b
-CHECK($1);$0
-endsnippet
-
-snippet dis "disable logging" i
-disableLog();
-endsnippet
-
-snippet en "disable logging" i
-enableLog();
+snippet ch "CppUTest CHECK Macro" b
+CHECK($1);
 endsnippet
