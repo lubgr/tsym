@@ -88,7 +88,7 @@ void tsym::ProductSimpl::contract(BasePtrList& u,
 
                 it1 = u.erase(it1);
                 u.insert(it1, res.begin(), res.end());
-                std::advance(it1, -res.size());
+                std::advance(it1, -static_cast<long>(res.size()));
                 u.erase(it2);
                 it2 = it1;
 
