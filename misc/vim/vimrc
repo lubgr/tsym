@@ -25,36 +25,6 @@ set shellpipe=2>&1\ \|
             \echo\ $line;
             \done
 
-func! AlternateImplVSplit()
-    let currentFile = expand('%:t')
-
-    let baseName = matchstr(currentFile, '.*\.')
-    let header = matchstr(currentFile, '\.h')
-    let impl =  matchstr(currentFile, '\.cpp')
-
-    if (strlen(header))
-        let suffix = 'cpp'
-    elseif (strlen(impl))
-        let suffix = 'h'
-    else
-        return
-    endif
-
-    let newFile = baseName . suffix
-
-    vsplit
-    execute "normal! \<C-W>\<C-W>"
-
-    try
-       execute 'find ' . newFile
-    catch /E345/
-       execute "normal! :q\<CR>"
-    endtry
-endfu
-
-command! LocalAV call AlternateImplVSplit()
-cabbrev av LocalAV
-
 function! GetTestCaseAndGroup()
     let l:pattern = '^ *TEST *( *\([^ ]\+\) *, *\([^ ]\+\) *) *$'
     let l:nLine = line('.')
