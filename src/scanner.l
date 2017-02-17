@@ -135,9 +135,9 @@ EXPONENT [eE][-+]?[0-9]+
 . {
     updateColumnCount();
 
-    yylval.stringVal = yytext;
+    yylval.stringVal = "";
 
-    yyerror("Character not recognized: ");
+    yyerror("Character not recognized");
 }
 
 %%
