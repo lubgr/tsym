@@ -142,7 +142,7 @@ if not env['CFLAGS']:
         env.Append(CFLAGS = ['-O0', '-g3', '-ggdb'])
 
 if not env['CXXFLAGS']:
-    env.Append(CXXFLAGS = ['-std=c++98', '-pedantic', '-Wall', '-Wextra', '-Werror=conversion'])
+    env.Append(CXXFLAGS = ['-std=c++11', '-pedantic', '-Wall', '-Wextra', '-Werror=conversion'])
     if env['RELEASE']:
         env.Append(CXXFLAGS = '-O2')
     elif env['DEBUG']:
@@ -172,7 +172,7 @@ libEnv.CFile(parser, 'src/parser.y')
 
 testEnv.VariantDir(testEnv.buildDir(), 'test')
 testEnv.Append(CPPPATH = [libEnv.buildDir(), testEnv.buildDir()])
-testEnv.Append(LIBS = ['CppUTest', 'tsym', 'trlog'])
+testEnv.Append(LIBS = ['CppUTest', 'tsym', 'plic', 'python3.6m'])
 testEnv.Append(RPATH = env.buildDir())
 testEnv.Append(LIBPATH = env.buildDir())
 

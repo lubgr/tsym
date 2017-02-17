@@ -38,7 +38,7 @@ tsym::Fraction tsym::Fraction::cancel() const
     else if (numerator->isZero())
         return Fraction(numerator);
     else if (denominator->expand()->isZero()) {
-        logging::warning() << "Zero denominator encountered during fraction cacellation";
+        TSYM_WARNING("Zero denominator encountered during fraction cancellation");
         return Fraction(Undefined::create());
     } else
         return cancelNonTrivial();

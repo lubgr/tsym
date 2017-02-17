@@ -203,8 +203,8 @@ tsym::BasePtr tsym::Base::diff(const BasePtr& symbol) const
     if (symbol->isSymbol())
         return diffWrtSymbol(symbol);
 
-    logging::warning() << "Differentiation w.r.t. " << typeStr() << "! Only Symbols are feasible, "
-        << "return Undefined.";
+    TSYM_WARNING("Differentiation w.r.t. %s! Only Symbols work, return Undefined.",
+            typeStr().c_str());
 
     return Undefined::create();
 }

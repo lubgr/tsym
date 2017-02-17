@@ -45,7 +45,7 @@ tsym::BasePtr tsym::Power::createNotUndefined(const BasePtr& base, const BasePtr
     if (exponent->isZero() || base->isOne())
         return Numeric::one();
     else if (base->isZero() && exponent->isNegative()) {
-        logging::warning() << "Division by zero during Power creation!";
+        TSYM_WARNING("Division by zero during Power creation!");
         return Undefined::create();
     } else if (base->isZero())
         return Numeric::zero();
@@ -63,7 +63,7 @@ tsym::BasePtr tsym::Power::createNonTrivial(const BasePtr& base, const BasePtr& 
     res = simpl.simplify(base, exponent);
 
     if (res.size() != 2) {
-        logging::error() << "Obtained wrong list from PowerSimpl: " << res << ". Return Undefined.";
+        TSYM_ERROR("Obtained wrong list from PowerSimpl: ", res, ". Return Undefined.");
         return Undefined::create();
     }
 
@@ -177,7 +177,7 @@ tsym::BasePtr tsym::Power::expandIntegerExponent() const
         return expandSumBaseIntExp();
     else if (baseRef->isProduct())
         /* Should have been resolved during standard product simplification. */
-        logging::error() << "Illegal power expression, base: " << baseRef << ", exp.: " << expRef;
+        TSYM_ERROR("Illegal power expression, base: ", baseRef, ", exp.: ", expRef);
 
     return Power::create(baseRef, expRef);
 }
@@ -236,8 +236,8 @@ int tsym::Power::degree(const BasePtr& variable) const
             && nExp.toDouble() > std::numeric_limits<int>::min()/(double)baseDegree)
         return nExp.toInt()*baseDegree;
 
-    logging::error() << "Degree of " << clone() <<
-        " doens't fit into a primitive integer! Return 0 as degree.";
+    TSYM_ERROR("Degree of ", clone(),
+            " doens't fit into a primitive integer! Return 0 as degree.");
 
     return 0;
 }

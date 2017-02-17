@@ -79,9 +79,9 @@ void tsym::Vector::copyValuesFromVector(const Vector& other)
 tsym::Var& tsym::Vector::operator () (size_t i)
 {
     if (dim == 0)
-        logging::error() << "Vector has zero size! Return zero.";
+        TSYM_ERROR("Vector has zero size! Return zero.");
     else if (i > dim)
-        logging::error() << "Vector index " << i << " out of bounds! Return zero.";
+        TSYM_ERROR("Vector index %zu out of bounds! Return zero.", i);
     else
         return data[i];
 
@@ -95,9 +95,9 @@ tsym::Var& tsym::Vector::operator () (size_t i)
 const tsym::Var& tsym::Vector::operator () (size_t i) const
 {
     if (dim == 0)
-        logging::error() << "Vector has zero size! Return zero.";
+        TSYM_ERROR("Vector has zero size! Return zero.");
     else if (i > dim)
-        logging::error() << "Vector index " << i << " out of bounds! Return zero.";
+        TSYM_ERROR("Vector index %zu out of bounds! Return zero.", i);
     else
         return data[i];
 
@@ -110,8 +110,8 @@ tsym::Vector& tsym::Vector::operator += (const Vector& rhs)
         for (size_t i = 0; i < dim; ++i)
             data[i] += rhs.data[i];
     else
-        logging::error() << "Illegal vector addition (dimensions: " << dim << ", " << rhs.dim <<
-                "! Return unmodified left hand side.";
+        TSYM_ERROR("Illegal vector addition (dimensions: %zu, %zu!"
+                " Return unmodified left hand side.", dim, rhs.dim);
 
     return *this;
 }
@@ -122,8 +122,8 @@ tsym::Vector& tsym::Vector::operator -= (const Vector& rhs)
         for (size_t i = 0; i < dim; ++i)
             data[i] -= rhs.data[i];
     else
-        logging::error() << "Illegal vector subtraction (dimensions: " << dim << ", " << rhs.dim <<
-                "! Return unmodified left hand side.";
+        TSYM_ERROR("Illegal vector subtraction (dimensions: %zu, %zu!"
+                " Return unmodified left hand side.", dim, rhs.dim);
 
     return *this;
 }
@@ -156,7 +156,7 @@ tsym::Var tsym::Vector::dotProduct(const Vector& other) const
     Var dotProduct;
 
     if (dim != other.dim)
-        logging::error() << "Illegal vector dot product (dim.: " << dim << ", " << other.dim << ")";
+        TSYM_ERROR("Illegal vector dot product (dim.: %zu, %zu)", dim, other.dim);
     else
         for (size_t i = 0; i < dim; ++i)
             dotProduct += data[i]*other.data[i];

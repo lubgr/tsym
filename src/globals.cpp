@@ -78,10 +78,10 @@ bool tsym::stringToVar(const std::string& toBeParsed, Var& result)
 
     result = stv.get();
 
-    logging::debug() << "Parsed '" << toBeParsed << "' with result: " << result;
+    TSYM_DEBUG("Parsed '", toBeParsed, "' with result: ", result);
 
     for (it = stv.errorMessages().begin(); it != stv.errorMessages().end(); ++it)
-        logging::error() << *it;
+        TSYM_ERROR(*it);
 
     return stv.success();
 }

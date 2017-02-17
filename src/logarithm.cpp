@@ -62,7 +62,7 @@ bool tsym::Logarithm::isInvalidArg(const BasePtr& arg)
         invalid = arg->numericEval().isZero();
 
     if (invalid)
-        logging::warning() << "Logarithm: invalid argument " << arg;
+        TSYM_WARNING("Logarithm: invalid argument ", arg);
 
     return invalid;
 }

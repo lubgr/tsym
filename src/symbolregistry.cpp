@@ -29,7 +29,7 @@ void tsym::SymbolRegistry::add(const Name& symbolName)
 
     if (lookup == reg->end()) {
         reg->insert(std::make_pair(symbolName, 1));
-        logging::info() << "Register new symbol: " << symbolName;
+        TSYM_INFO("Register new symbol: ", symbolName);
     } else
         ++lookup->second;
 }
@@ -42,9 +42,8 @@ void tsym::SymbolRegistry::remove(const Name& symbolName)
     assert(lookup != reg->end());
 
     if (--lookup->second == 0) {
-        logging::info() << "Deregister symbol: " << symbolName;
-        reg->erase(lookup);
-    }
+        TSYM_INFO("Deregister symbol: ", symbolName);
+        reg->erase(lookup); }
 
     reg = registry(true);
 }

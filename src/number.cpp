@@ -65,9 +65,9 @@ void tsym::Number::setAndSimplify(const Int& num, const Int& denom, double dValu
     set(num, denom, dValue);
 
     if (denom == 0)
-        logging::error() << "Try to set fraction with zero denominator. Number is undefined.";
+        TSYM_ERROR("Try to set fraction with zero denominator. Number is undefined.");
     else if (num.hasOverflowed() || denom.hasOverflowed())
-        logging::error() << "Initiate Number with overflowed Int arguments! Number is undefined.";
+        TSYM_ERROR("Initiate Number with overflowed Int arguments! Number is undefined.");
     else {
         simplify();
         return;
@@ -208,7 +208,7 @@ tsym::Int tsym::Number::lcm(const Int& a, const Int& b) const
 
 void tsym::Number::printOverflowWarning() const
 {
-    logging::warning() << "Integer overflow! Number is converted to double.";
+    TSYM_WARNING("Integer overflow! Number is converted to double.");
 }
 
 tsym::Number& tsym::Number::operator -= (const Number& rhs)
@@ -295,7 +295,7 @@ bool tsym::Number::processTrivialPowers(const Number& exponent, Number& result) 
         result = createUndefined();
         return true;
     } else if (isZero() && exponent.num < 0) {
-        logging::warning() << "Number division by zero! Result is undefined.";
+        TSYM_WARNING("Number division by zero! Result is undefined.");
         result = createUndefined();
         return true;
     } else if (isZero() || isOne() || exponent.isOne()) {
@@ -480,7 +480,7 @@ bool tsym::Number::isZero() const
     else if (isUndefined())
         return false;
 
-    logging::error() << "Unknown number type " << *this << " during zero request.";
+    TSYM_ERROR("Unknown number type ", *this, " during zero request.");
 
     return false;
 }

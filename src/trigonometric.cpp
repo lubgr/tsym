@@ -304,7 +304,7 @@ tsym::BasePtr tsym::Trigonometric::createAtan2Numerically(const BasePtr& y, cons
     else if (xNum == 0 && yNum < 0)
         return timesPi(3, 2);
     else if (xNum == 0 && yNum == 0) {
-        logging::warning() << "Illegal construction atan2(0, 0)";
+        TSYM_WARNING("Illegal construction atan2(0, 0)");
         return Undefined::create();
     } else if (xNum > 0)
         increment = Numeric::zero();
@@ -380,7 +380,7 @@ std::string tsym::Trigonometric::getStr(Type type)
         case ATAN2:
             return "atan2";
         default:
-            logging::fatal() << "Unknown trigonometric function type!";
+            TSYM_CRITICAL("Unknown trigonometric function type!");
             return "Unknown";
     }
 }
@@ -488,7 +488,7 @@ tsym::BasePtr tsym::Trigonometric::innerDiff() const
             tmp = Sum::create(Numeric::one(), square(atan2ArgEval(arg1, arg2)));
             return Power::oneOver(tmp);
         default:
-            logging::fatal() << "Unknown trigonometric function type!";
+            TSYM_CRITICAL("Unknown trigonometric function type!");
             return Undefined::create();
     }
 }

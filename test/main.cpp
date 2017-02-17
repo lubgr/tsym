@@ -8,7 +8,7 @@
 #include "poly.h"
 #include "name.h"
 #include "abc.h"
-#include "trlog/trlog.h"
+#include "plic/plic.h"
 #include "CppUTest/CommandLineTestRunner.h"
 
 void initConstructOnFirstUse()
@@ -37,9 +37,9 @@ void initConstructOnFirstUse()
 
     emptyMatrix(1, 1);
     emptyVec(1);
-}
 
-#include <cstdio>
+    plic::debug("CppUTest", "initialize plic local static variables by %%");
+}
 
 int main(int argc, char** argv)
 {
@@ -47,9 +47,7 @@ int main(int argc, char** argv)
 
     tsym::Printer::disableFractions();
 
-    trlog::appendToCerr(trlog::WARNING, trlog::PRINT_LEVEL);
-    trlog::appendToNewFile("misc/test-logfiles/info.log", trlog::INFO);
-    trlog::appendToNewFile("misc/test-logfiles/debug.log", trlog::DEBUG);
+    plic::configFile("test/logconfig.py");
 
     return CommandLineTestRunner::RunAllTests(argc, argv);
 }

@@ -36,7 +36,7 @@ tsym::BasePtr::BasePtr(const Base *base) :
     bp(base)
 {
     if (base == NULL)
-        logging::fatal() << "Initiate Base class with NULL pointer!";
+        TSYM_CRITICAL("Initiate Base class with NULL pointer!");
 
     ++bp->refCount;
 
@@ -52,7 +52,7 @@ tsym::BasePtr::BasePtr(const BasePtr& other) :
     bp(other.bp)
 {
     if (other.bp == NULL)
-        logging::fatal() << "Initiate Base class with NULL pointer!";
+        TSYM_CRITICAL("Initiate Base class with NULL pointer!");
 
     #ifdef TSYM_DEBUG_STRINGS
     prettyStr = other.prettyStr;

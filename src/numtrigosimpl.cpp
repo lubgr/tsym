@@ -187,7 +187,7 @@ void tsym::NumTrigoSimpl::detourSinCosTan()
     else if (type == Trigonometric::TAN)
         tan();
     else
-        logging::error() << "Wrong trigonometric function type!";
+        TSYM_ERROR("Wrong trigonometric function type!");
 }
 
 void tsym::NumTrigoSimpl::sin()
@@ -420,7 +420,7 @@ void tsym::NumTrigoSimpl::detourAsinAcosAtan()
     else if (type == Trigonometric::ATAN)
         atan();
     else
-        logging::error() << "Wrong trigonometric function type!";
+        TSYM_ERROR("Wrong trigonometric function type!");
 }
 
 void tsym::NumTrigoSimpl::asin()
@@ -495,8 +495,8 @@ tsym::BasePtr tsym::NumTrigoSimpl::get() const
     if (isSimplified)
         return res;
 
-    logging::error() << "Requesting numeric trigonometric simplification for unsimplified " <<
-        "expression! Return Undefined.";
+    TSYM_ERROR("Requesting numeric trigonometric simplification for unsimplified "
+        "expression! Return Undefined.");
 
     return Undefined::create();
 }

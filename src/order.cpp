@@ -57,7 +57,7 @@ bool tsym::doPermuteSameType(const BasePtr& left, const BasePtr& right)
     else if (left->isFunction())
         return doPermuteBothFunction(left, right);
     else if (left->isUndefined())
-        logging::warning() << "Requesting order relation for an Undefined!";
+        TSYM_WARNING("Requesting order relation for an Undefined!");
 
     return false;
 }
@@ -172,7 +172,7 @@ bool tsym::doPermuteDifferentType(const BasePtr& left, const BasePtr& right)
         return doPermuteLeftFunctionRightSymbol(left, right);
 
     if (left->isUndefined() || right->isUndefined()) {
-        logging::warning() << "Requesting order relation for Undefined base pointer!";
+        TSYM_WARNING("Requesting order relation for Undefined base pointer!");
         return false;
     }
 

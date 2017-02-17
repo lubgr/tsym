@@ -43,8 +43,8 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v, const B
     PolyInfo polyInfo(u, v);
 
     if (!polyInfo.isInputValid()) {
-        logging::error() << "Input for polynomial division is invalid: " << u << ", " << v;
-        logging::error() << "Return quotient and and remainder as Undefined.";
+        TSYM_ERROR("Input for polynomial division is invalid: ", u, ", ", v,
+                " Return quotient and and remainder as Undefined.");
         return BasePtrList(Undefined::create(), Undefined::create());
     } else if (L.empty())
         return divideEmptyList(u, v);
@@ -117,8 +117,8 @@ tsym::BasePtrList tsym::pseudoDivide(const BasePtr& u, const BasePtr& v, const B
     if (polyInfo.isInputValid())
         return pseudoDivideChecked(u, v, x, computeQuotient);
 
-    logging::error() << "Input for polynomial pseudo-division is invalid: " << u << ", " << v;
-    logging::error() << "Return pseudo-quotient and and -remainder as Undefined.";
+    TSYM_ERROR("Input for polynomial pseudo-division is invalid: ", u, ", ", v,
+            "Return pseudo-quotient and and -remainder as Undefined.");
 
     return BasePtrList(Undefined::create(), Undefined::create());
 }
@@ -186,7 +186,7 @@ int tsym::unitFromNonNumeric(const BasePtr& polynomial)
     const BasePtr firstSymbol(getFirstSymbol(polynomial));
 
     if (firstSymbol->isUndefined()) {
-        logging::error() << "Polynomial unit request with illegal argument: " << polynomial;
+        TSYM_ERROR("Polynomial unit request with illegal argument: ", polynomial);
         return 1;
     }
 
@@ -270,7 +270,7 @@ tsym::BasePtr tsym::nonTrivialContent(const BasePtr& expandedPolynomial, const B
 int tsym::poly::minDegree(const BasePtr& of, const BasePtr& variable)
 {
     if (!variable->isSymbol())
-        logging::warning() << "Requesting min. degree with non-Symbol argument " << variable << "!";
+        TSYM_WARNING("Requesting min. degree with non-Symbol argument ", variable);
 
     if (of->isNumeric())
         return 0;
@@ -293,8 +293,8 @@ int tsym::minDegreeOfPower(const BasePtr& power, const tsym::BasePtr& variable)
     int exp;
 
     if (!largeExp.fitsIntoInt()) {
-        logging::error() << power << ": Exponent doesn't fit into primitive integer! " <<
-            "Return 0 (min. degree).";
+        TSYM_ERROR(power, ": Exponent doesn't fit into primitive integer! "
+                "Return 0 (min. degree).");
         return 0;
     } else
         exp = largeExp.toInt();

@@ -24,7 +24,7 @@ tsym::BasePtr tsym::PrimitiveGcd::gcdAlgo(const BasePtr& u, const BasePtr& v,
         if (remainder->isZero())
             rPrimPart = Numeric::zero();
         else if (remainder->isUndefined()) {
-            logging::warning() << "Undefined remainder during primitive gcd computation, return 1.";
+            TSYM_WARNING("Undefined remainder during primitive gcd computation, return 1.");
             return Numeric::one();
         } else
             rPrimPart = poly::divide(remainder, poly::content(remainder, x), L).front();

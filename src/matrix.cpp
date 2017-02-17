@@ -109,9 +109,9 @@ void tsym::Matrix::deleteMem()
 tsym::Var& tsym::Matrix::operator () (size_t i, size_t j)
 {
     if (nRow == 0 && nCol == 0)
-        logging::error() << "Matrix has zero column/row size! Return zero.";
+        TSYM_ERROR("Matrix has zero column/row size! Return zero.");
     else if (i > nRow || j > nCol)
-        logging::error() << "Matric indices (" << i << ", " << j << ") out of bounds! Return zero.";
+        TSYM_ERROR("Matric indices (%zu, %zu) out of bounds! Return zero.", i, j);
     else
         return data[i][j];
 
@@ -125,9 +125,9 @@ tsym::Var& tsym::Matrix::operator () (size_t i, size_t j)
 const tsym::Var& tsym::Matrix::operator () (size_t i, size_t j) const
 {
     if (nRow == 0 && nCol == 0)
-        logging::error() << "Matrix has zero column/row size! Return zero.";
+        TSYM_ERROR("Matrix has zero column/row size! Return zero.");
     else if (i > nRow || j > nCol)
-        logging::error() << "Matric indices (" << i << ", " << j << ") out of bounds! Return zero.";
+        TSYM_ERROR("Matric indices (%zu, %zu) out of bounds! Return zero.", i, j);
     else
         return data[i][j];
 
@@ -141,8 +141,8 @@ tsym::Matrix& tsym::Matrix::operator += (const Matrix& rhs)
             for (size_t j = 0; j < nCol; ++j)
                 data[i][j] += rhs.data[i][j];
     } else
-        logging::error() << "Matrix dimensions " << nRow << " and " << rhs.nRow <<
-            " don't match! Return unmodified left hand side.";
+        TSYM_ERROR("Matrix dimensions %zu and %zu don't match!", nRow, rhs.nRow,
+                " Return unmodified left hand side.");
 
     return *this;
 }
@@ -154,8 +154,8 @@ tsym::Matrix& tsym::Matrix::operator -= (const Matrix& rhs)
             for (size_t j = 0; j < nCol; ++j)
                 data[i][j] -= rhs.data[i][j];
     } else
-        logging::error() << "Matrix dimensions " << nRow << " and " << rhs.nRow <<
-            " don't match! Return unmodified left hand side.";
+        TSYM_ERROR("Matrix dimensions %zu and %zu don't match!", nRow, rhs.nRow,
+                " Return unmodified left hand side.");
 
     return *this;
 }
@@ -165,8 +165,8 @@ tsym::Matrix& tsym::Matrix::operator *= (const Matrix& rhs)
     if (nCol == rhs.nRow)
         multiplyChecked(rhs);
     else
-        logging::error() << "Matrix dimensions " << nRow << " and " << rhs.nRow <<
-            " don't match! Return matrix with zero entries.";
+        TSYM_ERROR("Matrix dimensions %zu and %zu don't match!", nRow, rhs.nRow,
+            " Return matrix with zero entries.");
 
     return *this;
 }
@@ -203,8 +203,8 @@ tsym::Vector tsym::Matrix::operator * (const Vector& rhs) const
             for (size_t j = 0; j < nCol; ++j)
                 result.data[i] += data[i][j]*rhs.data[j];
     else
-        logging::error() << nCol << " matrix columns don't match vector size (" << rhs.dim <<
-            ")! Return vector with zero entries.";
+        TSYM_ERROR("%zu matrix columns don't match vector size (%zu)!", nCol, rhs.dim,
+                " Return vector with zero entries.");
 
     return result;
 }
@@ -239,15 +239,15 @@ tsym::Matrix tsym::Matrix::transpose() const
 tsym::Vector tsym::Matrix::solve(const Vector& rhs) const
 {
     if (!isSquare())
-        logging::error() << "Matrix (" << nRow << ", " << nCol << ") isn't square!";
+        TSYM_ERROR("Matrix (%zu, %zu) isn't square!", nRow , nCol);
     else if (rhs.size() != nRow)
-        logging::error() << "Matrix dim. " << nRow << " doesn't match vector size " << rhs.dim;
+        TSYM_ERROR("Matrix dimension %zu doesn't match vector size %zu", nRow, rhs.dim);
     else if (nRow == 0)
-        logging::error() << "Matrix and vector with zero dimension can't be solved!";
+        TSYM_ERROR("Matrix and vector with zero dimension can't be solved!");
     else
         return solveChecked(rhs);
 
-    logging::error() << "Return vector with zero dimension.";
+    TSYM_ERROR("Return vector with zero dimension.");
 
     return Vector();
 }
@@ -263,12 +263,12 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
     PLU.factorizeLU();
 
     if (PLU.detFromLU().isZero()) {
-        logging::warning() << "Can't solve system of equations with singular coefficient matrix!";
+        TSYM_WARNING("Can't solve system of equations with singular coefficient matrix!");
         x = Vector();
     } else {
         PLU.compXFromLU(x, b);
-        logging::info() << "Solved " << nRow << "-dim. system of equations in " <<
-            difftime(time(NULL), start) << " s.";
+        TSYM_INFO("Solved %zu-dim. system of equations in %.3f s.", nRow,
+                std::difftime(time(NULL), start));
     }
 
     return x;
@@ -327,13 +327,13 @@ void tsym::Matrix::compXFromLU(Vector& x, Vector& b) const
 tsym::Matrix tsym::Matrix::inverse() const
 {
     if (!isSquare())
-        logging::error() << "Inversion for " << nRow << "x" << nCol << " maxtrix impossible!";
+        TSYM_ERROR("Inversion for %zux%zu maxtrix impossible!", nRow, nCol);
     else if (det() == 0)
-        logging::error() << "Matrix is singular, no inversion possible!";
+        TSYM_ERROR("Matrix is singular, no inversion possible!");
     else
         return checkedInverse();
 
-    logging::error() << "Return zero dimension matrix.";
+    TSYM_ERROR("Return zero dimension matrix.");
 
     return Matrix();
 }
@@ -361,8 +361,8 @@ tsym::Var tsym::Matrix::det() const
     if (nRow == nCol && nRow != 0)
         return checkedDet();
 
-    logging::error() << "Illegal determinant request for " << nRow << "x" << nCol << " matrix!";
-    logging::error() << "Return zero determinant.";
+    TSYM_ERROR("Illegal determinant request for %zux%zu matrix!", nRow, nCol,
+            " Return zero determinant.");
 
     return constZero();
 }

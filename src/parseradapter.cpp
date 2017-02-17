@@ -88,7 +88,7 @@ namespace {
 
     void registerError(const std::string& message)
     {
-        logging::error() << message;
+        TSYM_ERROR(message);
 
         errors().push_back(message);
     }
@@ -99,7 +99,7 @@ tsym::BasePtr tsym::parserAdapter::parse(const char *string)
     const void *parseResult = parseString(string);
 
     if (parseResult == NULL) {
-        logging::warning() << "Parsing \'" << string << "\' resulted in NULL pointer";
+        TSYM_WARNING("Parsing \'%s\' resulted in NULL pointer", string);
         return Undefined::create();
     } else
         return castNonZeroParseResult(parseResult);
@@ -137,7 +137,7 @@ void *tsym_parserAdapter_createMaxInt(const char *errorMessage)
 {
     const BasePtr maxInt(Numeric::create(Int::max()));
 
-    logging::error() << errorMessage << maxInt;
+    TSYM_ERROR(errorMessage, maxInt);
 
     return toVoid(maxInt);
 }
@@ -153,7 +153,7 @@ void *tsym_parserAdapter_createMaxDouble(const char *errorMessage)
 {
     const BasePtr maxDouble(Numeric::create(std::numeric_limits<double>::max()));
 
-    logging::error() << errorMessage << maxDouble;
+    TSYM_ERROR(errorMessage, maxDouble);
 
     return toVoid(maxDouble);
 }

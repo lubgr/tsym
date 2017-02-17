@@ -85,7 +85,7 @@ tsym::BasePtrList::iterator tsym::BasePtrList::erase(BasePtrList::iterator& it)
 const tsym::BasePtr& tsym::BasePtrList::front() const
 {
     if (empty())
-        logging::warning() << "Requesting first element of an empty list!";
+        TSYM_WARNING("Requesting first element of an empty list!");
 
     return list.front();
 }
@@ -93,7 +93,7 @@ const tsym::BasePtr& tsym::BasePtrList::front() const
 const tsym::BasePtr& tsym::BasePtrList::back() const
 {
     if (empty())
-        logging::warning() << "Requesting last element of an empty list!";
+        TSYM_WARNING("Requesting last element of an empty list!");
 
     return list.back();
 }
@@ -184,7 +184,7 @@ tsym::BasePtrList tsym::BasePtrList::rest() const
     BasePtrList rest(*this);
 
     if (rest.empty())
-        logging::warning() << "Requesting rest of an empty list!";
+        TSYM_WARNING("Requesting rest of an empty list!");
     else
         rest.pop_front();
 

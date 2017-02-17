@@ -29,8 +29,8 @@ tsym::Int::Int(long n) :
 {
     if (n < minLong) {
         /* Happens if instantiated with the min. long int. */
-        logging::warning() << n << " doesn't fit into Int class (min. value: " << minLong <<
-                "). Return overflowed Int!";
+        TSYM_WARNING("%d doesn't fit into Int class (min. value: %d). Return overflowed Int!", n,
+                minLong);
         overflow = true;
     }
 }
@@ -59,10 +59,10 @@ bool tsym::Int::warnOverflow(const char *operationName) const
 bool tsym::Int::warnOverflow(const char *operationName, const Int& operand) const
 {
     if (overflow)
-        logging::warning() << operationName << " with overflowed Integer!";
+        TSYM_WARNING("%s with overflowed Integer!", operationName);
 
     if (operand.overflow)
-        logging::warning() << operationName << " with overflowed Integer operand!";
+        TSYM_WARNING("%s with overflowed Integer operand!", operationName);
 
     return overflow || operand.overflow;
 }
@@ -98,7 +98,7 @@ tsym::Int& tsym::Int::operator /= (const Int& rhs)
     if (warnOverflow("Division", rhs))
         overflow = true;
     else if (rhs.rep == 0) {
-        logging::error() << "Division by zero! Set integer to overflowed.";
+        TSYM_ERROR("Division by zero! Set integer to overflowed.");
         overflow = true;
     } else
         rep /= rhs.rep;
@@ -166,7 +166,7 @@ tsym::Int tsym::Int::toThe(const Int& exp) const
     else if (exp.rep == 0)
         return 1;
     else if (exp.rep < 0) {
-        logging::error() << "Request of integer power with negative exponent! Return zero.";
+        TSYM_ERROR("Request of integer power with negative exponent! Return zero.");
         return 0;
     } else
         return nonTrivialPower(exp);
@@ -247,10 +247,10 @@ bool tsym::Int::fitsIntoLong() const
 int tsym::Int::toInt() const
 {
     if (!fitsIntoInt() && rep > 0) {
-        logging::error() << "Primitive int request for too large value, return max. int " << maxInt;
+        TSYM_ERROR("Primitive int request for too large value, return max. int %d", maxInt);
         return maxInt;
     } else if (!fitsIntoInt() && rep < 0) {
-        logging::error() << "Primitive int request for too small value return min. int " << minInt;
+        TSYM_ERROR("Primitive int request for too small value return min. int %d", minInt);
         return minInt;
     }
 
@@ -260,7 +260,7 @@ int tsym::Int::toInt() const
 long tsym::Int::toLong() const
 {
     if (overflow) {
-        logging::error() << "Long request for too large integer, return max. long " << maxLong;
+        TSYM_ERROR("Long request for too large integer, return max. long %d", maxLong);
         return maxLong;
     }
 

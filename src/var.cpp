@@ -23,8 +23,8 @@ namespace tsym {
             if (success && tmp.getBasePtr()->isSymbol())
                 return tmp.getBasePtr()->name();
 
-            logging::error() << "Parsing a symbol from '" << origName << "' failed, result: "
-                << tmp << " (" << tmp.type() << "). Use '" << origName << "' as a symbol name";
+            TSYM_ERROR("Parsing a symbol from '%s' failed, result: ", origName,
+                    tmp, " (", tmp.type(), "). Use '%s' as a symbol name", origName);
 
             return Name(origName);
         }
@@ -34,7 +34,7 @@ namespace tsym {
             if (strlen(origName) != 0)
                 return parseNonEmptySymbolName(origName);
 
-            logging::error() << "A symbol can't be instantiated with an empty string!";
+            TSYM_ERROR("A symbol can't be instantiated with an empty string!");
 
             return Name("");
         }
@@ -173,8 +173,8 @@ tsym::Var tsym::Var::normal() const
     const BasePtr normalized((*rep)->normal());
 
     if (!normalized->isEqual(*rep))
-        logging::debug() << "Normalized " << *rep << " to " << normalized << " in " <<
-            difftime(time(NULL), start) << " s.";
+        TSYM_DEBUG("Normalized ", *rep, " to ", normalized, " in %.3f s.",
+                difftime(time(NULL), start));
 
     return Var(normalized);
 }
@@ -229,7 +229,7 @@ std::string tsym::Var::numericType() const
         return "Fraction";
 
     /* This should never happened, as the BasePtr must be Undefined in the first place. */
-    logging::error() << "Illegal number " << number << " in Var!";
+    TSYM_ERROR("Illegal number ", number, " in Var!");
 
     return "Undefined";
 }
@@ -275,7 +275,7 @@ bool tsym::Var::isInteger() const
 int tsym::Var::toInt() const
 {
     if (!isInteger())
-        logging::error() << "Requesting integer from " << type();
+        TSYM_ERROR("Requesting integer from ", type());
 
     return (*rep)->numericEval().numerator().toInt();
 }
