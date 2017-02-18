@@ -3,7 +3,7 @@
 #include <cmath>
 #include "numpowersimpl.h"
 #include "logging.h"
-#include "cpputest.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 

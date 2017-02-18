@@ -7,7 +7,7 @@
 #include "product.h"
 #include "logarithm.h"
 #include "trigonometric.h"
-#include "cpputest.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 

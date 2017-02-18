@@ -6,7 +6,7 @@
 #include "constant.h"
 #include "sum.h"
 #include "product.h"
-#include "cpputest.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 

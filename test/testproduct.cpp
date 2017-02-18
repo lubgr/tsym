@@ -10,7 +10,7 @@
 #include "numpowersimpl.h"
 #include "power.h"
 #include "sum.h"
-#include "cpputest.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 

@@ -5,7 +5,7 @@
 #include "product.h"
 #include "constant.h"
 #include "power.h"
-#include "cpputest.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 

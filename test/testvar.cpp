@@ -5,7 +5,7 @@
 #include "number.h"
 #include "var.h"
 #include "globals.h"
-#include "cpputest.h"
+#include "tsymtests.h"
 #include "baseptr.h"
 #include "base.h"
 #include "name.h"

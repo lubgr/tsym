@@ -8,7 +8,7 @@
 #include "power.h"
 #include "product.h"
 #include "trigonometric.h"
-#include "cpputest.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 

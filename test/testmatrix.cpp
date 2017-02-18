@@ -4,7 +4,7 @@
 #include "matrix.h"
 #include "globals.h"
 #include "logging.h"
-#include "cpputest.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 

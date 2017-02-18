@@ -2,7 +2,7 @@
 #include <cassert>
 #include "symbolregistry.h"
 #include "symbol.h"
-#include "cpputest.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 

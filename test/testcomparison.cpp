@@ -8,7 +8,7 @@
 #include "sum.h"
 #include "trigonometric.h"
 #include "undefined.h"
-#include "cpputest.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 

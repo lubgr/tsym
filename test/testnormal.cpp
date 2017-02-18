@@ -7,7 +7,7 @@
 #include "product.h"
 #include "power.h"
 #include "symbolmap.h"
-#include "cpputest.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 

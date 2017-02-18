@@ -9,7 +9,7 @@
 #include "numeric.h"
 #include "symbol.h"
 #include "globals.h"
-#include "cpputest.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 

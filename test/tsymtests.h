@@ -1,5 +1,5 @@
-#ifndef TEST_CPPUTEST_H
-#define TEST_CPPUTEST_H
+#ifndef TEST_TSYMTESTS_H
+#define TEST_TSYMTESTS_H
 
 /* Main header to be included in each compilation unit with test cases. This file includes the main
  * header of CppUTest and provides common definitions of functions necessary to work with

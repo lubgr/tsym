@@ -2,7 +2,7 @@
 #include <sstream>
 #include "base.h"
 #include "logging.h"
-#include "cpputest.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 

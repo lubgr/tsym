@@ -10,7 +10,7 @@
 #include "sum.h"
 #include "vector.h"
 #include "matrix.h"
-#include "cpputest.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 
