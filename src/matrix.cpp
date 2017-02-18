@@ -1,6 +1,6 @@
 
 #include <cassert>
-#include <ctime>
+#include <chrono>
 #include "matrix.h"
 #include "numeric.h"
 #include "logging.h"
@@ -254,7 +254,9 @@ tsym::Vector tsym::Matrix::solve(const Vector& rhs) const
 
 tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
 {
-    const time_t start = time(NULL);
+    auto ts = std::chrono::high_resolution_clock::now();
+    std::chrono::microseconds ms;
+    decltype(ts) te;
     Matrix PLU(*this);
     Vector b(rhs);
     Vector x(nRow);
@@ -267,8 +269,12 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
         x = Vector();
     } else {
         PLU.compXFromLU(x, b);
-        TSYM_INFO("Solved %zu-dim. system of equations in %.3f s.", nRow,
-                std::difftime(time(NULL), start));
+
+        te = std::chrono::high_resolution_clock::now();
+        ms = std::chrono::duration_cast<std::chrono::microseconds>(te - ts);
+
+        TSYM_INFO("Solved %zu-dim. system of equations in %.2f ms.", nRow,
+                static_cast<float>(ms.count())/1000.0);
     }
 
     return x;

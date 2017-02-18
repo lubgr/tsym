@@ -1,6 +1,6 @@
 
 #include <algorithm>
-#include <cstring>
+#include <chrono>
 #include "var.h"
 #include "symbol.h"
 #include "numeric.h"
@@ -169,12 +169,17 @@ tsym::Var tsym::Var::expand() const
 
 tsym::Var tsym::Var::normal() const
 {
-    const time_t start = time(NULL);
+    auto ts = std::chrono::high_resolution_clock::now();
     const BasePtr normalized((*rep)->normal());
+    std::chrono::microseconds ms;
+    decltype(ts) te;
+
+    te = std::chrono::high_resolution_clock::now();
+    ms = std::chrono::duration_cast<std::chrono::microseconds>(te - ts);
 
     if (!normalized->isEqual(*rep))
-        TSYM_DEBUG("Normalized ", *rep, " to ", normalized, " in %.3f s.",
-                difftime(time(NULL), start));
+        TSYM_DEBUG("Normalized ", *rep, " to ", normalized, " in %.2f ms.",
+                static_cast<float>(ms.count())/1000.0);
 
     return Var(normalized);
 }
