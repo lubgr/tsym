@@ -84,10 +84,19 @@ def writeBuildInfoHeader(target, source, env):
 def buildDir(self, *paths):
     return os.path.join(self['BUILDDIR'], *paths)
 
-def libExistance(target, source, env):
-    filename = str(env['LIBTARGET'][0])
-    if not os.path.isfile(filename):
-        raise Errors.StopError('%s not found. Compile it before tests or installation.' % filename)
+def concat(self, *keys):
+    strRep = ''
+
+    for key in keys:
+        if key in self.Dictionary():
+            entry = self[key]
+            if isinstance(entry, list):
+                entry = ' '.join(entry)
+
+            strRep += '%s ' % entry
+
+    return strRep[:-1]
+
 
 SetOption('num_jobs', 4)
 
@@ -97,6 +106,9 @@ variables.AddVariables(
         ('CXXFLAGS', 'C++ compiler flags'),
         ('CC', 'C compiler', Environment()['CC']),
         ('CFLAGS', 'C compiler flags'),
+        ('CPPFLAGS', 'Preprocessor flags, e.g. -I /usr/local/include'),
+        ('LDFLAGS', 'Linker flags for test executable, e.g. -L /usr/local/lib'),
+        ('LIBS', 'Libraries for the test executable, e.g. -lplic'),
         BoolVariable('RELEASE', 'Build with  predefined release flags', 1),
         BoolVariable('DEBUG', 'Build with predefined debug flags (overrides RELEASE)', 0),
         BoolVariable('COVERAGE', 'Add compiler flags for test coverage meta data', 0),
@@ -107,28 +119,31 @@ variables.AddVariables(
             PathVariable.PathIsDirCreate))
 
 env = Environment(variables = variables)
+env.AddMethod(buildDir)
+env.AddMethod(concat)
 
 if variables.unknown:
     raise Errors.StopError('Variables %s are invalid' % ' '.join(variables.unknown.keys()))
 
-if env['DEBUG']:
-    env['RELEASE'] = False
-
-for key in ('CC', 'CXX', 'CFLAGS', 'CXXFLAGS'):
+for key in ('CC', 'CXX', 'CFLAGS', 'CXXFLAGS', 'LDFLAGS', 'LIBS', 'CPPFLAGS'):
     if key in os.environ.keys() and not key in ARGUMENTS.keys():
         env[key] = os.environ.get(key)
 
-# Manual variables must be split into a list (e.g. "-O2 -march=native")
+argsToBeParsed = env.concat('LIBS', 'LDFLAGS', 'CPPFLAGS')
+
+for key in ('LIBS', 'LDFLAGS', 'CPPFLAGS'):
+    if key in env.Dictionary():
+        del env.Dictionary()[key]
+
+env.MergeFlags(argsToBeParsed)
+
+if env['DEBUG']:
+    env['RELEASE'] = False
+
 for key in ('CFLAGS', 'CXXFLAGS'):
     if isinstance(env[key], str):
         env[key] = env[key].split()
 
-env.AddMethod(buildDir)
-
-if env['RELEASE']:
-    env.Append(CPPDEFINES = 'NDEBUG')
-else:
-    env.Append(CPPDEFINES = [NAME.upper() + '_DEBUG_STRINGS'])
 
 if not env['UTF8']:
     env.Append(CPPDEFINES = [NAME.upper() + '_WITHOUT_UTF8'])
@@ -148,8 +163,16 @@ if not env['CXXFLAGS']:
     elif env['DEBUG']:
         env.Append(CXXFLAGS = ['-O0', '-g3', '-ggdb'])
 
+if env['RELEASE']:
+    env.Append(CPPDEFINES = 'NDEBUG')
+else:
+    env.Append(CPPDEFINES = [NAME.upper() + '_DEBUG_STRINGS'])
+
 libEnv = env.Clone()
 testEnv = env.Clone()
+
+libEnv['LIBS'] = ''
+libEnv['LIBPATH'] = None
 
 libEnv.Replace(BUILDDIR = env.buildDir('src'))
 testEnv.Replace(BUILDDIR = env.buildDir('test'))
@@ -172,7 +195,8 @@ libEnv.CFile(parser, 'src/parser.y')
 
 testEnv.VariantDir(testEnv.buildDir(), 'test')
 testEnv.Append(CPPPATH = [libEnv.buildDir(), testEnv.buildDir()])
-testEnv.Append(LIBS = ['CppUTest', 'tsym', 'plic', 'python3.6m'])
+if not testEnv.concat('LIBS'):
+    testEnv.Append(LIBS = ['CppUTest', 'tsym', 'plic', 'python3.6m'])
 testEnv.Append(RPATH = env.buildDir())
 testEnv.Append(LIBPATH = env.buildDir())
 
@@ -185,13 +209,6 @@ if libEnv['COVERAGE']:
     Clean(libTarget, Glob(libEnv.buildDir('*.gcno')) + Glob(libEnv.buildDir('*.gcda')))
 
 testTarget = testEnv.Program(env.buildDir(TEST_EXEC), Glob(testEnv.buildDir('*.cpp')))
-
-# The following lines ensures that library and tests can be built with different CXXFLAGS. Due to
-# the hard-coded removal of the dependency, its local existance has to be checked, otherwise the
-# test executable might be linked against a globally installed version of the library.
-testEnv.Append(LIBTARGET = libTarget)
-testEnv.Ignore(testTarget, testEnv['LIBTARGET'])
-testEnv.AddPreAction(testTarget, libExistance)
 
 includeDir = os.path.join(env['PREFIX'], 'include')
 headerTargetDir = os.path.join(includeDir, NAME)
@@ -223,5 +240,5 @@ Build targets:\n
     'install'        install library and headers
     'uninstall'      deinstall library and headers
 
-Build options, possibly set in %s, or by environment (compiler and their flags):
-%s""" % (CONFIG_FILE, variables.GenerateHelpText(env)), append = False)
+Options set in %s or environment (only CXX, CXXFLAGS, CPPFLAGS, LIBS, LDFLAGS):
+%s""" % (CONFIG_FILE, variables.GenerateHelpText(env)))
