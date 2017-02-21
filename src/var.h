@@ -8,6 +8,13 @@ namespace tsym { class BasePtr; }
 
 namespace tsym {
     class Var {
+        /* Wrapper around numbers, symbols, functions, constants and expressions with one of those,
+         * or undefined. There are implicit constructors for integer and double numerics, symbols
+         * (possibly > 0 by given flag) must be explicitly constructed with a symbol name. Besides
+         * the few global free functions, every interaction with symbolic expressions is either
+         * possible by comparison or algebraic operators or by member functions (differentiation,
+         * normalization, expansion, requesting the type etc.). Numbers can be converted to plain
+         * double or, if they fit, into integers (numerator and/or denominator). */
         public:
             enum Sign { POSITIVE = 1 };
 
