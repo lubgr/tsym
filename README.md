@@ -1,5 +1,5 @@
 
-# tsym: Tiny Symbolic Library
+# tsym: Tiny Symbolic Library [![Build Status](https://travis-ci.org/lubgr/tsym.svg?branch=develop)](https://travis-ci.org/lubgr/tsym)
 
 This small C++ library intends to provide a simple approach to symbolic algebra. In contrast to
 fully-fledged computer algebra systems or libraries (e.g. maxima, GiNaC, sympy), only the most basic
@@ -78,7 +78,7 @@ Information about expressions can be queried via methods of Var:
 tsym::Var b("b");
 tsym::Var c = 2*tsym::Var("a")/b/5;
 
-if (c.has(b))
+if (c.has(b) && c.type() == tsym::Var::PRODUCT)
     std::cout << "c contains " << b << " and is a " << c.type() << std::endl;
 
 std::cout << c.numerator() << ", " << c.denominator() << std::endl; /* 2*a, 5*b */
@@ -86,8 +86,10 @@ std::cout << c.numerator() << ", " << c.denominator() << std::endl; /* 2*a, 5*b 
 c.collectSymbols(); /* Returns a vector containing the symbols a and b. */
 c.operands(); /* Returns a vector with a, b^(-1) and the fraction 2/5. */
 ```
-Normalization, expansion and differentiation can be done as follows (all methods are declared const,
-thus don't modify the object).
+The type() method used in this snippet returns a enum class inside of Var with possible values
+`PRODUCT`, `SYMBOL`, `INT`, `FRACTION`, `DOUBLE`, `CONSTANT`, `UNDEFINED`, `FUNCTION`, `SUM` and
+`POWER`. Normalization, expansion and differentiation can be done as follows (all methods are
+declared const, thus don't modify the object).
 ```c++
 tsym::Var b = tsym::Var("b");
 tsym::Var c = tsym::Var("a")/b + 1/(5*b);
