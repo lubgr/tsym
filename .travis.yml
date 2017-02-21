@@ -1,0 +1,49 @@
+language: cpp
+
+dist: trusty
+sudo: required
+
+branches:
+  only:
+    - develop
+
+git:
+    depth: 3
+
+before_install:
+  - wget https://github.com/cpputest/cpputest/releases/download/v3.8/cpputest-3.8.tar.gz
+  - tar xf cpputest-3.8.tar.gz
+  - cd ./cpputest-3.8
+  - CC=gcc-6 CXX=g++-6 ./configure --enable-std-cpp11 --prefix=/usr --disable-memory-leak-detection
+  - make
+  - sudo make install
+  - cd ..
+  - git clone https://github.com/lubgr/plic
+  - cd plic
+  - scons CXX=g++-6 PYVERSION=3.4m
+  - sudo scons install CXX=g++-6 PYVERSION=3.4m
+  - cd ..
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-5
+      - g++-6
+
+matrix:
+  include:
+    - os: linux
+      compiler: gcc
+      env: COMPILER=g++-5
+
+    - os: linux
+      compiler: gcc
+      env: COMPILER=g++-6
+
+script:
+  - scons CXX=$COMPILER LIBS='-lCppUTest -ltsym -lplic -lpython3.4m' lib
+  - cat build/src/buildinfo.h
+  - scons CXX=$COMPILER LIBS='-lCppUTest -ltsym -lplic -lpython3.4m' test
+  - ./build/runtests
