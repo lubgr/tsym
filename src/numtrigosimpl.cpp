@@ -22,7 +22,7 @@ namespace tsym {
 tsym::NumTrigoSimpl::NumTrigoSimpl() :
     Pi(Constant::createPi()),
     PI(Pi->numericEval()),
-    type(Trigonometric::SIN), /* Dummy value. */
+    type(Trigonometric::Type::SIN), /* Dummy value. */
     isSimplified(false),
     sign(1)
 {
@@ -122,7 +122,8 @@ void tsym::NumTrigoSimpl::detour()
 
 bool tsym::NumTrigoSimpl::isNotAnInverseFct() const
 {
-    return type == Trigonometric::SIN || type == Trigonometric::COS || type == Trigonometric::TAN;
+    return type == Trigonometric::Type::SIN || type == Trigonometric::Type::COS ||
+        type == Trigonometric::Type::TAN;
 }
 
 void tsym::NumTrigoSimpl::computeSinCosTan()
@@ -180,11 +181,11 @@ void tsym::NumTrigoSimpl::adjustArgRange()
 
 void tsym::NumTrigoSimpl::detourSinCosTan()
 {
-    if (type == Trigonometric::SIN)
+    if (type == Trigonometric::Type::SIN)
         sin();
-    else if (type == Trigonometric::COS)
+    else if (type == Trigonometric::Type::COS)
         cos();
-    else if (type == Trigonometric::TAN)
+    else if (type == Trigonometric::Type::TAN)
         tan();
     else
         TSYM_ERROR("Wrong trigonometric function type!");
@@ -353,17 +354,17 @@ void tsym::NumTrigoSimpl::tanViaSinCos()
         setResult(Product::create(sine, Power::oneOver(cosine)));
 
     /* Restore original state. */
-    type = Trigonometric::TAN;
+    type = Trigonometric::Type::TAN;
 }
 
 void tsym::NumTrigoSimpl::setSinForTan(BasePtr& result, bool& simplified)
 {
-    setForTan(Trigonometric::SIN, result, simplified);
+    setForTan(Trigonometric::Type::SIN, result, simplified);
 }
 
 void tsym::NumTrigoSimpl::setCosForTan(BasePtr& result, bool& simplified)
 {
-    setForTan(Trigonometric::COS, result, simplified);
+    setForTan(Trigonometric::Type::COS, result, simplified);
 }
 
 void tsym::NumTrigoSimpl::setForTan(Trigonometric::Type type, BasePtr& result, bool& simplified)
@@ -393,7 +394,7 @@ bool tsym::NumTrigoSimpl::isInverseArgOutOfRange() const
 {
     const Number nArg(arg->numericEval());
 
-    if (type == Trigonometric::ATAN)
+    if (type == Trigonometric::Type::ATAN)
         return false;
     else if (nArg < -1 || nArg > 1)
         return true;
@@ -413,11 +414,11 @@ void tsym::NumTrigoSimpl::prepareAsinAcosAtan()
 
 void tsym::NumTrigoSimpl::detourAsinAcosAtan()
 {
-    if (type == Trigonometric::ASIN)
+    if (type == Trigonometric::Type::ASIN)
         asin();
-    else if (type == Trigonometric::ACOS)
+    else if (type == Trigonometric::Type::ACOS)
         acos();
-    else if (type == Trigonometric::ATAN)
+    else if (type == Trigonometric::Type::ATAN)
         atan();
     else
         TSYM_ERROR("Wrong trigonometric function type!");

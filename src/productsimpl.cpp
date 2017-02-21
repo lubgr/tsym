@@ -119,8 +119,8 @@ tsym::BasePtrList tsym::ProductSimpl::contractTrigFctPowers(const BasePtr& f1, c
      * arguments. */
 {
     const BasePtr newArg(f1->base()->operands().front());
-    const BasePtr sin(trigSymbReplacement(Trigonometric::SIN, newArg));
-    const BasePtr cos(trigSymbReplacement(Trigonometric::COS, newArg));
+    const BasePtr sin(trigSymbReplacement(Trigonometric::Type::SIN, newArg));
+    const BasePtr cos(trigSymbReplacement(Trigonometric::Type::COS, newArg));
     BasePtr r1(trigFunctionPowerReplacement(f1, sin, cos));
     BasePtr r2(trigFunctionPowerReplacement(f2, sin, cos));
     BasePtrList res;
@@ -154,11 +154,11 @@ tsym::BasePtrList tsym::ProductSimpl::contractTrigFctPowers(const BasePtr& f1, c
 
 tsym::BasePtr tsym::ProductSimpl::trigSymbReplacement(Trigonometric::Type type, const BasePtr& arg)
 {
-    const BasePtr signTest(type == Trigonometric::SIN ? Trigonometric::createSin(arg) :
+    const BasePtr signTest(type == Trigonometric::Type::SIN ? Trigonometric::createSin(arg) :
             Trigonometric::createCos(arg));
     const bool isPositive = signTest->isPositive();
 
-    assert(type == Trigonometric::SIN || type == Trigonometric::COS);
+    assert(type == Trigonometric::Type::SIN || type == Trigonometric::Type::COS);
 
     return Symbol::createTmpSymbol(isPositive);
 }

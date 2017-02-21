@@ -52,12 +52,12 @@ TEST(Var, undefinedType)
     u = Var(1, 0);
     enableLog();
 
-    CHECK_EQUAL("Undefined", u.type());
+    CHECK_EQUAL(Var::Type::UNDEFINED, u.type());
 }
 
 TEST(Var, symbolType)
 {
-    CHECK_EQUAL("Symbol", a.type());
+    CHECK_EQUAL(Var::Type::SYMBOL, a.type());
     CHECK_EQUAL("a", a.name());
 }
 
@@ -67,7 +67,7 @@ TEST(Var, emptyStringCreation)
     const Var undefined("");
     enableLog();
 
-    CHECK_EQUAL("Undefined", undefined.type());
+    CHECK_EQUAL(Var::Type::UNDEFINED, undefined.type());
 }
 
 TEST(Var, simpleSubcriptParsing)
@@ -97,7 +97,7 @@ TEST(Var, parsingError)
     const Var var("Pi*2");
     enableLog();
 
-    CHECK_EQUAL("Symbol", var.type());
+    CHECK_EQUAL(Var::Type::SYMBOL, var.type());
     CHECK_EQUAL("Pi*2", var.name());
 }
 
@@ -107,7 +107,7 @@ TEST(Var, illegalCharacter)
     const Var illegal("Ä");
     enableLog();
 
-    CHECK_EQUAL("Symbol", illegal.type());
+    CHECK_EQUAL(Var::Type::SYMBOL, illegal.type());
     CHECK_EQUAL("Ä", illegal.name());
 }
 
@@ -117,13 +117,13 @@ TEST(Var, illegalSymbolName)
     const Var illegal("12345");
     enableLog();
 
-    CHECK_EQUAL("Symbol", illegal.type());
+    CHECK_EQUAL(Var::Type::SYMBOL, illegal.type());
     CHECK_EQUAL("12345", illegal.name());
 }
 
 TEST(Var, constructPositiveSymbol)
 {
-    const Var aPos("a", Var::POSITIVE);
+    const Var aPos("a", Var::Sign::POSITIVE);
 
     CHECK(aPos.isPositive());
     CHECK(!a.isPositive());
@@ -131,9 +131,9 @@ TEST(Var, constructPositiveSymbol)
 
 TEST(Var, numberTypes)
 {
-    CHECK_EQUAL("Integer", one.type());
-    CHECK_EQUAL("Double", Var(1.23456789).type());
-    CHECK_EQUAL("Fraction", Var(3, 5).type());
+    CHECK_EQUAL(Var::Type::INT, one.type());
+    CHECK_EQUAL(Var::Type::DOUBLE, Var(1.23456789).type());
+    CHECK_EQUAL(Var::Type::FRACTION, Var(3, 5).type());
 }
 
 TEST(Var, numberRequest)
@@ -176,21 +176,21 @@ TEST(Var, powerType)
 {
     a = a.toThe(2);
 
-    CHECK_EQUAL("Power", a.type());
+    CHECK_EQUAL(Var::Type::POWER, a.type());
 }
 
 TEST(Var, productType)
 {
     const Var p(a*b*c);
 
-    CHECK_EQUAL("Product", p.type());
+    CHECK_EQUAL(Var::Type::PRODUCT, p.type());
 }
 
 TEST(Var, constantPi)
 {
     const Var pi(Pi);
 
-    CHECK_EQUAL("Constant", pi.type());
+    CHECK_EQUAL(Var::Type::CONSTANT, pi.type());
     CHECK_EQUAL("pi", pi.name());
     CHECK(pi.operands().empty());
 }
@@ -201,7 +201,7 @@ TEST(Var, functionType)
 
     res = sin(Var(1, 4));
 
-    CHECK_EQUAL("Function", res.type());
+    CHECK_EQUAL(Var::Type::FUNCTION, res.type());
     CHECK_EQUAL("sin", res.name());
 }
 
@@ -209,7 +209,7 @@ TEST(Var, sumType)
 {
     const Var s(a + b + d);
 
-    CHECK_EQUAL("Sum", s.type());
+    CHECK_EQUAL(Var::Type::SUM, s.type());
 }
 
 TEST(Var, sumHasSymbol)
@@ -282,7 +282,7 @@ TEST(Var, addDifferentSymbols)
 
     res = a + b;
 
-    CHECK_EQUAL("Sum", res.type());
+    CHECK_EQUAL(Var::Type::SUM, res.type());
     CHECK_EQUAL(a, res.operands().front());
     CHECK_EQUAL(b, res.operands().back());
 }
@@ -374,7 +374,7 @@ TEST(Var, productDividedByNumber)
 
 TEST(Var, multiplicationOfExpPosSymbol)
 {
-    const Var aPos("a", Var::POSITIVE);
+    const Var aPos("a", Var::Sign::POSITIVE);
     const Var expected(pow(aPos, Var(10, 3)));
     Var pow(aPos);
 
@@ -391,7 +391,7 @@ TEST(Var, noMultiplicationOfExpUnclearSymbol)
 
     res = res.toThe(3);
 
-    CHECK_EQUAL("Power", res.type());
+    CHECK_EQUAL(Var::Type::POWER, res.type());
 }
 
 TEST(Var, multiplicationOfExpUnclearSymbol)
@@ -454,7 +454,7 @@ TEST(Var, powerWithZeroBaseNegExp)
     zero = zero.toThe(-2);
     enableLog();
 
-    CHECK_EQUAL("Undefined", zero.type());
+    CHECK_EQUAL(Var::Type::UNDEFINED, zero.type());
 }
 
 TEST(Var, powerWithBaseOne)
@@ -501,7 +501,7 @@ TEST(Var, productOfSymbolAndSum)
     res = a*(b + c);
 
     /* Is not expanded into a sum. */
-    CHECK_EQUAL("Product", res.type());
+    CHECK_EQUAL(Var::Type::PRODUCT, res.type());
 }
 
 TEST(Var, productOfConstantSumAndSum)
@@ -512,7 +512,7 @@ TEST(Var, productOfConstantSumAndSum)
 
     res = (two + sqrtTwo)*(a + b);
 
-    CHECK_EQUAL("Sum", res.type());
+    CHECK_EQUAL(Var::Type::SUM, res.type());
     CHECK_EQUAL((two + sqrtTwo)*a + (two + sqrtTwo)*b, res);
 }
 
@@ -560,7 +560,7 @@ TEST(Var, productOfTwoConstantSums)
 
     res = (two + sqrtTwo)*(three + sqrtThree);
 
-    CHECK_EQUAL("Sum", res.type());
+    CHECK_EQUAL(Var::Type::SUM, res.type());
     CHECK_EQUAL(6 + 3*sqrtTwo + 2*sqrtThree + sqrtSix, res);
 }
 
@@ -585,7 +585,7 @@ TEST(Var, numPowerToUndefined)
 {
     const Var res = pow(Var(-1), Var(1, 3));
 
-    CHECK_EQUAL("Undefined", res.type());
+    CHECK_EQUAL(Var::Type::UNDEFINED, res.type());
 }
 
 TEST(Var, numPowerToUndefinedEvenDenomExp)
@@ -593,7 +593,7 @@ TEST(Var, numPowerToUndefinedEvenDenomExp)
 {
     const Var res = pow(Var(-1), Var(4, 5));
 
-    CHECK_EQUAL("Undefined", res.type());
+    CHECK_EQUAL(Var::Type::UNDEFINED, res.type());
 }
 
 TEST(Var, numPowerToUndefinedFractionBase)
@@ -601,7 +601,7 @@ TEST(Var, numPowerToUndefinedFractionBase)
 {
     const Var res = sqrt(Var(-1, 2));
 
-    CHECK_EQUAL("Undefined", res.type());
+    CHECK_EQUAL(Var::Type::UNDEFINED, res.type());
 }
 
 TEST(Var, simpleNumericPowerSimplification)
@@ -678,7 +678,7 @@ TEST(Var, constPowerfracExpGreaterThanOne)
 
     res = pow(2, Var(3, 2));
 
-    CHECK_EQUAL("Product", res.type());
+    CHECK_EQUAL(Var::Type::PRODUCT, res.type());
     CHECK_EQUAL(2*sqrtTwo, res);
 }
 
@@ -699,7 +699,7 @@ TEST(Var, simpleSumWithEqualNonConstTerms)
 
     res = two*a + sqrtTwo*a;
 
-    CHECK_EQUAL("Sum", res.type());
+    CHECK_EQUAL(Var::Type::SUM, res.type());
     CHECK_EQUAL((two + sqrtTwo)*a, res);
 }
 
@@ -720,7 +720,7 @@ TEST(Var, collectConstTermsWithSum)
 
     res = (1 + sqrtTwo)*a + sqrtThree*a;
 
-    CHECK_EQUAL("Sum", res.type());
+    CHECK_EQUAL(Var::Type::SUM, res.type());
     CHECK_EQUAL(a + sqrtTwo*a + sqrtThree*a, res);
 }
 
@@ -731,7 +731,7 @@ TEST(Var, expandProductOfConstTerms)
 
     res = (1 + 2*sqrtTwo*sqrtThree)*a + (2 + sqrtTwo*sqrtThree)*a;
 
-    CHECK_EQUAL("Sum", res.type());
+    CHECK_EQUAL(Var::Type::SUM, res.type());
     CHECK_EQUAL(3*a + 3*sqrt(6)*a, res);
 }
 
@@ -768,7 +768,7 @@ TEST(Var, largerSumWithEqualNonConstTerms)
 
     res = (two + sqrtTwo)*(a + b + c) + (one + sqrtThree)*(a + b + c);
 
-    CHECK_EQUAL("Sum", res.type())
+    CHECK_EQUAL(Var::Type::SUM, res.type())
     CHECK_EQUAL(constVar*a + constVar*b + constVar*c, res);
 }
 
@@ -913,7 +913,7 @@ TEST(Var, atan2OfNonResolvableNumericallyEvaluableArgs)
 {
     const Var res(atan2(sqrtSix, sqrtThree));
 
-    CHECK_EQUAL("Function", res.type());
+    CHECK_EQUAL(Var::Type::FUNCTION, res.type());
     CHECK_EQUAL("atan", res.name());
     CHECK_EQUAL(1, res.operands().size());
     CHECK_EQUAL(sqrtTwo, res.operands().front());
@@ -954,8 +954,8 @@ TEST(Var, getNumAndDenomFromProduct)
 
 TEST(Var, negativeVar)
 {
-    const Var aPos("a", Var::POSITIVE);
-    const Var bPos("b", Var::POSITIVE);
+    const Var aPos("a", Var::Sign::POSITIVE);
+    const Var bPos("b", Var::Sign::POSITIVE);
     Var res;
 
     res = -aPos*bPos + 2 - 3*Pi;
@@ -966,7 +966,7 @@ TEST(Var, negativeVar)
 
 TEST(Var, comparisonPosAndNonPosSymbols)
 {
-    const Var aPos("a_3", Var::POSITIVE);
+    const Var aPos("a_3", Var::Sign::POSITIVE);
     const Var aNonPos("a_3");
 
     CHECK(aPos != aNonPos);
@@ -1027,6 +1027,16 @@ TEST(Var, printerOperator)
     std::stringstream stream;
 
     stream << a;
+
+    CHECK_EQUAL(expected, stream.str());
+}
+
+TEST(Var, printerOperatorTypeEnum)
+{
+    const std::string expected("Sum");
+    std::stringstream stream;
+
+    stream << (a + b).type();
 
     CHECK_EQUAL(expected, stream.str());
 }

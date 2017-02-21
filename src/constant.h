@@ -27,7 +27,7 @@ namespace tsym {
             const Name& name() const;
 
         private:
-            enum Type { PI, E };
+            enum class Type { PI, E };
             Constant(Type type, const Name& name);
             Constant(const Constant& other);
             Constant& operator = (const Constant& other);

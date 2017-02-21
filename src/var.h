@@ -16,7 +16,9 @@ namespace tsym {
          * normalization, expansion, requesting the type etc.). Numbers can be converted to plain
          * double or, if they fit, into integers (numerator and/or denominator). */
         public:
-            enum Sign { POSITIVE = 1 };
+            enum class Sign { POSITIVE = 1 };
+            enum class Type { SYMBOL, INT, FRACTION, DOUBLE, CONSTANT, UNDEFINED, FUNCTION, SUM,
+                PRODUCT, POWER };
 
             Var();
             Var(int value);
@@ -53,9 +55,7 @@ namespace tsym {
             bool isZero() const;
             bool isPositive() const;
             bool isNegative() const;
-            /* Returns "Symbol", "Integer", "Fraction", "Double", "Constant", "Undefined",
-             * "Function", "Sum", "Product" or "Power": */
-            std::string type() const;
+            Type type() const;
             Var numerator() const;
             Var denominator() const;
             bool fitsIntoInt() const;
@@ -68,7 +68,7 @@ namespace tsym {
             const BasePtr& getBasePtr() const;
 
         private:
-            std::string numericType() const;
+            Type numericType() const;
             bool isInteger() const;
             std::pair<Var, Var> normalToFraction() const;
             void collectSymbols(const BasePtr& ptr, std::vector<Var>& symbols) const;
@@ -86,6 +86,7 @@ namespace tsym {
     Var operator / (Var lhs, const Var& rhs);
 
     std::ostream& operator << (std::ostream& stream, const Var& rhs);
+    std::ostream& operator << (std::ostream& stream, const Var::Type& rhs);
 }
 
 #endif

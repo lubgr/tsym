@@ -32,9 +32,9 @@ TEST_GROUP(NumTrigoSimpl)
 
     void check(const BasePtr& expectedSin, const BasePtr& expectedCos, const BasePtr& expectedTan)
     {
-        check(Trigonometric::SIN, expectedSin);
-        check(Trigonometric::COS, expectedCos);
-        check(Trigonometric::TAN, expectedTan);
+        check(Trigonometric::Type::SIN, expectedSin);
+        check(Trigonometric::Type::COS, expectedCos);
+        check(Trigonometric::Type::TAN, expectedTan);
     }
 
     void check(Trigonometric::Type type, const BasePtr& expected)
@@ -53,16 +53,16 @@ TEST_GROUP(NumTrigoSimpl)
     void checkInverse(const BasePtr& expectedAsin, const BasePtr& expectedAcos,
             const BasePtr& expectedAtan)
     {
-        check(Trigonometric::ASIN, expectedAsin);
-        check(Trigonometric::ACOS, expectedAcos);
-        check(Trigonometric::ATAN, expectedAtan);
+        check(Trigonometric::Type::ASIN, expectedAsin);
+        check(Trigonometric::Type::ACOS, expectedAcos);
+        check(Trigonometric::Type::ATAN, expectedAtan);
     }
 
     void checkUnsimplified()
     {
-        checkUnsimplified(Trigonometric::SIN);
-        checkUnsimplified(Trigonometric::COS);
-        checkUnsimplified(Trigonometric::TAN);
+        checkUnsimplified(Trigonometric::Type::SIN);
+        checkUnsimplified(Trigonometric::Type::COS);
+        checkUnsimplified(Trigonometric::Type::TAN);
     }
 
     void checkUnsimplified(Trigonometric::Type type)
@@ -223,7 +223,7 @@ TEST(NumTrigoSimpl, exactFromNumericallyEvaluable)
 
     nts.setArg(arg);
 
-    check(Trigonometric::SIN, expectedSin);
+    check(Trigonometric::Type::SIN, expectedSin);
 }
 
 TEST(NumTrigoSimpl, numericEvaluation)
@@ -277,9 +277,9 @@ TEST(NumTrigoSimpl, inverseOneOverSqrtTwo)
 
     nts.setArg(Power::oneOver(sqrtTwo));
 
-    check(Trigonometric::ASIN, piFourth);
-    check(Trigonometric::ACOS, piFourth);
-    checkUnsimplified(Trigonometric::ATAN);
+    check(Trigonometric::Type::ASIN, piFourth);
+    check(Trigonometric::Type::ACOS, piFourth);
+    checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
 TEST(NumTrigoSimpl, inverseNegativeArg)
@@ -291,9 +291,9 @@ TEST(NumTrigoSimpl, inverseNegativeArg)
 
     nts.setArg(arg);
 
-    check(Trigonometric::ASIN, expectedAsin);
-    check(Trigonometric::ACOS, expectedAcos);
-    checkUnsimplified(Trigonometric::ATAN);
+    check(Trigonometric::Type::ASIN, expectedAsin);
+    check(Trigonometric::Type::ACOS, expectedAcos);
+    checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
 TEST(NumTrigoSimpl, inverseFromSum)
@@ -306,9 +306,9 @@ TEST(NumTrigoSimpl, inverseFromSum)
 
     nts.setArg(arg);
 
-    check(Trigonometric::ASIN, expectedAsin);
-    check(Trigonometric::ACOS, expectedAcos);
-    checkUnsimplified(Trigonometric::ATAN);
+    check(Trigonometric::Type::ASIN, expectedAsin);
+    check(Trigonometric::Type::ACOS, expectedAcos);
+    checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
 TEST(NumTrigoSimpl, inverseNegativeSum)
@@ -320,9 +320,9 @@ TEST(NumTrigoSimpl, inverseNegativeSum)
 
     nts.setArg(arg);
 
-    check(Trigonometric::ASIN, expectedAsin);
-    check(Trigonometric::ACOS, expectedAcos);
-    checkUnsimplified(Trigonometric::ATAN);
+    check(Trigonometric::Type::ASIN, expectedAsin);
+    check(Trigonometric::Type::ACOS, expectedAcos);
+    checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
 TEST(NumTrigoSimpl, atanNegativeArg)
@@ -332,7 +332,7 @@ TEST(NumTrigoSimpl, atanNegativeArg)
 
     nts.setArg(Product::minus(sqrtThree));
 
-    check(Trigonometric::ATAN, expected);
+    check(Trigonometric::Type::ATAN, expected);
 }
 
 TEST(NumTrigoSimpl, atanNegativeSum)
@@ -343,7 +343,7 @@ TEST(NumTrigoSimpl, atanNegativeSum)
 
     nts.setArg(arg);
 
-    check(Trigonometric::ATAN, expected);
+    check(Trigonometric::Type::ATAN, expected);
 }
 
 TEST(NumTrigoSimpl, inverseExactFromDouble)
@@ -393,9 +393,9 @@ TEST(NumTrigoSimpl, noSimplification)
 
     nts.setArg(arg);
 
-    checkUnsimplified(Trigonometric::SIN);
-    checkUnsimplified(Trigonometric::COS);
-    checkUnsimplified(Trigonometric::TAN);
+    checkUnsimplified(Trigonometric::Type::SIN);
+    checkUnsimplified(Trigonometric::Type::COS);
+    checkUnsimplified(Trigonometric::Type::TAN);
 }
 
 TEST(NumTrigoSimpl, noSimplificationInverse)
@@ -405,9 +405,9 @@ TEST(NumTrigoSimpl, noSimplificationInverse)
 
     nts.setArg(arg);
 
-    checkUnsimplified(Trigonometric::ASIN);
-    checkUnsimplified(Trigonometric::ACOS);
-    checkUnsimplified(Trigonometric::ATAN);
+    checkUnsimplified(Trigonometric::Type::ASIN);
+    checkUnsimplified(Trigonometric::Type::ACOS);
+    checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
 TEST(NumTrigoSimpl, noSimplificationLargeInput)
@@ -425,12 +425,12 @@ TEST(NumTrigoSimpl, noSimplificationLargeInput)
 
     nts.setArg(arg);
 
-    checkUnsimplified(Trigonometric::SIN);
-    checkUnsimplified(Trigonometric::COS);
-    checkUnsimplified(Trigonometric::TAN);
-    checkUnsimplified(Trigonometric::ASIN);
-    checkUnsimplified(Trigonometric::ACOS);
-    checkUnsimplified(Trigonometric::ATAN);
+    checkUnsimplified(Trigonometric::Type::SIN);
+    checkUnsimplified(Trigonometric::Type::COS);
+    checkUnsimplified(Trigonometric::Type::TAN);
+    checkUnsimplified(Trigonometric::Type::ASIN);
+    checkUnsimplified(Trigonometric::Type::ACOS);
+    checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
 TEST(NumTrigoSimpl, greaterThanRange)
@@ -440,9 +440,9 @@ TEST(NumTrigoSimpl, greaterThanRange)
 
     nts.setArg(arg);
 
-    check(Trigonometric::ASIN, Undefined::create());
-    check(Trigonometric::ACOS, Undefined::create());
-    checkUnsimplified(Trigonometric::ATAN);
+    check(Trigonometric::Type::ASIN, Undefined::create());
+    check(Trigonometric::Type::ACOS, Undefined::create());
+    checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
 TEST(NumTrigoSimpl, lessThanRange)
@@ -472,7 +472,7 @@ TEST(NumTrigoSimpl, largeNumericEvaluationToExact)
 
     nts.setArg(arg);
 
-    check(Trigonometric::ASIN, piFourth);
+    check(Trigonometric::Type::ASIN, piFourth);
 }
 
 TEST(NumTrigoSimpl, inverseUnresolvableNumeric)
@@ -480,7 +480,7 @@ TEST(NumTrigoSimpl, inverseUnresolvableNumeric)
 {
     nts.setArg(Numeric::create(-1, 10));
 
-    checkUnsimplified(Trigonometric::ASIN);
-    checkUnsimplified(Trigonometric::ACOS);
-    checkUnsimplified(Trigonometric::ATAN);
+    checkUnsimplified(Trigonometric::Type::ASIN);
+    checkUnsimplified(Trigonometric::Type::ACOS);
+    checkUnsimplified(Trigonometric::Type::ATAN);
 }

@@ -1,6 +1,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <map>
 #include "var.h"
 #include "symbol.h"
 #include "numeric.h"
@@ -38,6 +39,16 @@ namespace tsym {
 
             return Name("");
         }
+
+        const std::map<std::string, Var::Type>& typeStringMap()
+        {
+            static const std::map<std::string, Var::Type> map {{ "Sum", Var::Type::SUM },
+                { "Product", Var::Type::PRODUCT }, { "Symbol", Var::Type::SYMBOL },
+                { "Power", Var::Type::POWER }, { "Constant", Var::Type::CONSTANT },
+                { "Undefined", Var::Type::UNDEFINED}, { "Function", Var::Type::FUNCTION }};
+
+            return map;
+        }
     }
 }
 
@@ -65,7 +76,7 @@ tsym::Var::Var(const char *name)
 
 tsym::Var::Var(const char *name, Var::Sign sign)
 {
-    assert(sign == Var::POSITIVE);
+    assert(sign == Var::Sign::POSITIVE);
 
     /* To avoid an unused variable warning: */
     (void)sign;
@@ -214,29 +225,35 @@ bool tsym::Var::isNegative() const
     return (*rep)->isNegative();
 }
 
-std::string tsym::Var::type() const
+tsym::Var::Type tsym::Var::type() const
 {
+    std::map<std::string, Type>::const_iterator lookup;
+
     if ((*rep)->isNumeric())
         return numericType();
-    else
-        return (*rep)->typeStr();
+
+    lookup = typeStringMap().find((*rep)->typeStr());
+
+    assert(lookup != typeStringMap().end());
+
+    return lookup->second;
 }
 
-std::string tsym::Var::numericType() const
+tsym::Var::Type tsym::Var::numericType() const
 {
     const Number number((*rep)->numericEval());
 
     if (number.isInt())
-        return "Integer";
+        return Type::INT;
     else if (number.isDouble())
-        return "Double";
+        return Type::DOUBLE;
     else if (number.isFrac())
-        return "Fraction";
+        return Type::FRACTION;
 
     /* This should never happened, as the BasePtr must be Undefined in the first place. */
     TSYM_ERROR("Illegal number ", number, " in Var!");
 
-    return "Undefined";
+    return Type::UNDEFINED;
 }
 
 tsym::Var tsym::Var::numerator() const
@@ -384,6 +401,19 @@ std::ostream& tsym::operator << (std::ostream& stream, const Var& var)
     Printer printer(var);
 
     printer.print(stream);
+
+    return stream;
+}
+
+std::ostream& tsym::operator << (std::ostream& stream, const Var::Type& type)
+{
+    for (const auto& it : typeStringMap())
+        if (it.second == type) {
+            stream << it.first;
+            return stream;
+        }
+
+    TSYM_ERROR("Couldn't find string representation of Var");
 
     return stream;
 }

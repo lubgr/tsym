@@ -38,6 +38,8 @@ void initConstructOnFirstUse()
     emptyMatrix(1, 1);
     emptyVec(1);
 
+    tsym::Var("a").type();
+
     plic::debug("CppUTest", "initialize plic local static variables by %%");
 }
 

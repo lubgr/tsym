@@ -130,7 +130,7 @@ TEST(Globals, logOfZero)
     result = tsym::log(0);
     enableLog();
 
-    CHECK_EQUAL("Undefined", result.type());
+    CHECK_EQUAL(Var::Type::UNDEFINED, result.type());
 }
 
 TEST(Globals, sineZero)

@@ -45,32 +45,32 @@ tsym::Trigonometric::~Trigonometric() {}
 
 tsym::BasePtr tsym::Trigonometric::createSin(const BasePtr& arg)
 {
-    return create(SIN, arg);
+    return create(Type::SIN, arg);
 }
 
 tsym::BasePtr tsym::Trigonometric::createCos(const BasePtr& arg)
 {
-    return create(COS, arg);
+    return create(Type::COS, arg);
 }
 
 tsym::BasePtr tsym::Trigonometric::createTan(const BasePtr& arg)
 {
-    return create(TAN, arg);
+    return create(Type::TAN, arg);
 }
 
 tsym::BasePtr tsym::Trigonometric::createAsin(const BasePtr& arg)
 {
-    return create(ASIN, arg);
+    return create(Type::ASIN, arg);
 }
 
 tsym::BasePtr tsym::Trigonometric::createAcos(const BasePtr& arg)
 {
-    return create(ACOS, arg);
+    return create(Type::ACOS, arg);
 }
 
 tsym::BasePtr tsym::Trigonometric::createAtan(const BasePtr& arg)
 {
-    return create(ATAN, arg);
+    return create(Type::ATAN, arg);
 }
 
 tsym::BasePtr tsym::Trigonometric::createAtan2(const BasePtr& y, const BasePtr& x)
@@ -81,7 +81,7 @@ tsym::BasePtr tsym::Trigonometric::createAtan2(const BasePtr& y, const BasePtr& 
     else if (x->isNumericallyEvaluable() && y->isNumericallyEvaluable())
         return createAtan2Numerically(y, x);
     else
-        return BasePtr(new Trigonometric(BasePtrList(y, x), ATAN2));
+        return BasePtr(new Trigonometric(BasePtrList(y, x), Type::ATAN2));
 }
 
 tsym::BasePtr tsym::Trigonometric::create(Type type, const BasePtr& arg)
@@ -121,9 +121,9 @@ tsym::BasePtr tsym::Trigonometric::createBySymmetry(Type type, const BasePtr& ne
 {
     const BasePtr positiveArg(Product::minus(negativeArg));
 
-    if (type == COS)
+    if (type == Type::COS)
         return create(type, positiveArg);
-    else if (type == ACOS)
+    else if (type == Type::ACOS)
         return Sum::create(timesPi(1), Product::minus(create(type, positiveArg)));
     else
         return Product::minus(create(type, positiveArg));
@@ -154,9 +154,9 @@ tsym::BasePtr tsym::Trigonometric::createNumericallyBySymmetry(Type type, const 
     const BasePtr positiveArg(Product::minus(arg));
     const BasePtr shiftedResult(new Trigonometric(BasePtrList(positiveArg), type));
 
-    if (type == COS)
+    if (type == Type::COS)
         return shiftedResult;
-    else if (type == ACOS)
+    else if (type == Type::ACOS)
         return Sum::create(timesPi(1), Product::minus(shiftedResult));
     else
         return Product::minus(shiftedResult);
@@ -207,19 +207,19 @@ bool tsym::Trigonometric::isOtherTheInverse(Type type, Type otherType)
     /* Doesn't return true for a general pair of e.g. asin - sin, the first type must be the
      * non-inverse part. Atan2 isn't considered here. */
 {
-    if (type == SIN)
-        return otherType == ASIN;
-    else if (type == COS)
-        return otherType == ACOS;
-    else if (type == TAN)
-        return otherType == ATAN;
+    if (type == Type::SIN)
+        return otherType == Type::ASIN;
+    else if (type == Type::COS)
+        return otherType == Type::ACOS;
+    else if (type == Type::TAN)
+        return otherType == Type::ATAN;
     else
         return false;
 }
 
 bool tsym::Trigonometric::isTanOfAtan2(Type type, Type otherType)
 {
-    return type == TAN && otherType == ATAN2;
+    return type == Type::TAN && otherType == Type::ATAN2;
 }
 
 bool tsym::Trigonometric::isThisTheInverse(Type type, Type otherType)
@@ -255,7 +255,7 @@ tsym::BasePtr tsym::Trigonometric::shiftArgIntoRange(Type type, BasePtr arg)
 
 void tsym::Trigonometric::defineIntervalAndEndFactor(Type type, BasePtr *interval, BasePtr& factor)
 {
-    if (type == ASIN || type == ATAN) {
+    if (type == Type::ASIN || type == Type::ATAN) {
         interval[0] = timesPi(-1, 2);
         interval[1] = timesPi(1, 2);
     } else {
@@ -263,7 +263,7 @@ void tsym::Trigonometric::defineIntervalAndEndFactor(Type type, BasePtr *interva
         interval[1] = timesPi(1);
     }
 
-    factor = type == ATAN ? Numeric::mOne() : Numeric::one();
+    factor = type == Type::ATAN ? Numeric::mOne() : Numeric::one();
 }
 
 tsym::BasePtr tsym::Trigonometric::createFromTrigoNoInverse(Type type, const BasePtr& arg)
@@ -275,19 +275,20 @@ tsym::BasePtr tsym::Trigonometric::createFromTrigoNoInverse(Type type, const Bas
     const BasePtr aux2(Power::sqrt(Sum::create(one, square(other->arg1))));
     const BasePtr aux3(Power::sqrt(Sum::create(square(other->arg1), square(other->arg2))));
 
-    if ((type == SIN && otherType == ACOS) || (type == COS && otherType == ASIN))
+    if ((type == Type::SIN && otherType == Type::ACOS) ||
+            (type == Type::COS && otherType == Type::ASIN))
         return aux1;
-    else if (type == SIN && otherType == ATAN)
+    else if (type == Type::SIN && otherType == Type::ATAN)
         return Fraction(other->arg1, aux2).eval()->normal();
-    else if (type == SIN && otherType == ATAN2)
+    else if (type == Type::SIN && otherType == Type::ATAN2)
         return Fraction(other->arg1, aux3).eval()->normal();
-    else if (type == COS && otherType == ATAN)
+    else if (type == Type::COS && otherType == Type::ATAN)
         return Fraction(one, aux2).eval()->normal();
-    else if (type == COS && otherType == ATAN2)
+    else if (type == Type::COS && otherType == Type::ATAN2)
         return Fraction(other->arg2, aux3).eval()->normal();
-    else if (type == TAN && otherType == ASIN)
+    else if (type == Type::TAN && otherType == Type::ASIN)
         return Fraction(other->arg1, aux1).eval()->normal();
-    else if (type == TAN && otherType == ACOS)
+    else if (type == Type::TAN && otherType == Type::ACOS)
         return Fraction(aux1, other->arg1).eval()->normal();
     else
         return BasePtr(new Trigonometric(BasePtrList(arg), type));
@@ -323,19 +324,19 @@ tsym::BasePtr tsym::Trigonometric::simplAtan2(const BasePtr& y, const BasePtr& x
     const Trigonometric *trigo(tryCast(atan2Arg));
     NumTrigoSimpl numTrigo;
 
-    if (trigo != NULL && trigo->type == TAN)
+    if (trigo != NULL && trigo->type == Type::TAN)
         return trigo->arg1;
 
-    numTrigo.setType(ATAN);
+    numTrigo.setType(Type::ATAN);
     numTrigo.setArg(atan2ArgEval(y, x));
     numTrigo.compute();
 
     if (numTrigo.hasSimplifiedResult())
         return shiftAtanResultIntoRange(numTrigo.get(), increment);
     else if (atan2Arg->isNegative())
-        return createBySymmetry(ATAN, atan2Arg);
+        return createBySymmetry(Type::ATAN, atan2Arg);
     else
-        return BasePtr(new Trigonometric(BasePtrList(atan2Arg), ATAN));
+        return BasePtr(new Trigonometric(BasePtrList(atan2Arg), Type::ATAN));
 }
 
 tsym::BasePtr tsym::Trigonometric::shiftAtanResultIntoRange(BasePtr result, BasePtr summand)
@@ -365,19 +366,19 @@ tsym::BasePtr tsym::Trigonometric::shiftAtanResultIntoRange(BasePtr result, Base
 std::string tsym::Trigonometric::getStr(Type type)
 {
     switch (type) {
-        case SIN:
+        case Type::SIN:
             return "sin";
-        case COS:
+        case Type::COS:
             return "cos";
-        case TAN:
+        case Type::TAN:
             return "tan";
-        case ASIN:
+        case Type::ASIN:
             return "asin";
-        case ACOS:
+        case Type::ACOS:
             return "acos";
-        case ATAN:
+        case Type::ATAN:
             return "atan";
-        case ATAN2:
+        case Type::ATAN2:
             return "atan2";
         default:
             TSYM_CRITICAL("Unknown trigonometric function type!");
@@ -398,25 +399,25 @@ tsym::Number tsym::Trigonometric::checkedNumericEval() const
     double (*fct)(double) = NULL;
 
     switch (type) {
-        case SIN:
+        case Type::SIN:
             fct = &std::sin;
             break;
-        case COS:
+        case Type::COS:
             fct = &std::cos;
             break;
-        case TAN:
+        case Type::TAN:
             fct = &std::tan;
             break;
-        case ASIN:
+        case Type::ASIN:
             fct = &std::asin;
             break;
-        case ACOS:
+        case Type::ACOS:
             fct = &std::acos;
             break;
-        case ATAN:
+        case Type::ATAN:
             fct = &std::atan;
             break;
-        case ATAN2:
+        case Type::ATAN2:
             return std::atan2(arg1->numericEval().toDouble(), arg2->numericEval().toDouble());
     }
 
@@ -426,7 +427,7 @@ tsym::Number tsym::Trigonometric::checkedNumericEval() const
 tsym::Fraction tsym::Trigonometric::normal(SymbolMap& map) const
     /* Normalizes the function argument and replaces itself with a temporary symbol afterwards. */
 {
-    if (type == ATAN2)
+    if (type == Type::ATAN2)
         return normalAtan2(map);
     else
         return normalOtherThanAtan2(map);
@@ -450,7 +451,7 @@ tsym::Fraction tsym::Trigonometric::normalOtherThanAtan2(SymbolMap& map) const
 
 tsym::BasePtr tsym::Trigonometric::diffWrtSymbol(const BasePtr& symbol) const
 {
-    if (type != ATAN2)
+    if (type != Type::ATAN2)
         return diffWrtSymbol(arg1, symbol);
     else
         return diffWrtSymbol(atan2ArgEval(arg1, arg2), symbol);
@@ -469,22 +470,22 @@ tsym::BasePtr tsym::Trigonometric::innerDiff() const
     BasePtr tmp;
 
     switch (type) {
-        case SIN:
-            return create(COS, arg1);
-        case COS:
-            return Product::minus(create(SIN, arg1));
-        case TAN:
-            return Sum::create(Numeric::one(), square(create(TAN, arg1)));
-        case ASIN:
+        case Type::SIN:
+            return create(Type::COS, arg1);
+        case Type::COS:
+            return Product::minus(create(Type::SIN, arg1));
+        case Type::TAN:
+            return Sum::create(Numeric::one(), square(create(Type::TAN, arg1)));
+        case Type::ASIN:
             tmp = Sum::create(Numeric::one(), Product::minus(square(arg1)));
             return Power::create(tmp, Numeric::create(-1, 2));
-        case ACOS:
+        case Type::ACOS:
             tmp = Sum::create(Numeric::one(), Product::minus(square(arg1)));
             return Product::minus(Power::create(tmp, Numeric::create(-1, 2)));
-        case ATAN:
+        case Type::ATAN:
             tmp = Sum::create(Numeric::one(), square(arg1));
             return Power::oneOver(tmp);
-        case ATAN2:
+        case Type::ATAN2:
             tmp = Sum::create(Numeric::one(), square(atan2ArgEval(arg1, arg2)));
             return Power::oneOver(tmp);
         default:
@@ -497,7 +498,7 @@ tsym::BasePtr tsym::Trigonometric::subst(const BasePtr& from, const BasePtr& to)
 {
     if (isEqual(from))
         return to;
-    else if (type == ATAN2)
+    else if (type == Type::ATAN2)
         return createAtan2(arg1->subst(from, to), arg2->subst(from, to));
     else
         return create(type, arg1->subst(from, to));
@@ -505,7 +506,7 @@ tsym::BasePtr tsym::Trigonometric::subst(const BasePtr& from, const BasePtr& to)
 
 bool tsym::Trigonometric::isPositive() const
 {
-    if (type == ATAN)
+    if (type == Type::ATAN)
         return arg1->isPositive();
     else
         return isNumericallyEvaluable() ? numericEval() > 0 : false;
@@ -513,7 +514,7 @@ bool tsym::Trigonometric::isPositive() const
 
 bool tsym::Trigonometric::isNegative() const
 {
-    if (type == ATAN)
+    if (type == Type::ATAN)
         return arg1->isNegative();
     else
         return isNumericallyEvaluable() ? numericEval() < 0 : false;

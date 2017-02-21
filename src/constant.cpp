@@ -11,12 +11,12 @@ tsym::Constant::Constant(Type type, const Name& name) :
 
 tsym::BasePtr tsym::Constant::createPi()
 {
-    return BasePtr(new Constant(PI, Name("pi")));
+    return BasePtr(new Constant(Type::PI, Name("pi")));
 }
 
 tsym::BasePtr tsym::Constant::createE()
 {
-    return BasePtr(new Constant(E, Name("e")));
+    return BasePtr(new Constant(Type::E, Name("e")));
 }
 
 tsym::Constant::~Constant() {}
@@ -37,9 +37,9 @@ bool tsym::Constant::sameType(const BasePtr& other) const
 tsym::Number tsym::Constant::numericEval() const
 {
     switch (type) {
-        case PI:
+        case Type::PI:
             return M_PI;
-        case E:
+        case Type::E:
             return M_E;
         default:
             return 0.0;

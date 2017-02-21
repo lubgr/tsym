@@ -49,7 +49,7 @@ TEST_GROUP(StringToVar)
     {
         CHECK(!stv.success());
 
-        CHECK_EQUAL("Undefined", stv.get().type());
+        CHECK_EQUAL(Var::Type::UNDEFINED, stv.get().type());
 
         CHECK_EQUAL(expectedErrorIndex, stv.firstErrorIndex());
 
@@ -60,8 +60,8 @@ TEST_GROUP(StringToVar)
     {
         CHECK(!stv.success());
 
-        assert(expected.type() != "Undefined");
-        assert(stv.get().type() != "Undefined");
+        assert(expected.type() != Var::Type::UNDEFINED);
+        assert(stv.get().type() != Var::Type::UNDEFINED);
 
         CHECK_EQUAL(expectedErrorIndex, stv.firstErrorIndex());
 
