@@ -21,7 +21,7 @@ before_install:
   - git clone https://github.com/lubgr/plic
   - cd plic
   - scons CXX=g++-6 PYVERSION=3.4m
-  - sudo scons install CXX=g++-6 PYVERSION=3.4m
+  - sudo scons install CXX=g++-6 PYVERSION=3.4m PREFIX=/usr/
   - cd ..
 
 addons:
