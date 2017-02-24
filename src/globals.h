@@ -24,7 +24,7 @@ namespace tsym {
 
     bool solve(const Matrix& A, const Vector& b, Vector& x);
 
-    bool stringToVar(const std::string& toBeParsed, Var& result);
+    Var parse(const std::string& str, bool *success = nullptr);
 
     extern const Var Pi;
     extern const Var Euler;

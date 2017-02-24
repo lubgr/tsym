@@ -18,8 +18,8 @@ namespace tsym {
     namespace {
         Name parseNonEmptySymbolName(const char *origName)
         {
-            Var tmp;
-            const bool success = stringToVar(origName, tmp);
+            bool success;
+            Var tmp(parse(origName, &success)) ;
 
             if (success && tmp.getBasePtr()->isSymbol())
                 return tmp.getBasePtr()->name();

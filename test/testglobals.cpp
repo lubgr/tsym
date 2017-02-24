@@ -225,19 +225,27 @@ TEST(Globals, atanMinusOneOverSqrtThree)
 
 TEST(Globals, successfulParsing)
 {
+    bool success;
     const Var expected = a*b*tsym::sqrt(2)*tan(a);
-    Var result;
-    const bool success = stringToVar("a*b*sqrt(2)*tan(a)", result);
+    const Var result(parse("a*b*sqrt(2)*tan(a)", &success));
 
     CHECK(success);
     CHECK_EQUAL(expected, result);
 }
 
+TEST(Globals, successfulParsingWithoutFlag)
+{
+    const Var expected = a*b + sin(a)*cos(b);
+    const Var result(parse("a*b + sin(a)*cos(b)"));
+
+    CHECK_EQUAL(expected, result);
+}
+
 TEST(Globals, parsingWithError)
 {
-    Var result;
+    bool success;
     disableLog();
-    const bool success = stringToVar("a*b*sqrt(2)*[[[tan(a)", result);
+    parse("a*b*sqrt(2)*[[[tan(a)", &success);
     enableLog();
 
     CHECK_FALSE(success);

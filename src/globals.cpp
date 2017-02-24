@@ -71,17 +71,19 @@ bool tsym::solve(const Matrix& A, const Vector& b, Vector& x)
     return x.size() > 0;
 }
 
-bool tsym::stringToVar(const std::string& toBeParsed, Var& result)
+tsym::Var tsym::parse(const std::string& str, bool *success)
 {
     std::vector<std::string>::const_iterator it;
-    const StringToVar stv(toBeParsed);
+    const StringToVar stv(str);
+    const Var result(stv.get());
 
-    result = stv.get();
-
-    TSYM_DEBUG("Parsed '", toBeParsed, "' with result: ", result);
+    TSYM_DEBUG("Parsed '", str, "' with result: ", result);
 
     for (it = stv.errorMessages().begin(); it != stv.errorMessages().end(); ++it)
         TSYM_ERROR(*it);
 
-    return stv.success();
+    if (success != nullptr)
+        *success = stv.success();
+
+    return result;
 }
