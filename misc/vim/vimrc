@@ -10,6 +10,7 @@ function! s:insertIncludeGuard()
 endfunction
 
 autocmd BufNewFile *.{h,hpp} call <SID>insertIncludeGuard()
+autocmd BufRead,BufReadPost README.md set spell spelllang=en_us
 
 map <F10> :argadd `git ls-files '*.h' '*.cpp'`
 
