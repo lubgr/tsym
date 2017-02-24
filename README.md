@@ -30,7 +30,7 @@ and [scons](http://scons.org) as a build system. For unit tests,
 [CppUTest](https://github.com/cpputest/cpputest) is required. tsym should build on all major Linux
 distributions by e.g.
 ```bash
-scons CFLAGS="-O2" CXXFLAGS="-march=native -O2" lib
+scons CFLAGS=-O2 CXXFLAGS="-march=native -O2" lib
 ```
 where the flag specifications are of course optional. See `scons -h` for details. To install header
 files and the shared library:
@@ -57,8 +57,10 @@ int main(int argc, char **argv)
     std::cout << a + b*fraction << std::endl;
 }
 ```
-Implicit constructors are available for `int` and `double` arguments, such that intuitive
-calculations are possible:
+Variable names and subscripts must be ASCII characters or numbers. A variable name can't start with
+a number, curly braces around the subscript can be omitted when it's only one character. Implicit
+constructors are available for `int` and `double` arguments, such that intuitive calculations are
+possible:
 ```c++
 tsym::Var a("a");
 tsym::Var b; /* Initialized to zero by default constructor. */
@@ -68,10 +70,12 @@ b = 2*a + a/1.2345;
 /* Careful - this will be zero, because 2/3 is evaluated first and as plain integral type: */
 b = 2/3*a;
 ```
-Some mathematical functions and two constants (e and pi) are available inside of the tsym namespace:
+Functions for square root, power, logarithm and (inverse) trigonometric maps including `atan2` as
+well as Euler and Pi constants are available inside of the tsym namespace:
 ```c++
 tsym::Var minusPiFourth = tsym::Pi/4 - tsym::asin(1);
-tsym::Var onePlusPiFourth = tsym::log(tsym::e) + tsym::acos(1/tsym::sqrt(2));
+tsym::Var onePlusPiFourth = tsym::log(tsym::Euler) + tsym::acos(1/tsym::sqrt(2));
+tsym::Var eToTheFour = tsym::pow(tsym::Euler, 4);
 ```
 Information about expressions can be queried via methods of Var:
 ```c++
@@ -101,8 +105,8 @@ c = c*b;
 
 std::cout << c.expand() << std::endl; /* 1/5 + a */
 ```
-Finally, a Matrix and a Vector class (simple wrappers around memory management) are provided with
-standard operations like addition, multiplication and the like. Linear systems of equations can be
+Matrix and a Vector class (simple wrappers around memory management) are provided with standard
+operators for addition, subtraction multiplication and the like. Linear systems of equations can be
 solved by the global function `solve`.
 ```c++
 tsym::Matrix M(2, 2); /* All entries are default by default. */
@@ -120,4 +124,31 @@ std::cout << M.det() << std::endl; /* -cos(2) */
 tsym::solve(M, rhs, solution);
 
 std::cout << solution << std::endl; /* [ 3/5, -a/cos(2) ] */
+```
+The construction of expressions can be done by parsing of strings, too, by invocation of a free
+function
+```c++
+tsym::Var parsedFromString = tsym::parse("a*cos(pi/5) + sqrt(3)*log(euler)");
+```
+This can go wrong of course, so a flag reference can be passed to check the success of parsing
+```c++
+bool success;
+tsym::Var wrong = tsym::parse("a*cos(3!)", &success); /* Results in a*cos(3). */
+
+if (!success)
+    std::cout << "Factorials aren't implemented" << std::endl;
+```
+The parser does very limited error recovery, you shouldn't rely on it.
+
+Compiling the example code
+--------------------------
+
+The exemplary C++ program from above can be compiled with
+```bash
+g++ -o example main-function-from-above.cpp -ltsym -lplic -lpython3.4m
+```
+for less recent compiler versions, `-std=c++11` should be manually enabled. Note that the version of
+the python library should match the one plic is compiled and linked against. If you are unsure, run
+```bash
+find /usr -type f -path '*plic/buildinfo.h' -exec sed -rn '/python/Is/^.*"(.*)"/\1/p' '{}' \;
 ```
