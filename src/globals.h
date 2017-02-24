@@ -27,7 +27,7 @@ namespace tsym {
     bool stringToVar(const std::string& toBeParsed, Var& result);
 
     extern const Var Pi;
-    extern const Var e;
+    extern const Var Euler;
 }
 
 #endif

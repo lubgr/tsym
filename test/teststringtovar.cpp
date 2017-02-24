@@ -726,11 +726,11 @@ TEST(StringToVar, euler)
     const StringToVar stv4("euLEr");
     const StringToVar stv5("EuleR");
 
-    checkSuccess(e, stv1);
-    checkSuccess(e, stv2);
-    checkSuccess(e, stv3);
-    checkSuccess(e, stv4);
-    checkSuccess(e, stv5);
+    checkSuccess(Euler, stv1);
+    checkSuccess(Euler, stv2);
+    checkSuccess(Euler, stv3);
+    checkSuccess(Euler, stv4);
+    checkSuccess(Euler, stv5);
 }
 
 TEST(StringToVar, symbolTimesFunction)
@@ -751,7 +751,7 @@ TEST(StringToVar, logOfEulerEvaluesToOne)
 TEST(StringToVar, eulerInMixedTerm)
 {
     const StringToVar stv("10*Euler + EULER^2 - a*b*log(euler)");
-    const Var expected = 10*e + e*e - a*b;
+    const Var expected = 10*Euler + Euler*Euler - a*b;
 
     checkSuccess(expected, stv);
 }

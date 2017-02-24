@@ -8,7 +8,7 @@
 
 const tsym::Var tsym::Pi(tsym::Constant::createPi());
 
-const tsym::Var tsym::e(tsym::Constant::createE());
+const tsym::Var tsym::Euler(tsym::Constant::createE());
 
 tsym::Var tsym::sqrt(const Var& base)
 {

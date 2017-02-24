@@ -1000,7 +1000,7 @@ TEST(Var, collectSymbolsFromMixedTerm)
 
 TEST(Var, collectSymbolsFromPower)
 {
-    const Var term(tsym::pow(a + b, a*d*(2 + tsym::Pi*e*tsym::e)));
+    const Var term(tsym::pow(a + b, a*d*(2 + tsym::Pi*e*tsym::Euler)));
     const std::vector<Var> result(term.collectSymbols());
 
     CHECK_EQUAL(4, result.size());

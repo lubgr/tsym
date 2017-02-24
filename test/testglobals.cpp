@@ -92,14 +92,14 @@ TEST(Globals, powerEulerBaseLogExp)
 {
     const Var arg = 2*a*b*b*Pi;
     const Var exp = log(arg);
-    const Var result = pow(tsym::e, exp);
+    const Var result = pow(Euler, exp);
 
     CHECK_EQUAL(arg, result);
 }
 
 TEST(Globals, logOfE)
 {
-    const Var result = log(e);
+    const Var result = log(Euler);
 
     CHECK_EQUAL(1, result);
 }
@@ -107,7 +107,7 @@ TEST(Globals, logOfE)
 TEST(Globals, logOfPowerWithBaseE)
 {
     const Var exp = a + b + tsym::sqrt(2);
-    const Var result = log(pow(e, exp));
+    const Var result = log(pow(Euler, exp));
 
     CHECK_EQUAL(exp, result);
 }
