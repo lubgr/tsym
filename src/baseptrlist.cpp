@@ -186,10 +186,10 @@ bool tsym::BasePtrList::isDifferent(const BasePtrList& other) const
 
 bool tsym::BasePtrList::has(const BasePtr& element) const
 {
-    for (const_iterator it = list.begin(); it != list.end(); ++it)
-        if ((*it)->isEqual(element))
+    for (const auto& item : list)
+        if (item->isEqual(element))
             return true;
-        else if ((*it)->has(element))
+        else if (item->has(element))
             return true;
 
     return false;
@@ -214,8 +214,8 @@ bool tsym::BasePtrList::hasUndefinedElements() const
 
 bool tsym::BasePtrList::isTrueForAtLeastOneElement(bool (Base::*method)() const) const
 {
-    for (const_iterator it = list.begin(); it != list.end(); ++it)
-        if (((**it).*method)())
+    for (const auto& item : list)
+        if (((*item).*method)())
             return true;
 
     return false;
@@ -238,8 +238,8 @@ bool tsym::BasePtrList::areElementsNumericallyEvaluable() const
 
 bool tsym::BasePtrList::isTrueForAllElements(bool (Base::*method)() const) const
 {
-    for (const_iterator it = list.begin(); it != list.end(); ++it)
-        if (!((**it).*method)())
+    for (const auto& item : list)
+        if (!((*item).*method)())
             return false;
 
     return true;
@@ -254,9 +254,9 @@ tsym::BasePtrList tsym::BasePtrList::getConstElements() const
 {
     BasePtrList items;
 
-    for (const_iterator it = list.begin(); it != list.end(); ++it)
-        if ((*it)->isConst())
-            items.push_back(*it);
+    for (const auto& item : list)
+        if (item->isConst())
+            items.push_back(item);
 
     return items;
 }
@@ -265,9 +265,9 @@ tsym::BasePtrList tsym::BasePtrList::getNonConstElements() const
 {
     BasePtrList items;
 
-    for (const_iterator it = list.begin(); it != list.end(); ++it)
-        if (!(*it)->isConst())
-            items.push_back(*it);
+    for (const auto& item : list)
+        if (!item->isConst())
+            items.push_back(item);
 
     return items;
 }
@@ -292,8 +292,8 @@ void tsym::BasePtrList::defScalarAndSums(BasePtr& scalar, BasePtrList& sums) con
     BasePtrList scalarFactors;
     BasePtr expanded;
 
-    for (const_iterator it = list.begin(); it != list.end(); ++it) {
-        expanded = (*it)->expand();
+    for (const auto& item : list) {
+        expanded = item->expand();
 
         if (expanded->isSum())
             sums.push_back(expanded);
@@ -317,8 +317,8 @@ tsym::BasePtr tsym::BasePtrList::expandProductOf(BasePtrList& sums) const
 
     second = sums.pop_front();
 
-    for (const_iterator it = first->operands().begin(); it != first->operands().end(); ++it)
-        summands.push_back(Product::create(*it, second)->expand());
+    for (const auto& item : first->operands())
+        summands.push_back(Product::create(item, second)->expand());
 
     sums.push_front(Sum::create(summands));
 
@@ -327,12 +327,11 @@ tsym::BasePtr tsym::BasePtrList::expandProductOf(BasePtrList& sums) const
 
 tsym::BasePtr tsym::BasePtrList::expandProductOf(const BasePtr& scalar, const BasePtr& sum) const
 {
-    const BasePtrList& terms(sum->operands());
     BasePtrList summands;
     BasePtr product;
 
-    for (const_iterator it = terms.begin(); it != terms.end(); ++it) {
-        product = Product::create(scalar, *it);
+    for (const auto& item : sum->operands()) {
+        product = Product::create(scalar, item);
         summands.push_back(product->expand());
     }
 
@@ -343,24 +342,23 @@ tsym::BasePtrList tsym::BasePtrList::subst(const BasePtr& from, const BasePtr& t
 {
     BasePtrList res;
 
-    for (const_iterator it = begin(); it != end(); ++it)
-        res.push_back((*it)->subst(from, to));
+    for (const auto& item : list)
+        res.push_back(item->subst(from, to));
 
     return res;
 }
 
 std::ostream& tsym::operator << (std::ostream& stream, const BasePtrList& list)
 {
-    BasePtrList::const_iterator it;
     Printer printer;
 
     stream << "[ ";
 
-    for (it = list.begin(); it != list.end(); ++it) {
-        printer.set(*it);
+    for (const auto& item : list) {
+        printer.set(item);
         printer.print(stream);
 
-        if (it != --list.end())
+        if (&item != &*(--list.end()))
             stream << "   ";
     }
 
