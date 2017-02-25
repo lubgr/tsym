@@ -6,6 +6,18 @@
 #include "printer.h"
 #include "logging.h"
 
+namespace tsym {
+    namespace {
+        const BasePtr& staticUndefined()
+        {
+            static const BasePtr undefined(Undefined::create());
+
+            return undefined;
+        }
+
+    }
+}
+
 tsym::BasePtrList::BasePtrList() {}
 
 tsym::BasePtrList::BasePtrList(const BasePtr& ptr)
@@ -84,18 +96,22 @@ tsym::BasePtrList::iterator tsym::BasePtrList::erase(BasePtrList::iterator& it)
 
 const tsym::BasePtr& tsym::BasePtrList::front() const
 {
-    if (empty())
-        TSYM_WARNING("Requesting first element of an empty list!");
+    if (!empty())
+        return list.front();
 
-    return list.front();
+    TSYM_WARNING("Requesting first element of an empty list!");
+
+    return staticUndefined();
 }
 
 const tsym::BasePtr& tsym::BasePtrList::back() const
 {
-    if (empty())
-        TSYM_WARNING("Requesting last element of an empty list!");
+    if (!empty())
+        return list.back();
 
-    return list.back();
+    TSYM_WARNING("Requesting last element of an empty list!");
+
+    return staticUndefined();
 }
 
 bool tsym::BasePtrList::empty() const

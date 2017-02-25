@@ -3,6 +3,7 @@
 #include "numeric.h"
 #include "logarithm.h"
 #include "trigonometric.h"
+#include "baseptrlist.h"
 #include "constant.h"
 #include "matrix.h"
 #include "poly.h"
@@ -15,6 +16,7 @@ void initConstructOnFirstUse()
     /* This initialization ensures that CppUTest doesn't spot a memory leak for the first test cases
      * that call the following functions employing local static variables. */
 {
+    const tsym::BasePtrList emptyList;
     const tsym::Matrix emptyMatrix;
     const tsym::Vector emptyVec;
     tsym::BasePtr undefined;
@@ -34,6 +36,9 @@ void initConstructOnFirstUse()
     tsym::Trigonometric::createAtan2(zero, two);
 
     tsym::poly::gcd(tsym::Numeric::one(), tsym::Numeric::one());
+
+    emptyList.front();
+    emptyList.back();
 
     emptyMatrix(1, 1);
     emptyVec(1);
