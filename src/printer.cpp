@@ -279,7 +279,7 @@ void tsym::Printer::printSum(const BasePtr& ptr)
     const BasePtrList summands(ptr->operands());
     BasePtr element;
 
-    for (BasePtrList::const_iterator it = summands.begin(); it != summands.end(); ++it) {
+    for (auto it = summands.begin(); it != summands.end(); ++it) {
         element = *it;
 
         if (it != summands.begin()) {
@@ -354,22 +354,21 @@ std::pair<tsym::BasePtrList, tsym::BasePtrList> tsym::Printer::getProductFrac(
         const BasePtrList& origFactors)
 {
     std::pair<BasePtrList, BasePtrList> frac;
-    BasePtrList::const_iterator it;
     Number fracFactor;
     BasePtr base;
     BasePtr exp;
 
-    for (it = origFactors.begin(); it != origFactors.end(); ++it) {
-        if ((*it)->isPower())
-            exp = (*it)->exp();
+    for (const auto& origFactor : origFactors) {
+        if (origFactor->isPower())
+            exp = origFactor->exp();
         else
             exp = Undefined::create();
 
         if (isNegativeNumeric(exp)) {
-            base = (*it)->base();
+            base = origFactor->base();
             frac.second.push_back(Power::create(base, toggleSign(exp)));
         } else
-            frac.first.push_back(*it);
+            frac.first.push_back(origFactor);
     }
 
     if (frac.first.empty() || frac.second.size() <= 1 || !frac.first.front()->isNumeric())
@@ -387,7 +386,7 @@ std::pair<tsym::BasePtrList, tsym::BasePtrList> tsym::Printer::getProductFrac(
 void tsym::Printer::printProduct(const BasePtrList& factors)
 {
     const unsigned productPrec = prec(typeid(Product));
-    BasePtrList::const_iterator it = factors.begin();
+    auto it = factors.begin();
 
     if ((*it)->isOne() && factors.size() > 1)
         ++it;
@@ -410,13 +409,12 @@ void tsym::Printer::printProduct(const BasePtrList& factors)
 void tsym::Printer::printFunction(const BasePtr& ptr)
 {
     const BasePtrList& ops(ptr->operands());
-    BasePtrList::const_iterator it;
 
     printName(ptr);
 
     stream << "(";
 
-    for (it = ops.begin(); it != ops.end(); ++it) {
+    for (auto it = ops.begin(); it != ops.end(); ++it) {
         stream << *it;
 
         if (it != --ops.end())

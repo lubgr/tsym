@@ -101,10 +101,8 @@ bool tsym::PolyInfo::isValidPower(const tsym::BasePtr& power)
 
 bool tsym::PolyInfo::hasValidOperands(const BasePtr& ptr)
 {
-    BasePtrList::const_iterator it;
-
-    for (it = ptr->operands().begin(); it != ptr->operands().end(); ++it)
-        if (!hasValidType(*it))
+    for (const auto& operand : ptr->operands())
+        if (!hasValidType(operand))
             return false;
 
     return true;
@@ -144,10 +142,8 @@ void tsym::PolyInfo::addSymbols(const BasePtr& ptr)
 
 void tsym::PolyInfo::addIfNotAlreadyStored(const BasePtr& symbol)
 {
-    BasePtrList::const_iterator it;
-
-    for (it = symbolList.begin(); it != symbolList.end(); ++it)
-        if ((*it)->isEqual(symbol))
+    for (const auto& existentSymbol : symbolList)
+        if (existentSymbol->isEqual(symbol))
             return;
 
     symbolList.push_back(symbol);
@@ -165,8 +161,8 @@ void tsym::PolyInfo::addSymbolsNonScalar(const BasePtr& ptr)
 
 void tsym::PolyInfo::addSymbols(const BasePtrList& list)
 {
-    for (BasePtrList::const_iterator it = list.begin(); it != list.end(); ++it)
-        addSymbols(*it);
+    for (const auto& item : list)
+        addSymbols(item);
 }
 
 tsym::BasePtr tsym::PolyInfo::mainSymbol()
@@ -181,10 +177,8 @@ tsym::BasePtr tsym::PolyInfo::mainSymbol()
 
 bool tsym::PolyInfo::hasCommonSymbol() const
 {
-    BasePtrList::const_iterator it;
-
-    for (it = symbolList.begin(); it != symbolList.end(); ++it)
-        if (u->has(*it) && v->has(*it))
+    for (const auto& symbol : symbolList)
+        if (u->has(symbol) && v->has(symbol))
             return true;
 
     return false;

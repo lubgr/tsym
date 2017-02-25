@@ -195,15 +195,14 @@ tsym::BasePtrList tsym::PowerSimpl::simplifyProductBase(const BasePtr& base, con
     /* Performs (a*b)^c = a^c*b^c if possible. */
 {
     const bool doExpandAll = isInteger(exp);
-    BasePtrList::const_iterator it;
     BasePtrList simplified;
     BasePtrList keep;
 
-    for (it = base->operands().begin(); it != base->operands().end(); ++it)
-        if (doExpandAll || (*it)->isPositive())
-            simplified.push_back(Power::create(*it, exp));
+    for (const auto& factor : base->operands())
+        if (doExpandAll || factor->isPositive())
+            simplified.push_back(Power::create(factor, exp));
         else
-            keep.push_back(*it);
+            keep.push_back(factor);
 
     if (simplified.empty())
         return BasePtrList(base, exp);

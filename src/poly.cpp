@@ -207,11 +207,10 @@ tsym::BasePtr tsym::getFirstSymbol(const BasePtr& polynomial)
 
 tsym::BasePtr tsym::getFirstSymbol(const BasePtrList& polynomials)
 {
-    BasePtrList::const_iterator it;
     BasePtr firstSymbol;
 
-    for (it = polynomials.begin(); it != polynomials.end(); ++it) {
-        firstSymbol = getFirstSymbol(*it);
+    for (const auto& item : polynomials) {
+        firstSymbol = getFirstSymbol(item);
 
         if (!firstSymbol->isUndefined())
             return firstSymbol;
@@ -307,7 +306,7 @@ int tsym::minDegreeOfPower(const BasePtr& power, const tsym::BasePtr& variable)
 
 int tsym::minDegreeOfSum(const BasePtr& sum, const tsym::BasePtr& variable)
 {
-    BasePtrList::const_iterator it(sum->operands().begin());
+    auto it(sum->operands().begin());
     int result = poly::minDegree(*it, variable);
     int minDeg;
 
@@ -322,11 +321,10 @@ int tsym::minDegreeOfSum(const BasePtr& sum, const tsym::BasePtr& variable)
 
 int tsym::minDegreeOfProduct(const BasePtr& product, const tsym::BasePtr& variable)
 {
-    BasePtrList::const_iterator it;
     int result = 0;
 
-    for (it = product->operands().begin(); it != product->operands().end(); ++it)
-        result += poly::minDegree(*it, variable);
+    for (const auto& factor : product->operands())
+        result += poly::minDegree(factor, variable);
 
     return result;
 }

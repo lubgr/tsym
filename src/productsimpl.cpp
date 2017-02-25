@@ -46,7 +46,7 @@ void tsym::ProductSimpl::prepare(BasePtrList& fac)
 
 void tsym::ProductSimpl::extractProducts(BasePtrList& u)
 {
-    BasePtrList::iterator it(u.begin());
+    auto it(u.begin());
 
     while (it != u.end()) {
         if ((*it)->isProduct()) {
@@ -72,9 +72,9 @@ void tsym::ProductSimpl::contract(BasePtrList& u,
      * list. This method calls itself recursively, whenever a change to the given BasePtrList u was
      * made, to ensure correct simplification of every possible combination of factors. */
 {
-    BasePtrList::iterator it1(u.begin());
-    BasePtrList::iterator it2;
     bool hasChanged = false;
+    auto it1(u.begin());
+    decltype(it1) it2;
     BasePtrList res;
     bool found;
 
@@ -523,7 +523,7 @@ void tsym::ProductSimpl::prepareConst(BasePtrList& u)
 
 void tsym::ProductSimpl::contractNumerics(BasePtrList& u)
 {
-    BasePtrList::iterator it(u.begin());
+    auto it(u.begin());
     Number n(1);
 
     while (it != u.end())
@@ -539,8 +539,8 @@ void tsym::ProductSimpl::contractNumerics(BasePtrList& u)
 
 void tsym::ProductSimpl::contractConst(BasePtrList& u)
 {
-    for (BasePtrList::iterator it1 = u.begin(); it1 != u.end(); ++it1)
-            for (BasePtrList::iterator it2 = it1; it2 != u.end(); ++it2)
+    for (auto it1 = u.begin(); it1 != u.end(); ++it1)
+            for (auto it2 = it1; it2 != u.end(); ++it2)
                 if (it1 == it2)
                     continue;
                 else if (areTwoContractableConst(*it1, *it2))

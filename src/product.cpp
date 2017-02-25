@@ -141,11 +141,10 @@ bool tsym::Product::sameType(const BasePtr& other) const
 tsym::Number tsym::Product::numericEval() const
     /* If a factor returns an undefined Number on numericEval(), the result is undefined, too. */
 {
-    BasePtrList::const_iterator it;
     Number res(1);
 
-    for (it = ops.begin(); it != ops.end(); ++it)
-        res *= (*it)->numericEval();
+    for (const auto& factor : ops)
+        res *= factor->numericEval();
 
     return res;
 }
@@ -164,13 +163,12 @@ tsym::Fraction tsym::Product::normal(SymbolMap& map) const
 
 tsym::Fraction tsym::Product::normalAndSplitIntoFraction(SymbolMap& map) const
 {
-    BasePtrList::const_iterator it;
     BasePtrList denominators;
     BasePtrList numerators;
     Fraction normalOperand;
 
-    for (it = ops.begin(); it != ops.end(); ++it) {
-        normalOperand = (*it)->normal(map);
+    for (const auto& factor : ops) {
+        normalOperand = factor->normal(map);
         numerators.push_back(normalOperand.num());
         denominators.push_back(normalOperand.denom());
     }
@@ -180,15 +178,13 @@ tsym::Fraction tsym::Product::normalAndSplitIntoFraction(SymbolMap& map) const
 
 tsym::BasePtr tsym::Product::diffWrtSymbol(const BasePtr& symbol) const
 {
-    BasePtrList::const_iterator it1;
-    BasePtrList::const_iterator it2;
     BasePtrList derivedSummands;
     BasePtrList factors;
 
-    for (it1 = ops.begin(); it1 != ops.end(); ++it1) {
+    for (auto it1 = ops.begin(); it1 != ops.end(); ++it1) {
         factors.push_back((*it1)->diffWrtSymbol(symbol));
 
-        for (it2 = ops.begin(); it2 != ops.end(); ++it2)
+        for (auto it2 = ops.begin(); it2 != ops.end(); ++it2)
             if (it1 != it2)
                 factors.push_back(*it2);
 
@@ -218,10 +214,10 @@ int tsym::Product::sign() const
 {
     int result = 1;
 
-    for (BasePtrList::const_iterator it = ops.begin(); it != ops.end(); ++it)
-        if ((*it)->isPositive())
+    for (const auto& factor : ops)
+        if (factor->isPositive())
             continue;
-        else if ((*it)->isNegative())
+        else if (factor->isNegative())
             result *= -1;
         else
             return 0;
@@ -292,9 +288,9 @@ tsym::BasePtr tsym::Product::coeffFactorMatch(const BasePtr& variable , int exp)
 {
     const BasePtr pow(Power::create(variable, Numeric::create(exp)));
     BasePtrList resultFactors(ops);
-    BasePtrList::iterator it;
+    auto it = resultFactors.begin();
 
-    for (it = resultFactors.begin(); it != resultFactors.end(); ++it)
+    for (; it != resultFactors.end(); ++it)
         if ((*it)->isEqual(pow))
             break;
 
@@ -308,14 +304,13 @@ tsym::BasePtr tsym::Product::coeffFactorMatch(const BasePtr& variable , int exp)
 
 int tsym::Product::degree(const BasePtr& variable) const
 {
-    BasePtrList::const_iterator it;
     int degreeSum = 0;
 
     if (isEqual(variable))
         return 1;
 
-    for (it = ops.begin(); it != ops.end(); ++it)
-        degreeSum += (*it)->degree(variable);
+    for (const auto& factor : ops)
+        degreeSum += factor->degree(variable);
 
     return degreeSum;
 }

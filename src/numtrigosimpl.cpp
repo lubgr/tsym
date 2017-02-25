@@ -258,14 +258,13 @@ const tsym::BasePtr *tsym::NumTrigoSimpl::getValue(
      * that don't exactly match. The latter could be made optional. However, the chance that the
      * following equality leads to a match by accident is extremely low. */
 {
-    std::vector< std::pair<BasePtr, BasePtr> >::const_iterator it;
     const Number nArg(arg->numericEval());
 
-    for (it = table.begin(); it != table.end(); ++it)
-        if (arg->isEqual(it->first))
-            return &it->second;
-        else if (nArg == it->first->numericEval())
-            return &it->second;
+    for (const auto& entry : table)
+        if (arg->isEqual(entry.first))
+            return &entry.second;
+        else if (nArg == entry.first->numericEval())
+            return &entry.second;
 
     return nullptr;
 }
@@ -439,16 +438,15 @@ void tsym::NumTrigoSimpl::asin()
 const tsym::BasePtr *tsym::NumTrigoSimpl::getKey(
         const std::vector< std::pair<BasePtr, BasePtr> >& table) const
 {
-    std::vector< std::pair<BasePtr, BasePtr> >::const_iterator it;
     const Number nArg(arg->numericEval());
 
-    for (it = table.begin(); it != table.end(); ++it)
-        if (it->second->isUndefined())
+    for (const auto& entry : table)
+        if (entry.second->isUndefined())
             continue;
-        else if (arg->isEqual(it->second))
-            return &it->first;
-        else if (nArg == it->second->numericEval())
-            return &it->first;
+        else if (arg->isEqual(entry.second))
+            return &entry.first;
+        else if (nArg == entry.second->numericEval())
+            return &entry.first;
 
     return nullptr;
 }

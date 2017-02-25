@@ -22,7 +22,6 @@ TEST(BasePtrList, emptyListItemAccess)
 TEST(BasePtrList, nonConstReverseIteration)
 {
     const BasePtr plainList[] { a, b, c, d };
-    BasePtrList::const_reverse_iterator it;
     BasePtrList list;
     int i = 0;
 
@@ -31,7 +30,7 @@ TEST(BasePtrList, nonConstReverseIteration)
     list.push_back(b);
     list.push_back(a);
 
-    for (it = list.rbegin(); it != list.rend(); ++it, ++i) {
+    for (auto it = list.rbegin(); it != list.rend(); ++it, ++i) {
         CHECK_EQUAL(plainList[i], *it);
     }
 }

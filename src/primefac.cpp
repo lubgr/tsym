@@ -146,11 +146,10 @@ tsym::PrimeFac tsym::PrimeFac::extract(const Number& exponent)
 void tsym::PrimeFac::extract(std::vector<Int>& source, std::vector<Int>& target,
         const Int& expDenom)
 {
-    std::vector<Int>::iterator it;
     Int prime(0);
     Int nPrime(0);
 
-    for (it = source.begin(); it != source.end(); ++it)
+    for (auto it = source.begin(); it != source.end(); ++it)
         if (prime != *it) {
             prime = *it;
             nPrime = 1;
@@ -197,21 +196,20 @@ int tsym::PrimeFac::getEqualCount() const
 
 int tsym::PrimeFac::getEqualCount(const std::vector<Int>& primes) const
 {
-    std::vector<Int>::const_iterator it;
     int lastCount = 0;
     int count = 0;
     Int oldPrime;
 
     /* The vector must not be empty at this point! */
-    for (it = primes.begin(), oldPrime = *it; it != primes.end(); ++it)
-        if (*it == oldPrime)
+    for (const auto& prime : primes)
+        if (prime == oldPrime)
             ++count;
         else if (lastCount != 0 && lastCount != count)
             return 0;
         else {
             lastCount = count;
             count = 1;
-            oldPrime = *it;
+            oldPrime = prime;
         }
 
     return count == lastCount || lastCount == 0 ? count : 0;
@@ -227,9 +225,7 @@ void tsym::PrimeFac::deleteElements(int nToDelete, std::vector<Int>& primes)
     /* Removes duplicate elements from the given vector of primes. It is supposed, that primes have
      * been checked before, such that this operation is safe. */
 {
-    std::vector<Int>::iterator it;
-
-    for (it = primes.begin(); it != primes.end(); ++it)
+    for (auto it = primes.begin(); it != primes.end(); ++it)
         for (int i = 0; i < nToDelete; ++i)
             it = primes.erase(it);
 }

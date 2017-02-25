@@ -547,7 +547,6 @@ TEST(Power, unclearProductBaseFractionExp)
 TEST(Power, extractAllFactorsOfProductBase)
     /* (a*b*c*d*e*pi)^8 = a^8*b^8*c^8*d^8*e^8*pi^8. */
 {
-    BasePtrList::const_iterator it;
     BasePtrList factors;
     BasePtr res;
 
@@ -562,9 +561,9 @@ TEST(Power, extractAllFactorsOfProductBase)
 
     CHECK(res->isProduct());
 
-    for (it = res->operands().begin(); it != res->operands().end(); ++it) {
-        CHECK((*it)->isPower());
-        CHECK_EQUAL(eight, (*it)->exp());
+    for (const auto& factor : res->operands()) {
+        CHECK(factor->isPower());
+        CHECK_EQUAL(eight, factor->exp());
     }
 }
 
@@ -574,7 +573,6 @@ TEST(Power, extractPositiveFactorsOfProductBase)
     const BasePtr exp = Numeric::create(2, 3);
     const BasePtr expected[] = { Power::create(pi, exp), Power::create(aPos, exp),
         Power::create(bPos, exp), Power::create(Product::create(c, d, e), exp) };
-    BasePtrList::const_iterator it;
     BasePtrList factors;
     BasePtr res;
 
@@ -799,12 +797,11 @@ TEST(Power, applyExponentToProduct)
     const BasePtr bSquare = Power::create(b, two);
     const BasePtr product = Product::create(a, bSquare);
     const BasePtr res = Power::create(product, three);
-    BasePtrList::const_iterator it;
+    auto it = res->operands().begin();
     BasePtr fac;
 
     CHECK(res->isProduct());
 
-    it = res->operands().begin();
     fac = *it;
     CHECK(fac->isPower());
     CHECK(fac->base()->name() == Name("a"));
@@ -819,7 +816,7 @@ TEST(Power, applyExponentToProduct)
 
 TEST(Power, intOverflowLargeBase)
     /* A large base with exponent > 1 causes an integer overflow. The power is converted into a
-     * numeric of type double.  */
+     * numeric of type double. */
 {
     const BasePtr expected = Numeric::create(std::pow(maxInt.toDouble(), 3.0));
     BasePtr pow;

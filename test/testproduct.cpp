@@ -672,13 +672,12 @@ TEST(Product, productOfSymbolAndProduct)
     const BasePtr product1 = Product::create(a, c);
     const BasePtr res = Product::create(product1, b);
     const BasePtrList& fac(res->operands());
-    BasePtrList::const_iterator it;
+    auto it = fac.begin();
 
     CHECK(res->isProduct());
 
     CHECK_EQUAL(3, fac.size());
 
-    it = fac.begin();
     CHECK_EQUAL(a, *it);
     CHECK_EQUAL(b, *++it);
     CHECK_EQUAL(c, *++it);
@@ -690,12 +689,11 @@ TEST(Product, productOfProductAndSymbol)
     const BasePtr p2 = Product::create(e, b);
     const BasePtr res = Product::create(a, p2);
     const BasePtrList& fac(res->operands());
-    BasePtrList::const_iterator it;
+    auto it = fac.begin();
 
     CHECK(res->isProduct());
     CHECK_EQUAL(3, fac.size());
 
-    it = fac.begin();
     CHECK_EQUAL(a, *it);
     CHECK_EQUAL(b, *++it);
     CHECK_EQUAL(e, *++it);
@@ -708,11 +706,9 @@ TEST(Product, productOfThreeProducts)
     const BasePtr p2 = Product::create(b, e);
     const BasePtr p3 = Product::create(a, d);
     const BasePtr res = Product::create(p1, p2, p3);
-    BasePtrList::const_iterator it;
+    auto it = res->operands().begin();
 
     CHECK(res->isProduct());
-
-    it = res->operands().begin();
 
     CHECK_EQUAL(two, (*it)->exp());
     CHECK_EQUAL(a, (*it)->base());

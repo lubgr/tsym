@@ -82,11 +82,10 @@ tsym::Number tsym::Sum::numericEval() const
     /* If one of the summands returns an undefined Number on numericEval(), the result will be
      * undefined, too. */
 {
-    BasePtrList::const_iterator it;
     Number res(0);
 
-    for (it = ops.begin(); it != ops.end(); ++it)
-        res += (*it)->numericEval();
+    for (const auto& summand : ops)
+        res += summand->numericEval();
 
     return res;
 }
@@ -98,8 +97,8 @@ tsym::Fraction tsym::Sum::normal(SymbolMap& map) const
     if (expand()->isZero())
         return Fraction(Numeric::zero());
 
-    for (BasePtrList::const_iterator it = ops.begin(); it != ops.end(); ++it)
-        fractions.push_back((*it)->normal(map));
+    for (const auto& summand : ops)
+        fractions.push_back(summand->normal(map));
 
     return toCommonDenom(fractions);
 }
@@ -136,11 +135,10 @@ tsym::Fraction tsym::Sum::toCommonDenom(const std::vector<Fraction>& operands) c
 
 tsym::BasePtr tsym::Sum::diffWrtSymbol(const BasePtr& symbol) const
 {
-    BasePtrList::const_iterator it;
     BasePtrList derivedSummands;
 
-    for (it = ops.begin(); it != ops.end(); ++it)
-        derivedSummands.push_back((*it)->diff(symbol));
+    for (const auto& summand : ops)
+        derivedSummands.push_back(summand->diff(symbol));
 
     return create(derivedSummands);
 }
@@ -179,9 +177,9 @@ int tsym::Sum::signOfNumericParts() const
 {
     Number numericPart(0);
 
-    for (BasePtrList::const_iterator it = ops.begin(); it != ops.end(); ++it)
-        if ((*it)->isNumericallyEvaluable())
-            numericPart += (*it)->numericEval();
+    for (const auto& summand : ops)
+        if (summand->isNumericallyEvaluable())
+            numericPart += summand->numericEval();
 
     if (numericPart.isZero())
         return 0;
@@ -193,12 +191,12 @@ int tsym::Sum::signOfSymbolicParts() const
 {
     int symbolicSign = 0;
 
-    for (BasePtrList::const_iterator it = ops.begin(); it != ops.end(); ++it)
-        if ((*it)->isNumericallyEvaluable())
+    for (const auto& summand : ops)
+        if (summand->isNumericallyEvaluable())
             continue;
-        else if ((*it)->isPositive() && symbolicSign >= 0)
+        else if (summand->isPositive() && symbolicSign >= 0)
             symbolicSign = 1;
-        else if ((*it)->isNegative() && symbolicSign <= 0)
+        else if (summand->isNegative() && symbolicSign <= 0)
             symbolicSign = -1;
         else
             return 0;
@@ -213,11 +211,10 @@ bool tsym::Sum::isSum() const
 
 tsym::BasePtr tsym::Sum::expand() const
 {
-    BasePtrList::const_iterator it;
     BasePtrList expandedSummands;
 
-    for (it = ops.begin(); it != ops.end(); ++it)
-        expandedSummands.push_back((*it)->expand());
+    for (const auto& summand : ops)
+        expandedSummands.push_back(summand->expand());
 
     return create(expandedSummands);
 }
@@ -243,17 +240,16 @@ tsym::BasePtr tsym::Sum::coeff(const BasePtr& variable, int exp) const
 tsym::BasePtr tsym::Sum::coeffOverSummands(const BasePtr& variable, int exp) const
 {
     BasePtr coeffSum(Numeric::zero());
-    BasePtrList::const_iterator it;
 
-    for (it = ops.begin(); it != ops.end(); ++it)
-        coeffSum = create(coeffSum, (*it)->coeff(variable, exp));
+    for (const auto& summand : ops)
+        coeffSum = create(coeffSum, summand->coeff(variable, exp));
 
     return coeffSum;
 }
 
 int tsym::Sum::degree(const tsym::BasePtr& variable) const
 {
-    BasePtrList::const_iterator it = ops.begin();
+    auto it = ops.begin();
     int maxDegree;
     int deg;
 

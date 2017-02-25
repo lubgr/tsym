@@ -77,8 +77,8 @@ tsym::Int tsym::GcdStrategy::integerGcd(const Int& u, const Int& v) const
 bool tsym::GcdStrategy::haveCommonSymbol(const BasePtr& u, const BasePtr& v,
         const BasePtrList& L) const
 {
-    for (BasePtrList::const_iterator it = L.begin(); it != L.end(); ++it)
-        if (u->has(*it) && v->has(*it))
+    for (const auto& item : L)
+        if (u->has(item) && v->has(item))
             return true;
 
     return false;
@@ -126,12 +126,11 @@ tsym::Number tsym::GcdStrategy::integerContent(const BasePtr& poly) const
 
 tsym::Number tsym::GcdStrategy::integerContentOfSum(const BasePtrList& summands) const
 {
-    BasePtrList::const_iterator it;
     Number intContent;
     Int result(0);
 
-    for (it = summands.begin(); it != summands.end(); ++it) {
-        intContent = integerContent(*it);
+    for (const auto& summand : summands) {
+        intContent = integerContent(summand);
 
         assert(intContent.isInt());
 

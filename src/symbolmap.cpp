@@ -20,22 +20,19 @@ tsym::BasePtr tsym::SymbolMap::getTmpSymbolAndStore(const BasePtr& ptr)
 
 const tsym::BasePtr *tsym::SymbolMap::getExisting(const BasePtr& ptr)
 {
-    std::map<BasePtr, BasePtr>::const_iterator it;
-
-    for (it = map.begin(); it != map.end(); ++it)
-        if (it->second->isEqual(ptr))
-            return &it->first;
+    for (const auto& entry : map)
+        if (entry.second->isEqual(ptr))
+            return &entry.first;
 
     return nullptr;
 }
 
 tsym::BasePtr tsym::SymbolMap::replaceTmpSymbolsBackFrom(const BasePtr& orig)
 {
-    std::map<BasePtr, BasePtr>::const_iterator it;
     BasePtr result(orig);
 
-    for (it = map.begin(); it != map.end(); ++it)
-        result = result->subst(it->first, it->second);
+    for (const auto & entry : map)
+        result = result->subst(entry.first, entry.second);
 
     if (result->isUndefined())
         /* Catch this in advance to avoid a possible comparison with an Undefined instance: */

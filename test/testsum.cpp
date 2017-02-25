@@ -115,7 +115,6 @@ TEST(Sum, rearrangeTwoSymbols)
 TEST(Sum, rearrangeFiveSymbols)
     /*  More complex ordering: e + c + a + b + d = a + b + c + d + e. */
 {
-    BasePtrList::const_iterator it;
     BasePtrList summands;
     BasePtr res;
 
@@ -133,10 +132,10 @@ TEST(Sum, rearrangeFiveSymbols)
 
     CHECK_EQUAL(5, summands.size());
 
-    for (it = summands.begin(); it != summands.end(); ++it)
-        CHECK((*it)->isSymbol());
+    for (const auto& summand : summands)
+        CHECK(summand->isSymbol());
 
-    it = summands.begin();
+    auto it = summands.begin();
     CHECK_EQUAL(a, *it);
     CHECK_EQUAL(b, *++it);
     CHECK_EQUAL(c, *++it);

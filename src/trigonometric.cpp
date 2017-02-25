@@ -110,8 +110,8 @@ bool tsym::Trigonometric::doesSymmetryApply(const BasePtr& arg)
 
 bool tsym::Trigonometric::haveAllNegativePrefactors(const BasePtrList& operands)
 {
-    for (BasePtrList::const_iterator it = operands.begin(); it != operands.end(); ++it)
-        if ((*it)->constTerm()->isPositive())
+    for (const auto& arg : operands)
+        if (arg->constTerm()->isPositive())
             return false;
 
     return true;

@@ -23,10 +23,8 @@ TEST_GROUP(PolyInfo)
 
     bool contains(const BasePtrList& symbolList, const BasePtr& symbol)
     {
-        BasePtrList::const_iterator it;
-
-        for (it = symbolList.begin(); it != symbolList.end(); ++it)
-            if ((*it)->isEqual(symbol))
+        for (const auto& symbolFromList : symbolList)
+            if (symbolFromList->isEqual(symbol))
                 return true;
 
         return false;

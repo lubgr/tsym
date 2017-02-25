@@ -316,11 +316,10 @@ const std::string& tsym::Var::name() const
 
 std::vector<tsym::Var> tsym::Var::operands() const
 {
-    BasePtrList::const_iterator it;
     std::vector<Var> ops;
 
-    for (it = (*rep)->operands().begin(); it != (*rep)->operands().end(); ++it)
-        ops.push_back(Var(*it));
+    for (const auto& operand : (*rep)->operands())
+        ops.push_back(Var(operand));
 
     return ops;
 }
@@ -336,13 +335,11 @@ std::vector<tsym::Var> tsym::Var::collectSymbols() const
 
 void tsym::Var::collectSymbols(const BasePtr& ptr, std::vector<Var>& symbols) const
 {
-    BasePtrList::const_iterator it;
-
     if (ptr->isSymbol())
         insertSymbolIfNotPresent(ptr, symbols);
     else
-        for (it = ptr->operands().begin(); it != ptr->operands().end(); ++it)
-            collectSymbols(*it, symbols);
+        for (const auto& operand : ptr->operands())
+            collectSymbols(operand, symbols);
 }
 
 void tsym::Var::insertSymbolIfNotPresent(const BasePtr& symbol, std::vector<Var>& symbols) const

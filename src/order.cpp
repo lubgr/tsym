@@ -106,8 +106,8 @@ bool tsym::doPermuteBothProduct(const BasePtr& left, const BasePtr& right)
 
 bool tsym::doPermuteListReverse(const BasePtrList& left, const BasePtrList& right)
 {
-    BasePtrList::const_reverse_iterator lIt(left.rbegin());
-    BasePtrList::const_reverse_iterator rIt(right.rbegin());
+    auto lIt(left.rbegin());
+    auto rIt(right.rbegin());
 
     for (; lIt != left.rend() && rIt != right.rend(); ++lIt, ++rIt)
         if ((*lIt)->isDifferent(*rIt))
