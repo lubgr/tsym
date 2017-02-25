@@ -14,7 +14,6 @@ namespace tsym {
 
             return undefined;
         }
-
     }
 }
 
