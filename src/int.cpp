@@ -14,18 +14,18 @@ const long tsym::Int::maxLong = std::numeric_limits<long>::max();
 const long tsym::Int::minLong = -maxLong;
 
 tsym::Int::Int() :
-    overflow(false),
-    rep(0)
+    rep(0),
+    overflow(false)
 {}
 
 tsym::Int::Int(int n) :
-    overflow(false),
-    rep(static_cast<long>(n))
+    rep(static_cast<long>(n)),
+    overflow(false)
 {}
 
 tsym::Int::Int(long n) :
-    overflow(false),
-    rep(n)
+    rep(n),
+    overflow(false)
 {
     if (n < minLong) {
         /* Happens if instantiated with the min. long int. */

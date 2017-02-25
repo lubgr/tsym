@@ -53,8 +53,8 @@ namespace tsym {
             static const int minInt;
             static const long maxLong;
             static const long minLong;
+            std::int64_t rep;
             bool overflow;
-            long rep;
     };
 
     bool operator == (const Int& lhs, const Int& rhs);
