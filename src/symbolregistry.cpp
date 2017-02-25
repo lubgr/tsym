@@ -9,12 +9,12 @@ namespace tsym {
     namespace {
         std::map<Name, unsigned> *registry(bool deleteIfEmpty = false)
         {
-            static std::map<Name, unsigned> *symbols = NULL;
+            static std::map<Name, unsigned> *symbols = nullptr;
 
-            if (symbols != NULL && symbols->empty() && deleteIfEmpty) {
+            if (symbols != nullptr && symbols->empty() && deleteIfEmpty) {
                 delete symbols;
-                symbols = NULL;
-            } else if (symbols == NULL)
+                symbols = nullptr;
+            } else if (symbols == nullptr)
                 symbols = new std::map<Name, unsigned>();
 
             return symbols;

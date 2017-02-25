@@ -36,13 +36,13 @@ namespace tsym {
 }
 
 tsym::Matrix::Matrix() :
-    data(NULL),
+    data(nullptr),
     nRow(0),
     nCol(0)
 {}
 
 tsym::Matrix::Matrix(size_t nRow, size_t nCol) :
-    data(NULL),
+    data(nullptr),
     nRow(nRow),
     nCol(nCol)
 {
@@ -289,7 +289,7 @@ void tsym::Matrix::compPartialPivots(Vector *b)
         for (size_t i = j + 1; i < nRow; ++i)
             if (!data[i][j].isZero()) {
                 swapRows(i, j);
-                if (b != NULL)
+                if (b != nullptr)
                     std::swap(b->data[j], b->data[i]);
                 break;
             }
@@ -377,7 +377,7 @@ tsym::Var tsym::Matrix::checkedDet() const
 {
     Matrix PLU(*this);
 
-    PLU.compPartialPivots(NULL);
+    PLU.compPartialPivots(nullptr);
     PLU.factorizeLU();
 
     return PLU.detFromLU();

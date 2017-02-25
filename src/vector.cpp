@@ -23,12 +23,12 @@ namespace tsym {
 }
 
 tsym::Vector::Vector() :
-    data(NULL),
+    data(nullptr),
     dim(0)
 {}
 
 tsym::Vector::Vector(size_t size) :
-    data(NULL),
+    data(nullptr),
     dim(size)
 {
     allocateMem();

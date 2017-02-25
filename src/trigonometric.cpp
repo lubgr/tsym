@@ -166,7 +166,7 @@ tsym::BasePtr tsym::Trigonometric::createFromFunction(Type type, const BasePtr& 
 {
     const Trigonometric *trigo(tryCast(arg));
 
-    if (trigo == NULL)
+    if (trigo == nullptr)
         return BasePtr(new Trigonometric(BasePtrList(arg), type));
     else
         return createFromTrigo(type, arg);
@@ -178,7 +178,7 @@ const tsym::Trigonometric *tsym::Trigonometric::tryCast(const BasePtr& arg)
 
     cast = dynamic_cast<const Trigonometric*>(arg.base());
 
-    assert(cast == NULL || arg->isFunction());
+    assert(cast == nullptr || arg->isFunction());
 
     return cast;
 }
@@ -188,7 +188,7 @@ tsym::BasePtr tsym::Trigonometric::createFromTrigo(Type type, const BasePtr& arg
     const Trigonometric *other(tryCast(arg));
     const Type otherType = other->type;
 
-    assert(other != NULL);
+    assert(other != nullptr);
 
     if (isOtherTheInverse(type, otherType))
         return other->arg1;
@@ -324,7 +324,7 @@ tsym::BasePtr tsym::Trigonometric::simplAtan2(const BasePtr& y, const BasePtr& x
     const Trigonometric *trigo(tryCast(atan2Arg));
     NumTrigoSimpl numTrigo;
 
-    if (trigo != NULL && trigo->type == Type::TAN)
+    if (trigo != nullptr && trigo->type == Type::TAN)
         return trigo->arg1;
 
     numTrigo.setType(Type::ATAN);
@@ -396,7 +396,7 @@ tsym::Number tsym::Trigonometric::numericEval() const
 
 tsym::Number tsym::Trigonometric::checkedNumericEval() const
 {
-    double (*fct)(double) = NULL;
+    double (*fct)(double) = nullptr;
 
     switch (type) {
         case Type::SIN:

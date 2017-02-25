@@ -243,7 +243,7 @@ void tsym::NumTrigoSimpl::compShiftedSin()
 {
     const BasePtr *exact(getValue(sinTable));
 
-    if (exact != NULL)
+    if (exact != nullptr)
         setResult(*exact);
     else if (isDoubleNumeric(origArg))
         compNumericalSin();
@@ -267,7 +267,7 @@ const tsym::BasePtr *tsym::NumTrigoSimpl::getValue(
         else if (nArg == it->first->numericEval())
             return &it->second;
 
-    return NULL;
+    return nullptr;
 }
 
 void tsym::NumTrigoSimpl::setResult(const BasePtr& result)
@@ -324,7 +324,7 @@ void tsym::NumTrigoSimpl::tan()
 
     setTanSign(quadrant);
 
-    if (exact != NULL)
+    if (exact != nullptr)
         setResult(*exact);
     else
         tanViaSinCos();
@@ -428,7 +428,7 @@ void tsym::NumTrigoSimpl::asin()
 {
     const BasePtr *exact(getKey(sinTable));
 
-    if (exact != NULL)
+    if (exact != nullptr)
         setResult(*exact);
     else if (isDoubleNumeric(origArg)) {
         reset();
@@ -450,7 +450,7 @@ const tsym::BasePtr *tsym::NumTrigoSimpl::getKey(
         else if (nArg == it->second->numericEval())
             return &it->first;
 
-    return NULL;
+    return nullptr;
 }
 
 void tsym::NumTrigoSimpl::acos()
@@ -478,7 +478,7 @@ void tsym::NumTrigoSimpl::atan()
 {
     const BasePtr *exact(getKey(tanTable));
 
-    if (exact != NULL)
+    if (exact != nullptr)
         setResult(*exact);
     else if (isDoubleNumeric(origArg)) {
         reset();

@@ -98,8 +98,8 @@ tsym::BasePtr tsym::parserAdapter::parse(const char *string)
 {
     const void *parseResult = parseString(string);
 
-    if (parseResult == NULL) {
-        TSYM_WARNING("Parsing \'%s\' resulted in NULL pointer", string);
+    if (parseResult == nullptr) {
+        TSYM_WARNING("Parsing \'%s\' resulted in null pointer", string);
         return Undefined::create();
     } else
         return castNonZeroParseResult(parseResult);
@@ -280,7 +280,7 @@ void tsym_parserAdapter_deletePtr(void *ptr)
 
     delete casted;
 
-    ptr = NULL;
+    ptr = nullptr;
 }
 
 void tsym_parserAdapter_logParsingError(const char *message, char *yytext)

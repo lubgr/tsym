@@ -26,7 +26,7 @@ const tsym::BasePtr *tsym::SymbolMap::getExisting(const BasePtr& ptr)
         if (it->second->isEqual(ptr))
             return &it->first;
 
-    return NULL;
+    return nullptr;
 }
 
 tsym::BasePtr tsym::SymbolMap::replaceTmpSymbolsBackFrom(const BasePtr& orig)
