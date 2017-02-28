@@ -78,3 +78,25 @@ TEST(BasePtrList, streamOperator)
 
     CHECK_EQUAL(expected, stream.str());
 }
+
+TEST(BasePtrList, constructWithInitializerList)
+{
+    BasePtrList list = { a, b, c, two, three, four };
+
+    CHECK_EQUAL(6, list.size());
+    CHECK_EQUAL(a, list.pop_front());
+    CHECK_EQUAL(b, list.pop_front());
+    CHECK_EQUAL(four, list.back());
+}
+
+TEST(BasePtrList, assignWithInitializerList)
+{
+    BasePtrList list(a, b);
+
+    list = { c, d, two };
+
+    CHECK_EQUAL(3, list.size());
+    CHECK_EQUAL(c, list.pop_front());
+    CHECK_EQUAL(d, list.pop_front());
+    CHECK_EQUAL(two, list.front());
+}

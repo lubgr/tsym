@@ -44,6 +44,10 @@ tsym::BasePtrList::BasePtrList(const BasePtrList& l1, const BasePtrList& l2)
     set(l1, l2);
 }
 
+tsym::BasePtrList::BasePtrList(const std::initializer_list<BasePtr>& list) :
+    list(list)
+{}
+
 void tsym::BasePtrList::set(const BasePtrList& l1, const BasePtrList& l2)
 {
     list.insert(list.end(), l1.begin(), l1.end());
