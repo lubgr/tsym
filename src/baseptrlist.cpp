@@ -26,8 +26,7 @@ tsym::BasePtrList::BasePtrList(const BasePtr& ptr)
 
 tsym::BasePtrList::BasePtrList(const BasePtr& ptr1, const BasePtr& ptr2)
 {
-    list.push_back(ptr1);
-    list.push_back(ptr2);
+    list = { ptr1, ptr2 };
 }
 
 tsym::BasePtrList::BasePtrList(const BasePtr& ptr, const BasePtrList& l)

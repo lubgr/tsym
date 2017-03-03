@@ -113,10 +113,10 @@ tsym::Fraction tsym::Power::normal(SymbolMap& map) const
 
 tsym::BasePtr tsym::Power::diffWrtSymbol(const BasePtr& symbol) const
 {
-    BasePtrList summands;
-
-    summands.push_back(Product::create(Logarithm::create(baseRef), expRef->diffWrtSymbol(symbol)));
-    summands.push_back(Product::create(expRef, oneOver(baseRef), baseRef->diffWrtSymbol(symbol)));
+    const BasePtrList summands {
+        Product::create(Logarithm::create(baseRef), expRef->diffWrtSymbol(symbol)),
+            Product::create(expRef, oneOver(baseRef), baseRef->diffWrtSymbol(symbol))
+    };
 
     return Product::create(clone(), Sum::create(summands));
 }

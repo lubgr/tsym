@@ -212,14 +212,8 @@ TEST(NumTrigoSimpl, exactFromNumericallyEvaluable)
      * class will lead to an exact result. */
 {
     const BasePtr expectedSin = Power::oneOver(sqrtTwo);
-    BasePtrList fac;
-    BasePtr arg;
-
-    fac.push_back(Numeric::create(0.176351684975302));
-    fac.push_back(sqrtThree);
-    fac.push_back(Power::create(Numeric::create(17), Numeric::create(1, 3)));
-
-    arg = Product::create(fac);
+    const BasePtr arg = Product::create({ Numeric::create(0.176351684975302), sqrtThree,
+            Power::create(Numeric::create(17), Numeric::create(1, 3)) });
 
     nts.setArg(arg);
 
@@ -460,15 +454,8 @@ TEST(NumTrigoSimpl, largeNumericEvaluationToExact)
      * class will lead to an exact result. */
 {
     const BasePtr piFourth = Product::create(pi, Numeric::create(1, 4));
-    BasePtrList fac;
-    BasePtr arg;
-
-    fac.push_back(Numeric::create(0.6258398439057556));
-    fac.push_back(Power::sqrt(five));
-    fac.push_back(Power::oneOver(pi));
-    fac.push_back(Power::create(four, Numeric::create(1, 3)));
-
-    arg = Product::create(fac);
+    const BasePtr arg = Product::create({ Numeric::create(0.6258398439057556), Power::sqrt(five),
+            Power::oneOver(pi), Power::create(four, Numeric::create(1, 3)) });
 
     nts.setArg(arg);
 

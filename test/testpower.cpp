@@ -547,17 +547,8 @@ TEST(Power, unclearProductBaseFractionExp)
 TEST(Power, extractAllFactorsOfProductBase)
     /* (a*b*c*d*e*pi)^8 = a^8*b^8*c^8*d^8*e^8*pi^8. */
 {
-    BasePtrList factors;
-    BasePtr res;
-
-    factors.push_back(a);
-    factors.push_back(b);
-    factors.push_back(c);
-    factors.push_back(d);
-    factors.push_back(e);
-    factors.push_back(pi);
-
-    res = Power::create(Product::create(factors), eight);
+    const BasePtr base = Product::create({ a, b, c, d, e, pi });
+    const BasePtr res = Power::create(base, eight);
 
     CHECK(res->isProduct());
 
@@ -573,17 +564,9 @@ TEST(Power, extractPositiveFactorsOfProductBase)
     const BasePtr exp = Numeric::create(2, 3);
     const BasePtr expected[] = { Power::create(pi, exp), Power::create(aPos, exp),
         Power::create(bPos, exp), Power::create(Product::create(c, d, e), exp) };
+    const BasePtr base = Product::create({ aPos, bPos, c, d, e, pi });
+    BasePtr res = Power::create(base, exp);
     BasePtrList factors;
-    BasePtr res;
-
-    factors.push_back(aPos);
-    factors.push_back(bPos);
-    factors.push_back(c);
-    factors.push_back(d);
-    factors.push_back(e);
-    factors.push_back(pi);
-
-    res = Power::create(Product::create(factors), exp);
 
     CHECK(res->isProduct());
 

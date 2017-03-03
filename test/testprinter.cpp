@@ -523,17 +523,8 @@ TEST(Printer, largeProductOfPowersWithFrac)
 {
     const std::string expectedFrac("a*b*(a + c)*f^a/(d*e^2)");
     const std::string expectedNoFrac("a*b*(a + c)*d^(-1)*e^(-2)*f^a");
-    BasePtrList fac;
-    BasePtr product;
-
-    fac.push_back(a);
-    fac.push_back(b);
-    fac.push_back(Sum::create(a, c));
-    fac.push_back(Power::create(f, a));
-    fac.push_back(Power::oneOver(d));
-    fac.push_back(Power::create(e, Numeric::create(-2)));
-
-    product = Product::create(fac);
+    const BasePtr product = Product::create({ a, b, Sum::create(a, c), Power::create(f, a),
+            Power::oneOver(d), Power::create(e, Numeric::create(-2)) });
 
     printer.set(product);
 
@@ -584,15 +575,7 @@ TEST(Printer, negProductNonTrivialFactor)
 TEST(Printer, productWithConstantPi)
 {
     const std::string expected("-2*\u03c0*a*b");
-    BasePtrList fac;
-    BasePtr product;
-
-    fac.push_back(Numeric::create(-2));
-    fac.push_back(a);
-    fac.push_back(b);
-    fac.push_back(Constant::createPi());
-
-    product = Product::create(fac);
+    const BasePtr product = Product::create({ Numeric::create(-2), a, b, Constant::createPi() });
 
     printer.set(product);
 
@@ -614,14 +597,9 @@ TEST(Printer, negProductOfEqualExpPowers)
 {
     const std::string expected("-a^(2/3)*b^(2/3)");
     const BasePtr exp = Numeric::create(2, 3);
-    BasePtrList fac;
-    BasePtr product;
+    const BasePtr product = Product::create({ Numeric::mOne(), Power::create(a, exp),
+            Power::create(b, exp) });
 
-    fac.push_back(Numeric::mOne());
-    fac.push_back(Power::create(a, exp));
-    fac.push_back(Power::create(b, exp));
-
-    product = Product::create(fac);
     printer.set(product);
 
     CHECK_EQUAL(expected, printer.getStr());

@@ -137,18 +137,8 @@ TEST(PolyInfo, symbolListMultipleSymbols)
     const BasePtr sum1 = Sum::create(Product::create(two, a), b, pow1);
     const BasePtr pow2 = Power::create(sum1, five);
     const BasePtr sum2 = Sum::create(pow2, b, Power::create(c, two));
+    const BasePtr product = Product::create({ five, a, b, Sum::create(c, d), e, sum1 });
     BasePtrList list;
-    BasePtrList factors;
-    BasePtr product;
-
-    factors.push_back(five);
-    factors.push_back(a);
-    factors.push_back(b);
-    factors.push_back(Sum::create(c, d));
-    factors.push_back(e);
-    factors.push_back(sum1);
-
-    product = Product::create(factors);
 
     info.set(product, sum2);
 
@@ -213,22 +203,9 @@ TEST(PolyInfo, mainSymbolBothZeroMinDegree)
 TEST(PolyInfo, mainSymbol)
     /* Main symbol of a^3 + b^2 + c*d^4 and a^2*b*c^2: b. */
 {
-    BasePtrList ops;
-    BasePtr arg1;
-    BasePtr arg2;
-
-    ops.push_back(Power::create(a, three));
-    ops.push_back(Power::create(b, two));
-    ops.push_back(Product::create(c, Power::create(d, four)));
-
-    arg1 = Sum::create(ops);
-
-    ops.clear();
-    ops.push_back(Power::create(a, two));
-    ops.push_back(b);
-    ops.push_back(Power::create(c, two));
-
-    arg2 = Product::create(ops);
+    const BasePtr arg1 = Sum::create({ Power::create(a, three), Power::create(b, two),
+            Product::create(c, Power::create(d, four)) });
+    const BasePtr arg2 = Product::create({ Power::create(a, two), b, Power::create(c, two) });
 
     info.set(arg1, arg2);
 

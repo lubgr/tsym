@@ -64,13 +64,10 @@ TEST(PolyUnit, longNegativeMonomial)
     BasePtrList factors;
     BasePtr monomial;
 
-    factors.push_back(Numeric::mOne());
-    factors.push_back(Power::create(a, ten));
-    factors.push_back(b);
-    factors.push_back(Power::create(c, five));
-    factors.push_back(Power::create(d, Numeric::create(112)));
-    factors.push_back(Power::create(e, two));
-    factors.push_back(f);
+    factors.push_back(Numeric::mOne()); factors.push_back(Power::create(a, ten));
+    factors.push_back(b); factors.push_back(Power::create(c, five));
+    factors.push_back(Power::create(d, Numeric::create(112))); factors.push_back(Power::create(e,
+                two)); factors.push_back(f);
 
     monomial = Product::create(factors);
 

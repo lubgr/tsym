@@ -18,13 +18,9 @@ TEST_GROUP(Gcd)
 
     void setup()
     {
-        BasePtrList summands;
+        zeroAfterExpansion = Sum::create({ Product::create(a, b), Product::minus(b, c),
+                Product::create(b, Sum::create(c, Product::minus(a))) });
 
-        summands.push_back(Product::create(a, b));
-        summands.push_back(Product::minus(b, c));
-        summands.push_back(Product::create(b, Sum::create(c, Product::minus(a))));
-
-        zeroAfterExpansion = Sum::create(summands);
         undefined = Undefined::create();
     }
 

@@ -115,13 +115,8 @@ TEST(Product, resolvableNumPowNegativeBase)
     /* 2*(-1)*2^(-1/2) = -sqrt(2). */
 {
     const BasePtr expected = Product::minus(sqrtTwo);
-    BasePtrList factors;
-    BasePtr res;
-
-    factors.push_back(two);
-    factors.push_back(Product::minus(Power::create(two, Numeric::create(-1, 2))));
-
-    res = Product::create(factors);
+    const BasePtr res = Product::create({ two,
+            Product::minus(Power::create(two, Numeric::create(-1, 2))) });
 
     CHECK_EQUAL(expected, res);
 }
@@ -130,29 +125,17 @@ TEST(Product, resolvableNumPowNegativeNumericFactor)
     /* (-2)*2^(-1/2) = -sqrt(2). */
 {
     const BasePtr expected = Product::minus(sqrtTwo);
-    BasePtrList factors;
-    BasePtr res;
-
-    factors.push_back(Numeric::create(-2));
-    factors.push_back(Power::create(two, Numeric::create(-1, 2)));
-
-    res = Product::create(factors);
+    const BasePtr res = Product::create({ Numeric::create(-2),
+            Power::create(two, Numeric::create(-1, 2)) });
 
     CHECK_EQUAL(expected, res);
 }
+
 TEST(Product, resolvableNumPowNegativeNumericFractionFactor)
     /* b*(-1/2)*sqrt(2)*a = -2^(-1/2)*a*b. */
 {
     const BasePtr expected = Product::minus(a, b, Power::create(two, Numeric::create(-1, 2)));
-    BasePtrList factors;
-    BasePtr res;
-
-    factors.push_back(b);
-    factors.push_back(Numeric::create(-1, 2));
-    factors.push_back(sqrtTwo);
-    factors.push_back(a);
-
-    res = Product::create(factors);
+    const BasePtr res = Product::create({ b, Numeric::create(-1, 2), sqrtTwo, a });
 
     CHECK_EQUAL(expected, res);
 }
@@ -161,14 +144,8 @@ TEST(Product, resolvableNumPowMixedWithSymbol)
     /* 2*a*(-1)*2^(-1/2) = -sqrt(2)*a. */
 {
     const BasePtr expected = Product::minus(sqrtTwo, a);
-    BasePtrList factors;
-    BasePtr res;
-
-    factors.push_back(two);
-    factors.push_back(a);
-    factors.push_back(Product::minus(Power::create(two, Numeric::create(-1, 2))));
-
-    res = Product::create(factors);
+    const BasePtr res = Product::create({ two, a,
+            Product::minus(Power::create(two, Numeric::create(-1, 2))) });
 
     CHECK_EQUAL(expected, res);
 }
@@ -356,15 +333,8 @@ TEST(Product, numericPowersDifferentExpSign)
 TEST(Product, contractionOfNumerics)
     /* (1/4)*(2/5)*11*(3/7) = 33/70. */
 {
-    BasePtrList fac;
-    BasePtr res;
-
-    fac.push_back(Numeric::create(1, 4));
-    fac.push_back(Numeric::create(2, 5));
-    fac.push_back(Numeric::create(11));
-    fac.push_back(Numeric::create(3, 7));
-
-    res = Product::create(fac);
+    const BasePtr res = Product::create({ Numeric::create(1, 4), Numeric::create(2, 5),
+            Numeric::create(11), Numeric::create(3, 7) });
 
     CHECK_EQUAL(Numeric::create(33, 70), res);
 }
@@ -526,16 +496,7 @@ TEST(Product, multipleOnesTimesSum)
     /* 1*(a + b)*1*1*1 = a + b. */
 {
     const BasePtr aPlusB = Sum::create(a, b);
-    BasePtrList factors;
-    BasePtr res;
-
-    factors.push_back(one);
-    factors.push_back(aPlusB);
-    factors.push_back(one);
-    factors.push_back(one);
-    factors.push_back(one);
-
-    res = Product::create(factors);
+    const BasePtr res = Product::create({ one, aPlusB, one, one, one });
 
     CHECK_EQUAL(aPlusB, res);
 }
@@ -736,21 +697,10 @@ TEST(Product, contractNumericsAndPi)
     /* 2*Pi*3*Pi*4 = 24*Pi^2. */
 {
     const BasePtr pi = Constant::createPi();
-    BasePtrList fac;
-    BasePtr res;
+    const BasePtr res = Product::create({ two, pi, three, pi, four });
 
-    fac.push_back(two);
-    fac.push_back(pi);
-    fac.push_back(three);
-    fac.push_back(pi);
-    fac.push_back(four);
-
-    res = Product::create(fac);
-
-    fac = res->operands();
-
-    CHECK_EQUAL(Numeric::create(24), fac.front());
-    CHECK_EQUAL(Power::create(pi, two), fac.back());
+    CHECK_EQUAL(Numeric::create(24), res->operands().front());
+    CHECK_EQUAL(Power::create(pi, two), res->operands().back());
 }
 
 TEST(Product, piDividedByPi)
@@ -769,24 +719,9 @@ TEST(Product, orderingOfFunctionsNumbersAndSymbols)
         Trigonometric::createCos(one), Trigonometric::createCos(d),
         Trigonometric::createCos(Product::create(d, e)), Trigonometric::createSin(a) };
     const size_t nFac = sizeof(factors)/sizeof(factors[0]);
-    BasePtrList res;
-    BasePtrList fac;
-    BasePtr product;
-
-    fac.push_back(factors[1]);
-    fac.push_back(factors[0]);
-    fac.push_back(factors[5]);
-    fac.push_back(factors[8]);
-    fac.push_back(factors[9]);
-    fac.push_back(factors[3]);
-    fac.push_back(factors[6]);
-    fac.push_back(factors[2]);
-    fac.push_back(factors[7]);
-    fac.push_back(factors[4]);
-
-    product = Product::create(fac);
-
-    res = product->operands();
+    const BasePtr product = Product::create({ factors[1], factors[0], factors[5], factors[8],
+            factors[9], factors[3], factors[6], factors[2], factors[7], factors[4] });
+    BasePtrList res = product->operands();
 
     for (size_t i = 0; i < nFac; ++i)
         CHECK_EQUAL(factors[i], res.pop_front());

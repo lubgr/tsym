@@ -22,13 +22,8 @@ TEST(BasePtrList, emptyListItemAccess)
 TEST(BasePtrList, nonConstReverseIteration)
 {
     const BasePtr plainList[] { a, b, c, d };
-    BasePtrList list;
+    BasePtrList list { d, c, b, a };
     int i = 0;
-
-    list.push_back(d);
-    list.push_back(c);
-    list.push_back(b);
-    list.push_back(a);
 
     for (auto it = list.rbegin(); it != list.rend(); ++it, ++i) {
         CHECK_EQUAL(plainList[i], *it);
@@ -37,12 +32,7 @@ TEST(BasePtrList, nonConstReverseIteration)
 
 TEST(BasePtrList, popFrontAndBack)
 {
-    BasePtrList list;
-
-    list.push_back(eight);
-    list.push_back(b);
-    list.push_back(c);
-    list.push_back(two);
+    BasePtrList list { eight, b, c, two };
 
     CHECK_EQUAL(eight, list.pop_front());
     CHECK_EQUAL(3, list.size());
@@ -64,7 +54,7 @@ TEST(BasePtrList, restOfEmptyList)
     CHECK(result.empty());
 }
 
-TEST(BasePtrList, streamOperator)
+TEST(BasePtrList, streamOperatorAndPushFront)
 {
     const std::string expected("[ a   3 + b + c   2 ]");
     std::stringstream stream;

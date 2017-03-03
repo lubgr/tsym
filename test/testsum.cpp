@@ -115,16 +115,8 @@ TEST(Sum, rearrangeTwoSymbols)
 TEST(Sum, rearrangeFiveSymbols)
     /*  More complex ordering: e + c + a + b + d = a + b + c + d + e. */
 {
+    const BasePtr res = Sum::create({ e, c, a, b, d });
     BasePtrList summands;
-    BasePtr res;
-
-    summands.push_back(e);
-    summands.push_back(c);
-    summands.push_back(a);
-    summands.push_back(b);
-    summands.push_back(d);
-
-    res = Sum::create(summands);
 
     CHECK(res->isSum());
 
@@ -247,11 +239,7 @@ TEST(Sum, sumOfSumAndSymbols)
     BasePtrList summands;
     BasePtr res;
 
-    summands.push_back(sum1);
-    summands.push_back(e);
-    summands.push_back(c);
-
-    res = Sum::create(summands);
+    res = Sum::create({ sum1, e, c });
 
     CHECK(res->isSum());
 

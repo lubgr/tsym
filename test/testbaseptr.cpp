@@ -201,15 +201,7 @@ TEST(BasePtr, constCheckConstProduct)
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr sqrtThree = Power::sqrt(three);
     const BasePtr sqrtFive = Power::sqrt(five);
-    BasePtrList factors;
-    BasePtr product;
-
-    factors.push_back(half);
-    factors.push_back(sqrtTwo);
-    factors.push_back(sqrtThree);
-    factors.push_back(sqrtFive);
-
-    product = Product::create(factors);
+    const BasePtr product = Product::create({ half, sqrtTwo, sqrtThree, sqrtFive });
 
     CHECK(product->isConst());
 }
@@ -295,16 +287,10 @@ TEST(BasePtr, constTermOfConstProduct)
 {
     const BasePtr pow = Power::create(seven, Numeric::create(1, 5));
     const BasePtr expected = Product::create(three, pow);
-    BasePtrList fac;
     BasePtr product;
 
-    fac.push_back(three);
-    fac.push_back(pow);
-    fac.push_back(Constant::createPi());
-    fac.push_back(Power::create(a, b));
-    fac.push_back(Power::create(c, d));
-
-    product = Product::create(fac);
+    product = Product::create({ three, pow, Constant::createPi(), Power::create(a, b),
+            Power::create(c, d) });
 
     CHECK_EQUAL(expected, product->constTerm());
 }
@@ -331,9 +317,7 @@ TEST(BasePtr, nonConstTermOfConstProduct)
     BasePtrList fac;
     BasePtr product;
 
-    fac.push_back(Constant::createPi());
-    fac.push_back(Power::create(a, b));
-    fac.push_back(Power::create(c, d));
+    fac = { Constant::createPi(), Power::create(a, b), Power::create(c, d) };
 
     expected = Product::create(fac);
 

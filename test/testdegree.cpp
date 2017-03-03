@@ -158,16 +158,8 @@ TEST(Degree, sumWithProduct)
 TEST(Degree, sumWithMultipleExponents)
     /* Degree(10 + a + a*b + a^3 + a^5*b*c, a) = 5. */
 {
-    BasePtrList summands;
-    BasePtr sum;
-
-    summands.push_back(ten);
-    summands.push_back(a);
-    summands.push_back(abProduct);
-    summands.push_back(Power::create(a, three));
-    summands.push_back(Product::create(b, c, Power::create(a, five)));
-
-    sum = Sum::create(summands);
+    const BasePtr sum = Sum::create({ ten, a, abProduct, Power::create(a, three),
+            Product::create(b, c, Power::create(a, five)) });
 
     CHECK_EQUAL(5, sum->degree(a));
 }

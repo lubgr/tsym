@@ -95,26 +95,16 @@ TEST(PolyDivide, intRemainder)
     const BasePtr divisor = Sum::create(Product::create(three, a), one);
     const BasePtr expectedRemainder = Numeric::create(-7);
     BasePtr expectedQuotient;
-    BasePtrList summands;
     BasePtr dividend;
     BasePtrList res;
 
-    summands.push_back(Product::create(three, Power::create(a, three)));
-    summands.push_back(Product::create(Numeric::create(-5), Power::create(a, two)));
-    summands.push_back(Product::create(ten, a));
-    summands.push_back(Numeric::create(-3));
-
-    dividend = Sum::create(summands);
+    dividend = Sum::create({ Product::create(three, Power::create(a, three)),
+        Product::create(Numeric::create(-5), Power::create(a, two)), Product::create(ten, a),
+        Numeric::create(-3) });
 
     res = poly::divide(dividend, divisor);
 
-    summands.clear();
-
-    summands.push_back(Power::create(a, two));
-    summands.push_back(Product::minus(two, a));
-    summands.push_back(four);
-
-    expectedQuotient = Sum::create(summands);
+    expectedQuotient = Sum::create({ Power::create(a, two), Product::minus(two, a), four });
 
     CHECK_EQUAL(expectedQuotient, res.front());
     CHECK_EQUAL(expectedRemainder, res.back());
@@ -155,16 +145,8 @@ TEST(PolyDivide, multipleVarsNoRemainder)
             Product::create(a, c));
     const BasePtr p2 = Sum::create(Power::create(d, three), Product::create(two, e));
     const BasePtr dividend = Product::create(p1, p2)->expand();
-    BasePtrList vars;
-    BasePtrList res;
-
-    vars.push_back(a);
-    vars.push_back(b);
-    vars.push_back(c);
-    vars.push_back(d);
-    vars.push_back(e);
-
-    res = poly::divide(dividend, p2, vars);
+    const BasePtrList vars { a, b, c, d, e };
+    const BasePtrList res = poly::divide(dividend, p2, vars);
 
     CHECK_EQUAL(p1, res.front());
     CHECK(res.back()->isZero());
@@ -181,14 +163,8 @@ TEST(PolyDivide, hugeExpandedPolynomials)
     const BasePtr p12 = Product::create(p1, p2)->expand();
     const BasePtr p34 = Product::create(p3, p4)->expand();
     const BasePtr p1234 = Product::create(p12, p34)->expand();
-    BasePtrList vars;
+    const BasePtrList vars { a, b, c, d, e };
     BasePtrList res;
-
-    vars.push_back(a);
-    vars.push_back(b);
-    vars.push_back(c);
-    vars.push_back(d);
-    vars.push_back(e);
 
     res = poly::divide(p1234, p12, vars);
 

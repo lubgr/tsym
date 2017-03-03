@@ -22,26 +22,13 @@ tsym::BasePtr tsym::Product::create(const BasePtr& f1, const BasePtr& f2)
 
 tsym::BasePtr tsym::Product::create(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3)
 {
-    BasePtrList factors;
-
-    factors.push_back(f1);
-    factors.push_back(f2);
-    factors.push_back(f3);
-
-    return create(factors);
+    return create({ f1, f2, f3 });
 }
 
 tsym::BasePtr tsym::Product::create(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3,
         const BasePtr& f4)
 {
-    BasePtrList factors;
-
-    factors.push_back(f1);
-    factors.push_back(f2);
-    factors.push_back(f3);
-    factors.push_back(f4);
-
-    return create(factors);
+    return create({ f1, f2, f3, f4 });
 }
 
 tsym::BasePtr tsym::Product::minus(const BasePtr& f1)
@@ -51,36 +38,18 @@ tsym::BasePtr tsym::Product::minus(const BasePtr& f1)
 
 tsym::BasePtr tsym::Product::minus(const BasePtr& f1, const BasePtr& f2)
 {
-    BasePtrList factors(Numeric::mOne());
-
-    factors.push_back(f1);
-    factors.push_back(f2);
-
-    return create(factors);
+    return create({ Numeric::mOne(), f1, f2 });
 }
 
 tsym::BasePtr tsym::Product::minus(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3)
 {
-    BasePtrList factors(Numeric::mOne());
-
-    factors.push_back(f1);
-    factors.push_back(f2);
-    factors.push_back(f3);
-
-    return create(factors);
+    return create({ Numeric::mOne(), f1, f2, f3 });
 }
 
 tsym::BasePtr tsym::Product::minus(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3,
         const BasePtr& f4)
 {
-    BasePtrList factors(Numeric::mOne());
-
-    factors.push_back(f1);
-    factors.push_back(f2);
-    factors.push_back(f3);
-    factors.push_back(f4);
-
-    return create(factors);
+    return create({ Numeric::mOne(), f1, f2, f3, f4 });
 }
 
 tsym::BasePtr tsym::Product::create(const BasePtrList& factors)

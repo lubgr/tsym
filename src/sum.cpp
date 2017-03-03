@@ -21,26 +21,13 @@ tsym::BasePtr tsym::Sum::create(const BasePtr& s1, const BasePtr& s2)
 
 tsym::BasePtr tsym::Sum::create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3)
 {
-    BasePtrList summands;
-
-    summands.push_back(s1);
-    summands.push_back(s2);
-    summands.push_back(s3);
-
-    return create(summands);
+    return create({ s1, s2, s3 });
 }
 
 tsym::BasePtr tsym::Sum::create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3,
         const BasePtr& s4)
 {
-    BasePtrList summands;
-
-    summands.push_back(s1);
-    summands.push_back(s2);
-    summands.push_back(s3);
-    summands.push_back(s4);
-
-    return create(summands);
+    return create({ s1, s2, s3, s4 });
 }
 
 tsym::BasePtr tsym::Sum::create(const BasePtrList& summands)

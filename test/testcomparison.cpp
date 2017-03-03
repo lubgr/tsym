@@ -164,24 +164,15 @@ TEST(Comparison, functionsDifferentTrigonometric)
 
 TEST(Comparison, equalLists)
 {
-    BasePtrList list;
-
-    list.push_back(ten);
-    list.push_back(a);
-    list.push_back(Product::create(two, b));
-    list.push_back(Sum::create(three, c));
+    const BasePtrList list { ten, a, Product::create(two, b), Sum::create(three, c) };
 
     CHECK(list.isEqual(list));
 }
 
 TEST(Comparison, differentLists)
 {
-    BasePtrList l1;
+    BasePtrList l1 { three, four, a };
     BasePtrList l2;
-
-    l1.push_back(three);
-    l1.push_back(four);
-    l1.push_back(a);
 
     l2 = l1;
 

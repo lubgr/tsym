@@ -89,39 +89,22 @@ TEST(Expansion, trivialSymbol)
 TEST(Expansion, powerOfSumPosIntExp)
     /* (a + b)^2 = a^2 + 2*a*b + b^2. */
 {
+    const BasePtr expected = Sum::create({ Power::create(a, two), Power::create(b, two),
+            Product::create(two, abProduct) });
     const BasePtr orig = Power::create(abSum, two);
-    BasePtrList summands;
-    BasePtr expected;
-    BasePtr expanded;
 
-    expanded = orig->expand();
-
-    summands.push_back(Power::create(a, two));
-    summands.push_back(Power::create(b, two));
-    summands.push_back(Product::create(two, abProduct));
-
-    expected = Sum::create(summands);
-
-    CHECK_EQUAL(expected, expanded);
+    CHECK_EQUAL(expected, orig->expand());
 }
 
 TEST(Expansion, powerOfSumNegIntExp)
     /* (a + b)^(-2) = (a^2 + 2*a*b + b^2)^(-1). */
 {
     const BasePtr orig = Power::create(abSum, Numeric::create(-2));
-    BasePtrList summands;
-    BasePtr expanded;
-    BasePtr expected;
+    const BasePtrList summands{ Power::create(a, two), Power::create(b, two),
+        Product::create(two, abProduct) };
+    const BasePtr expected = Power::oneOver(Sum::create(summands));
 
-    summands.push_back(Power::create(a, two));
-    summands.push_back(Power::create(b, two));
-    summands.push_back(Product::create(two, abProduct));
-
-    expected = Power::oneOver(Sum::create(summands));
-
-    expanded = orig->expand();
-
-    CHECK_EQUAL(expected, expanded);
+    CHECK_EQUAL(expected, orig->expand());
 }
 
 TEST(Expansion, powerOfSumPosFracExp)
@@ -182,20 +165,10 @@ TEST(Expansion, symbolSumTimesSum)
     /* (a + b)*(c + d) = a*c + b*c + a*d + b*d. */
 {
     const BasePtr orig = Product::create(abSum, cdSum);
-    BasePtrList summands;
-    BasePtr expanded;
-    BasePtr expected;
+    const BasePtr expected = Sum::create({ Product::create(a, c), Product::create(b, c),
+            Product::create(a, d), Product::create(b, d)});
 
-    summands.push_back(Product::create(a, c));
-    summands.push_back(Product::create(b, c));
-    summands.push_back(Product::create(a, d));
-    summands.push_back(Product::create(b, d));
-
-    expected = Sum::create(summands);
-
-    expanded = orig->expand();
-
-    CHECK_EQUAL(expected, expanded);
+    CHECK_EQUAL(expected, orig->expand());
 }
 
 TEST(Expansion, noExpansionOfFunctionArg)
@@ -213,48 +186,39 @@ TEST(Expansion, noExpansionOfFunctionArg)
 TEST(Expansion, symbolSumProduct)
     /* (a + b)*(c + d)*(e + f + g)*(h + i) = ... */
 {
+    const BasePtr orig = Product::create({ abSum, Sum::create(c, d), Sum::create(e, f, g),
+            Sum::create(h, i) });
     BasePtrList summands;
     BasePtr expected;
-    BasePtr expanded;
-    BasePtrList fac;
-    BasePtr orig;
 
-    fac.push_back(abSum);
-    fac.push_back(Sum::create(c, d));
-    fac.push_back(Sum::create(e, f, g));
-    fac.push_back(Sum::create(h, i));
+    summands.push_back(Product::create(b, d, g, i));
+    summands.push_back(Product::create(a, d, g, i));
+    summands.push_back(Product::create(b, c, g, i));
+    summands.push_back(Product::create(a, c, g, i));
+    summands.push_back(Product::create(b, d, f, i));
+    summands.push_back(Product::create(a, d, f, i));
+    summands.push_back(Product::create(b, c, f, i));
+    summands.push_back(Product::create(a, c, f, i));
+    summands.push_back(Product::create(b, d, e, i));
+    summands.push_back(Product::create(a, d, e, i));
+    summands.push_back(Product::create(b, c, e, i));
+    summands.push_back(Product::create(a, c, e, i));
+    summands.push_back(Product::create(b, d, g, h));
+    summands.push_back(Product::create(a, d, g, h));
+    summands.push_back(Product::create(b, c, g, h));
+    summands.push_back(Product::create(a, c, g, h));
+    summands.push_back(Product::create(b, d, f, h));
+    summands.push_back(Product::create(a, d, f, h));
+    summands.push_back(Product::create(b, c, f, h));
+    summands.push_back(Product::create(a, c, f, h));
+    summands.push_back(Product::create(b, d, e, h));
+    summands.push_back(Product::create(a, d, e, h));
+    summands.push_back(Product::create(b, c, e, h));
+    summands.push_back(Product::create(a, c, e, h));
 
-    orig = Product::create(fac);
-
-    summands.push_back(getProduct(b, d, g, i));
-    summands.push_back(getProduct(a, d, g, i));
-    summands.push_back(getProduct(b, c, g, i));
-    summands.push_back(getProduct(a, c, g, i));
-    summands.push_back(getProduct(b, d, f, i));
-    summands.push_back(getProduct(a, d, f, i));
-    summands.push_back(getProduct(b, c, f, i));
-    summands.push_back(getProduct(a, c, f, i));
-    summands.push_back(getProduct(b, d, e, i));
-    summands.push_back(getProduct(a, d, e, i));
-    summands.push_back(getProduct(b, c, e, i));
-    summands.push_back(getProduct(a, c, e, i));
-    summands.push_back(getProduct(b, d, g, h));
-    summands.push_back(getProduct(a, d, g, h));
-    summands.push_back(getProduct(b, c, g, h));
-    summands.push_back(getProduct(a, c, g, h));
-    summands.push_back(getProduct(b, d, f, h));
-    summands.push_back(getProduct(a, d, f, h));
-    summands.push_back(getProduct(b, c, f, h));
-    summands.push_back(getProduct(a, c, f, h));
-    summands.push_back(getProduct(b, d, e, h));
-    summands.push_back(getProduct(a, d, e, h));
-    summands.push_back(getProduct(b, c, e, h));
-    summands.push_back(getProduct(a, c, e, h));
     expected = Sum::create(summands);
 
-    expanded = orig->expand();
-
-    CHECK_EQUAL(expected, expanded);
+    CHECK_EQUAL(expected, orig->expand());
 }
 
 TEST(Expansion, mixedSumTimesSum)
@@ -297,19 +261,11 @@ TEST(Expansion, sumWithTermsToExpand)
 TEST(Expansion, expansionLeadsToZero)
     /* a*b - b*c + b(c - a) = 0. */
 {
-    BasePtrList summands;
-    BasePtr expanded;
-    BasePtr orig;
-
-    summands.push_back(Product::create(a, b));
-    summands.push_back(Product::minus(b, c));
-    summands.push_back(Product::create(b, Sum::create(c, Product::minus(a))));
-
-    orig = Sum::create(summands);
-    expanded = orig->expand();
+    const BasePtr orig = Sum::create({ Product::create(a, b), Product::minus(b, c),
+            Product::create(b, Sum::create(c, Product::minus(a)))});
 
     CHECK(!orig->isZero());
-    CHECK(expanded->isZero());
+    CHECK(orig->expand()->isZero());
 }
 
 TEST(Expansion, sumPowerOfThree)
@@ -319,7 +275,6 @@ TEST(Expansion, sumPowerOfThree)
     const BasePtr orig = Power::create(Sum::create(a, b, c), three);
     BasePtrList summands;
     BasePtr expected;
-    BasePtr result;
 
     summands.push_back(Power::create(a, three));
     summands.push_back(Power::create(b, three));
@@ -334,9 +289,7 @@ TEST(Expansion, sumPowerOfThree)
 
     expected = Sum::create(summands);
 
-    result = orig->expand();
-
-    CHECK_EQUAL(expected, result);
+    CHECK_EQUAL(expected, orig->expand());
 }
 
 TEST(Expansion, productOfPowersWithIntExp)

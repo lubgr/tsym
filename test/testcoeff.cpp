@@ -267,14 +267,8 @@ TEST(Coeff, sumIncludingFunctionTermsAndPowers)
     const BasePtr threeTimesSinA = Product::create(three, Trigonometric::createSin(a));
     const BasePtr twoTimesCosA = Product::create(two, Trigonometric::createCos(a));
     const BasePtr aSquare = Power::create(a, two);
-    BasePtrList summands;
-    BasePtr sum;
-
-    summands.push_back(Product::create(threeTimesSinA, aSquare));
-    summands.push_back(Product::create(twoTimesCosA, a));
-    summands.push_back(four);
-
-    sum = Sum::create(summands);
+    const BasePtr sum = Sum::create({ Product::create(threeTimesSinA, aSquare),
+            Product::create(twoTimesCosA, a), four });
 
     CHECK_EQUAL(threeTimesSinA, sum->coeff(a, 2));
 }
