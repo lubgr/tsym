@@ -148,13 +148,11 @@ TEST(Var, fitsIntoInt)
 
 TEST(Var, doesntFitIntoInt)
 {
-    Var large(std::numeric_limits<int>::max());
+    Var n(std::numeric_limits<int>::max());
 
-    disableLog();
-    large = tsym::pow(large, large);
-    enableLog();
+    n *= 2;
 
-    CHECK_FALSE(large.fitsIntoInt());
+    CHECK_FALSE(n.fitsIntoInt());
 }
 
 TEST(Var, toDouble)

@@ -196,7 +196,7 @@ libEnv.CFile(parser, 'src/parser.y')
 testEnv.VariantDir(testEnv.buildDir(), 'test')
 testEnv.Append(CPPPATH = [libEnv.buildDir(), testEnv.buildDir()])
 if not testEnv.concat('LIBS'):
-    testEnv.Append(LIBS = ['CppUTest', 'tsym', 'plic', 'python3.6m'])
+    testEnv.Append(LIBS = ['CppUTest', 'tsym', 'plic', 'gmp', 'python3.6m'])
 testEnv.Append(RPATH = env.buildDir())
 testEnv.Append(LIBPATH = env.buildDir())
 
