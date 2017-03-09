@@ -32,7 +32,7 @@ namespace tsym {
             /* To be used only internally: */
             explicit Var(const BasePtr& ptr);
             Var(const Var& other);
-            const Var& operator = (const Var& rhs);
+            Var& operator = (const Var& rhs);
             ~Var();
 
             Var& operator += (const Var& rhs);

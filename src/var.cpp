@@ -92,7 +92,7 @@ tsym::Var::Var(const Var& other) :
     rep(new BasePtr(*other.rep))
 {}
 
-const tsym::Var& tsym::Var::operator = (const Var& rhs)
+tsym::Var& tsym::Var::operator = (const Var& rhs)
 {
     if (this == &rhs)
         return *this;
