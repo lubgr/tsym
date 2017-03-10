@@ -241,12 +241,26 @@ double tsym::Int::toDouble() const
 
 void tsym::Int::print(std::ostream& stream) const
 {
-    // TODO how to determine necessary lenght?
-    static char buffer[1024];
+    std::size_t bufferLength = 100;
+    std::size_t charsWritten;
+    char *buffer = nullptr;
 
-    gmp_snprintf(buffer, 1023, "%Zd", handle);
+    while (buffer == nullptr) {
+        buffer = new char[bufferLength];
+
+        charsWritten = gmp_snprintf(buffer, bufferLength, "%Zd", handle);
+
+        if (charsWritten >= bufferLength) {
+            bufferLength *= 2;
+
+            delete[] buffer;
+            buffer = nullptr;
+        }
+    }
 
     stream << buffer;
+
+    delete[] buffer;
 }
 
 bool tsym::operator == (const Int& lhs, const Int& rhs)

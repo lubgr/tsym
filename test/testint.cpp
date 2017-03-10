@@ -357,3 +357,16 @@ TEST(Int, streamOperator)
 
     CHECK_EQUAL(expected, stream.str());
 }
+
+TEST(Int, streamOperatorVeryLongNumber)
+{
+    const std::string expected("-1230029380928409280920984098230948099812038209340942385930859034"
+            "203984092384092843092809483209482093840928430928309482093480923840928340928309402394"
+            "029348092384092834092830942803482039482039482039482093840293840293840293840928430928");
+    const Int n(expected.c_str());
+    std::stringstream stream;
+
+    stream << n;
+
+    CHECK_EQUAL(expected, stream.str());
+}
