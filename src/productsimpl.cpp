@@ -457,15 +457,8 @@ tsym::BasePtrList tsym::ProductSimpl::simplTwoEqualExpDenom(const BasePtr& f1, c
     Int newDenom;
     Int newNum;
 
-    if (num[0].hasOverflowed() || num[1].hasOverflowed() ||
-            denom[0].hasOverflowed() || denom[1].hasOverflowed())
-        return BasePtrList(f1, f2);
-
     newNum = num[0]*num[1];
     newDenom = denom[0]*denom[1];
-
-    if (newNum.hasOverflowed() || newDenom.hasOverflowed())
-        return BasePtrList(f1, f2);
 
     newBase = Number(newNum, newDenom);
 

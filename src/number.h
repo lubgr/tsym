@@ -12,13 +12,7 @@ namespace tsym {
          * up to a certain (not very high) accuracy.
          *
          * Conveniece shortcut functions for numeric evaluation of powers can be found as static
-         * methods of this class (Pow/Sqrt).
-         *
-         * Note that in contrast to many other computer algebra systems, no arbitrary precision
-         * numbers are involved, which means that integer overflows may occur, e.g. when a power of
-         * high numbers is requested. All operations for rational numbers are checked for an
-         * overflow - if it happens, the representation of the number is automatically converted to
-         * double and a warning is printed out. Double overflow isn't checked. */
+         * methods of this class (Pow/Sqrt). */
         public:
             Number();
             Number(int value);
@@ -73,15 +67,14 @@ namespace tsym {
             bool isThisOrOtherDouble(const Number& other) const;
             void addRational(const Number& other);
             Int lcm(const Int& a, const Int& b) const;
-            void printOverflowWarning() const;
             Number flipSign() const;
             void timesRational(const Number& other);
             bool processTrivialPowers(const Number& exponent, Number& result) const;
             Number computeMinusOneToThe(const Number& exponent) const;
             bool processNegBase(const Number& exponent, Number& result) const;
             bool processIrrationalPowers(const Number& exponent, Number& result) const;
-            bool processRationalPowers(const Number& exponent, Number& result) const;
-            bool computeNumPower(const Int& numExponent, Number& result) const;
+            void processRationalPowers(const Number& exponent, Number& result) const;
+            void computeNumPower(const Int& numExponent, Number& result) const;
             void computeDenomPower(const Int& denomExponent, Number& result) const;
             Int tryGetBase(const Int& n, const Int& denomExponent) const;
             bool areBothRational(const Number& other) const;

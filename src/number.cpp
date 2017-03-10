@@ -64,16 +64,11 @@ void tsym::Number::setAndSimplify(const Int& num, const Int& denom, double dValu
 {
     set(num, denom, dValue);
 
-    if (denom == 0)
+    if (denom == 0) {
         TSYM_ERROR("Try to set fraction with zero denominator. Number is undefined.");
-    else if (num.hasOverflowed() || denom.hasOverflowed())
-        TSYM_ERROR("Initiate Number with overflowed Int arguments! Number is undefined.");
-    else {
+        setUndefined();
+    } else
         simplify();
-        return;
-    }
-
-    setUndefined();
 }
 
 void tsym::Number::set(const Int& num, const Int& denom, double dValue)
@@ -187,12 +182,6 @@ void tsym::Number::addRational(const Number& other)
         newDenom = multiple;
     }
 
-    if (newNum.hasOverflowed() || newDenom.hasOverflowed()) {
-        printOverflowWarning();
-        setAndSimplify(0, 1, toDouble() + other.toDouble());
-        return;
-    }
-
     setAndSimplify(newNum, newDenom, 0.0);
 }
 
@@ -204,11 +193,6 @@ tsym::Int tsym::Number::lcm(const Int& a, const Int& b) const
     const Int divisor(gcd(a, b));
 
     return a/divisor*b;
-}
-
-void tsym::Number::printOverflowWarning() const
-{
-    TSYM_WARNING("Integer overflow! Number is converted to double.");
 }
 
 tsym::Number& tsym::Number::operator -= (const Number& rhs)
@@ -240,14 +224,7 @@ tsym::Number& tsym::Number::operator *= (const Number& rhs)
 
 void tsym::Number::timesRational(const Number& other)
 {
-    const Int newNum(num*other.num);
-    const Int newDenom(denom*other.denom);
-
-    if (newNum.hasOverflowed() || newDenom.hasOverflowed()) {
-        printOverflowWarning();
-        setAndSimplify(0, 1, toDouble()*other.toDouble());
-    } else
-        setAndSimplify(newNum, newDenom, 0.0);
+    setAndSimplify(num*other.num, denom*other.denom, 0.0);
 }
 
 tsym::Number& tsym::Number::operator /= (const Number& rhs)
@@ -277,12 +254,8 @@ tsym::Number tsym::Number::toThe(const Number& exponent) const
         return res;
     else if (processIrrationalPowers(exponent, res))
         return res;
-    else if (processRationalPowers(exponent, res))
-        return res;
-
-    res = *this;
-
-    res.setAndSimplify(0, 1, std::pow(toDouble(), exponent.toDouble()));
+    else
+        processRationalPowers(exponent, res);
 
     return res;
 }
@@ -347,36 +320,25 @@ bool tsym::Number::processIrrationalPowers(const Number& exponent, Number& resul
         return false;
 }
 
-bool tsym::Number::processRationalPowers(const Number& exponent, Number& result) const
+void tsym::Number::processRationalPowers(const Number& exponent, Number& result) const
 {
     /* The base is positive and neither 1 or 0. The exponent is positive or negative. */
-    if (!computeNumPower(exponent.num, result))
-        return false;
-
-    /* We get here only if no integer overflow happened before. computeDenomPower can't produce
-     * an integer overflow, so no additional check is required. */
+    computeNumPower(exponent.num, result);
     computeDenomPower(exponent.denom, result);
-
-    return true;
 }
 
-bool tsym::Number::computeNumPower(const Int& numExponent, Number& result) const
+void tsym::Number::computeNumPower(const Int& numExponent, Number& result) const
     /* For e.g. (1/2)^(2/3), this does the part (1/2)^2. This may produce an integer overflow - if
      * it does, the method stops and returns false, otherwise true. */
 {
     const Int newDenom(denom.toThe(numExponent.abs()));
     const Int newNum(num.toThe(numExponent.abs()));
 
-    if (newNum.hasOverflowed() || newDenom.hasOverflowed()) {
-        printOverflowWarning();
-        return false;
-    } else if (numExponent < 0)
+    if (numExponent < 0)
         /* The method takes care of negative a numerator. */
         result = Number(newDenom, newNum);
     else
         result = Number(newNum, newDenom);
-
-    return true;
 }
 
 void tsym::Number::computeDenomPower(const Int& denomExponent, Number& result) const
@@ -419,11 +381,7 @@ tsym::Int tsym::Number::tryGetBase(const Int& n, const Int& denomExponent) const
 
     res = res.toThe(denomExponent);
 
-    if (res.hasOverflowed())
-        /* This shouldn't happen, it should have been overflowed before. */
-        return 0;
-    else
-        return res == n ? base : 0;
+    return res == n ? base : 0;
 }
 
 bool tsym::Number::equal(const Number& rhs) const
