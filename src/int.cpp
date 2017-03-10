@@ -90,11 +90,10 @@ tsym::Int& tsym::Int::operator *= (const Int& rhs)
 
 tsym::Int& tsym::Int::operator /= (const Int& rhs)
 {
-    if (mpz_cmp_si(rhs.handle, 0) == 0) {
+    if (mpz_cmp_si(rhs.handle, 0) == 0)
         TSYM_ERROR("Division by zero!");
-        // TODO what to do?
-    } else
-        mpz_fdiv_q(handle, handle, rhs.handle);
+
+    mpz_fdiv_q(handle, handle, rhs.handle);
 
     return *this;
 }
@@ -165,10 +164,8 @@ tsym::Int tsym::Int::nonTrivialPower(const Int& exp) const
 {
     Int result;
 
-    if (!mpz_fits_ulong_p(exp.handle)) {
+    if (!mpz_fits_ulong_p(exp.handle))
         TSYM_ERROR("Can't evaluate integer power with huge exponent: ", exp);
-        // TODO return something!
-    }
 
      mpz_pow_ui(result.handle, handle, mpz_get_ui(exp.handle));
 

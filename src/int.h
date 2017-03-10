@@ -22,6 +22,7 @@ namespace tsym {
             Int& operator += (const Int& rhs);
             Int& operator -= (const Int& rhs);
             Int& operator *= (const Int& rhs);
+            /* Logs an error when rhs is zero, but forwads it to the gmp division: */
             Int& operator /= (const Int& rhs);
             /* The remainder has the same sign as the left and side: */
             Int& operator %= (const Int& rhs);

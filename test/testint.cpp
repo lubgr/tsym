@@ -97,17 +97,6 @@ TEST(Int, power)
     CHECK_EQUAL(Int("6659166111488656281486807152009765625"), result);
 }
 
-TEST(Int, divisonByZero)
-{
-    Int res;
-
-    disableLog();
-    res = Int(5)/0;
-    enableLog();
-
-    // TODO what is here to be checked?!
-}
-
 TEST(Int, incrementDecrementOperators)
 {
     Int n(1);
