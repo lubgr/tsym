@@ -40,7 +40,6 @@ namespace tsym {
             bool equal(const Int& rhs) const;
             bool lessThan(const Int& rhs) const;
             int sign() const;
-            bool hasOverflowed() const;
             bool fitsIntoInt() const;
             bool fitsIntoLong() const;
             int toInt() const;
@@ -49,17 +48,10 @@ namespace tsym {
 
             void print(std::ostream& stream) const;
 
-            static Int max();
-            static Int min();
-
         private:
-            void handleMinMaxLimits();
-            bool warnOverflow(const char *operationName, const Int& operand = 0) const;
-            Int createOverflowed() const;
             Int nonTrivialPower(const Int& exp) const;
 
             mpz_t handle;
-            bool overflow;
     };
 
     bool operator == (const Int& lhs, const Int& rhs);

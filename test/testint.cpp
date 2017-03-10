@@ -8,7 +8,6 @@ using namespace tsym;
 
 TEST_GROUP(Int)
 {
-    Int overflowed;
     long maxLong;
     int maxInt;
 
@@ -16,10 +15,6 @@ TEST_GROUP(Int)
     {
         maxInt = std::numeric_limits<int>::max();
         maxLong = std::numeric_limits<long>::max();
-
-        disableLog();
-        overflowed = 2*Int::max();
-        enableLog();
     }
 };
 
@@ -47,17 +42,6 @@ TEST(Int, constructFromMaxLong)
     Int n(maxLong);
 
     CHECK_EQUAL(maxLong, n);
-}
-
-TEST(Int, changeOfSignMinMax)
-{
-    const Int min(Int::min());
-    const Int max(Int::max());
-    Int result;
-
-    result = min.abs();
-
-    CHECK_EQUAL(max, result);
 }
 
 TEST(Int, powerWithNegativeExp)
@@ -113,98 +97,6 @@ TEST(Int, power)
     CHECK_EQUAL(Int("6659166111488656281486807152009765625"), result);
 }
 
-TEST(Int, powerWithLargeExp)
-{
-    Int exp(maxLong);
-    Int result;
-
-    exp *= 10;
-
-    disableLog();
-    result = Int(23).toThe(exp);
-    enableLog();
-
-    CHECK(result.hasOverflowed());
-}
-
-TEST(Int, subtractionWithOverflowedRhs)
-{
-    Int res;
-
-    disableLog();
-    res = 5 - overflowed;
-    enableLog();
-
-    CHECK(res.hasOverflowed());
-}
-
-TEST(Int, overflowBySubtraction)
-{
-    Int res;
-
-    disableLog();
-    res = Int::min() - 12345;
-    enableLog();
-
-    CHECK(res.hasOverflowed());
-}
-
-TEST(Int, overflowBySubtractionNegativeRhs)
-{
-    const Int rhs(-9876543);
-    Int res;
-
-    disableLog();
-    res = Int::max() - rhs;
-    enableLog();
-
-    CHECK(res.hasOverflowed());
-}
-
-TEST(Int, powerWithOverflowed)
-{
-    Int res;
-
-    disableLog();
-    res = Int(2).toThe(overflowed);
-    enableLog();
-
-    CHECK(res.hasOverflowed());
-}
-
-TEST(Int, signWithOverflowed)
-{
-    int res;
-
-    disableLog();
-    res = overflowed.sign();
-    enableLog();
-
-    CHECK_EQUAL(1, res);
-}
-
-TEST(Int, absWithOverflowed)
-{
-    Int res;
-
-    disableLog();
-    res = -overflowed.abs();
-    enableLog();
-
-    CHECK(res.hasOverflowed());
-}
-
-TEST(Int, moduloWithOverflowed)
-{
-    Int res;
-
-    disableLog();
-    res = overflowed % 2;
-    enableLog();
-
-    CHECK(res.hasOverflowed());
-}
-
 TEST(Int, divisonByZero)
 {
     Int res;
@@ -213,7 +105,7 @@ TEST(Int, divisonByZero)
     res = Int(5)/0;
     enableLog();
 
-    CHECK(res.hasOverflowed());
+    // TODO what is here to be checked?!
 }
 
 TEST(Int, incrementDecrementOperators)
@@ -326,10 +218,11 @@ TEST(Int, toPrimitiveLong)
 
 TEST(Int, toPrimitiveLongFails)
 {
+    Int large("9238947298374892738942389470293809234094");
     long res;
 
     disableLog();
-    res = overflowed.toLong();
+    res = large.toLong();
     enableLog();
 
     CHECK_EQUAL(maxLong, res);
@@ -371,21 +264,6 @@ TEST(Int, comparisonOperators)
     CHECK(one <= four);
     CHECK(one > mTwo);
     CHECK(one >= mTwo);
-}
-
-TEST(Int, comparisonWithOverflowedInt)
-{
-    disableLog();
-    CHECK(!(overflowed < 1));
-    CHECK(!(1 > overflowed));
-    enableLog();
-}
-
-TEST(Int, equalityWithOverflowedInt)
-{
-    disableLog();
-    CHECK(overflowed != 1);
-    enableLog();
 }
 
 TEST(Int, comparisonLargeNumbers)
@@ -487,16 +365,6 @@ TEST(Int, streamOperator)
     std::stringstream stream;
 
     stream << n;
-
-    CHECK_EQUAL(expected, stream.str());
-}
-
-TEST(Int, streamOperatorOverflowed)
-{
-    const std::string expected("[Overflowed integer]");
-    std::stringstream stream;
-
-    stream << overflowed;
 
     CHECK_EQUAL(expected, stream.str());
 }

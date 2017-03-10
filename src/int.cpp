@@ -13,33 +13,28 @@ namespace tsym {
         static const int minInt = std::numeric_limits<int>::min();
         static const long maxLong = std::numeric_limits<long>::max();
         static const long minLong = std::numeric_limits<long>::min();
-        static const char maxIntStr[] = " 1 000 000 000 000 000 000 000 000 000 000 000 000 000";
     }
 }
 
-tsym::Int::Int() :
-    overflow(false)
+tsym::Int::Int()
 {
     mpz_init(handle);
     mpz_set_si(handle, 0);
 }
 
-tsym::Int::Int(int n) :
-    overflow(false)
+tsym::Int::Int(int n)
 {
     mpz_init(handle);
     mpz_set_si(handle, n);
 }
 
-tsym::Int::Int(long n) :
-    overflow(false)
+tsym::Int::Int(long n)
 {
     mpz_init(handle);
     mpz_set_si(handle, n);
 }
 
-tsym::Int::Int(const char *str) :
-    overflow(false)
+tsym::Int::Int(const char *str)
 {
     int flag;
 
@@ -50,8 +45,7 @@ tsym::Int::Int(const char *str) :
         TSYM_ERROR("Failed to parse integer from \'%s\'", str);
 }
 
-tsym::Int::Int(const Int& other) :
-    overflow(other.overflow)
+tsym::Int::Int(const Int& other)
 {
     mpz_init(handle);
     mpz_set(handle, other.handle);
@@ -63,7 +57,6 @@ const tsym::Int& tsym::Int::operator = (const Int& rhs)
         mpz_clear(handle);
         mpz_init(handle);
         mpz_set(handle, rhs.handle);
-        overflow = rhs.overflow;
     }
 
     return *this;
@@ -78,24 +71,12 @@ tsym::Int& tsym::Int::operator += (const Int& rhs)
 {
     mpz_add(handle, handle, rhs.handle);
 
-    handleMinMaxLimits();
-
     return *this;
-}
-
-void tsym::Int::handleMinMaxLimits()
-{
-    if (mpz_cmp(handle, min().handle) < 0 || mpz_cmp(handle, max().handle) > 0) {
-        TSYM_WARNING("Integer overflow detected, meaningful arithmetic is impossible now!");
-        overflow = true;
-    }
 }
 
 tsym::Int& tsym::Int::operator -= (const Int& rhs)
 {
     mpz_sub(handle, handle, rhs.handle);
-
-    handleMinMaxLimits();
 
     return *this;
 }
@@ -104,28 +85,22 @@ tsym::Int& tsym::Int::operator *= (const Int& rhs)
 {
     mpz_mul(handle, handle, rhs.handle);
 
-    handleMinMaxLimits();
-
     return *this;
 }
 
 tsym::Int& tsym::Int::operator /= (const Int& rhs)
 {
     if (mpz_cmp_si(rhs.handle, 0) == 0) {
-        TSYM_ERROR("Division by zero! Set integer to overflowed.");
-        overflow = true;
+        TSYM_ERROR("Division by zero!");
+        // TODO what to do?
     } else
         mpz_fdiv_q(handle, handle, rhs.handle);
-
-    handleMinMaxLimits();
 
     return *this;
 }
 
 tsym::Int& tsym::Int::operator %= (const Int& rhs)
 {
-    warnOverflow("Modulo", rhs);
-
     mpz_tdiv_r(handle, handle, rhs.handle);
 
     return *this;
@@ -175,9 +150,7 @@ tsym::Int tsym::Int::operator - () const
 
 tsym::Int tsym::Int::toThe(const Int& exp) const
 {
-    if (warnOverflow("Power", exp))
-        return createOverflowed();
-    else if (mpz_cmp_si(handle, 1) == 0)
+    if (mpz_cmp_si(handle, 1) == 0)
         return *this;
     else if (mpz_cmp_si(exp.handle, 0) == 0)
         return 1;
@@ -188,27 +161,16 @@ tsym::Int tsym::Int::toThe(const Int& exp) const
         return nonTrivialPower(exp);
 }
 
-tsym::Int tsym::Int::createOverflowed() const
-{
-    Int overflowed;
-
-    overflowed.overflow = true;
-
-    return overflowed;
-}
-
 tsym::Int tsym::Int::nonTrivialPower(const Int& exp) const
 {
     Int result;
 
     if (!mpz_fits_ulong_p(exp.handle)) {
         TSYM_ERROR("Can't evaluate integer power with huge exponent: ", exp);
-        return createOverflowed();
+        // TODO return something!
     }
 
      mpz_pow_ui(result.handle, handle, mpz_get_ui(exp.handle));
-
-     result.handleMinMaxLimits();
 
      return result;
 }
@@ -224,52 +186,27 @@ tsym::Int tsym::Int::abs() const
 
 bool tsym::Int::equal(const Int& rhs) const
 {
-    if (warnOverflow("Comparison", rhs))
-        return false;
-    else
-        return mpz_cmp(handle, rhs.handle) == 0;
-}
-
-bool tsym::Int::warnOverflow(const char *operationName, const Int& operand) const
-{
-    if (overflow)
-        TSYM_WARNING("%s with overflowed Integer!", operationName);
-
-    if (operand.overflow)
-        TSYM_WARNING("%s with overflowed Integer operand!", operationName);
-
-    return overflow || operand.overflow;
+    return mpz_cmp(handle, rhs.handle) == 0;
 }
 
 bool tsym::Int::lessThan(const Int& rhs) const
 {
-    if (warnOverflow("Comparison", rhs))
-        return false;
-    else
-        return mpz_cmp(handle, rhs.handle) < 0;
+    return mpz_cmp(handle, rhs.handle) < 0;
 }
 
 int tsym::Int::sign() const
 {
-    if (warnOverflow("Sign request"))
-        return 1;
-    else
-        return mpz_cmp_si(handle, 0) >= 0 ? 1 : -1;
-}
-
-bool tsym::Int::hasOverflowed() const
-{
-    return overflow;
+    return mpz_cmp_si(handle, 0) >= 0 ? 1 : -1;
 }
 
 bool tsym::Int::fitsIntoInt() const
 {
-    return !hasOverflowed() && mpz_fits_sint_p(handle) != 0;
+    return mpz_fits_sint_p(handle) != 0;
 }
 
 bool tsym::Int::fitsIntoLong() const
 {
-    return !hasOverflowed() && mpz_fits_slong_p(handle) != 0;
+    return mpz_fits_slong_p(handle) != 0;
 }
 
 int tsym::Int::toInt() const
@@ -307,32 +244,12 @@ double tsym::Int::toDouble() const
 
 void tsym::Int::print(std::ostream& stream) const
 {
-    static char buffer[std::strlen(maxIntStr) + 2];
+    // TODO how to determine necessary lenght?
+    static char buffer[1024];
 
-    if (overflow)
-        stream << "[Overflowed integer]";
-    else {
-        gmp_snprintf(buffer, std::strlen(maxIntStr) + 1, "%Zd", handle);
+    gmp_snprintf(buffer, 1023, "%Zd", handle);
 
-        stream << buffer;
-    }
-}
-
-tsym::Int tsym::Int::max()
-{
-    static Int maxInt;
-    static const int flag = mpz_set_str(maxInt.handle, maxIntStr, 10);
-
-    (void) flag;
-
-    assert(flag == 0);
-
-    return maxInt;
-}
-
-tsym::Int tsym::Int::min()
-{
-    return -max();
+    stream << buffer;
 }
 
 bool tsym::operator == (const Int& lhs, const Int& rhs)
