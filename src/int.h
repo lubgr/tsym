@@ -7,7 +7,10 @@
 namespace tsym {
     class Int {
         /* Simple wrapper around libgmp integer functions and memory management. Standard integer
-         * operators are provided. */
+         * operators are provided. The C++ interface of gmp (libgmpxx) could have been used instead,
+         * but some of the API restrictions are circumvented here (probably sacrificing
+         * performance), and operators as well as method names are more consistent with the Number
+         * and Var classes. */
         public:
             Int();
             Int(int n);
