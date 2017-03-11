@@ -11,10 +11,10 @@
     extern char yytext[];
 %}
 
-%token LONG
+%token LONG LONG_TEXT
 %token DOUBLE
 %token SYMBOL
-%token LONG_RANGE DOUBLE_RANGE
+%token DOUBLE_RANGE
 %token SIN COS TAN ASIN ACOS ATAN ATAN2
 %token SQRT
 %token LOG
@@ -27,8 +27,8 @@
     void *basePtr;
 }
 
-%type <stringVal> SYMBOL
-%type <stringVal> LONG_RANGE DOUBLE_RANGE
+%type <stringVal> SYMBOL LONG_TEXT
+%type <stringVal> DOUBLE_RANGE
 %type <doubleVal> DOUBLE
 %type <longVal> LONG
 %type <basePtr> parsedExpr expr function textual
@@ -49,16 +49,15 @@ parsedExpr: expr {
 
 expr: function
     | textual
-    | LONG_RANGE {
-        tsym_parserAdapter_logParsingError("Integer out of representable range: ", $1);
-        result = $$ = tsym_parserAdapter_createMaxInt("Continue with max. integer: ");
-    }
     | DOUBLE_RANGE {
         tsym_parserAdapter_logParsingError("Float out of representable range: ", $1);
         result = $$ = tsym_parserAdapter_createMaxDouble("Continue with maximum double: ");
     }
     | LONG {
         result = $$ = tsym_parserAdapter_createInteger($1);
+    }
+    | LONG_TEXT {
+        result = $$ = tsym_parserAdapter_createLongInteger($1);
     }
     | DOUBLE {
         result = $$ = tsym_parserAdapter_createDouble($1);

@@ -24,7 +24,7 @@ extern "C" {
      * order to handle its internal stack within pure C code (thus, evil void* pointer instead of
      * the underlying C++ objects of type BasePtr). */
     void *tsym_parserAdapter_createInteger(long value);
-    void *tsym_parserAdapter_createMaxInt(const char *errorMessage);
+    void *tsym_parserAdapter_createLongInteger(const char *value);
     void *tsym_parserAdapter_createDouble(double value);
     void *tsym_parserAdapter_createMaxDouble(const char *errorMessage);
     void *tsym_parserAdapter_createSymbol(const char *name);

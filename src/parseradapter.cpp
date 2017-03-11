@@ -133,13 +133,11 @@ void *tsym_parserAdapter_createInteger(long value)
     return toVoid(numeric);
 }
 
-void *tsym_parserAdapter_createMaxInt(const char *errorMessage)
+void *tsym_parserAdapter_createLongInteger(const char *value)
 {
-    const BasePtr maxInt(Numeric::create(Int::max()));
+    const BasePtr numeric(Numeric::create(Int(value)));
 
-    TSYM_ERROR(errorMessage, maxInt);
-
-    return toVoid(maxInt);
+    return toVoid(numeric);
 }
 
 void *tsym_parserAdapter_createDouble(double value)
