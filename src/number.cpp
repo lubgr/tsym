@@ -180,7 +180,6 @@ void tsym::Number::addRational(const Number& other)
         newNum = num + other.num;
         newDenom = denom + other.denom - 1;
     } else {
-        /* If the lcm is overflowed, the result of this evaluation will be, too. */
         newNum = num*multiple/denom + other.num*multiple/other.denom;
         newDenom = multiple;
     }
@@ -190,8 +189,7 @@ void tsym::Number::addRational(const Number& other)
 
 tsym::Int tsym::Number::lcm(const Int& a, const Int& b) const
     /* Returns the smallest common multiple of the given two integers, This method is only called
-     * during addition, the arguments are denominators of two numbers and thus positive. If an
-     * integer overflow occurs, this state is ported to the return value. */
+     * during addition, the arguments are denominators of two numbers and thus positive. */
 {
     const Int divisor(gcd(a, b));
 
@@ -331,8 +329,7 @@ void tsym::Number::processRationalPowers(const Number& exponent, Number& result)
 }
 
 void tsym::Number::computeNumPower(const Int& numExponent, Number& result) const
-    /* For e.g. (1/2)^(2/3), this does the part (1/2)^2. This may produce an integer overflow - if
-     * it does, the method stops and returns false, otherwise true. */
+    /* For e.g. (1/2)^(2/3), this does the part (1/2)^2. */
 {
     const Int newDenom(denom.toThe(numExponent.abs()));
     const Int newNum(num.toThe(numExponent.abs()));

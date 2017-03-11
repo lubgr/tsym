@@ -417,7 +417,7 @@ TEST(NumPowerSimpl, multipleSets)
     check(1, 3, exp);
 }
 
-TEST(NumPowerSimpl, intOverflowLargeBasePosExp)
+TEST(NumPowerSimpl, largePlainIntBasePosExp)
     /* A large base with fraction exponent > 1 is not automatically simplified to something else. */
 {
     const Number large(std::numeric_limits<int>::max() - 5);

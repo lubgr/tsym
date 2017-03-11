@@ -196,8 +196,6 @@ void tsym::NumPowerSimpl::computeAllPosAndDefined()
     else if (newExp.isInt())
         adjustExpGreaterThanOne();
 
-    processIntOverflow();
-
     shiftPreFacSignBack();
 }
 
@@ -287,15 +285,6 @@ void tsym::NumPowerSimpl::adjustExpGreaterThanOne()
         preFac *= baseExtraction;
         newExp -= expFloor;
     }
-}
-
-void tsym::NumPowerSimpl::processIntOverflow()
-{
-    if (!preFac.isDouble() || origPreFac.isDouble())
-        return;
-
-    initFromOrig();
-    computeNonRational();
 }
 
 void tsym::NumPowerSimpl::adjustExpSignAndBase()

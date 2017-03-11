@@ -251,8 +251,6 @@ tsym::Number tsym::PrimeFac::eval() const
     while (nIt != numPrimes.end() || dIt != denomPrimes.end()) {
         num = nIt == numPrimes.end() ? 1 : *nIt++;
         denom = dIt == denomPrimes.end() ? 1 : *dIt++;
-        /* If an integer overflow happens here, the original Number has already been corrupted, and
-         * the behavior is undefined in any case. */
         res *= Number(num, denom);
     }
 

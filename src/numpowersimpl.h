@@ -65,7 +65,6 @@ namespace tsym {
             void collectPrimesInPower();
             void primesToComponents();
             void adjustExpGreaterThanOne();
-            void processIntOverflow();
             void adjustExpSignAndBase();
             void shiftPreFacSignBack();
 

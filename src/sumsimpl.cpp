@@ -103,16 +103,12 @@ tsym::BasePtrList tsym::SumSimpl::simplTwoSummandsWithoutSum(const BasePtr& s1, 
 
 tsym::BasePtrList tsym::SumSimpl::simplTwoNumerics(const BasePtr& s1, const BasePtr& s2)
 {
-    const Number n1(s1->numericEval());
-    const Number n2(s2->numericEval());
-    /* An integer overflow may happen here for large values of n1 and n2. The number class handles
-     * this by converting the result to double. */
-    const Number res(n1 + n2);
+    const Number sum(s1->numericEval() + s2->numericEval());
 
-    if (res.isZero())
+    if (sum.isZero())
         return BasePtrList();
     else
-        return BasePtrList(Numeric::create(res));
+        return BasePtrList(Numeric::create(sum));
 }
 
 bool tsym::SumSimpl::haveEqualNonConstTerms(const BasePtr& s1, const BasePtr& s2)

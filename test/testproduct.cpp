@@ -839,16 +839,14 @@ TEST(Product, numPowEqualDenomExpToProductInLargeList)
     CHECK_EQUAL(expected, res);
 }
 
-TEST(Product, numPowEqualDenomExpToOverflow)
+TEST(Product, numPowEqualDenomExpNotContracted)
     /* 7^(1/23)*17^(21/23) isn't contracted due to the too large result of 17^21. */
 {
     const BasePtr pow1 = Power::create(seven, Numeric::create(1, 23));
     const BasePtr pow2 = Power::create(Numeric::create(17), Numeric::create(21, 23));
     BasePtr result;
 
-    disableLog();
     result = Product::create(pow1, pow2);
-    enableLog();
 
     CHECK(result->isProduct());
     CHECK_EQUAL(pow1, result->operands().front());

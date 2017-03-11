@@ -292,8 +292,6 @@ tsym::BasePtrList tsym::ProductSimpl::simplTwoNumerics(const BasePtr& f1, const 
 {
     const Number n1(f1->numericEval());
     const Number n2(f2->numericEval());
-    /* An integer overflow may happen here for large values of n1 and n2. The number class handles
-     * this by converting the result to double. */
     const Number res(n1*n2);
 
     if (res.isOne())
@@ -442,11 +440,7 @@ bool tsym::ProductSimpl::areNumPowersWithEqualExpDenom(const BasePtr& f1, const 
 
 tsym::BasePtrList tsym::ProductSimpl::simplTwoEqualExpDenom(const BasePtr& f1, const BasePtr& f2)
     /* This method has to manually perform an evaluation of integer exponentiation and
-     * multiplication. If it were using Power/Product or the Number class, possible integer
-     * overflows would have to be evaluated leading to a conversion of Numbers to double. While such
-     * a result could be checked, meaningless errors would be logged indicating a false overflow
-     * during a trial evaluation. Using the Int class directly enables stepwise checking for
-     * overflows without log messages. */
+     * multiplication. */
 {
     assert(f1->isNumericPower() && f2->isNumericPower());
     const BasePtr newExp(Numeric::create(1, f1->exp()->numericEval().denominator()));
