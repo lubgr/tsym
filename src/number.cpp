@@ -108,15 +108,18 @@ void tsym::Number::tryDoubleToFraction()
     /* We don't want to have huge fractions everywhere possible, so default number of floating point
      * digits isn't set to a too large value. */
     const int nFloatDigits = 10000;
-    int truncated;
+    const double roundIncrement = dValue > 0.0 ? 0.5 : -0.5;
+    Int truncated;
 
-    if (dValue*nFloatDigits >= std::numeric_limits<int>::max())
-        /* Conversion to int would lead to an integer overflow. */
+    if (dValue > std::numeric_limits<double>::max()/nFloatDigits - roundIncrement/nFloatDigits)
+        /* The product for constructing a fraction doesn't fit into a double. */
+        return;
+    else if (dValue < std::numeric_limits<double>::lowest()/nFloatDigits - roundIncrement/nFloatDigits)
         return;
 
-    truncated = (int)(dValue*nFloatDigits + 0.5);
+    truncated = Int(dValue*nFloatDigits + roundIncrement);
 
-    if (std::abs((double)truncated/nFloatDigits - dValue) < ZERO_TOL)
+    if (std::abs(truncated.toDouble()/nFloatDigits - dValue) < ZERO_TOL)
         /* This will also catch very low double values, which turns them into a rational zero. */
         setAndSimplify(truncated, nFloatDigits, 0.0);
 }

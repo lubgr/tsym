@@ -73,12 +73,26 @@ TEST(Rational, zeroDenominator)
     CHECK(n.isUndefined());
 }
 
-TEST(Rational, doubleToFraction)
+TEST(Rational, posDoubleToFraction)
 {
     a = Number(0.125);
 
     CHECK(a.isFrac());
     CHECK_EQUAL(Number(1, 8), a);
+}
+
+TEST(Rational, zeroDoubleToFraction)
+{
+    a = Number(0.0);
+    CHECK_EQUAL(0, a);
+}
+
+TEST(Rational, negDoubleToFraction)
+{
+    a = Number(-0.125);
+
+    CHECK(a.isFrac());
+    CHECK_EQUAL(Number(-1, 8), a);
 }
 
 TEST(Rational, simpleFractionSum)
