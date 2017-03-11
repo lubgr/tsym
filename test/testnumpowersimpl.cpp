@@ -12,16 +12,12 @@ TEST_GROUP(NumPowerSimpl)
     NumPowerSimpl nps;
     Number half;
     Number third;
-    Int maxInt;
-    Int minInt;
     double TOL;
 
     void setup()
     {
         half = Number(1, 2);
         third = Number(1, 3);
-        maxInt = Int::max();
-        minInt = Int::min();
         TOL = 1.e-10;
     }
 
@@ -424,7 +420,7 @@ TEST(NumPowerSimpl, multipleSets)
 TEST(NumPowerSimpl, intOverflowLargeBasePosExp)
     /* A large base with fraction exponent > 1 is not automatically simplified to something else. */
 {
-    const Number large(Int::max() - 5);
+    const Number large(std::numeric_limits<int>::max() - 5);
     const Number exp(9, 4);
 
     nps.setPower(large, exp);
@@ -432,39 +428,13 @@ TEST(NumPowerSimpl, intOverflowLargeBasePosExp)
     check(1, large, exp);
 }
 
-TEST(NumPowerSimpl, intOverflowLargeNegExp)
-{
-    const int base = 2;
-    const Number largeExp(-maxInt + 123);
-    const double expected = std::pow(base, largeExp.toDouble());
-
-    nps.setPower(base, largeExp);
-
-    disableLog();
-    check(1, expected, 1);
-}
-
 TEST(NumPowerSimpl, largePosPreFac)
 {
-    const Number large = Number(Int::max() - 111);
+    const Number large = Number(std::numeric_limits<int>::max() - 111);
     const Number exp(4, 3);
 
     nps.setPower(3, exp);
     nps.setPreFac(large);
 
     check(large, 3, exp);
-}
-
-TEST(NumPowerSimpl, intOverflowLargeNegPreFac)
-{
-    const Int large = Int::min();
-    const int base = 2*2*2*2;
-    const Number exp(7);
-    const double expected = large.toDouble()*std::pow(base, exp.toDouble());
-
-    nps.setPower(base, exp);
-    nps.setPreFac(Number(large));
-
-    disableLog();
-    check(1, expected, 1);
 }

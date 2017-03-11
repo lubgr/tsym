@@ -28,7 +28,6 @@ TEST_GROUP(Power)
     BasePtr sqrtTwo;
     BasePtr undefPtr;
     BasePtr pi;
-    Int maxInt;
     Int defaultPrimeFacLimit;
 
     void setup()
@@ -41,7 +40,6 @@ TEST_GROUP(Power)
         sqrtTwo = Power::sqrt(two);
         undefPtr = Undefined::create();
         pi = Constant::createPi();
-        maxInt = Int::max();
         defaultPrimeFacLimit = NumPowerSimpl::getMaxPrimeResolution();
     }
 
@@ -108,19 +106,6 @@ TEST(Power, largeBaseIntegerExp)
     const BasePtr pow = Power::create(base, two);
 
     CHECK_EQUAL(Numeric::create(Int(lBase*lBase)), pow);
-}
-
-TEST(Power, largeBaseIntegerExpIntOverflow)
-{
-    const BasePtr expected = Numeric::create(std::pow(Int::max().toDouble(), 2));
-    const BasePtr base = Numeric::create(Int::max());
-    BasePtr pow;
-
-    disableLog();
-    pow = Power::create(base, two);
-    enableLog();
-
-    CHECK_EQUAL(expected, pow);
 }
 
 TEST(Power, expFracGreaterThanOne)
@@ -194,14 +179,12 @@ TEST(Power, fracBaseToIntWithNegExp)
 }
 
 TEST(Power, evalLargeNumericExponent)
-    /* 5^(125/3) = 5^41*5^(2/3) which is converted to a double because of an overflow. */
+    /* 5^(125/3) = 5^41*5^(2/3) = [large int]*5^(2/3). */
 {
-    const BasePtr expected = Numeric::create(std::pow(5.0, 125.0/3.0));
-    BasePtr result;
-
-    disableLog();
-    result = Power::create(five, Numeric::create(125, 3));
-    enableLog();
+    const BasePtr result = Power::create(five, Numeric::create(125, 3));
+    const Int prefac = Int("45474735088646411895751953125");
+    const BasePtr expected = Product::create(Numeric::create(prefac),
+            Power::create(five, Numeric::create(2, 3)));
 
     CHECK_EQUAL(expected, result);
 }
@@ -795,37 +778,6 @@ TEST(Power, applyExponentToProduct)
     CHECK(fac->isPower());
     CHECK(fac->base()->name() == Name("b"));
     CHECK_EQUAL(six, fac->exp());
-}
-
-TEST(Power, intOverflowLargeBase)
-    /* A large base with exponent > 1 causes an integer overflow. The power is converted into a
-     * numeric of type double. */
-{
-    const BasePtr expected = Numeric::create(std::pow(maxInt.toDouble(), 3.0));
-    BasePtr pow;
-
-    disableLog();
-    pow = Power::create(Numeric::create(maxInt), three);
-    enableLog();
-
-    CHECK_EQUAL(expected, pow);
-}
-
-TEST(Power, intOverflowNumericExpMultiplication)
-    /* (a^b)^c shall be evaluated to a double, if b and c are rational numbers that lead to an
-     * integer overflow. This test case depends on the zero tolerance of the Number class! */
-{
-    const Number exp1(1, maxInt - 1000);
-    const Number exp2(1, 3);
-    const BasePtr expected = Power::create(a, Numeric::create(exp1.toDouble()*exp2.toDouble()));
-    const BasePtr pow1 = Power::create(a, Numeric::create(exp1));
-    BasePtr res;
-
-    disableLog();
-    res = Power::create(pow1, Numeric::create(exp2));
-    enableLog();
-
-    CHECK_EQUAL(expected, res);
 }
 
 TEST(Power, sumBase)

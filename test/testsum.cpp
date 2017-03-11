@@ -484,22 +484,6 @@ TEST(Sum, numericEvaluation)
     CHECK_EQUAL(expected, res->numericEval());
 }
 
-TEST(Sum, intOverflowByCollection)
-    /* Large integer coefficients of the same symbol may lead to an integer overflow. */
-{
-    const Int maxInt = Int::max();
-    const BasePtr expected = Product::create(Numeric::create(maxInt.toDouble() - 3.0 + 50.0), a);
-    const BasePtr s1 = Product::create(Numeric::create(maxInt - 3), a);
-    const BasePtr s2 = Product::create(Numeric::create(50), a);
-    BasePtr res;
-
-    disableLog();
-    res = Sum::create(s1, s2);
-    enableLog();
-
-    CHECK_EQUAL(expected, res);
-}
-
 TEST(Sum, contractableSinCosSquareWithoutPrefactor)
     /* sin(a)^2 + cos(a)^2 = 1. */
 {

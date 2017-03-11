@@ -450,28 +450,28 @@ TEST(StringToVar, precedenceOfUnaryMinus)
     checkSuccess(expected, stv);
 }
 
-TEST(StringToVar, posIntegerOutsideRange)
+TEST(StringToVar, posLargeInteger)
 {
-    disableLog();
-    const StringToVar stv("12039182309810923809182093021938409283409820394");
-    enableLog();
+    const std::string intStr("12039182309810923809182093021938409283409820394");
+    const BasePtr expected = Numeric::create(Int(intStr.c_str()));
+    const StringToVar stv(intStr);
     Var result;
 
     result = stv.get();
 
-    checkFailure(Var(Numeric::create(Int::max())), stv, 0);
+    checkSuccess(Var(expected), stv);
 }
 
-TEST(StringToVar, negIntegerOutsideRange)
+TEST(StringToVar, negLargeInteger)
 {
-    disableLog();
-    const StringToVar stv("-20394802984092843098209384092384092840924353");
-    enableLog();
+    const std::string intStr("-2039384092840928309482309480980928309482093480923840928309420938");
+    const BasePtr expected = Numeric::create(Int(intStr.c_str()));
+    const StringToVar stv(intStr);
     Var result;
 
     result = stv.get();
 
-    checkFailure(Var(Numeric::create(Int::min())), stv, 1);
+    checkSuccess(Var(expected), stv);
 }
 
 TEST(StringToVar, posDoubleOutsideOfRange)

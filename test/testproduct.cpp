@@ -24,7 +24,6 @@ TEST_GROUP(Product)
     BasePtr oneThird;
     BasePtr oneFourth;
     Int numPowerSimplLimit;
-    Int maxInt;
 
     void setup()
     {
@@ -36,7 +35,6 @@ TEST_GROUP(Product)
         oneThird = Numeric::create(1, 3);
         oneFourth = Numeric::create(1, 4);
         numPowerSimplLimit = NumPowerSimpl::getMaxPrimeResolution();
-        maxInt = Int::max();
     }
 
     void teardown()
@@ -751,65 +749,17 @@ TEST(Product, numericEvaluation)
     CHECK_EQUAL(expected, res->numericEval());
 }
 
-TEST(Product, intOverflowEqualExp)
-    /* a^c*b^c = (a*b)^c = d, where a and b are large integer and a*b converts into a double due to
-     * an integer overflow. c and d are numerics, too. */
+TEST(Product, equalNonNumericBaseNumExp)
+    /* a^b*a^c = a^(b*c) = a^d with b, c and d being numerics. */
 {
-    const BasePtr base1 = Numeric::create(maxInt - 1234);
-    const BasePtr base2 = Numeric::create(maxInt - 5678);
-    /* The exponent is some number that makes a power unresolvable. */
-    const BasePtr exp = Numeric::create(1, 123456);
-    const BasePtr pow1 = Power::create(base1, exp);
-    const BasePtr pow2 = Power::create(base2, exp);
-    double expected;
-    BasePtr res;
-
-    disableLog();
-    res = Product::create(pow1, pow2);
-    enableLog();
-
-    expected = std::pow(base1->numericEval().toDouble()*base2->numericEval().toDouble(),
-            exp->numericEval().toDouble());
-
-    CHECK_EQUAL(Numeric::create(expected), res);
-}
-
-TEST(Product, intOverflowEqualNonNumericBase)
-    /* a^b*a^c = a^(b*c) = a^d with b, c and d being numerics. d must be a double due to an integer
-     * overflow. */
-{
-    const BasePtr exp1 = Numeric::create(maxInt - 9876);
-    const BasePtr exp2 = Numeric::create(maxInt - 5432);
+    const BasePtr exp1 = Numeric::create(Int("2039840928430928094328094"));
+    const BasePtr exp2 = Numeric::create(Int("2093840928430998324"));
     const BasePtr pow1 = Power::create(a, exp1);
     const BasePtr pow2 = Power::create(a, exp2);
-    BasePtr expected;
-    BasePtr res;
-
-    disableLog();
-    res = Product::create(pow1, pow2);
-    expected = Power::create(a, Sum::create(exp1, exp2));
-    enableLog();
+    const BasePtr expected = Power::create(a, Sum::create(exp1, exp2));
+    const BasePtr res = Product::create(pow1, pow2);
 
     CHECK_EQUAL(expected, res);
-}
-
-TEST(Product, intOverflowEqualNumericBase)
-    /* a^b*a^c = a^(b*c) = d with a, b, c and d being numerics. */
-{
-    const BasePtr exp1 = Numeric::create(1, maxInt - 1234);
-    const BasePtr exp2 = Numeric::create(1, maxInt - 4321);
-    const BasePtr pow1 = Power::create(two, exp1);
-    const BasePtr pow2 = Power::create(two, exp2);
-    double expected;
-    BasePtr res;
-
-    disableLog();
-    res = Product::create(pow1, pow2);
-    enableLog();
-
-    expected = std::pow(2.0, exp1->numericEval().toDouble() + exp2->numericEval().toDouble());
-
-    CHECK_EQUAL(Numeric::create(expected), res);
 }
 
 TEST(Product, numPowEqualDenomInPosExp)

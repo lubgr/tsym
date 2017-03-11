@@ -1,4 +1,5 @@
 
+#include <limits>
 #include "abc.h"
 #include "sum.h"
 #include "trigonometric.h"
@@ -233,7 +234,7 @@ TEST(Degree, powerSumBase)
 
 TEST(Degree, powerTooLargeIntExp)
 {
-    const BasePtr pow = Power::create(a, Numeric::create(Int::max()));
+    const BasePtr pow = Power::create(a, Numeric::create(std::numeric_limits<int>::max()));
     int degree;
 
     disableLog();
@@ -253,18 +254,14 @@ TEST(Degree, powerWithNegIntExp)
 
 TEST(Degree, powerTooSmallIntExp)
 {
-    const Int min(Int::min());
-    const BasePtr pow = Power::create(a, Numeric::create(min));
+    const Int largeNeg("-230980928430982309482098409283094832");
+    const BasePtr pow = Power::create(a, Numeric::create(largeNeg));
     int degree;
 
     disableLog();
     degree = pow->degree(a);
     enableLog();
 
-    /* Depending on the architecture (32/64bit), Int::min() is just the primitive int-limit. */
-    if (min.fitsIntoInt()) {
-        CHECK_EQUAL(min.toInt(), degree);
-    } else {
-        CHECK_EQUAL(0, degree);
-    }
+    CHECK_FALSE(largeNeg.fitsIntoInt());
+    CHECK_EQUAL(0, degree);
 }
