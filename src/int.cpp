@@ -34,6 +34,12 @@ tsym::Int::Int(long n)
     mpz_set_si(handle, n);
 }
 
+tsym::Int::Int(double n)
+{
+    mpz_init(handle);
+    mpz_set_d(handle, n);
+}
+
 tsym::Int::Int(const char *str)
 {
     int flag;

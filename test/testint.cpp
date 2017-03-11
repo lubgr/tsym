@@ -26,6 +26,20 @@ TEST(Int, equality)
     CHECK(1 == one);
 }
 
+TEST(Int, initWithDoubleCeil)
+{
+    const Int n(12345.6789);
+
+    CHECK_EQUAL(12345, n);
+}
+
+TEST(Int, initWithDoubleFloor)
+{
+    const Int n(98765.4321);
+
+    CHECK_EQUAL(98765, n);
+}
+
 TEST(Int, changeOfSign)
 {
     const Int expected(213094234);

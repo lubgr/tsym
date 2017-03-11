@@ -15,6 +15,8 @@ namespace tsym {
             Int();
             Int(int n);
             Int(long n);
+            /* Truncates the argument: */
+            explicit Int(double n);
             /* No error checking is performed, illegal strings result in an error log message, and
              * the number is set to zero: */
             explicit Int(const char *str);
