@@ -306,9 +306,9 @@ void tsym::Matrix::factorizeLU()
 {
     for (size_t j = 0; j + 1 < nCol; ++j) {
         for (size_t i = j + 1; i < nRow; ++i) {
-            data[i][j] = data[i][j]/data[j][j];
+            data[i][j] /= data[j][j];
                 for (size_t k = j + 1; k < nCol; ++k)
-                    data[i][k] = data[i][k] - data[i][j]*data[j][k];
+                    data[i][k] -= data[i][j]*data[j][k];
         }
     }
 }
