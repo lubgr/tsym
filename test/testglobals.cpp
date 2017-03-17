@@ -251,6 +251,17 @@ TEST(Globals, parsingWithError)
     CHECK_FALSE(success);
 }
 
+TEST(Globals, parsingEmptyString)
+{
+    bool success;
+    disableLog();
+    const Var result = parse("", &success);
+    enableLog();
+
+    CHECK_FALSE(success);
+    CHECK_EQUAL(Var::Type::UNDEFINED, result.type());
+}
+
 TEST(Globals, solveWithSingularMatrix)
 {
     const Var bCosA = pow(b, cos(a));
