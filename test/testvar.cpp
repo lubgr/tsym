@@ -1029,12 +1029,45 @@ TEST(Var, printerOperator)
     CHECK_EQUAL(expected, stream.str());
 }
 
-TEST(Var, printerOperatorTypeEnum)
+TEST(Var, printerOperatorTypeEnumSumProductPower)
 {
-    const std::string expected("Sum");
+    const std::string expected("SumProductPower");
     std::stringstream stream;
 
-    stream << (a + b).type();
+    stream << (a + b).type() << (a*b).type() << pow(a, b).type();
+
+    CHECK_EQUAL(expected, stream.str());
+}
+
+TEST(Var, printerOperatorTypeEnumNumeric)
+{
+    const std::string expected("IntegerDoubleFraction");
+    std::stringstream stream;
+
+    stream << one.type() << Var(1.23456789).type() << Var(1, 2).type();
+
+    CHECK_EQUAL(expected, stream.str());
+}
+
+TEST(Var, printerOperatorTypeEnumConstantFunctionSymbol)
+{
+    const std::string expected("ConstantFunctionSymbol");
+    std::stringstream stream;
+
+    stream << Pi.type() << cos(a).type() << a.type();
+
+    CHECK_EQUAL(expected, stream.str());
+}
+
+TEST(Var, printerOperatorTypeEnumUndefined)
+{
+    const std::string expected("Undefined");
+    std::stringstream stream;
+    disableLog();
+    const Var u(1, 0);
+    enableLog();
+
+    stream << u;
 
     CHECK_EQUAL(expected, stream.str());
 }

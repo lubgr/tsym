@@ -45,7 +45,9 @@ namespace tsym {
             static const std::map<std::string, Var::Type> map {{ "Sum", Var::Type::SUM },
                 { "Product", Var::Type::PRODUCT }, { "Symbol", Var::Type::SYMBOL },
                 { "Power", Var::Type::POWER }, { "Constant", Var::Type::CONSTANT },
-                { "Undefined", Var::Type::UNDEFINED}, { "Function", Var::Type::FUNCTION }};
+                { "Undefined", Var::Type::UNDEFINED}, { "Function", Var::Type::FUNCTION },
+                { "Integer", Var::Type::INT }, { "Fraction", Var::Type::FRACTION },
+                { "Double", Var::Type::DOUBLE }};
 
             return map;
         }
