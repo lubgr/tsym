@@ -24,11 +24,12 @@ namespace tsym {
             Var(int value);
             Var(double value);
             Var(int numerator, int denominator);
-            /* The next two constructors create symbols. Alphanumeric characters are valid, though
-             * the symbol name must not start with a digit. It can contain subscripts though: if
-             * it's only one character, a_1 is sufficient, for longer subscripts, use a_{10}. */
-            explicit Var(const char *name);
-            explicit Var(const char *name, Sign sign);
+            /* The next two constructors create symbols or (possibly big) integers. For symbols,
+             * alphanumeric characters are valid, though the symbol name must not start with a
+             * digit. It can contain subscripts though: if it's only one character, a_1 is
+             * sufficient, for longer subscripts, use a_{10}. */
+            explicit Var(const char *str);
+            explicit Var(const char *str, Sign sign);
             /* To be used only internally: */
             explicit Var(const BasePtr& ptr);
             Var(const Var& other);

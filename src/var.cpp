@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <chrono>
 #include <map>
+#include <cstring>
 #include "var.h"
 #include "symbol.h"
 #include "numeric.h"
@@ -16,30 +17,6 @@
 
 namespace tsym {
     namespace {
-        Name parseNonEmptySymbolName(const char *origName)
-        {
-            bool success;
-            Var tmp(parse(origName, &success)) ;
-
-            if (success && tmp.getBasePtr()->isSymbol())
-                return tmp.getBasePtr()->name();
-
-            TSYM_ERROR("Parsing a symbol from '%s' failed, result: ", origName,
-                    tmp, " (", tmp.type(), "). Use '%s' as a symbol name", origName);
-
-            return Name(origName);
-        }
-
-        Name parseSymbolName(const char *origName)
-        {
-            if (strlen(origName) != 0)
-                return parseNonEmptySymbolName(origName);
-
-            TSYM_ERROR("A symbol can't be instantiated with an empty string!");
-
-            return Name("");
-        }
-
         const std::map<std::string, Var::Type>& typeStringMap()
         {
             static const std::map<std::string, Var::Type> map {{ "Sum", Var::Type::SUM },
@@ -71,19 +48,41 @@ tsym::Var::Var(int numerator, int denominator) :
     rep(new BasePtr(Numeric::create(numerator, denominator)))
 {}
 
-tsym::Var::Var(const char *name)
+tsym::Var::Var(const char *str)
 {
-    rep = new BasePtr(Symbol::create(parseSymbolName(name)));
+    bool success;
+    const Var tmp(parse(str, &success));
+
+    if (success && (tmp.type() == Type::SYMBOL || tmp.type() == Type::INT)) {
+        rep = new BasePtr(*tmp.rep);
+        return;
+    }
+
+    TSYM_ERROR("Parsing symbol or integer from '%s' failed, result: ", str,
+            tmp, " (", tmp.type(), "). Create undefined Var object");
+
+    rep = new BasePtr(Undefined::create());
 }
 
-tsym::Var::Var(const char *name, Var::Sign sign)
+tsym::Var::Var(const char *str, Var::Sign sign)
 {
+    const Var withoutSign(str);
+    const Type type(withoutSign.type());
+
     assert(sign == Var::Sign::POSITIVE);
 
     /* To avoid an unused variable warning: */
     (void)sign;
 
-    rep = new BasePtr(Symbol::createPositive(parseSymbolName(name)));
+    if (type == Type::SYMBOL) {
+        rep = new BasePtr(Symbol::createPositive((*withoutSign.rep)->name()));
+        return;
+    }
+
+    if (type == Type::INT && withoutSign < 0)
+        TSYM_WARNING("Ignore positive flag for negative int (", withoutSign, ")");
+
+    rep = new BasePtr(*withoutSign.rep);
 }
 
 tsym::Var::Var(const BasePtr& ptr) :

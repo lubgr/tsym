@@ -7,6 +7,7 @@
 #include "globals.h"
 #include "tsymtests.h"
 #include "baseptr.h"
+#include "numeric.h"
 #include "base.h"
 #include "name.h"
 
@@ -91,14 +92,49 @@ TEST(Var, subscriptParsing)
     CHECK(name.getSuperscript().empty());
 }
 
+TEST(Var, smallIntParsing)
+{
+    const Var n("-12345");
+
+    CHECK_EQUAL(Var(-12345), n);
+    CHECK_EQUAL(Var::Type::INT, n.type());
+}
+
+TEST(Var, bigIntParsing)
+{
+    const char *intStr = "20394809284309283409820943820938409284309209438";
+    const BasePtr numeric = Numeric::create(Int(intStr));
+    const Var n(intStr);
+
+    CHECK_EQUAL(Var::Type::INT, n.type());
+    CHECK_FALSE(n.fitsIntoInt());
+    CHECK_EQUAL(numeric, n.getBasePtr());
+}
+
+TEST(Var, posIntWithPosSign)
+{
+    const Var var("1234567", Var::Sign::POSITIVE);
+
+    CHECK_EQUAL(Var(1234567), var);
+}
+
+TEST(Var, negIntWithPosSign)
+{
+    disableLog();
+    const Var var("-1234567", Var::Sign::POSITIVE);
+    enableLog();
+
+    /* The inconsistent sign is ignored: */
+    CHECK_EQUAL(Var(-1234567), var);
+}
+
 TEST(Var, parsingError)
 {
     disableLog();
     const Var var("Pi*2");
     enableLog();
 
-    CHECK_EQUAL(Var::Type::SYMBOL, var.type());
-    CHECK_EQUAL("Pi*2", var.name());
+    CHECK_EQUAL(Var::Type::UNDEFINED, var.type());
 }
 
 TEST(Var, illegalCharacter)
@@ -107,18 +143,18 @@ TEST(Var, illegalCharacter)
     const Var illegal("Ä");
     enableLog();
 
-    CHECK_EQUAL(Var::Type::SYMBOL, illegal.type());
-    CHECK_EQUAL("Ä", illegal.name());
+    CHECK_EQUAL(Var::Type::UNDEFINED, illegal.type());
+    CHECK_EQUAL("", illegal.name());
 }
 
 TEST(Var, illegalSymbolName)
 {
     disableLog();
-    const Var illegal("12345");
+    const Var illegal("12345.678");
     enableLog();
 
-    CHECK_EQUAL(Var::Type::SYMBOL, illegal.type());
-    CHECK_EQUAL("12345", illegal.name());
+    CHECK_EQUAL(Var::Type::UNDEFINED, illegal.type());
+    CHECK_EQUAL("", illegal.name());
 }
 
 TEST(Var, constructPositiveSymbol)
