@@ -1,17 +1,21 @@
 
 #include "name.h"
 
-tsym::Name::Name() {}
+tsym::Name::Name() :
+    numeric(0)
+{}
 
 tsym::Name::Name(const std::string& name) :
     name(name),
-    plainText(name)
+    plainText(name),
+    numeric(0)
 {}
 
 tsym::Name::Name(const std::string& name, const std::string& subscript) :
     name(name),
     subscript(subscript),
-    plainText(name)
+    plainText(name),
+    numeric(0)
 {
     if (!subscript.empty())
         plainText.append("_").append(subscript);
@@ -22,7 +26,8 @@ tsym::Name::Name(const std::string& name, const std::string& subscript,
     name(name),
     subscript(subscript),
     superscript(superscript),
-    plainText(name)
+    plainText(name),
+    numeric(0)
 {
     if (!subscript.empty())
         plainText.append("_").append(subscript);
@@ -30,6 +35,11 @@ tsym::Name::Name(const std::string& name, const std::string& subscript,
     if (!superscript.empty())
         plainText.append("_").append(superscript);
 }
+
+tsym::Name::Name(unsigned n) :
+    plainText("[tmp]"),
+    numeric(n)
+{}
 
 const std::string& tsym::Name::getName() const
 {
@@ -139,12 +149,29 @@ std::string tsym::Name::texAppendix(const std::string& term, const std::string& 
 
 bool tsym::Name::equal(const Name& rhs) const
 {
-    return plainText == rhs.plainText;
+    if (numeric != 0 && rhs.numeric != 0)
+        return numeric == rhs.numeric;
+    else if (numeric != 0 || rhs.numeric != 0)
+        return false;
+    else
+        return plainText == rhs.plainText;
 }
 
 bool tsym::Name::lessThan(const Name& rhs) const
 {
-    return plainText < rhs.plainText;
+    if (numeric != 0 && rhs.numeric != 0)
+        return numeric < rhs.numeric;
+    else if (numeric != 0)
+        return true;
+    else if (rhs.numeric != 0)
+        return false;
+    else
+        return plainText < rhs.plainText;
+}
+
+bool tsym::Name::isNumericId() const
+{
+    return numeric != 0;
 }
 
 bool tsym::operator == (const Name& lhs, const Name& rhs)

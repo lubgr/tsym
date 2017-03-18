@@ -8,12 +8,14 @@ namespace tsym {
         public:
             /* A Name object with super- and subscript. The given string may be empty (this is what
              * the default constructor does), because it can be queried for
-             * non-Symbol/-Function/-Constant types. */
+             * non-Symbol/-Function/-Constant types. It may be an unsigned integer for the
+             * construction of temporary symbols. */
             Name();
             explicit Name(const std::string& name);
             Name(const std::string& name, const std::string& subscript);
             Name(const std::string& name, const std::string& subscript,
                     const std::string& superscript);
+            explicit Name(unsigned n);
 
             const std::string& getName() const;
             const std::string& getSubscript() const;
@@ -25,6 +27,8 @@ namespace tsym {
 
             bool equal(const Name& rhs) const;
             bool lessThan(const Name& rhs) const;
+
+            bool isNumericId() const;
 
         private:
             bool isGreekLetter() const;
@@ -38,6 +42,7 @@ namespace tsym {
             std::string subscript;
             std::string superscript;
             std::string plainText;
+            unsigned numeric;
     };
 
     bool operator == (const Name& lhs, const Name& rhs);
