@@ -15,18 +15,21 @@ for some). The main features are:
 * differentiation `d/da 2*a^4 = 8*a^3`
 * solution of simple linear systems of equations
 * parsing of expressions from strings
+* big integer arithmetic by use of [libgmp](https://gmplib.org)
 
 Most algorithms are implemented according to _Cohen, Computer Algebra and Symbolic Computation
 [2003]_, modifications are made for the handling of numeric power expressions and when not taking
 complex numbers into account. Absent features that are usually implemented in common CAS are e.g.
-arbitrary precision arithmetics, collecting parts of an expression or series expansion.
+arbitrary precision arithmetics for floating point numbers, collecting parts of an expression or
+series expansion.
 
 
 Installation
 ------------
-To compile tsym, you need the [plic](https://github.com/lubgr/plic) library for logging, flex and
-bison (or their non-GPL counterparts), obviously C and C++ compiler recent enough to support C++11
-and [scons](http://scons.org) as a build system. For unit tests,
+To compile tsym, you need the [plic](https://github.com/lubgr/plic) library for logging,
+[gmp](https://gmplib.org) (installed by default on many systems), flex and bison (or their non-GPL
+counterparts), obviously C and C++ compiler recent enough to support C++11 and
+[scons](http://scons.org) as a build system. For unit tests,
 [CppUTest](https://github.com/cpputest/cpputest) is required. tsym should build on all major Linux
 distributions by e.g.
 ```bash
@@ -58,14 +61,15 @@ int main(int argc, char **argv)
 }
 ```
 Variable names and subscripts must be ASCII characters or numbers. A variable name can't start with
-a number, curly braces around the subscript can be omitted when it's only one character. Implicit
-constructors are available for `int` and `double` arguments, such that intuitive calculations are
-possible:
+a number, curly braces around the subscript can be omitted when it's only one character. Big
+integers can be constructed by a digit-only string, and implicit constructors are available for
+`int` and `double` arguments, such that intuitive calculations are possible:
 ```c++
+tsym::Var largeInt("98938498203948203948203948209384029384092834098");
 tsym::Var a("a");
 tsym::Var b; /* Initialized to zero by default constructor. */
 
-b = 2*a + a/1.2345;
+b = 2*a + a/1.2345 - largeInt;
 
 /* Careful - this will be zero, because 2/3 is evaluated first and as plain integral type: */
 b = 2/3*a;
