@@ -17,16 +17,7 @@ namespace tsym {
         private:
             const BasePtr *getExisting(const BasePtr& orig);
 
-            struct CompareSymbols {
-                bool operator () (const BasePtr& lhs, const BasePtr& rhs) const
-                {
-                    assert(lhs->isSymbol() && rhs->isSymbol());
-
-                    return lhs->name() < rhs->name();
-                }
-            };
-
-            std::map<BasePtr, BasePtr, CompareSymbols> map;
+            std::map<unsigned, std::pair<BasePtr, BasePtr>> map;
     };
 }
 
