@@ -2,7 +2,6 @@
 #include <cstddef>
 #include "base.h"
 #include "baseptr.h"
-#include "symbolregistry.h"
 #include "symbolmap.h"
 #include "undefined.h"
 #include "printer.h"
@@ -43,35 +42,24 @@ tsym::BasePtr::BasePtr(const Base *base) :
     #ifdef TSYM_DEBUG_STRINGS
     prettyStr = (Printer(*this)).getStr();
     #endif
-
-    if (bp->isSymbol())
-        SymbolRegistry::add(base->name());
 }
 
 tsym::BasePtr::BasePtr(const BasePtr& other) :
     bp(other.bp)
 {
     if (other.bp == nullptr)
-        TSYM_CRITICAL("IniTIATE bASe class with null pointer!");
+        TSYM_CRITICAL("Initiate bASe class with null pointer!");
 
     #ifdef TSYM_DEBUG_STRINGS
     prettyStr = other.prettyStr;
     #endif
 
     ++bp->refCount;
-
-    if (bp->isSymbol())
-        SymbolRegistry::add(bp->name());
 }
 
 const tsym::BasePtr& tsym::BasePtr::operator = (const BasePtr& other)
 {
     const Base* const old = bp;
-
-    if (bp->isSymbol())
-        SymbolRegistry::remove(bp->name());
-    if (other->isSymbol())
-        SymbolRegistry::add(other->name());
 
     bp = other.bp;
 
@@ -90,9 +78,6 @@ const tsym::BasePtr& tsym::BasePtr::operator = (const BasePtr& other)
 tsym::BasePtr::~BasePtr()
 {
     --bp->refCount;
-
-    if (bp->isSymbol())
-        SymbolRegistry::remove(bp->name());
 
     if (bp->refCount == 0)
         delete bp;

@@ -12,7 +12,8 @@ namespace tsym {
             static BasePtr create(const Name& name);
             static BasePtr createPositive(const std::string& name);
             static BasePtr createPositive(const Name& name);
-            static BasePtr createTmpSymbol(bool positive = false);
+            /* Sets 'count' to the temporary symbol counter if not a nullptr: */
+            static BasePtr createTmpSymbol(unsigned *count, bool positive = false);
 
             /* Implentations of pure virtual methods of Base. */
             bool isEqual(const BasePtr& other) const;
@@ -30,16 +31,17 @@ namespace tsym {
 
         private:
             Symbol(const Name& name, bool positive);
+            Symbol(unsigned tmpId, bool positive);
             Symbol(const Symbol& other);
             Symbol& operator = (const Symbol& other);
             ~Symbol();
 
             static BasePtr create(const Name& name, bool positive);
-            static Name getTmpName();
             bool isEqualOtherSymbol(const BasePtr& other) const;
 
             const Name symbolName;
             const bool positive;
+            static unsigned tmpCounter;
     };
 }
 

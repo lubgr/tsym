@@ -2,14 +2,24 @@
 #include <sstream>
 #include "symbol.h"
 #include "numeric.h"
-#include "symbolregistry.h"
+
+unsigned tsym::Symbol::tmpCounter = 0;
 
 tsym::Symbol::Symbol(const Name& name, bool positive) :
     symbolName(name),
     positive(positive)
 {}
 
-tsym::Symbol::~Symbol() {}
+tsym::Symbol::Symbol(unsigned tmpId, bool positive) :
+    symbolName(tmpId),
+    positive(positive)
+{}
+
+tsym::Symbol::~Symbol()
+{
+    if (symbolName.isNumericId())
+        --tmpCounter;
+}
 
 tsym::BasePtr tsym::Symbol::create(const std::string& name)
 {
@@ -39,26 +49,14 @@ tsym::BasePtr tsym::Symbol::createPositive(const Name& name)
     return create(name, true);
 }
 
-tsym::BasePtr tsym::Symbol::createTmpSymbol(bool positive)
+tsym::BasePtr tsym::Symbol::createTmpSymbol(unsigned *counter, bool positive)
 {
-    const Name name(getTmpName());
+    unsigned newTmpCount = ++tmpCounter;
 
-    return BasePtr(new Symbol(name, positive));
-}
+    if (counter != nullptr)
+        *counter = newTmpCount;
 
-tsym::Name tsym::Symbol::getTmpName()
-{
-    std::ostringstream stream;
-    unsigned count = 0;
-    Name name;
-
-    do {
-        stream.str("");
-        stream << ++count;
-        name = Name("tmp", stream.str());
-    } while (SymbolRegistry::count(name) != 0);
-
-    return name;
+    return BasePtr(new Symbol(newTmpCount, positive));
 }
 
 bool tsym::Symbol::isEqual(const BasePtr& other) const
