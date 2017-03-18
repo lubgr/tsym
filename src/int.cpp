@@ -248,9 +248,9 @@ double tsym::Int::toDouble() const
 
 void tsym::Int::print(std::ostream& stream) const
 {
-    std::size_t bufferLength = 100;
-    std::size_t charsWritten;
     char *buffer = nullptr;
+    int bufferLength = 100;
+    int charsWritten;
 
     while (buffer == nullptr) {
         buffer = new char[bufferLength];
