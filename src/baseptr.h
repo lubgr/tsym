@@ -24,11 +24,13 @@ namespace tsym {
 
         private:
             const Base* bp;
-            #ifdef TSYM_DEBUG_STRINGS
+
+#ifdef TSYM_DEBUG_STRINGS
             /* A member to be accessed by a gdb pretty printing plugin. As the class is immutable,
              * it has to be defined in (copy/assignment) constructors only. */
             std::string prettyStr;
-            #endif
+#endif
+
     };
 
     std::ostream& operator << (std::ostream& stream, const BasePtr& ptr);

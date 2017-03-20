@@ -98,9 +98,9 @@ void tsym::Number::simplify()
     if (isFrac())
         cancel();
 
-    #ifdef TSYM_DEBUG_STRINGS
+#ifdef TSYM_DEBUG_STRINGS
     prettyStr = Printer(*this).getStr();
-    #endif
+#endif
 }
 
 void tsym::Number::tryDoubleToFraction()
