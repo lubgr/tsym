@@ -59,7 +59,7 @@ tsym::BasePtr tsym::Symbol::createTmpSymbol(unsigned *counter, bool positive)
     return BasePtr(new Symbol(newTmpCount, positive));
 }
 
-bool tsym::Symbol::isEqual(const BasePtr& other) const
+bool tsym::Symbol::isEqualDifferentBase(const BasePtr& other) const
 {
     if (other->isSymbol())
         return isEqualOtherSymbol(other);

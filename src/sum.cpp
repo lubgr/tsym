@@ -55,7 +55,7 @@ tsym::BasePtr tsym::Sum::createSimplifiedSum(const BasePtrList& summands)
         return BasePtr(new Sum(res));
 }
 
-bool tsym::Sum::isEqual(const BasePtr& other) const
+bool tsym::Sum::isEqualDifferentBase(const BasePtr& other) const
 {
     return isEqualByTypeAndOperands(other);
 }

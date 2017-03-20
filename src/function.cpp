@@ -9,7 +9,7 @@ tsym::Function::Function(const BasePtrList& args, const std::string& name) :
 
 tsym::Function::~Function() {}
 
-bool tsym::Function::isEqual(const BasePtr& other) const
+bool tsym::Function::isEqualDifferentBase(const BasePtr& other) const
 {
     if (sameType(other))
         return name() == other->name() && ops.isEqual(other->operands());

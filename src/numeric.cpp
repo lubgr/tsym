@@ -62,7 +62,7 @@ const tsym::BasePtr& tsym::Numeric::mOne()
     return n;
 }
 
-bool tsym::Numeric::isEqual(const BasePtr& other) const
+bool tsym::Numeric::isEqualDifferentBase(const BasePtr& other) const
 {
     if (other->isNumeric())
         return number == other->numericEval();

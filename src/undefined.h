@@ -10,6 +10,7 @@ namespace tsym {
 
             /* Returns always false: */
             bool isEqual(const BasePtr& other) const;
+            bool isEqualDifferentBase(const BasePtr& other) const;
             bool sameType(const BasePtr& other) const;
             Number numericEval() const;
             Fraction normal(SymbolMap&) const;

@@ -29,7 +29,7 @@ namespace tsym {
 
             friend class BasePtr;
 
-            virtual bool isEqual(const BasePtr& other) const = 0;
+            virtual bool isEqualDifferentBase(const BasePtr& other) const = 0;
             virtual bool sameType(const BasePtr& other) const = 0;
             virtual Number numericEval() const = 0;
             virtual Fraction normal(SymbolMap& map) const = 0;
@@ -52,6 +52,7 @@ namespace tsym {
             virtual bool isFunction() const;
             virtual bool isConstant() const;
 
+            virtual bool isEqual(const BasePtr& other) const;
             virtual bool isDifferent(const BasePtr& other) const;
             virtual bool has(const BasePtr& other) const;
             /* Returns true for (composites of) Numerics or num. powers, nothing else: */

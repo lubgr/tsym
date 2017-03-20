@@ -86,6 +86,11 @@ bool tsym::Base::isConstant() const
     return false;
 }
 
+bool tsym::Base::isEqual(const BasePtr& other) const
+{
+    return this == other.base() || isEqualDifferentBase(other);
+}
+
 bool tsym::Base::isDifferent(const BasePtr& other) const
 {
     return !isEqual(other);

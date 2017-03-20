@@ -12,7 +12,7 @@ namespace tsym {
             static BasePtr createE();
 
             /* Implentations of pure virtual methods of Base. */
-            bool isEqual(const BasePtr& other) const;
+            bool isEqualDifferentBase(const BasePtr& other) const;
             bool sameType(const BasePtr& other) const;
             Number numericEval() const;
             Fraction normal(SymbolMap& map) const;

@@ -77,7 +77,7 @@ tsym::BasePtr tsym::Power::createNonTrivial(const BasePtr& base, const BasePtr& 
     return BasePtr(new Power(res.front(), res.back()));
 }
 
-bool tsym::Power::isEqual(const BasePtr& other) const
+bool tsym::Power::isEqualDifferentBase(const BasePtr& other) const
 {
     return isEqualByTypeAndOperands(other);
 }

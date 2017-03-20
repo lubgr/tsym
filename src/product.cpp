@@ -97,7 +97,7 @@ bool tsym::Product::needsExpansion(const BasePtrList& factors)
     return constFac.hasSumElements();
 }
 
-bool tsym::Product::isEqual(const BasePtr& other) const
+bool tsym::Product::isEqualDifferentBase(const BasePtr& other) const
 {
     return isEqualByTypeAndOperands(other);
 }

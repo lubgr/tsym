@@ -21,7 +21,7 @@ tsym::BasePtr tsym::Constant::createE()
 
 tsym::Constant::~Constant() {}
 
-bool tsym::Constant::isEqual(const BasePtr& other) const
+bool tsym::Constant::isEqualDifferentBase(const BasePtr& other) const
 {
     if (other->isConstant())
         return name() == other->name();

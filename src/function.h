@@ -18,7 +18,7 @@ namespace tsym {
             virtual bool isNegative() const = 0;
 
             /* Implentations of pure virtual methods of Base. */
-            bool isEqual(const BasePtr& other) const;
+            bool isEqualDifferentBase(const BasePtr& other) const;
             bool sameType(const BasePtr& other) const;
             std::string typeStr() const;
 
