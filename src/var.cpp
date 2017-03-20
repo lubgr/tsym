@@ -79,7 +79,7 @@ tsym::Var::Var(const char *str, Var::Sign sign)
         return;
     }
 
-    if (type == Type::INT && withoutSign < 0)
+    if (type == Type::INT && (*withoutSign.rep)->numericEval() < 0)
         TSYM_WARNING("Ignore positive flag for negative int (", withoutSign, ")");
 
     rep = new BasePtr(*withoutSign.rep);
