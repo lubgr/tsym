@@ -2,6 +2,7 @@
 #define TSYM_INT_H
 
 #include <iostream>
+#include <cstddef>
 #include "gmp.h"
 
 namespace tsym {
