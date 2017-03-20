@@ -38,6 +38,15 @@ TEST(BasePtr, copyCtor)
     CHECK_EQUAL(2, ten->getRefCount());
 }
 
+TEST(BasePtr, initWithNullPointer)
+{
+    disableLog();
+    const BasePtr ptr(nullptr);
+    enableLog();
+
+    CHECK(ptr->isUndefined());
+}
+
 TEST(BasePtr, pointerAccess)
 {
     const Base *base = ten.base();
