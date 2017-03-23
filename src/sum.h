@@ -23,6 +23,7 @@ namespace tsym {
             std::string typeStr() const;
             bool isPositive() const;
             bool isNegative() const;
+            size_t hash() const;
 
             /* Overridden methods from Base. */
             bool isSum() const;

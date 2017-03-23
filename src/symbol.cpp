@@ -110,6 +110,14 @@ bool tsym::Symbol::isNegative() const
     return false;
 }
 
+size_t tsym::Symbol::hash() const
+{
+    const size_t nameHash = std::hash<Name>{}(symbolName);
+    const size_t signHash = std::hash<bool>{}(positive);
+
+    return nameHash ^ (signHash << 1);
+}
+
 bool tsym::Symbol::isSymbol() const
 {
     return true;

@@ -108,6 +108,11 @@ bool tsym::Numeric::isNegative() const
     return number < 0;
 }
 
+size_t tsym::Numeric::hash() const
+{
+    return std::hash<Number>{}(number);
+}
+
 bool tsym::Numeric::isNumericallyEvaluable() const
 {
     return true;

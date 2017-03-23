@@ -73,6 +73,11 @@ bool tsym::Constant::isNegative() const
     return false;
 }
 
+size_t tsym::Constant::hash() const
+{
+    return std::hash<Type>{}(type);
+}
+
 bool tsym::Constant::isNumericallyEvaluable() const
 {
     return true;

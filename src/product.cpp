@@ -179,6 +179,11 @@ bool tsym::Product::isNegative() const
     return sign() == -1;
 }
 
+size_t tsym::Product::hash() const
+{
+    return std::hash<BasePtrList>{}(ops);
+}
+
 int tsym::Product::sign() const
 {
     int result = 1;

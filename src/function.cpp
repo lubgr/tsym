@@ -27,6 +27,11 @@ std::string tsym::Function::typeStr() const
     return "Function";
 }
 
+size_t tsym::Function::hash() const
+{
+    return std::hash<Name>{}(functionName) ^ (std::hash<BasePtrList>{}(ops) << 1);
+}
+
 bool tsym::Function::isFunction() const
 {
     return true;

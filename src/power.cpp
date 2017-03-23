@@ -143,6 +143,11 @@ bool tsym::Power::isNegative() const
     return false;
 }
 
+size_t tsym::Power::hash() const
+{
+    return std::hash<BasePtrList>{}(ops);
+}
+
 bool tsym::Power::isExponentRationalNumeric() const
 {
     return expRef->isNumericallyEvaluable() && expRef->numericEval().isRational();

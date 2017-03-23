@@ -61,6 +61,11 @@ bool tsym::Undefined::isNegative() const
     return false;
 }
 
+size_t tsym::Undefined::hash() const
+{
+    return 1;
+}
+
 bool tsym::Undefined::isUndefined() const
 {
     return true;

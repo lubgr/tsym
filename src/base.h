@@ -38,6 +38,7 @@ namespace tsym {
             /* If unclear or zero, the following two methods shall return false: */
             virtual bool isPositive() const = 0;
             virtual bool isNegative() const = 0;
+            virtual size_t hash() const = 0;
 
             virtual bool isZero() const;
             virtual bool isOne() const;

@@ -145,6 +145,11 @@ bool tsym::Sum::isNegative() const
     return isNumericallyEvaluable() ? numericEval() < 0 : sign() == -1;
 }
 
+size_t tsym::Sum::hash() const
+{
+    return std::hash<BasePtrList>{}(ops);
+}
+
 int tsym::Sum::sign() const
 {
     const int numericSign = signOfNumericParts();

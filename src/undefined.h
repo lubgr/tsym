@@ -18,6 +18,7 @@ namespace tsym {
             std::string typeStr() const;
             bool isPositive() const;
             bool isNegative() const;
+            size_t hash() const;
 
             /* Returns always true: */
             bool isDifferent(const BasePtr& other) const;
