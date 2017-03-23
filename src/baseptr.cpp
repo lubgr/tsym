@@ -1,4 +1,3 @@
-
 #include <cstddef>
 #include <typeinfo>
 #include "base.h"
@@ -110,4 +109,10 @@ std::ostream& tsym::operator << (std::ostream& stream, const BasePtr& ptr)
 size_t std::hash<tsym::BasePtr>::operator () (const tsym::BasePtr& ptr) const
 {
     return typeid(*ptr).hash_code() ^ (ptr->hash() << 1);
+}
+
+bool std::equal_to<tsym::BasePtr>::operator () (const tsym::BasePtr& lhs,
+        const tsym::BasePtr& rhs) const
+{
+    return lhs->isEqual(rhs);
 }

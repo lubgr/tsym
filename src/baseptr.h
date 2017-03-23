@@ -43,6 +43,11 @@ namespace std
     {
         size_t operator () (const tsym::BasePtr& ptr) const;
     };
+
+    template<> struct equal_to<tsym::BasePtr>
+    {
+        bool operator () (const tsym::BasePtr& lhs, const tsym::BasePtr& rhs) const;
+    };
 }
 
 #endif

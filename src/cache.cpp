@@ -7,28 +7,9 @@
 
 namespace tsym {
     namespace {
-        class BasePtrEquality {
-            public:
-                bool operator () (const BasePtr& lhs, const BasePtr& rhs) const
-                {
-                    return lhs->isEqual(rhs);
-                }
-        };
-
-        class BasePtrListEquality {
-            public:
-                bool operator () (const BasePtrList& lhs, const BasePtrList& rhs) const
-                {
-                    return lhs.isEqual(rhs);
-                }
-        };
-
-        typedef std::unordered_map<BasePtr, BasePtr, std::hash<BasePtr>, BasePtrEquality>
-            CacheBpToBp;
-        typedef std::unordered_map<BasePtrList, BasePtr, std::hash<BasePtrList>,
-                BasePtrListEquality> CacheBplToBp;
-        typedef std::unordered_map<BasePtrList, BasePtrList, std::hash<BasePtrList>,
-                BasePtrListEquality> CacheBplToBpl;
+        typedef std::unordered_map<BasePtr, BasePtr> CacheBpToBp;
+        typedef std::unordered_map<BasePtrList, BasePtr> CacheBplToBp;
+        typedef std::unordered_map<BasePtrList, BasePtrList> CacheBplToBpl;
 
         CacheBpToBp& getBpToBpCache(cache::Method index)
         {

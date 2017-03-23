@@ -386,3 +386,9 @@ size_t std::hash<tsym::BasePtrList>::operator () (const tsym::BasePtrList& bpLis
 
     return result;
 }
+
+bool std::equal_to<tsym::BasePtrList>::operator () (const tsym::BasePtrList& lhs,
+        const tsym::BasePtrList& rhs) const
+{
+    return lhs.isEqual(rhs);
+}
