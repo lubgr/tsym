@@ -4,6 +4,7 @@
 #include "product.h"
 #include "sum.h"
 #include "printer.h"
+#include "cache.h"
 #include "logging.h"
 
 namespace tsym {
@@ -276,15 +277,22 @@ tsym::BasePtrList tsym::BasePtrList::getNonConstElements() const
 
 tsym::BasePtr tsym::BasePtrList::expandAsProduct() const
 {
+    const BasePtr *cached(cache::retrieve(*this, cache::EXPANSION));
+    BasePtr expanded;
     BasePtrList sums;
     BasePtr scalar;
+
+    if (cached != nullptr)
+        return *cached;
 
     defScalarAndSums(scalar, sums);
 
     if (sums.empty())
-        return scalar;
+        expanded = scalar;
     else
-        return expandProductOf(scalar, expandProductOf(sums));
+        expanded = expandProductOf(scalar, expandProductOf(sums));
+
+    return cache::insertAndGet(*this, expanded, cache::EXPANSION);
 }
 
 void tsym::BasePtrList::defScalarAndSums(BasePtr& scalar, BasePtrList& sums) const

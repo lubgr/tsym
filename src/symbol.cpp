@@ -1,6 +1,7 @@
 
 #include <sstream>
 #include "symbol.h"
+#include "cache.h"
 #include "numeric.h"
 
 unsigned tsym::Symbol::tmpCounter = 0;
@@ -35,8 +36,18 @@ tsym::BasePtr tsym::Symbol::create(const Name& name, bool positive)
 {
     if (name.getName().empty())
         return Undefined::create();
+    return createNonEmptyName(name, positive);
+}
+
+tsym::BasePtr tsym::Symbol::createNonEmptyName(const Name& name, bool positive)
+{
+    const BasePtr symbol(new Symbol(name, positive));
+    const BasePtr *cached = cache::retrieve(symbol, cache::SYMBOL);
+
+    if (cached != nullptr)
+        return *cached;
     else
-        return BasePtr(new Symbol(name, positive));
+        return cache::insertAndGet(symbol, symbol, cache::SYMBOL);
 }
 
 tsym::BasePtr tsym::Symbol::createPositive(const std::string& name)

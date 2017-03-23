@@ -38,6 +38,7 @@ namespace tsym {
             ~Symbol();
 
             static BasePtr create(const Name& name, bool positive);
+            static BasePtr createNonEmptyName(const Name& name, bool positive);
             bool isEqualOtherSymbol(const BasePtr& other) const;
 
             const Name symbolName;

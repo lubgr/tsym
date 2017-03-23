@@ -90,6 +90,9 @@ namespace tsym {
             const BasePtrList ops;
 
         private:
+            BasePtr normalViaCache() const;
+            BasePtr normalWithoutCache() const;
+
             mutable unsigned refCount;
     };
 }

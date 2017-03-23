@@ -5,6 +5,7 @@
 #include "numeric.h"
 #include "symbolmap.h"
 #include "product.h"
+#include "cache.h"
 #include "logging.h"
 
 tsym::Base::Base() :
@@ -194,13 +195,31 @@ tsym::BasePtr tsym::Base::clone() const
 
 tsym::BasePtr tsym::Base::normal() const
 {
+    if (ops.empty())
+        return normalWithoutCache();
+    else
+        return normalViaCache();
+}
+
+tsym::BasePtr tsym::Base::normalViaCache() const
+{
+    const BasePtr *cached(cache::retrieve(clone(), cache::NORMAL));
+
+    if (cached != nullptr)
+        return *cached;
+    else
+        return cache::insertAndGet(clone(), normalWithoutCache(), cache::NORMAL);
+}
+
+tsym::BasePtr tsym::Base::normalWithoutCache() const
+{
     Fraction normalizedFrac;
     SymbolMap map;
 
     normalizedFrac = normal(map);
 
     return Fraction(map.replaceTmpSymbolsBackFrom(normalizedFrac.num()),
-                map.replaceTmpSymbolsBackFrom(normalizedFrac.denom())).eval();
+            map.replaceTmpSymbolsBackFrom(normalizedFrac.denom())).eval();
 }
 
 tsym::BasePtr tsym::Base::diff(const BasePtr& symbol) const

@@ -9,6 +9,7 @@
 #include "polyinfo.h"
 #include "primitivegcd.h"
 #include "subresultantgcd.h"
+#include "cache.h"
 
 namespace tsym {
     static BasePtrList divideEmptyList(const BasePtr& u, const BasePtr& v);
@@ -30,9 +31,15 @@ namespace tsym {
 
 tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v)
 {
-    PolyInfo polyInfo(u, v);
+    const BasePtrList *cached(cache::retrieveList({ u, v }, cache::POLY_DIVISION));
+    BasePtrList result;
 
-    return divide(u, v, polyInfo.listOfSymbols());
+    if (cached != nullptr)
+        result = *cached;
+    else
+        result = divide(u, v, PolyInfo(u, v).listOfSymbols());
+
+    return cache::insertAndGet({ u, v }, result, cache::POLY_DIVISION);
 }
 
 tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v, const BasePtrList& L)
@@ -221,7 +228,12 @@ tsym::BasePtr tsym::getFirstSymbol(const BasePtrList& polynomials)
 
 tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v)
 {
-    return gcd(u, v, defaultGcd());
+    const BasePtr *cached(cache::retrieve({ u, v }, cache::GCD));
+
+    if (cached != nullptr)
+        return *cached;
+    else
+        return cache::insertAndGet({ u, v }, gcd(u, v, defaultGcd()), cache::GCD);
 }
 
 const tsym::GcdStrategy *tsym::defaultGcd()
