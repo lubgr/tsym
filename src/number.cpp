@@ -584,3 +584,12 @@ std::ostream& tsym::operator << (std::ostream& stream, const Number& rhs)
 
     return stream;
 }
+
+size_t std::hash<tsym::Number>::operator () (const tsym::Number& n) const
+{
+    const size_t doubleHash = std::hash<double>{}(n.toDouble());
+    const size_t denomHash = std::hash<tsym::Int>{}(n.denominator());
+    const size_t numHash = std::hash<tsym::Int>{}(n.numerator());
+
+    return (doubleHash ^ (numHash << 1)) ^ (denomHash << 1);
+}

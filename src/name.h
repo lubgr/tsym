@@ -29,6 +29,7 @@ namespace tsym {
             bool lessThan(const Name& rhs) const;
 
             bool isNumericId() const;
+            unsigned getNumericId() const;
 
         private:
             bool isGreekLetter() const;
@@ -52,6 +53,14 @@ namespace tsym {
     bool operator > (const Name& lhs, const Name& rhs);
     bool operator >= (const Name& lhs, const Name& rhs);
     std::ostream& operator << (std::ostream& stream, const Name& name);
+}
+
+namespace std
+{
+    template<> struct hash<tsym::Name>
+    {
+        size_t operator () (const tsym::Name& name) const;
+    };
 }
 
 #endif

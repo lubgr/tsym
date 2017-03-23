@@ -1,5 +1,6 @@
 
 #include <cstddef>
+#include <typeinfo>
 #include "base.h"
 #include "baseptr.h"
 #include "symbolmap.h"
@@ -104,4 +105,9 @@ std::ostream& tsym::operator << (std::ostream& stream, const BasePtr& ptr)
     printer.print(stream);
 
     return stream;
+}
+
+size_t std::hash<tsym::BasePtr>::operator () (const tsym::BasePtr& ptr) const
+{
+    return typeid(*ptr).hash_code() ^ (ptr->hash() << 1);
 }

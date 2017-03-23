@@ -109,4 +109,12 @@ namespace tsym {
     std::ostream& operator << (std::ostream& stream, const Number& rhs);
 }
 
+namespace std
+{
+    template<> struct hash<tsym::Number>
+    {
+        size_t operator () (const tsym::Number& n) const;
+    };
+}
+
 #endif

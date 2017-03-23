@@ -368,3 +368,13 @@ std::ostream& tsym::operator << (std::ostream& stream, const BasePtrList& list)
 
     return stream;
 }
+
+size_t std::hash<tsym::BasePtrList>::operator () (const tsym::BasePtrList& bpList) const
+{
+    size_t result = 0;
+
+    for (const auto& item : bpList)
+        result = result ^ (std::hash<tsym::BasePtr>{}(item) << 1);
+
+    return result;
+}

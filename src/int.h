@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <cstddef>
+#include <functional>
 #include "gmp.h"
 
 namespace tsym {
@@ -75,6 +76,14 @@ namespace tsym {
     Int operator % (Int lhs, const Int& rhs);
 
     std::ostream& operator << (std::ostream& stream, const Int& rhs);
+}
+
+namespace std
+{
+    template<> struct hash<tsym::Int>
+    {
+        size_t operator () (const tsym::Int& n) const;
+    };
 }
 
 #endif

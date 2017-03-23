@@ -2,6 +2,7 @@
 #define TSYM_BASEPTR_H
 
 #include <string>
+#include <functional>
 
 namespace tsym { class Base; }
 
@@ -34,6 +35,14 @@ namespace tsym {
     };
 
     std::ostream& operator << (std::ostream& stream, const BasePtr& ptr);
+}
+
+namespace std
+{
+    template<> struct hash<tsym::BasePtr>
+    {
+        size_t operator () (const tsym::BasePtr& ptr) const;
+    };
 }
 
 #endif

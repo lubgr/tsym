@@ -174,6 +174,11 @@ bool tsym::Name::isNumericId() const
     return numeric != 0;
 }
 
+unsigned tsym::Name::getNumericId() const
+{
+    return numeric;
+}
+
 bool tsym::operator == (const Name& lhs, const Name& rhs)
 {
     return lhs.equal(rhs);
@@ -207,4 +212,10 @@ bool tsym::operator >= (const Name& lhs, const Name& rhs)
 std::ostream& tsym::operator << (std::ostream& stream, const Name& name)
 {
     return stream << name.plain();
+}
+
+size_t std::hash<tsym::Name>::operator () (const tsym::Name& name) const
+{
+    return std::hash<std::string>{}(name.plain()) ^
+        (std::hash<unsigned>{}(name.getNumericId()) << 1);
 }

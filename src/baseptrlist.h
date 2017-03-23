@@ -3,6 +3,7 @@
 
 #include <list>
 #include <initializer_list>
+#include <functional>
 #include "baseptr.h"
 
 namespace tsym {
@@ -81,6 +82,15 @@ namespace tsym {
     };
 
     std::ostream& operator << (std::ostream& stream, const BasePtrList& list);
+
+}
+
+namespace std
+{
+    template<> struct hash<tsym::BasePtrList>
+    {
+        size_t operator () (const tsym::BasePtrList& bpList) const;
+    };
 }
 
 #endif

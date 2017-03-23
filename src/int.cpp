@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cassert>
 #include <cstdlib>
+#include <sstream>
 #include "int.h"
 #include "logging.h"
 
@@ -339,4 +340,13 @@ std::ostream& tsym::operator << (std::ostream& stream, const Int& rhs)
     rhs.print(stream);
 
     return stream;
+}
+
+size_t std::hash<tsym::Int>::operator () (const tsym::Int& n) const
+{
+    if (n.fitsIntoLong())
+        return std::hash<long>{}(n.toLong());
+    else
+        return std::hash<std::string>{}(
+                static_cast<std::ostringstream&>(std::ostringstream() << n).str());
 }
