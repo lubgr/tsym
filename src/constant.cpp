@@ -75,7 +75,9 @@ bool tsym::Constant::isNegative() const
 
 size_t tsym::Constant::hash() const
 {
-    return std::hash<Type>{}(type);
+    typedef std::underlying_type<Type>::type EnumType;
+
+    return std::hash<EnumType>{}(static_cast<EnumType>(type));
 }
 
 bool tsym::Constant::isNumericallyEvaluable() const
