@@ -27,11 +27,11 @@ series expansion.
 Installation
 ------------
 To compile tsym, you need the [plic](https://github.com/lubgr/plic) library for logging,
-[gmp](https://gmplib.org) (installed by default on many systems), flex and bison (or their non-GPL
-counterparts), obviously C and C++ compiler recent enough to support C++11 and
-[scons](http://scons.org) as a build system. For unit tests,
-[CppUTest](https://github.com/cpputest/cpputest) is required. tsym should build on all major Linux
-distributions by e.g.
+[gmp](https://gmplib.org) together with its development headers (`gmp-devel` in Fedora/Suse or
+`libgmp-dev` in Debian-base distributions), flex and bison (or their non-GPL counterparts),
+C and C++ compiler recent enough to support C++11 and [scons](http://scons.org) as a build system.
+For unit tests, [CppUTest](https://github.com/cpputest/cpputest) is required. tsym should build on
+all major Linux distributions by e.g.
 ```bash
 scons CFLAGS=-O2 CXXFLAGS="-march=native -O2" lib
 ```
@@ -149,10 +149,16 @@ Compiling the example code
 
 The exemplary C++ program from above can be compiled with
 ```bash
-g++ -o example main-function-from-above.cpp -ltsym -lplic -lpython3.4m
+g++ -o example main-function-from-above.cpp -ltsym -lplic -lpython3.4m -lgmp
 ```
 for less recent compiler versions, `-std=c++11` should be manually enabled. Note that the version of
 the python library should match the one plic is compiled and linked against. If you are unsure, run
 ```bash
 find /usr -type f -path '*plic/buildinfo.h' -exec sed -rn '/python/Is/^.*"(.*)"/\1/p' '{}' \;
 ```
+
+Additional notes
+----------------
+* Avoid `using namespace tsym` when compiling with g++ < 4.9, because `sqrt` and `pow` from math.h
+  are in the global namespace. `sqrt(2)` will thus be evaluated to a `double`, while `tsym::sqrt(2)`
+  gives the desired result. The problem vanishes with more recent gcc versions, though.
