@@ -114,6 +114,13 @@ TEST(Name, twoNumeric)
     CHECK(!(n2 < n1));
 }
 
+TEST(Name, accessNumericId)
+{
+    const Name name(123);
+
+    CHECK_EQUAL(123, name.getNumericId());
+}
+
 TEST(Name, oneNumericOneTextual)
 {
     const Name textual("100");
