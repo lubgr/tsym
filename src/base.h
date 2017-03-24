@@ -25,8 +25,6 @@ namespace tsym {
          * Symbol or Constant. This clutters the interface a bit, but provides easy access to all
          * information without using casts or other runtime informations. */
         public:
-            unsigned getRefCount() const;
-
             friend class BasePtr;
 
             virtual bool isEqualDifferentBase(const BasePtr& other) const = 0;

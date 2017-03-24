@@ -19,11 +19,6 @@ tsym::Base::Base(const BasePtrList& operands) :
 
 tsym::Base::~Base() {}
 
-unsigned tsym::Base::getRefCount() const
-{
-    return refCount;
-}
-
 bool tsym::Base::isZero() const
 {
     return false;
