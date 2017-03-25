@@ -264,7 +264,7 @@ TEST(Expansion, expansionLeadsToZero)
     const BasePtr orig = Sum::create({ Product::create(a, b), Product::minus(b, c),
             Product::create(b, Sum::create(c, Product::minus(a)))});
 
-    CHECK(!orig->isZero());
+    CHECK_FALSE(orig->isZero());
     CHECK(orig->expand()->isZero());
 }
 

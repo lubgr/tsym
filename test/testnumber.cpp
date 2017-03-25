@@ -217,8 +217,8 @@ TEST(Rational, lessThanForEqualFraction)
 {
     const Number oneThird(1, 3);
 
-    CHECK(!(oneThird < oneThird));
-    CHECK(!(oneThird > oneThird));
+    CHECK_FALSE((oneThird < oneThird));
+    CHECK_FALSE((oneThird > oneThird));
 }
 
 TEST(Rational, absValue)
@@ -371,9 +371,9 @@ TEST(NumberPower, undefined)
     enableLog();
 
     CHECK(zero.isUndefined());
-    CHECK(!zero.isInt());
-    CHECK(!zero.isDouble());
-    CHECK(!zero.isFrac());
+    CHECK_FALSE(zero.isInt());
+    CHECK_FALSE(zero.isDouble());
+    CHECK_FALSE(zero.isFrac());
 
     CHECK(zero != 0);
     CHECK(zero != 1);
@@ -697,7 +697,7 @@ TEST(Double, isNotRational)
 {
     const Number n(123.4567890);
 
-    CHECK(!n.isRational());
+    CHECK_FALSE(n.isRational());
 }
 
 TEST(Double, equality)
@@ -745,8 +745,8 @@ TEST_GROUP(UndefinedNumber)
 TEST(UndefinedNumber, typeRequests)
 {
     CHECK(undefined.isUndefined());
-    CHECK(!undefined.isZero());
-    CHECK(!undefined.isOne());
+    CHECK_FALSE(undefined.isZero());
+    CHECK_FALSE(undefined.isOne());
 }
 
 TEST(UndefinedNumber, creationDivisionByZero)

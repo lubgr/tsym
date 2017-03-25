@@ -29,8 +29,8 @@ TEST(Constant, typeString)
 TEST(Constant, constRequest)
     /* A Constant is treated like a Symbol, so it isn't considered const. */
 {
-    CHECK(!pi->isConst());
-    CHECK(!e->isConst());
+    CHECK_FALSE(pi->isConst());
+    CHECK_FALSE(e->isConst());
 }
 
 TEST(Constant, typeRequest)

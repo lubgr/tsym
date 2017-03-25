@@ -162,7 +162,7 @@ TEST(Var, constructPositiveSymbol)
     const Var aPos("a", Var::Sign::POSITIVE);
 
     CHECK(aPos.isPositive());
-    CHECK(!a.isPositive());
+    CHECK_FALSE(a.isPositive());
 }
 
 TEST(Var, numberTypes)
@@ -251,7 +251,7 @@ TEST(Var, sumHasSymbol)
     const Var sum(a + b + c);
 
     CHECK(sum.has(a));
-    CHECK(!sum.has(a + b));
+    CHECK_FALSE(sum.has(a + b));
 }
 
 TEST(Var, substSymbolInProduct)
@@ -994,7 +994,7 @@ TEST(Var, negativeVar)
 
     res = -aPos*bPos + 2 - 3*Pi;
 
-    CHECK(!res.isPositive());
+    CHECK_FALSE(res.isPositive());
     CHECK(res.isNegative());
 }
 

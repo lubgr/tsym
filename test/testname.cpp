@@ -111,7 +111,7 @@ TEST(Name, twoNumeric)
 
     CHECK_EQUAL(n1, n1);
     CHECK(n1 < n2);
-    CHECK(!(n2 < n1));
+    CHECK_FALSE((n2 < n1));
 }
 
 TEST(Name, accessNumericId)

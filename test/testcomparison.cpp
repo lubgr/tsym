@@ -33,7 +33,7 @@ TEST(Comparison, symbolsEqualNameOnePositive)
 {
     const BasePtr aPos = Symbol::createPositive("a");
 
-    CHECK(!a->isEqual(aPos));
+    CHECK_FALSE(a->isEqual(aPos));
 }
 
 TEST(Comparison, equalConstants)
@@ -62,7 +62,7 @@ TEST(Comparison, twoUndefined)
     /* Comparing undefined  doesn't make sense, this shall always return false. */
 {
     disableLog();
-    CHECK(!undefined->isEqual(undefined));
+    CHECK_FALSE(undefined->isEqual(undefined));
     enableLog();
 }
 

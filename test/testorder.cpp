@@ -356,7 +356,7 @@ TEST(Order, functionAndSymbolDifferentNames)
     const BasePtr cos = Trigonometric::createCos(a);
 
     CHECK(order::doPermute(cos, a));
-    CHECK(!order::doPermute(a, cos));
+    CHECK_FALSE(order::doPermute(a, cos));
 }
 
 TEST(Order, functionAndProduct)

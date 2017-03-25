@@ -34,7 +34,7 @@ TEST(Has, equalSymbols)
 
 TEST(Has, differentSymbols)
 {
-    CHECK(!a->has(b));
+    CHECK_FALSE(a->has(b));
 }
 
 TEST(Has, equalNumerics)
@@ -44,7 +44,7 @@ TEST(Has, equalNumerics)
 
 TEST(Has, differentNumerics)
 {
-    CHECK(!two->has(three));
+    CHECK_FALSE(two->has(three));
 }
 
 TEST(Has, equalConstant)
@@ -55,23 +55,23 @@ TEST(Has, equalConstant)
 TEST(Has, equalUndefined)
     /* Two Undefined are never equal, thus this query shall return false. */
 {
-    CHECK(!undefined->has(undefined));
+    CHECK_FALSE(undefined->has(undefined));
 }
 
 TEST(Has, differentScalarTypes)
 {
-    CHECK(!a->has(two));
-    CHECK(!a->has(pi));
-    CHECK(!a->has(undefined));
-    CHECK(!ten->has(b));
-    CHECK(!ten->has(pi));
-    CHECK(!ten->has(undefined));
-    CHECK(!pi->has(a));
-    CHECK(!pi->has(one));
-    CHECK(!pi->has(undefined));
-    CHECK(!undefined->has(a));
-    CHECK(!undefined->has(ten));
-    CHECK(!undefined->has(pi));
+    CHECK_FALSE(a->has(two));
+    CHECK_FALSE(a->has(pi));
+    CHECK_FALSE(a->has(undefined));
+    CHECK_FALSE(ten->has(b));
+    CHECK_FALSE(ten->has(pi));
+    CHECK_FALSE(ten->has(undefined));
+    CHECK_FALSE(pi->has(a));
+    CHECK_FALSE(pi->has(one));
+    CHECK_FALSE(pi->has(undefined));
+    CHECK_FALSE(undefined->has(a));
+    CHECK_FALSE(undefined->has(ten));
+    CHECK_FALSE(undefined->has(pi));
 }
 
 TEST(Has, equalProducts)
@@ -83,14 +83,14 @@ TEST(Has, differentProducts)
 {
     const BasePtr different = Product::create(d, e);
 
-    CHECK(!twoPiAbProduct->has(different));
+    CHECK_FALSE(twoPiAbProduct->has(different));
 }
 
 TEST(Has, subProductsMultipleFactors)
 {
     const BasePtr sub = Product::create(a, b);
 
-    CHECK(!twoPiAbProduct->has(sub));
+    CHECK_FALSE(twoPiAbProduct->has(sub));
 }
 
 TEST(Has, subProductsOneFactor)
@@ -110,7 +110,7 @@ TEST(Has, differentSums)
 {
     const BasePtr different = Sum::create(c, d);
 
-    CHECK(!onePlusATimesB->has(different));
+    CHECK_FALSE(onePlusATimesB->has(different));
 }
 
 TEST(Has, subSumMultipleSummands)
@@ -118,7 +118,7 @@ TEST(Has, subSumMultipleSummands)
     const BasePtr sub = Sum::create(a, b);
     const BasePtr sum = Sum::create(c, sub);
 
-    CHECK(!sum->has(sub));
+    CHECK_FALSE(sum->has(sub));
 }
 
 TEST(Has, subSumOneSummand)
@@ -137,7 +137,7 @@ TEST(Has, differentPowers)
 {
     const BasePtr different = Power::create(pi, Product::create(a, b));
 
-    CHECK(!aPlusBSquare->has(different));
+    CHECK_FALSE(aPlusBSquare->has(different));
 }
 
 TEST(Has, baseOfPower)
@@ -164,7 +164,7 @@ TEST(Has, differentFunctions)
     const BasePtr sinA = Trigonometric::createSin(a);
     const BasePtr cosB = Trigonometric::createCos(b);
 
-    CHECK(!sinA->has(cosB));
+    CHECK_FALSE(sinA->has(cosB));
 }
 
 TEST(Has, argOfFunction)

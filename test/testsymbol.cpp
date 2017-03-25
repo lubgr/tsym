@@ -19,7 +19,7 @@ TEST(Symbol, numericEvaluation)
 {
     const BasePtr ptr = Symbol::create("dummy");
 
-    CHECK(!ptr->isNumericallyEvaluable());
+    CHECK_FALSE(ptr->isNumericallyEvaluable());
 }
 
 TEST(Symbol, typeString)

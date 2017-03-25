@@ -35,21 +35,21 @@ TEST(PolyInfo, bothZero)
 {
     info.set(zero, zero);
 
-    CHECK(!info.isInputValid());
+    CHECK_FALSE(info.isInputValid());
 }
 
 TEST(PolyInfo, invalidInputFirstArgUndefined)
 {
     info.set(undefined, a);
 
-    CHECK(!info.isInputValid());
+    CHECK_FALSE(info.isInputValid());
 }
 
 TEST(PolyInfo, invalidInputSecondArgUndefined)
 {
     info.set(a, undefined);
 
-    CHECK(!info.isInputValid());
+    CHECK_FALSE(info.isInputValid());
 }
 
 TEST(PolyInfo, validInputFraction)
@@ -66,14 +66,14 @@ TEST(PolyInfo, invalidInputSumWithNumericPower)
 
     info.set(sum, b);
 
-    CHECK(!info.isInputValid());
+    CHECK_FALSE(info.isInputValid());
 }
 
 TEST(PolyInfo, invalidInputPowerWithSymbolExp)
 {
     info.set(a, Power::create(b, c));
 
-    CHECK(!info.isInputValid());
+    CHECK_FALSE(info.isInputValid());
 }
 
 TEST(PolyInfo, invalidInputPowerWithValidSumExp)
@@ -82,7 +82,7 @@ TEST(PolyInfo, invalidInputPowerWithValidSumExp)
 
     info.set(a, Power::create(b, exp));
 
-    CHECK(!info.isInputValid());
+    CHECK_FALSE(info.isInputValid());
 }
 
 TEST(PolyInfo, validInputTwoInteger)

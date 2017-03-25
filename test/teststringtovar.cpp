@@ -47,18 +47,18 @@ TEST_GROUP(StringToVar)
 
     void checkTotalFailure(const StringToVar& stv, unsigned expectedErrorIndex)
     {
-        CHECK(!stv.success());
+        CHECK_FALSE(stv.success());
 
         CHECK_EQUAL(Var::Type::UNDEFINED, stv.get().type());
 
         CHECK_EQUAL(expectedErrorIndex, stv.firstErrorIndex());
 
-        CHECK(!stv.errorMessages().empty());
+        CHECK_FALSE(stv.errorMessages().empty());
     }
 
     void checkFailure(const Var& expected, const StringToVar& stv, unsigned expectedErrorIndex)
     {
-        CHECK(!stv.success());
+        CHECK_FALSE(stv.success());
 
         assert(expected.type() != Var::Type::UNDEFINED);
         assert(stv.get().type() != Var::Type::UNDEFINED);
@@ -67,7 +67,7 @@ TEST_GROUP(StringToVar)
 
         CHECK_EQUAL(expected, stv.get());
 
-        CHECK(!stv.errorMessages().empty());
+        CHECK_FALSE(stv.errorMessages().empty());
     }
 };
 

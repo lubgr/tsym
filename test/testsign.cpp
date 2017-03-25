@@ -32,19 +32,19 @@ TEST_GROUP(Sign)
     void checkPos(const BasePtr& arg)
     {
         CHECK(arg->isPositive());
-        CHECK(!arg->isNegative());
+        CHECK_FALSE(arg->isNegative());
     }
 
     void checkNeg(const BasePtr& arg)
     {
         CHECK(arg->isNegative());
-        CHECK(!arg->isPositive());
+        CHECK_FALSE(arg->isPositive());
     }
 
     void checkUnclear(const BasePtr& arg)
     {
-        CHECK(!arg->isNegative());
-        CHECK(!arg->isPositive());
+        CHECK_FALSE(arg->isNegative());
+        CHECK_FALSE(arg->isPositive());
     }
 };
 

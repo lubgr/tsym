@@ -136,7 +136,7 @@ TEST(Matrix, nonSquareMatrix)
 {
     Matrix nonSquare(2, 3);
 
-    CHECK(!nonSquare.isSquare());
+    CHECK_FALSE(nonSquare.isSquare());
 }
 
 TEST(Matrix, symmetricMatrix)
@@ -158,14 +158,14 @@ TEST(Matrix, symmetricMatrix)
 
 TEST(Matrix, squareNonSymmetricMatrix)
 {
-    CHECK(!m.isSymmetric());
+    CHECK_FALSE(m.isSymmetric());
 }
 
 TEST(Matrix, nonSquareNonSymmetricMatrix)
 {
     Matrix nonSquare(3, 4);
 
-    CHECK(!nonSquare.isSymmetric());
+    CHECK_FALSE(nonSquare.isSymmetric());
 }
 
 TEST(Matrix, equalMatrices)

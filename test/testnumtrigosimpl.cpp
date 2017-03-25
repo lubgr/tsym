@@ -69,7 +69,7 @@ TEST_GROUP(NumTrigoSimpl)
     {
         nts.setType(type);
         nts.compute();
-        CHECK(!nts.hasSimplifiedResult());
+        CHECK_FALSE(nts.hasSimplifiedResult());
 
         disableLog();
         /* Requesting the result should give an Undefined. */

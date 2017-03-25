@@ -154,16 +154,16 @@ TEST(Int, fitsIntoInt)
 {
     CHECK(Int(1234567).fitsIntoInt());
     CHECK(Int(-7654321).fitsIntoInt());
-    CHECK(!Int("230894203489028394082903849092340").fitsIntoInt());
-    CHECK(!Int("-29304209843902894308290384203989").fitsIntoInt());
+    CHECK_FALSE(Int("230894203489028394082903849092340").fitsIntoInt());
+    CHECK_FALSE(Int("-29304209843902894308290384203989").fitsIntoInt());
 }
 
 TEST(Int, fitsIntoLong)
 {
     CHECK(Int(1234567).fitsIntoLong());
     CHECK(Int(-7654321).fitsIntoLong());
-    CHECK(!Int("230894203489028394082903849092340").fitsIntoLong());
-    CHECK(!Int("-29304209843902894308290384203989").fitsIntoLong());
+    CHECK_FALSE(Int("230894203489028394082903849092340").fitsIntoLong());
+    CHECK_FALSE(Int("-29304209843902894308290384203989").fitsIntoLong());
 }
 
 TEST(Int, toPrimitiveInt)
@@ -210,7 +210,7 @@ TEST(Int, toPrimitiveLong)
 
     if (maxInt < maxLong) {
         n = Int(maxInt + 123456l);
-        CHECK(!n.fitsIntoInt());
+        CHECK_FALSE(n.fitsIntoInt());
         CHECK(n.fitsIntoLong());
     } else {
         n = Int(maxLong);

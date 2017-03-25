@@ -42,8 +42,8 @@ TEST(Trigonometric, constRequest)
     const BasePtr symbolArg = Trigonometric::createCos(a);
     const BasePtr numericArg = Trigonometric::createCos(two);
 
-    CHECK(!symbolArg->isConst());
-    CHECK(!numericArg->isConst());
+    CHECK_FALSE(symbolArg->isConst());
+    CHECK_FALSE(numericArg->isConst());
 }
 
 TEST(Trigonometric, sinFunctionName)

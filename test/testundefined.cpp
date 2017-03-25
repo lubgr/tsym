@@ -17,7 +17,7 @@ TEST_GROUP(Undefined)
 
 TEST(Undefined, numericalEvaluation)
 {
-    CHECK(!undefined->isNumericallyEvaluable());
+    CHECK_FALSE(undefined->isNumericallyEvaluable());
 }
 
 TEST(Undefined, typeString)
@@ -49,7 +49,7 @@ TEST(Undefined, nonConstTerm)
 
 TEST(Undefined, numericEvaluability)
 {
-    CHECK(!undefined->isNumericallyEvaluable());
+    CHECK_FALSE(undefined->isNumericallyEvaluable());
 }
 
 TEST(Undefined, numericEvaluation)
@@ -63,8 +63,8 @@ TEST(Undefined, equalityOtherUndefined)
 
     disableLog();
 
-    CHECK(!undefined->isEqual(undefined));
-    CHECK(!undefined->isEqual(otherUndefined));
+    CHECK_FALSE(undefined->isEqual(undefined));
+    CHECK_FALSE(undefined->isEqual(otherUndefined));
 
     CHECK(undefined->isDifferent(undefined));
     CHECK(undefined->isDifferent(otherUndefined));
