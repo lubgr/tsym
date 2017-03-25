@@ -31,7 +31,6 @@ namespace tsym {
              * it has to be defined in (copy/assignment) constructors only. */
             std::string prettyStr;
 #endif
-
     };
 
     std::ostream& operator << (std::ostream& stream, const BasePtr& ptr);

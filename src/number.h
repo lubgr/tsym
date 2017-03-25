@@ -93,7 +93,6 @@ namespace tsym {
 #endif
     };
 
-
     bool operator == (const Number& lhs, const Number& rhs);
     bool operator < (const Number& lhs, const Number& rhs);
     bool operator != (const Number& lhs, const Number& rhs);

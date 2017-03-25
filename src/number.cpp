@@ -114,7 +114,8 @@ void tsym::Number::tryDoubleToFraction()
     if (dValue > std::numeric_limits<double>::max()/nFloatDigits - roundIncrement/nFloatDigits)
         /* The product for constructing a fraction doesn't fit into a double. */
         return;
-    else if (dValue < std::numeric_limits<double>::lowest()/nFloatDigits - roundIncrement/nFloatDigits)
+    else if (dValue
+            < std::numeric_limits<double>::lowest()/nFloatDigits - roundIncrement/nFloatDigits)
         return;
 
     truncated = Int(dValue*nFloatDigits + roundIncrement);

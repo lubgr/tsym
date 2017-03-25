@@ -174,9 +174,9 @@ tsym::Int tsym::Int::nonTrivialPower(const Int& exp) const
     if (!mpz_fits_ulong_p(exp.handle))
         TSYM_ERROR("Can't evaluate integer power with huge exponent: ", exp);
 
-     mpz_pow_ui(result.handle, handle, mpz_get_ui(exp.handle));
+    mpz_pow_ui(result.handle, handle, mpz_get_ui(exp.handle));
 
-     return result;
+    return result;
 }
 
 tsym::Int tsym::Int::abs() const
