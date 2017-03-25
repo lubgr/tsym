@@ -31,7 +31,8 @@ namespace tsym {
 
 tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v)
 {
-    const BasePtrList *cached(cache::retrieveList({ u, v }, cache::POLY_DIVISION));
+    static Cache<BasePtrList, BasePtrList> cache;
+    const BasePtrList *cached(cache.retrieve({ u, v }));
     BasePtrList result;
 
     if (cached != nullptr)
@@ -39,7 +40,7 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v)
     else
         result = divide(u, v, PolyInfo(u, v).listOfSymbols());
 
-    return cache::insertAndGet({ u, v }, result, cache::POLY_DIVISION);
+    return cache.insertAndReturn({ u, v }, result);
 }
 
 tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v, const BasePtrList& L)
@@ -228,12 +229,13 @@ tsym::BasePtr tsym::getFirstSymbol(const BasePtrList& polynomials)
 
 tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v)
 {
-    const BasePtr *cached(cache::retrieve({ u, v }, cache::GCD));
+    static Cache<BasePtrList, BasePtr> cache;
+    const BasePtr *cached(cache.retrieve({ u, v }));
 
     if (cached != nullptr)
         return *cached;
     else
-        return cache::insertAndGet({ u, v }, gcd(u, v, defaultGcd()), cache::GCD);
+        return cache.insertAndReturn({ u, v }, gcd(u, v, defaultGcd()));
 }
 
 const tsym::GcdStrategy *tsym::defaultGcd()

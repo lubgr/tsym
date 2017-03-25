@@ -277,7 +277,8 @@ tsym::BasePtrList tsym::BasePtrList::getNonConstElements() const
 
 tsym::BasePtr tsym::BasePtrList::expandAsProduct() const
 {
-    const BasePtr *cached(cache::retrieve(*this, cache::EXPANSION));
+    static Cache<BasePtrList, BasePtr> cache;
+    const BasePtr *cached(cache.retrieve(*this));
     BasePtr expanded;
     BasePtrList sums;
     BasePtr scalar;
@@ -292,7 +293,7 @@ tsym::BasePtr tsym::BasePtrList::expandAsProduct() const
     else
         expanded = expandProductOf(scalar, expandProductOf(sums));
 
-    return cache::insertAndGet(*this, expanded, cache::EXPANSION);
+    return cache.insertAndReturn(*this, expanded);
 }
 
 void tsym::BasePtrList::defScalarAndSums(BasePtr& scalar, BasePtrList& sums) const

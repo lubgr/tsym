@@ -41,13 +41,14 @@ tsym::BasePtr tsym::Symbol::create(const Name& name, bool positive)
 
 tsym::BasePtr tsym::Symbol::createNonEmptyName(const Name& name, bool positive)
 {
+    static Cache<BasePtr, BasePtr> pool;
     const BasePtr symbol(new Symbol(name, positive));
-    const BasePtr *cached = cache::retrieve(symbol, cache::SYMBOL);
+    const BasePtr *cached = pool.retrieve(symbol);
 
     if (cached != nullptr)
         return *cached;
     else
-        return cache::insertAndGet(symbol, symbol, cache::SYMBOL);
+        return pool.insertAndReturn(symbol, symbol);
 }
 
 tsym::BasePtr tsym::Symbol::createPositive(const std::string& name)

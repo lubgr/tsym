@@ -198,12 +198,18 @@ tsym::BasePtr tsym::Base::normal() const
 
 tsym::BasePtr tsym::Base::normalViaCache() const
 {
-    const BasePtr *cached(cache::retrieve(clone(), cache::NORMAL));
+    static Cache<BasePtr, BasePtr> cache;
+    const BasePtr *cached(cache.retrieve(clone()));
+    BasePtr result;
 
     if (cached != nullptr)
         return *cached;
-    else
-        return cache::insertAndGet(clone(), normalWithoutCache(), cache::NORMAL);
+
+    result = normalWithoutCache();
+
+    cache.insertAndReturn(clone(), result);
+
+    return cache.insertAndReturn(result, result);
 }
 
 tsym::BasePtr tsym::Base::normalWithoutCache() const
