@@ -22,8 +22,8 @@ namespace tsym {
 tsym::BasePtr::BasePtr() :
     bp(undefinedBaseForNoArgCtor().bp)
 {
-    /* This sets the reference count to 2, which is necessary to not destroy the static object
-     * above, when this particular undefined BasePtr goes out of scope somewhere. */
+    /* Necessary to not destroy the static object above, when this particular undefined BasePtr goes
+     * out of scope somewhere. */
     ++bp->refCount;
 
 #ifdef TSYM_DEBUG_STRINGS
@@ -56,6 +56,18 @@ tsym::BasePtr::BasePtr(const BasePtr& other) :
     ++bp->refCount;
 }
 
+tsym::BasePtr::BasePtr(BasePtr&& other) noexcept :
+    bp(std::move(other.bp))
+{
+    other.bp = undefinedBaseForNoArgCtor().bp;
+    ++other.bp->refCount;
+
+#ifdef TSYM_DEBUG_STRINGS
+    prettyStr = std::move(other.prettyStr);
+    other.prettyStr = "Undefined";
+#endif
+}
+
 const tsym::BasePtr& tsym::BasePtr::operator = (const BasePtr& other)
 {
     const Base* const old = bp;
@@ -67,6 +79,26 @@ const tsym::BasePtr& tsym::BasePtr::operator = (const BasePtr& other)
 #endif
 
     ++bp->refCount;
+
+    if (--old->refCount == 0)
+        delete old;
+
+    return *this;
+}
+
+const tsym::BasePtr& tsym::BasePtr::operator = (BasePtr&& other)
+{
+    const Base* const old = bp;
+
+    bp = other.bp;
+
+    other.bp = undefinedBaseForNoArgCtor().bp;
+    ++other.bp->refCount;
+
+#ifdef TSYM_DEBUG_STRINGS
+    prettyStr = std::move(other.prettyStr);
+    other.prettyStr = "Undefined";
+#endif
 
     if (--old->refCount == 0)
         delete old;

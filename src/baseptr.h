@@ -16,7 +16,9 @@ namespace tsym {
             BasePtr();
             explicit BasePtr(const Base *base);
             BasePtr(const BasePtr& other);
-            const BasePtr& operator = (const BasePtr & other);
+            BasePtr(BasePtr&& other) noexcept;
+            const BasePtr& operator = (const BasePtr& other);
+            const BasePtr& operator = (BasePtr&& other);
             ~BasePtr();
 
             const Base *operator -> () const;
@@ -28,7 +30,7 @@ namespace tsym {
 
 #ifdef TSYM_DEBUG_STRINGS
             /* A member to be accessed by a gdb pretty printing plugin. As the class is immutable,
-             * it has to be defined in (copy/assignment) constructors only. */
+             * it has to be filled with content during initialization only. */
             std::string prettyStr;
 #endif
     };
