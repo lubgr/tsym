@@ -2,6 +2,7 @@
 #define TSYM_POWERNORMAL_H
 
 #include "symbolmap.h"
+#include "fraction.h"
 
 namespace tsym {
     class PowerNormal {

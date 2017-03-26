@@ -1,5 +1,4 @@
 
-#include <map>
 #include "symbolmap.h"
 #include "symbol.h"
 
