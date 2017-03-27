@@ -4,6 +4,7 @@
 #include <cassert>
 #include <map>
 #include "baseptr.h"
+#include "cache.h"
 
 namespace tsym {
     class SymbolMap {
@@ -11,13 +12,15 @@ namespace tsym {
          * replacing any BasePtr object with a temporary, unique Symbol. This replacement is saved
          * internally in a map for a back-replacement after further steps of normalization. */
         public:
+            SymbolMap();
+            SymbolMap(const SymbolMap& other) = delete;
+            const SymbolMap& operator = (const SymbolMap& rhs) = delete;
+
             BasePtr getTmpSymbolAndStore(const BasePtr& ptr);
             BasePtr replaceTmpSymbolsBackFrom(const BasePtr& ptr);
 
         private:
-            const BasePtr *getExisting(const BasePtr& orig);
-
-            std::map<unsigned, std::pair<BasePtr, BasePtr>> map;
+            Cache<BasePtr, BasePtr> cache;
     };
 }
 

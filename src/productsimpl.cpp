@@ -160,7 +160,7 @@ tsym::BasePtr tsym::ProductSimpl::trigSymbReplacement(Trigonometric::Type type, 
 
     assert(type == Trigonometric::Type::SIN || type == Trigonometric::Type::COS);
 
-    return Symbol::createTmpSymbol(nullptr, isPositive);
+    return Symbol::createTmpSymbol(isPositive);
 }
 
 tsym::BasePtr tsym::ProductSimpl::trigFunctionPowerReplacement(const BasePtr& pow,

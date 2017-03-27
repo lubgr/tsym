@@ -65,14 +65,9 @@ tsym::BasePtr tsym::Symbol::createPositive(const Name& name)
     return create(name, true);
 }
 
-tsym::BasePtr tsym::Symbol::createTmpSymbol(unsigned *counter, bool positive)
+tsym::BasePtr tsym::Symbol::createTmpSymbol(bool positive)
 {
-    unsigned newTmpCount = ++tmpCounter;
-
-    if (counter != nullptr)
-        *counter = newTmpCount;
-
-    return BasePtr(new Symbol(newTmpCount, positive));
+    return BasePtr(new Symbol(++tmpCounter, positive));
 }
 
 bool tsym::Symbol::isEqualDifferentBase(const BasePtr& other) const

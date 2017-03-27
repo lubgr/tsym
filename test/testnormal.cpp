@@ -15,7 +15,7 @@ TEST_GROUP(Normal)
 {
     const BasePtr undefined;
     BasePtr argToZero;
-    SymbolMap map;
+    SymbolMap *map;
     BasePtr pi;
 
     void setup()
@@ -25,7 +25,12 @@ TEST_GROUP(Normal)
                 Product::create(Numeric::mOne(), a, c, denom));
 
         pi = Constant::createPi();
-        map = SymbolMap();
+        map = new SymbolMap();
+    }
+
+    void teardown()
+    {
+        delete map;
     }
 };
 
@@ -116,7 +121,7 @@ TEST(Normal, powerWithNegNumEvalExp)
 TEST(Normal, simpleProduct)
 {
     const BasePtr orig = Product::create(a, Power::oneOver(b));
-    const Fraction frac = orig->normal(map);
+    const Fraction frac = orig->normal(*map);
 
     CHECK_EQUAL(a, frac.num());
     CHECK_EQUAL(b, frac.denom());
@@ -136,7 +141,7 @@ TEST(Normal, product)
     const BasePtr expectedDenom = Product::create(four, a);
     Fraction frac;
 
-    frac = orig->normal(map);
+    frac = orig->normal(*map);
 
     CHECK_EQUAL(expectedNum, frac.num());
     CHECK_EQUAL(expectedDenom, frac.denom());
@@ -218,13 +223,13 @@ TEST(Normal, replacementOfFunctionWithNumPowerArg)
     const BasePtr sqrtThree = Power::sqrt(three);
     const BasePtr sin = Trigonometric::createSin(sqrtThree);
     const BasePtr orig = Power::oneOver(sin);
-    const Fraction frac = orig->normal(map);
+    const Fraction frac = orig->normal(*map);
     BasePtr denom;
 
     CHECK_EQUAL(one, frac.num());
     CHECK(frac.denom()->isSymbol());
 
-    denom = map.replaceTmpSymbolsBackFrom(frac.denom());
+    denom = map->replaceTmpSymbolsBackFrom(frac.denom());
 
     CHECK_EQUAL(sin, denom);
 }

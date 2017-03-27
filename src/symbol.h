@@ -12,8 +12,7 @@ namespace tsym {
             static BasePtr create(const Name& name);
             static BasePtr createPositive(const std::string& name);
             static BasePtr createPositive(const Name& name);
-            /* Sets 'count' to the temporary symbol counter if not a nullptr: */
-            static BasePtr createTmpSymbol(unsigned *count, bool positive = false);
+            static BasePtr createTmpSymbol(bool positive = false);
 
             /* Implentations of pure virtual methods of Base. */
             bool isEqualDifferentBase(const BasePtr& other) const;

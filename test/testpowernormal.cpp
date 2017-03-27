@@ -12,7 +12,7 @@ using namespace tsym;
 
 TEST_GROUP(PowerNormal)
 {
-    SymbolMap map;
+    SymbolMap *map;
     const BasePtr undefined;
     BasePtr zeroByExpansion;
     BasePtr zeroByNormal;
@@ -32,17 +32,19 @@ TEST_GROUP(PowerNormal)
         /* a*b + a*c - a*(b + c) is zero after expansion. */
         zeroByExpansion = Sum::create(Product::create(a, b), Product::create(a, c),
                 Product::minus(a, Sum::create(b, c)));
+
+        map = new SymbolMap();
     }
 
     void teardown()
     {
-        map = SymbolMap();
+        delete map;
     }
 };
 
 TEST(PowerNormal, unspecifiedInput)
 {
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     Fraction res;
 
     res = pn.normal();
@@ -53,7 +55,7 @@ TEST(PowerNormal, unspecifiedInput)
 
 TEST(PowerNormal, powerWithPosIntExp)
 {
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     Fraction res;
 
     pn.setBase(a);
@@ -67,7 +69,7 @@ TEST(PowerNormal, powerWithPosIntExp)
 
 TEST(PowerNormal, powerWithPosNegExp)
 {
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     Fraction res;
 
     pn.setBase(a);
@@ -84,7 +86,7 @@ TEST(PowerNormal, powerWithSymbolExp)
 {
     const BasePtr orig = Power::create(abSum, c);
     BasePtr backReplaced;
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     Fraction res;
 
     pn.setBase(Sum::create(a, b));
@@ -95,7 +97,7 @@ TEST(PowerNormal, powerWithSymbolExp)
     CHECK_EQUAL(one, res.denom());
     CHECK(res.num()->isSymbol());
 
-    backReplaced = map.replaceTmpSymbolsBackFrom(res.num());
+    backReplaced = map->replaceTmpSymbolsBackFrom(res.num());
 
     CHECK_EQUAL(orig, backReplaced);
 }
@@ -104,7 +106,7 @@ TEST(PowerNormal, fractionBaseSymbolExp)
     /* (3/4)^a becomes tmp1/1. */
 {
     const BasePtr base = Numeric::create(3, 4);
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     Fraction res;
 
     pn.setBase(base);
@@ -124,7 +126,7 @@ TEST(PowerNormal, fractionBaseNumericallyEvaluableNegExp)
     const BasePtr expectedDenom = Power::create(three, sinOne);
     const BasePtr exp = Product::minus(sinOne);
     const BasePtr base = Numeric::create(3, 4);
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     BasePtr backReplaced;
     Fraction res;
 
@@ -136,11 +138,11 @@ TEST(PowerNormal, fractionBaseNumericallyEvaluableNegExp)
     CHECK(res.num()->isSymbol());
     CHECK(res.denom()->isSymbol());
 
-    backReplaced = map.replaceTmpSymbolsBackFrom(res.num());
+    backReplaced = map->replaceTmpSymbolsBackFrom(res.num());
 
     CHECK_EQUAL(expectedNum, backReplaced);
 
-    backReplaced = map.replaceTmpSymbolsBackFrom(res.denom());
+    backReplaced = map->replaceTmpSymbolsBackFrom(res.denom());
 
     CHECK_EQUAL(expectedDenom, backReplaced);
 }
@@ -151,7 +153,7 @@ TEST(PowerNormal, fractionBaseNumericallyEvaluablePosExp)
     const BasePtr exp = Power::sqrt(two);
     const BasePtr expectedNum = Power::create(two, exp);
     const BasePtr expectedDenom = Power::create(five, exp);
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     BasePtr backReplaced;
     Fraction res;
 
@@ -163,11 +165,11 @@ TEST(PowerNormal, fractionBaseNumericallyEvaluablePosExp)
     CHECK(res.num()->isSymbol());
     CHECK(res.denom()->isSymbol());
 
-    backReplaced = map.replaceTmpSymbolsBackFrom(res.num());
+    backReplaced = map->replaceTmpSymbolsBackFrom(res.num());
 
     CHECK_EQUAL(expectedNum, backReplaced);
 
-    backReplaced = map.replaceTmpSymbolsBackFrom(res.denom());
+    backReplaced = map->replaceTmpSymbolsBackFrom(res.denom());
 
     CHECK_EQUAL(expectedDenom, backReplaced);
 }
@@ -179,7 +181,7 @@ TEST(PowerNormal, symbolicFractionBaseNumericallyEvaluablePosExp)
     const BasePtr exp = Power::sqrt(two);
     const BasePtr expectedNum = Power::create(a, exp);
     const BasePtr expectedDenom = Power::create(b, exp);
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     BasePtr backReplaced;
     Fraction res;
 
@@ -191,11 +193,11 @@ TEST(PowerNormal, symbolicFractionBaseNumericallyEvaluablePosExp)
     CHECK(res.num()->isSymbol());
     CHECK(res.denom()->isSymbol());
 
-    backReplaced = map.replaceTmpSymbolsBackFrom(res.num());
+    backReplaced = map->replaceTmpSymbolsBackFrom(res.num());
 
     CHECK_EQUAL(expectedNum, backReplaced);
 
-    backReplaced = map.replaceTmpSymbolsBackFrom(res.denom());
+    backReplaced = map->replaceTmpSymbolsBackFrom(res.denom());
 
     CHECK_EQUAL(expectedDenom, backReplaced);
 }
@@ -205,7 +207,7 @@ TEST(PowerNormal, powerWithMinusSymbolExp)
 {
     const BasePtr minusC = Product::minus(c);
     BasePtr backReplaced;
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     Fraction res;
 
     pn.setBase(abSum);
@@ -216,7 +218,7 @@ TEST(PowerNormal, powerWithMinusSymbolExp)
     CHECK_EQUAL(one, res.denom());
     CHECK(res.num()->isSymbol());
 
-    backReplaced = map.replaceTmpSymbolsBackFrom(res.num());
+    backReplaced = map->replaceTmpSymbolsBackFrom(res.num());
 
     CHECK_EQUAL(Power::create(abSum, minusC), backReplaced);
 }
@@ -225,7 +227,7 @@ TEST(PowerNormal, powerWithPiExp)
     /* a^Pi becomes tmp/1 with tmp = a^Pi. */
 {
     BasePtr backReplaced;
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     Fraction res;
 
     pn.setBase(a);
@@ -236,7 +238,7 @@ TEST(PowerNormal, powerWithPiExp)
     CHECK_EQUAL(one, res.denom());
     CHECK(res.num()->isSymbol());
 
-    backReplaced = map.replaceTmpSymbolsBackFrom(res.num());
+    backReplaced = map->replaceTmpSymbolsBackFrom(res.num());
 
     CHECK_EQUAL(Power::create(a, pi), backReplaced);
 }
@@ -246,7 +248,7 @@ TEST(PowerNormal, powerWithNegNumEvalExp)
 {
     const BasePtr pos = Product::create(three, pi, Power::sqrt(two));
     BasePtr backReplaced;
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     Fraction res;
 
     pn.setBase(a);
@@ -257,7 +259,7 @@ TEST(PowerNormal, powerWithNegNumEvalExp)
     CHECK_EQUAL(one, res.num());
     CHECK(res.denom()->isSymbol());
 
-    backReplaced = map.replaceTmpSymbolsBackFrom(res.denom());
+    backReplaced = map->replaceTmpSymbolsBackFrom(res.denom());
 
     CHECK_EQUAL(Power::create(a, pos), backReplaced);
 }
@@ -265,14 +267,14 @@ TEST(PowerNormal, powerWithNegNumEvalExp)
 TEST(PowerNormal, rationalBaseZero)
 {
     BasePtr backReplaced;
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     Fraction res;
 
     pn.setBase(zeroByNormal);
     pn.setExponent(pi);
 
     res = pn.normal();
-    backReplaced = map.replaceTmpSymbolsBackFrom(res.eval());
+    backReplaced = map->replaceTmpSymbolsBackFrom(res.eval());
 
     CHECK_EQUAL(zero, backReplaced);
 }
@@ -281,14 +283,14 @@ TEST(PowerNormal, rationalBaseOne)
 {
     const BasePtr base = Sum::create(zeroByNormal, one);
     BasePtr backReplaced;
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     Fraction res;
 
     pn.setBase(base);
     pn.setExponent(pi);
 
     res = pn.normal();
-    backReplaced = map.replaceTmpSymbolsBackFrom(res.eval());
+    backReplaced = map->replaceTmpSymbolsBackFrom(res.eval());
 
     CHECK_EQUAL(one, backReplaced);
 }
@@ -296,7 +298,7 @@ TEST(PowerNormal, rationalBaseOne)
 TEST(PowerNormal, rationalBaseUndefined)
 {
     const BasePtr base = Power::oneOver(zeroByNormal);
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     BasePtr res;
 
     pn.setBase(base);
@@ -310,7 +312,7 @@ TEST(PowerNormal, rationalBaseUndefined)
 TEST(PowerNormal, rationalBaseUndefinedByExpansion)
 {
     const BasePtr base = Power::oneOver(zeroByExpansion);
-    PowerNormal pn(map);
+    PowerNormal pn(*map);
     BasePtr res;
 
     pn.setBase(base);

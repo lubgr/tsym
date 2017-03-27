@@ -7,10 +7,9 @@
 
 namespace tsym {
     template<class S, class T> class Cache {
-        /* Cache for key-value-pairs with std::hash and std::equal_to specializations. They shall be
-         * instantiated as local static variables (anything else doesn't make sense) and serve as a
-         * lookup-pool for expensive transformations and symbols. The latter enables usage of the
-         * same Base object, when identicval Symbol instances are created, which speeds up an
+        /* Cache for key-value-pairs with std::hash and std::equal_to specializations. It serves as
+         * a lookup-pool for expensive transformations and/or symbols. The latter enables usage of
+         * the same Base object, when identical Symbol instances are created, which speeds up an
          * equality comparison. */
         public:
             Cache() {};
@@ -27,6 +26,11 @@ namespace tsym {
                 const auto lookup = rep.find(key);
 
                 return lookup != rep.end() ? &lookup->second : nullptr;
+            }
+
+            const std::unordered_map<S, T>& getUnderlyingMap() const
+            {
+                return rep;
             }
 
         private:
