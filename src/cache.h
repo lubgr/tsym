@@ -35,7 +35,6 @@ namespace tsym {
 
         private:
             std::unordered_map<S, T> rep;
-            std::string description;
     };
 }
 
