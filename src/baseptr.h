@@ -2,7 +2,6 @@
 #define TSYM_BASEPTR_H
 
 #include <functional>
-#include <memory>
 
 namespace tsym { class Base; }
 
@@ -15,13 +14,17 @@ namespace tsym {
             /* Creates an Undefined Base class: */
             BasePtr();
             explicit BasePtr(const Base *base);
-            explicit BasePtr(const std::shared_ptr<const Base>& rep);
+            BasePtr(const BasePtr& other);
+            BasePtr(BasePtr&& other) noexcept;
+            const BasePtr& operator = (const BasePtr& other);
+            const BasePtr& operator = (BasePtr&& other);
+            ~BasePtr();
 
             const Base *operator -> () const;
             const Base& operator * () const;
 
         private:
-            std::shared_ptr<const Base> rep;
+            const Base* bp;
     };
 
     std::ostream& operator << (std::ostream& stream, const BasePtr& ptr);

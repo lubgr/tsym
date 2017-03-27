@@ -1,7 +1,6 @@
 #ifndef TSYM_BASE_H
 #define TSYM_BASE_H
 
-#include <memory>
 #include "number.h"
 #include "baseptrlist.h"
 #include "fraction.h"
@@ -10,7 +9,7 @@
 namespace tsym { class SymbolMap; }
 
 namespace tsym {
-    class Base : public std::enable_shared_from_this<const Base> {
+    class Base {
         /* Abstract base class for all mathematical classes (Power, Product etc.). References to
          * this class are managed by intrusive reference counting inside of the BasePtr class.
          * Objects of this type will be passed around most of the time.
@@ -26,6 +25,8 @@ namespace tsym {
          * Symbol or Constant. This clutters the interface a bit, but provides easy access to all
          * information without using casts or other runtime informations. */
         public:
+            friend class BasePtr;
+
             virtual bool isEqualDifferentBase(const BasePtr& other) const = 0;
             virtual bool sameType(const BasePtr& other) const = 0;
             virtual Number numericEval() const = 0;
@@ -77,11 +78,11 @@ namespace tsym {
             BasePtr diff(const BasePtr& symbol) const;
             const BasePtrList& operands() const;
 
+        protected:
             Base();
             Base(const BasePtrList& operands);
             virtual ~Base();
 
-        protected:
             bool isEqualByTypeAndOperands(const BasePtr& other) const;
             void setDebugString();
 
@@ -91,6 +92,7 @@ namespace tsym {
             BasePtr normalViaCache() const;
             BasePtr normalWithoutCache() const;
 
+            mutable unsigned refCount;
 #ifdef TSYM_DEBUG_STRINGS
             /* A member to be accessed by a gdb pretty printing plugin. As the class is immutable,
              * it has to be filled with content during initialization only. */

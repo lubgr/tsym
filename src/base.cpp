@@ -9,11 +9,13 @@
 #include "printer.h"
 #include "logging.h"
 
-tsym::Base::Base()
+tsym::Base::Base() :
+    refCount(0)
 {}
 
 tsym::Base::Base(const BasePtrList& operands) :
-    ops(operands)
+    ops(operands),
+    refCount(0)
 {}
 
 tsym::Base::~Base() {}
@@ -184,8 +186,7 @@ const tsym::Name& tsym::Base::name() const
 
 tsym::BasePtr tsym::Base::clone() const
 {
-    return BasePtr(shared_from_this());
-    // return BasePtr(this);
+    return BasePtr(this);
 }
 
 tsym::BasePtr tsym::Base::normal() const
@@ -253,6 +254,10 @@ void tsym::Base::setDebugString()
     /* When this class is instantiated, the reference count is zero. Construction and
      * destruction of a BasePtr will then delete the object, to circumvent this, we artificially
      * increment the reference count temporarily here. */
+    ++refCount;
+
     prettyStr = Printer(BasePtr(this)).getStr();
+
+    --refCount;
 #endif
 }
