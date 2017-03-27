@@ -85,7 +85,7 @@ bool tsym::Base::isConstant() const
 
 bool tsym::Base::isEqual(const BasePtr& other) const
 {
-    return this == other.base() || isEqualDifferentBase(other);
+    return this == &*other || isEqualDifferentBase(other);
 }
 
 bool tsym::Base::isDifferent(const BasePtr& other) const

@@ -178,7 +178,7 @@ const tsym::Trigonometric *tsym::Trigonometric::tryCast(const BasePtr& arg)
 {
     const Trigonometric *cast;
 
-    cast = dynamic_cast<const Trigonometric*>(arg.base());
+    cast = dynamic_cast<const Trigonometric*>(&*arg);
 
     assert(cast == nullptr || arg->isFunction());
 

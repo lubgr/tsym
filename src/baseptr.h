@@ -22,7 +22,6 @@ namespace tsym {
 
             const Base *operator -> () const;
             const Base& operator * () const;
-            const Base *base() const;
 
         private:
             const Base* bp;

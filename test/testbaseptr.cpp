@@ -26,7 +26,7 @@ TEST(BasePtr, initWithNullPointer)
 
 TEST(BasePtr, pointerAccess)
 {
-    const Base *base = ten.base();
+    const Base *base = &*ten;
 
     POINTERS_EQUAL(base, &*ten);
 }

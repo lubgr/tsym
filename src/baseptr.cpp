@@ -98,11 +98,6 @@ const tsym::Base& tsym::BasePtr::operator* () const
     return *bp;
 }
 
-const tsym::Base *tsym::BasePtr::base() const
-{
-    return bp;
-}
-
 std::ostream& tsym::operator << (std::ostream& stream, const BasePtr& ptr)
 {
     Printer printer(ptr);
