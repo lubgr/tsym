@@ -84,6 +84,7 @@ namespace tsym {
             virtual ~Base();
 
             bool isEqualByTypeAndOperands(const BasePtr& other) const;
+            void setDebugString();
 
             const BasePtrList ops;
 
@@ -92,6 +93,11 @@ namespace tsym {
             BasePtr normalWithoutCache() const;
 
             mutable unsigned refCount;
+#ifdef TSYM_DEBUG_STRINGS
+            /* A member to be accessed by a gdb pretty printing plugin. As the class is immutable,
+             * it has to be filled with content during initialization only. */
+            std::string prettyStr;
+#endif
     };
 }
 

@@ -17,6 +17,8 @@ tsym::Power::Power(const BasePtr& base, const BasePtr& exponent) :
     expRef(ops.back())
 {
     assert(ops.size() == 2);
+
+    setDebugString();
 }
 
 tsym::Power::~Power() {}

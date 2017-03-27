@@ -10,7 +10,9 @@
 
 tsym::Sum::Sum(const BasePtrList& summands) :
     Base(summands)
-{}
+{
+    setDebugString();
+}
 
 tsym::Sum::~Sum() {}
 

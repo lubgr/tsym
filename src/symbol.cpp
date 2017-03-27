@@ -9,12 +9,16 @@ unsigned tsym::Symbol::tmpCounter = 0;
 tsym::Symbol::Symbol(const Name& name, bool positive) :
     symbolName(name),
     positive(positive)
-{}
+{
+    setDebugString();
+}
 
 tsym::Symbol::Symbol(unsigned tmpId, bool positive) :
     symbolName(tmpId),
     positive(positive)
-{}
+{
+    setDebugString();
+}
 
 tsym::Symbol::~Symbol()
 {

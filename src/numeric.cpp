@@ -4,7 +4,9 @@
 
 tsym::Numeric::Numeric(const Number& number) :
     number(number)
-{}
+{
+    setDebugString();
+}
 
 tsym::Numeric::~Numeric() {}
 

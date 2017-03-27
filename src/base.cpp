@@ -6,6 +6,7 @@
 #include "symbolmap.h"
 #include "product.h"
 #include "cache.h"
+#include "printer.h"
 #include "logging.h"
 
 tsym::Base::Base() :
@@ -245,4 +246,18 @@ bool tsym::Base::isEqualByTypeAndOperands(const BasePtr& other) const
         return ops.isEqual(other->ops);
     else
         return false;
+}
+
+void tsym::Base::setDebugString()
+{
+#ifdef TSYM_DEBUG_STRINGS
+    /* When this class is instantiated, the reference count is zero. Construction and
+     * destruction of a BasePtr will then delete the object, to circumvent this, we artificially
+     * increment the reference count temporarily here. */
+    ++refCount;
+
+    prettyStr = Printer(BasePtr(this)).getStr();
+
+    --refCount;
+#endif
 }

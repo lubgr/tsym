@@ -39,7 +39,9 @@ tsym::Trigonometric::Trigonometric(const BasePtrList& args, Type type) :
     /* Points to ops.front() except for atan2: */
     arg2(ops.back()),
     type(type)
-{}
+{
+    setDebugString();
+}
 
 tsym::Trigonometric::~Trigonometric() {}
 

@@ -4,7 +4,10 @@
 #include "numeric.h"
 #include "logging.h"
 
-tsym::Undefined::Undefined() {}
+tsym::Undefined::Undefined()
+{
+    setDebugString();
+}
 
 tsym::Undefined::~Undefined() {}
 

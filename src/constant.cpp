@@ -7,7 +7,9 @@
 tsym::Constant::Constant(Type type, const Name& name) :
     type(type),
     constantName(name)
-{}
+{
+    setDebugString();
+}
 
 tsym::BasePtr tsym::Constant::createPi()
 {

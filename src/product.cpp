@@ -11,7 +11,9 @@
 
 tsym::Product::Product(const BasePtrList& factors) :
     Base(factors)
-{}
+{
+    setDebugString();
+}
 
 tsym::Product::~Product() {}
 
