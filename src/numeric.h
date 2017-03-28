@@ -44,7 +44,7 @@ namespace tsym {
             int degree(const BasePtr& variable) const;
 
         private:
-            Numeric(const Number& number);
+            explicit Numeric(const Number& number);
             Numeric(const Numeric& other);
             Numeric& operator = (Numeric const& other);
             ~Numeric();
