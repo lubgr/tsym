@@ -34,8 +34,8 @@ namespace tsym {
 
         private:
             explicit Sum(const BasePtrList& summands);
-            Sum(const Sum& other);
-            Sum& operator = (const Sum& other);
+            Sum(const Sum& other) = delete;
+            Sum& operator = (const Sum& other) = delete;
             ~Sum();
 
             static BasePtr createSimplifiedSum(const BasePtrList& summands);

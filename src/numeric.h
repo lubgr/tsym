@@ -45,8 +45,8 @@ namespace tsym {
 
         private:
             explicit Numeric(const Number& number);
-            Numeric(const Numeric& other);
-            Numeric& operator = (Numeric const& other);
+            Numeric(const Numeric& other) = delete;
+            Numeric& operator = (Numeric const& other) = delete;
             ~Numeric();
 
             const Number number;

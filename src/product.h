@@ -41,8 +41,8 @@ namespace tsym {
 
         private:
             explicit Product(const BasePtrList& factors);
-            Product(const Product& other);
-            Product& operator = (Product const& other);
+            Product(const Product& other) = delete;
+            Product& operator = (Product const& other) = delete;
             ~Product();
 
             static BasePtr createSimplifiedProduct(const BasePtrList& factors);

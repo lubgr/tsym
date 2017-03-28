@@ -30,8 +30,8 @@ namespace tsym {
         private:
             enum class Type { PI, E };
             Constant(Type type, const Name& name);
-            Constant(const Constant& other);
-            Constant& operator = (const Constant& other);
+            Constant(const Constant& other) = delete;
+            Constant& operator = (const Constant& other) = delete;
             ~Constant();
 
             const Type type;

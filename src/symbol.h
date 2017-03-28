@@ -32,8 +32,8 @@ namespace tsym {
         private:
             Symbol(const Name& name, bool positive);
             Symbol(unsigned tmpId, bool positive);
-            Symbol(const Symbol& other);
-            Symbol& operator = (const Symbol& other);
+            Symbol(const Symbol& other) = delete;
+            Symbol& operator = (const Symbol& other) = delete;
             ~Symbol();
 
             static BasePtr create(const Name& name, bool positive);

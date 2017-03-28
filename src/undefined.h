@@ -30,8 +30,8 @@ namespace tsym {
 
         private:
             Undefined();
-            Undefined(const Undefined& other);
-            Undefined& operator = (Undefined const& other);
+            Undefined(const Undefined& other) = delete;
+            Undefined& operator = (Undefined const& other) = delete;
             ~Undefined();
     };
 }

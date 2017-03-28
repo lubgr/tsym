@@ -38,8 +38,8 @@ namespace tsym {
 
         private:
             Power(const BasePtr& base, const BasePtr& exponent);
-            Power(const Power& other);
-            Power& operator = (Power const& other);
+            Power(const Power& other) = delete;
+            Power& operator = (Power const& other) = delete;
             ~Power();
 
             static BasePtr createNotUndefined(const BasePtr& base, const BasePtr& exponent);
