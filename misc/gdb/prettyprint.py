@@ -15,18 +15,6 @@ if len(searchPath) > 0:
 else:
     gdb.write('Couldn\'t find path to include libstd++ pretty printers\n')
 
-class IntPrinter:
-    def __init__(self, val):
-        self.val = val
-        self.rep = self.val['rep']
-        self.overflowed = self.val['overflow']
-
-    def to_string(self):
-        if self.overflowed:
-            return "Overflowed"
-        else:
-            return str(self.rep)
-
 class NumberPrinter:
     def __init__(self, val):
         self.val = val
@@ -65,8 +53,6 @@ def lookup(val):
         return VarPrinter(val)
     elif typeStr in lookupVariations('Number'):
         return NumberPrinter(val)
-    elif typeStr in lookupVariations('Int'):
-        return IntPrinter(val)
     elif typeStr in lookupVariations('BasePtrList'):
         return StdListPrinter('std::__cxx11::list', val['list'])
     elif 'std::__cxx11::list' in typeStr:
