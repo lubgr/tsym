@@ -24,7 +24,11 @@ namespace tsym {
             BasePtrList(const BasePtr& ptr1, const BasePtr& ptr2);
             BasePtrList(const BasePtr& ptr, const BasePtrList& l);
             BasePtrList(const BasePtrList& l1, const BasePtrList& l2);
-            BasePtrList(const std::initializer_list<BasePtr>& list);
+            BasePtrList(std::initializer_list<BasePtr> list);
+            BasePtrList(const BasePtrList& other) = default;
+            BasePtrList(BasePtrList&& other) = default;
+            BasePtrList& operator = (const BasePtrList& rhs) = default;
+            BasePtrList& operator = (BasePtrList&& rhs) = default;
 
             void clear();
             void push_front(const BasePtr& ptr);
