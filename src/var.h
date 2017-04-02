@@ -16,7 +16,7 @@ namespace tsym {
          * normalization, expansion, requesting the type etc.). Numbers can be converted to plain
          * double or, if they fit, into integers (numerator and/or denominator). */
         public:
-            enum class Sign { POSITIVE = 1 };
+            enum class Sign : bool { POSITIVE = 1 };
             enum class Type { SYMBOL, INT, FRACTION, DOUBLE, CONSTANT, UNDEFINED, FUNCTION, SUM,
                 PRODUCT, POWER };
 
