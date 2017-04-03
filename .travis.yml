@@ -52,4 +52,5 @@ script:
 
 after_success:
   - lcov -c --no-external -d build/src -o build/coverage.info
+  - sed -i 's/\(^SF:.*\)build\/src/\1src/' build/coverage.info
   - coveralls-lcov build/coverage.info
