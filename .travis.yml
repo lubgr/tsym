@@ -51,5 +51,5 @@ script:
   - ./build/runtests
 
 after_success:
-  - lcov --compat-libtool --directory build/ --capture --output-file build/coverage.info
+  - lcov -c --no-external -d build/src -o build/coverage.info
   - coveralls-lcov build/coverage.info
