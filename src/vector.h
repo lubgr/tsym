@@ -13,7 +13,9 @@ namespace tsym {
             explicit Vector(size_t size);
             explicit Vector(std::initializer_list<Var> data);
             Vector(const Vector& other);
+            Vector(Vector&& other);
             Vector& operator = (const Vector& rhs);
+            Vector& operator = (Vector&& rhs);
             ~Vector();
 
             Var& operator() (size_t i);
@@ -35,6 +37,7 @@ namespace tsym {
 
         private:
             void allocateMem();
+            void deleteMem();
             void copyValuesFromVector(const Vector& other);
 
             Var *data;

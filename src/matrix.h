@@ -13,7 +13,9 @@ namespace tsym {
             Matrix(size_t nRow, size_t nCol);
             explicit Matrix(std::initializer_list<std::initializer_list<Var>> data);
             Matrix(const Matrix& other);
+            Matrix(Matrix&& other);
             Matrix& operator = (const Matrix& rhs);
+            Matrix& operator = (Matrix&& rhs);
             ~Matrix();
 
             Var& operator() (size_t i, size_t j);

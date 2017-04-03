@@ -83,6 +83,16 @@ tsym::Matrix::Matrix(const Matrix& other) :
     copyValuesFromMatrix(other);
 }
 
+tsym::Matrix::Matrix(Matrix&& other) :
+    data(other.data),
+    nRow(other.nRow),
+    nCol(other.nCol)
+{
+    other.nRow = 0;
+    other.nCol = 0;
+    other.data = nullptr;
+}
+
 tsym::Matrix& tsym::Matrix::operator = (const Matrix& rhs)
 {
     if (this == &rhs)
@@ -96,6 +106,21 @@ tsym::Matrix& tsym::Matrix::operator = (const Matrix& rhs)
     }
 
     copyValuesFromMatrix(rhs);
+
+    return *this;
+}
+
+tsym::Matrix& tsym::Matrix::operator = (Matrix&& rhs)
+{
+    deleteMem();
+
+    nRow = rhs.nRow;
+    nCol = rhs.nCol;
+    data = rhs.data;
+
+    rhs.nRow = 0;
+    rhs.nCol = 0;
+    rhs.data = nullptr;
 
     return *this;
 }

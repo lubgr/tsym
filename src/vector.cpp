@@ -52,6 +52,14 @@ tsym::Vector::Vector(const Vector& other) :
     copyValuesFromVector(other);
 }
 
+tsym::Vector::Vector(Vector&& other) :
+    data(other.data),
+    dim(other.dim)
+{
+    other.data = nullptr;
+    other.dim = 0;
+}
+
 tsym::Vector& tsym::Vector::operator = (const Vector& rhs)
 {
     if (this == &rhs)
@@ -68,16 +76,34 @@ tsym::Vector& tsym::Vector::operator = (const Vector& rhs)
     return *this;
 }
 
+tsym::Vector& tsym::Vector::operator = (Vector&& rhs)
+{
+    deleteMem();
+
+    dim = rhs.dim;
+    data = rhs.data;
+
+    rhs.data = nullptr;
+    rhs.dim = 0;
+
+    return *this;
+}
+
 tsym::Vector::~Vector()
 {
-    if (dim != 0)
-        delete[] data;
+    deleteMem();
 }
 
 void tsym::Vector::allocateMem()
 {
     if (dim != 0)
         data = new Var[dim];
+}
+
+void tsym::Vector::deleteMem()
+{
+    if (dim != 0)
+        delete[] data;
 }
 
 void tsym::Vector::copyValuesFromVector(const Vector& other)
