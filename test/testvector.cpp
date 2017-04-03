@@ -144,6 +144,16 @@ TEST(Vector, selfAssignment)
     checkAbcVector(abcVec);
 }
 
+TEST(Vector, constructWithInitializerList)
+{
+    const Vector vec { a, b, c, 1, 2, 3, 4 };
+
+    CHECK_EQUAL(7, vec.size());
+    CHECK_EQUAL(a, vec(0));
+    CHECK_EQUAL(b, vec(1));
+    CHECK_EQUAL(4, vec(6));
+}
+
 TEST(Vector, assignmentOperatorEqualSize)
 {
     Vector vec(3);

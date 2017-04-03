@@ -49,6 +49,32 @@ tsym::Matrix::Matrix(size_t nRow, size_t nCol) :
     allocateMem();
 }
 
+tsym::Matrix::Matrix(std::initializer_list<std::initializer_list<Var>> data) :
+    nRow(data.size())
+{
+    size_t columnCount = data.begin()->size();
+    size_t i = 0;
+    size_t j = 0;
+
+    for (const auto& row : data) {
+        if (columnCount != row.size()) {
+            TSYM_ERROR("Matrix initialization with varying column number");
+            columnCount = row.size() >= columnCount ? row.size() : columnCount;
+        }
+    }
+
+    nCol = columnCount;
+
+    allocateMem();
+
+    for (const auto& row : data) {
+        j = 0;
+        for (const auto& item : row)
+            (this->data)[i][j++] = item;
+        ++i;
+    }
+}
+
 tsym::Matrix::Matrix(const Matrix& other) :
     nRow(other.nRow),
     nCol(other.nCol)

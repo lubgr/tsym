@@ -1,6 +1,7 @@
 #ifndef TSYM_MATRIX_H
 #define TSYM_MATRIX_H
 
+#include <initializer_list>
 #include "var.h"
 #include "vector.h"
 
@@ -10,6 +11,7 @@ namespace tsym {
         public:
             Matrix();
             Matrix(size_t nRow, size_t nCol);
+            explicit Matrix(std::initializer_list<std::initializer_list<Var>> data);
             Matrix(const Matrix& other);
             Matrix& operator = (const Matrix& rhs);
             ~Matrix();

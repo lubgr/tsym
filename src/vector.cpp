@@ -34,6 +34,17 @@ tsym::Vector::Vector(size_t size) :
     allocateMem();
 }
 
+tsym::Vector::Vector(std::initializer_list<Var> data) :
+    dim(data.size())
+{
+    size_t i = 0;
+
+    allocateMem();
+
+    for (const auto& item : data)
+        this->data[i++] = item;
+}
+
 tsym::Vector::Vector(const Vector& other) :
     dim(other.dim)
 {

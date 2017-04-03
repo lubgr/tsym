@@ -1,16 +1,17 @@
 #ifndef TSYM_VECTOR_H
 #define TSYM_VECTOR_H
 
+#include <initializer_list>
 #include "var.h"
 
 namespace tsym {
     class Vector {
         /* This simple vector class wraps around a primitive pointer to dynamically allocated
-         * storage, while the memory managment is hidden. This class has to be understood as a
-         * column vector, there is no such thing as a row vector. */
+         * storage, while the memory managment is hidden. */
         public:
             Vector();
             explicit Vector(size_t size);
+            explicit Vector(std::initializer_list<Var> data);
             Vector(const Vector& other);
             Vector& operator = (const Vector& rhs);
             ~Vector();

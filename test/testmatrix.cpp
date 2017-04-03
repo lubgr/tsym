@@ -109,6 +109,36 @@ TEST(Matrix, assignmentSmallerSize)
     checkMatrixM(otherM);
 }
 
+TEST(Matrix, constructionWithInitializerList)
+{
+    const Matrix m {{ a, b, c }, { 1, 2, 3 }, { b, b, 0 }};
+
+    CHECK_EQUAL(3, m.rowSize());
+    CHECK_EQUAL(3, m.colSize());
+
+    CHECK_EQUAL(a, m(0, 0));
+    CHECK_EQUAL(2, m(1, 1));
+    CHECK_EQUAL(b, m(2, 1));
+}
+
+TEST(Matrix, invalidConstructtionWithInitializerList)
+{
+    disableLog();
+    const Matrix m {{ a, b, c }, { 2 }, { 0, 0, 0, b, 0 }};
+    enableLog();
+
+    CHECK_EQUAL(3, m.rowSize());
+    CHECK_EQUAL(5, m.colSize());
+
+    CHECK_EQUAL(c, m(0, 2));
+    CHECK_EQUAL(2, m(1, 0));
+    CHECK_EQUAL(b, m(2, 3));
+    CHECK_EQUAL(0, m(2, 4));
+
+    CHECK_EQUAL(0, m(0, 4));
+    CHECK_EQUAL(0, m(1, 4));
+}
+
 TEST(Matrix, retainIndexOutOfRangeConst)
 {
     const Matrix constM(m);
