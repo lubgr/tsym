@@ -23,6 +23,7 @@ before_install:
   - scons CXX=g++-6 PYVERSION=3.4m
   - sudo scons install CXX=g++-6 PYVERSION=3.4m PREFIX=/usr/
   - cd ..
+  - gem install coveralls-lcov
 
 addons:
   apt:
@@ -31,6 +32,7 @@ addons:
     packages:
       - g++-5
       - g++-6
+      - lcov
 
 matrix:
   include:
@@ -47,3 +49,7 @@ script:
   - cat build/src/buildinfo.h
   - scons CXX=$COMPILER LIBS='-lCppUTest -ltsym -lplic -lpython3.4m -lgmp' test
   - ./build/runtests
+
+after_success:
+  - lcov --compat-libtool --directory build/ --capture --output-file build/coverage.info
+  - coveralls-lcov build/coverage.info
