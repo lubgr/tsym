@@ -9,6 +9,7 @@ using namespace tsym;
 
 TEST_GROUP(NumPowerSimpl)
 {
+    Int defaultMaxPrimeLimit;
     NumPowerSimpl nps;
     Number half;
     Number third;
@@ -19,12 +20,16 @@ TEST_GROUP(NumPowerSimpl)
         half = Number(1, 2);
         third = Number(1, 3);
         TOL = 1.e-10;
+
+        defaultMaxPrimeLimit = NumPowerSimpl::getMaxPrimeResolution();
     }
 
     void teardown()
     {
         nps = NumPowerSimpl();
         enableLog();
+
+        NumPowerSimpl::setMaxPrimeResolution(defaultMaxPrimeLimit);
     }
 
     void check(const Number& preFac, const Number& base, const Number& exp)
@@ -423,15 +428,23 @@ TEST(NumPowerSimpl, largePlainIntBasePosExp)
     const Number large(std::numeric_limits<int>::max() - 5);
     const Number exp(9, 4);
 
+    nps.setMaxPrimeResolution(100);
     nps.setPower(large, exp);
 
     check(1, large, exp);
+
+    nps.setMaxPrimeResolution(std::numeric_limits<int>::max());
+    nps.setPower(large, exp);
+
+    check(Number(Int("4611685992657584164")), large, Number(1, 4));
 }
 
 TEST(NumPowerSimpl, largePosPreFac)
 {
     const Number large = Number(std::numeric_limits<int>::max() - 111);
     const Number exp(4, 3);
+
+    nps.setMaxPrimeResolution(10000);
 
     nps.setPower(3, exp);
     nps.setPreFac(large);

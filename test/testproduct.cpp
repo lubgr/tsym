@@ -794,6 +794,8 @@ TEST(Product, numPowEqualDenomInMixedSignExp)
     const BasePtr expected = Power::create(Numeric::create(7, 3125), posExp);
     BasePtr result;
 
+    NumPowerSimpl::setMaxPrimeResolution(100);
+
     result = Product::create(f1, f2);
 
     CHECK(result->isProduct());
