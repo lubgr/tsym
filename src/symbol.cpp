@@ -129,6 +129,11 @@ size_t tsym::Symbol::hash() const
     return nameHash ^ (signHash << 1);
 }
 
+unsigned int tsym::Symbol::complexity() const
+{
+    return 5; 
+}
+
 bool tsym::Symbol::isSymbol() const
 {
     return true;

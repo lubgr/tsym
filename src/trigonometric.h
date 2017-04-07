@@ -31,6 +31,7 @@ namespace tsym {
             BasePtr subst(const BasePtr& from, const BasePtr& to) const;
             bool isPositive() const;
             bool isNegative() const;
+            unsigned int complexity() const;
 
         private:
             Trigonometric(const BasePtrList& args, Type type);

@@ -115,6 +115,20 @@ size_t tsym::Numeric::hash() const
     return std::hash<Number>{}(number);
 }
 
+unsigned int tsym::Numeric::complexity() const
+{
+    if (number.isInt())
+    {
+         return 1;
+    }else if(number.isFrac())
+    {
+        return 2;
+    }else if(number.isDouble())
+    {
+        return 3;
+    }
+}
+
 bool tsym::Numeric::isNumericallyEvaluable() const
 {
     return true;

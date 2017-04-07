@@ -21,7 +21,8 @@ namespace tsym {
             bool isPositive() const;
             bool isNegative() const;
             size_t hash() const;
-
+            unsigned int complexity() const;
+            
             /* Overridden methods from Base. */
             bool isNumericallyEvaluable() const;
             bool isConstant() const;

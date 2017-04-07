@@ -82,6 +82,11 @@ size_t tsym::Constant::hash() const
     return std::hash<EnumType>{}(static_cast<EnumType>(type));
 }
 
+unsigned int tsym::Constant::complexity() const
+{
+    return 4;
+}
+
 bool tsym::Constant::isNumericallyEvaluable() const
 {
     return true;
