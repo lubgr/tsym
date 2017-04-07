@@ -28,7 +28,7 @@ TEST_GROUP(Matrix)
         d = Var("d");
         e = Var("e");
         f = Var("f");
-        power = pow(a, 2*d);
+        power = tsym::pow(a, 2*d);
 
         m = Matrix(3, 3);
         m(0, 0) = a;
@@ -523,7 +523,7 @@ TEST(Matrix, luDecompPivoting)
     A(0, 0) = a;
     A(0, 1) = 1;
     A(1, 1) = b;
-    A(1, 0) = pow(a, 3);
+    A(1, 0) = tsym::pow(a, 3);
     A(1, 3) = 2;
     A(2, 2) = c;
     A(3, 0) = a;
@@ -569,8 +569,8 @@ TEST(Matrix, linearEqSetDim3)
     Vector x;
 
     rhs(0) = 3*b/10 + b*f*f + e*a*a*f;
-    rhs(1) = 3*(d + c)/5*b + pow(a, 2*d)*f*f;
-    rhs(1) = Var(3, 5)*b*(d + c) + pow(a, 2*d)*f*f;
+    rhs(1) = 3*(d + c)/5*b + tsym::pow(a, 2*d)*f*f;
+    rhs(1) = Var(3, 5)*b*(d + c) + tsym::pow(a, 2*d)*f*f;
     rhs(2) = 3*b + b*f*f + e*a*f;
 
     x = m.solve(rhs);

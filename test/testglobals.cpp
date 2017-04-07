@@ -38,7 +38,7 @@ TEST(Globals, squareRoot)
     Var expected(a);
     Var res;
 
-    res = sqrt(a);
+    res = tsym::sqrt(a);
     expected = expected.toThe(half);
 
     CHECK_EQUAL(expected, res);
@@ -48,7 +48,7 @@ TEST(Globals, resolvableSquareRoot)
 {
     Var res;
 
-    res = sqrt(4);
+    res = tsym::sqrt(4);
 
     CHECK_EQUAL(2, res);
 }
@@ -69,7 +69,7 @@ TEST(Globals, power)
     Var expected(a);
     Var res;
 
-    res = pow(a, b);
+    res = tsym::pow(a, b);
 
     expected = expected.toThe(b);
 
@@ -81,7 +81,7 @@ TEST(Globals, powerWithNumericExp)
     Var expected(a);
     Var res;
 
-    res = pow(a, Var(1, 4));
+    res = tsym::pow(a, Var(1, 4));
 
     expected = expected.toThe(Var(1, 4));
 
@@ -92,7 +92,7 @@ TEST(Globals, powerEulerBaseLogExp)
 {
     const Var arg = 2*a*b*b*Pi;
     const Var exp = log(arg);
-    const Var result = pow(Euler, exp);
+    const Var result = tsym::pow(Euler, exp);
 
     CHECK_EQUAL(arg, result);
 }
@@ -107,7 +107,7 @@ TEST(Globals, logOfE)
 TEST(Globals, logOfPowerWithBaseE)
 {
     const Var exp = a + b + tsym::sqrt(2);
-    const Var result = log(pow(Euler, exp));
+    const Var result = log(tsym::pow(Euler, exp));
 
     CHECK_EQUAL(exp, result);
 }
@@ -115,7 +115,7 @@ TEST(Globals, logOfPowerWithBaseE)
 TEST(Globals, logOfPower)
 {
     const Var exp = tsym::sqrt(5)*a + 1/b;
-    const Var power = pow(a, exp);
+    const Var power = tsym::pow(a, exp);
     const Var result = log(power);
     const Var expected = exp*log(a);
 
@@ -205,7 +205,7 @@ TEST(Globals, asinHalf)
 
 TEST(Globals, acosMinusOneOverSqrtTwo)
 {
-    const Var arg(-1/sqrt(2));
+    const Var arg(-1/tsym::sqrt(2));
     Var res;
 
     res = acos(arg);
@@ -215,7 +215,7 @@ TEST(Globals, acosMinusOneOverSqrtTwo)
 
 TEST(Globals, atanMinusOneOverSqrtThree)
 {
-    const Var arg(-1/sqrt(3));
+    const Var arg(-1/tsym::sqrt(3));
     Var res;
 
     res = atan(arg);
@@ -264,7 +264,7 @@ TEST(Globals, parsingEmptyString)
 
 TEST(Globals, solveWithSingularMatrix)
 {
-    const Var bCosA = pow(b, cos(a));
+    const Var bCosA = tsym::pow(b, cos(a));
     Matrix A(2, 2);
     Vector rhs(2);
     Vector x;
@@ -296,12 +296,12 @@ TEST(Globals, solveLinearSystemDim3a)
     A(0, 0) = a;
     A(0, 1) = 17*b/29;
     A(1, 1) = 1/(a*b*c);
-    A(1, 2) = pow(12, d);
+    A(1, 2) = tsym::pow(12, d);
     A(2, 0) = 1;
     A(2, 1) = 4*a;
 
     rhs(0) = a*d + 17*a*b/116;
-    rhs(1) = b*pow(12, d) + 1/(b*c*4);
+    rhs(1) = b*tsym::pow(12, d) + 1/(b*c*4);
     rhs(2) = d + a*a;
 
     res = solve(A, rhs, x);
@@ -320,15 +320,15 @@ TEST(Globals, solveLinearSystemDim3b)
     Vector x;
     bool res;
 
-    A(0, 0) = pow(a, 2*sin(b));
+    A(0, 0) = tsym::pow(a, 2*sin(b));
     A(0, 1) = 17*b/29;
     A(1, 1) = 1/(a*b*c);
-    A(1, 2) = pow(12, d);
+    A(1, 2) = tsym::pow(12, d);
     A(2, 0) = 1;
     A(2, 1) = 4*a;
 
-    rhs(0) = pow(a, 2*sin(b))*d + 17*a*b/116;
-    rhs(1) = pow(b, cos(b))*pow(12, d) + 1/(4*b*c);
+    rhs(0) = tsym::pow(a, 2*sin(b))*d + 17*a*b/116;
+    rhs(1) = tsym::pow(b, cos(b))*tsym::pow(12, d) + 1/(4*b*c);
     rhs(2) = d + a*a;
 
     res = solve(A, rhs, x);
@@ -337,7 +337,7 @@ TEST(Globals, solveLinearSystemDim3b)
     CHECK_EQUAL(3, x.size());
     CHECK_EQUAL(d, x(0));
     CHECK_EQUAL(a/4, x(1));
-    CHECK_EQUAL(pow(b, cos(b)), x(2));
+    CHECK_EQUAL(tsym::pow(b, cos(b)), x(2));
 }
 
 TEST(Globals, solveWithoutRhs)
