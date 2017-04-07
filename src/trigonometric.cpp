@@ -396,6 +396,18 @@ tsym::Number tsym::Trigonometric::numericEval() const
         return checkedNumericEval();
 }
 
+unsigned int tsym::Trigonometric::complexity() const
+{
+    unsigned int operandscomplexity = 0; 
+    
+     for (const auto& summand : ops)
+    {
+        operandscomplexity  += summand->complexity();
+    }
+    return 6+operandscomplexity; //TODO: + operands
+
+}
+
 tsym::Number tsym::Trigonometric::checkedNumericEval() const
 {
     double (*fct)(double) = nullptr;

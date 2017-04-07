@@ -186,6 +186,17 @@ size_t tsym::Product::hash() const
     return std::hash<BasePtrList>{}(ops);
 }
 
+unsigned int tsym::Product::complexity() const
+{
+    unsigned int operandscomplexity = 0; 
+    
+     for (const auto& factors : ops)
+    {
+        operandscomplexity  += factors->complexity();
+    }
+    return 5+operandscomplexity; //TODO: + operands
+}
+
 int tsym::Product::sign() const
 {
     int result = 1;

@@ -146,3 +146,11 @@ bool tsym::Logarithm::isNegative() const
 {
     return checkSign(&Base::isNegative);
 }
+
+
+unsigned int tsym::Logarithm::complexity() const
+{
+    return  5; 
+    //+??? nothing in issue and i don't know how to handle input?
+    //e.g.: 5+arg->base().complexity()+2*arg->base().exp() ?????
+}
