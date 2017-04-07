@@ -152,6 +152,11 @@ size_t tsym::Sum::hash() const
     return std::hash<BasePtrList>{}(ops);
 }
 
+unsigned tsym::Sum::complexity() const
+{
+    return 5 + ops.complexitySum();
+}
+
 int tsym::Sum::sign() const
 {
     const int numericSign = signOfNumericParts();

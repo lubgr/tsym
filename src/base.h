@@ -36,6 +36,7 @@ namespace tsym {
             /* If unclear or zero, the following two methods shall return false: */
             virtual bool isPositive() const = 0;
             virtual bool isNegative() const = 0;
+            virtual unsigned complexity() const = 0;
             virtual size_t hash() const = 0;
 
             virtual bool isZero() const;
@@ -70,6 +71,7 @@ namespace tsym {
             /* These two methods return clone() and 1 and must be overridden by Power only. */
             virtual BasePtr base() const;
             virtual BasePtr exp() const;
+
             /* Returns Symbol/Constant/Function name, an empty Name otherwise: */
             virtual const Name& name() const;
 
