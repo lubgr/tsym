@@ -311,10 +311,8 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
     Matrix PLU(*this);
     Vector b(rhs);
     Vector x(nRow);
-
     PLU.compPartialPivots(&b);
     PLU.factorizeLU();
-
     if (PLU.detFromLU().isZero()) {
         TSYM_WARNING("Can't solve system of equations with singular coefficient matrix!");
         x = Vector();
@@ -334,16 +332,28 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
 void tsym::Matrix::compPartialPivots(Vector *b)
 {
     for (size_t j = 0; j + 1 < nCol; ++j) {
-        if (!data[j][j].isZero())
-            continue;
-
-        for (size_t i = j + 1; i < nRow; ++i)
-            if (!data[i][j].isZero()) {
-                swapRows(i, j);
-                if (b != nullptr)
-                    std::swap(b->data[j], b->data[i]);
-                break;
+        size_t highestcomplpos = 0;
+        unsigned highestcompl = data[j][j].getBasePtr()->complexity();
+        for (size_t i = j + 1; i < nRow; ++i){
+            unsigned curr_complexity = data[i][j].getBasePtr()->complexity();
+            if (curr_complexity>highestcompl){
+                highestcompl=curr_complexity;
+                highestcomplpos = i;
             }
+        }
+        if(highestcompl > data[j][j].getBasePtr()->complexity()){
+            swapRows(highestcomplpos, j);
+            if (b != nullptr)
+                std::swap(b->data[j], b->data[highestcomplpos]);
+        }
+        if(data[j][j].isZero())
+            for (size_t i = j + 1; i < nRow; ++i)
+                if (!data[i][j].isZero()){
+                    swapRows(i, j);
+                    if (b != nullptr)
+                        std::swap(b->data[j], b->data[i]);
+                    break;
+                }
     }
 }
 
@@ -351,12 +361,13 @@ void tsym::Matrix::swapRows(size_t index1, size_t index2)
 {
     for (size_t j = 0; j < nCol; ++j)
         std::swap(data[index1][j], data[index2][j]);
+    swapEven = !swapEven;
 }
 
 void tsym::Matrix::factorizeLU()
 {
-    for (size_t j = 0; j + 1 < nCol; ++j) {
-        for (size_t i = j + 1; i < nRow; ++i) {
+    for (size_t j = 0; j + 1 < nCol; ++j){
+        for (size_t i = j + 1; i < nRow; ++i){
             data[i][j] /= data[j][j];
                 for (size_t k = j + 1; k < nCol; ++k)
                     data[i][k] -= data[i][j]*data[j][k];
@@ -430,7 +441,6 @@ tsym::Var tsym::Matrix::checkedDet() const
 
     PLU.compPartialPivots(nullptr);
     PLU.factorizeLU();
-
     return PLU.detFromLU();
 }
 
@@ -440,9 +450,9 @@ tsym::Var tsym::Matrix::detFromLU() const
 
     for (size_t i = 0; i < nRow; ++i)
         det *= data[i][i];
-
+    if(swapEven==false)
+        det *= -1;
     det = det.normal();
-
     return det;
 }
 

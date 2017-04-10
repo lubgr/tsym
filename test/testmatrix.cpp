@@ -537,9 +537,38 @@ TEST(Matrix, luDecompPivoting)
     x = A.solve(rhs);
 
     CHECK_EQUAL((4*c - 3*b)/(a*c), x(0));
-    CHECK_EQUAL(3*(b - c)/c, x(1));
+    CHECK_EQUAL(-(3*(-b + c)/c), x(1));
     CHECK_EQUAL(3/c, x(2));
     CHECK_EQUAL((2*c + 3*b*c - 4*c*a*a - 3*b*b + 3*a*a*b)/(2*c), x(3));
+}
+
+TEST(Matrix, checkPivotElementComplexity)
+{
+    Matrix A(4, 4);
+    Vector rhs(4);
+    Vector x;
+
+    A(0, 0) = 3;
+    A(0, 1) = 1;
+    A(1, 1) = 6;
+    A(1, 0) = pow(a, 3);
+    A(1, 3) = 2;
+    A(2, 2) = 8;
+    A(2, 2) = 7;
+    A(2, 1) = 13*a;
+    A(1, 2) = b;
+    A(3, 2) = b;
+
+    rhs(0) = 1;
+    rhs(1) = 2;
+    rhs(2) = 3;
+    rhs(3) = 4;
+
+    x=A.solve(rhs);
+
+    //CHECK_EQUAL(pow(a, 3),A(0,0));
+    //not testable because pivoting is private
+    //and not possible to see from here
 }
 
 TEST(Matrix, linearEqSetDim2)
