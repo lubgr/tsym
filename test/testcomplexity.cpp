@@ -13,106 +13,94 @@ using namespace tsym;
 
 TEST_GROUP(Complexity)
 {
-    BasePtr undef;
-    BasePtr integer;
-    BasePtr fraction;
-    BasePtr doubleval;
-    BasePtr constant;
-    BasePtr symbol;
-    BasePtr prod;
-    BasePtr power;
-    BasePtr sinus;
-    BasePtr ln;
-    BasePtr undefnumeric;
+    BasePtr pi;
 
     void setup()
     {
-        integer = Numeric::create(3);
-        doubleval= Numeric::create(2.7665454894445454);
-        constant = Constant::createPi();
-        symbol = Symbol::create("a");
-        prod = Product::create(integer,symbol,constant);
-        power = Power::create(integer,symbol);
-        sinus = Trigonometric::createSin(symbol);
-        ln = Logarithm::create(symbol);
+        pi = Constant::createPi();
     }
 };
 
 TEST(Complexity, undefined)
 {
-    BasePtr undef = Undefined::create();
-    unsigned res = undef->complexity();
-    CHECK_EQUAL(0,res);
+    const BasePtr undefined = Undefined::create();
+
+    CHECK_EQUAL(0, undefined->complexity());
 }
 
-TEST(Complexity, integer)
+TEST(Complexity, three)
 {
-    unsigned res = integer->complexity();
-    CHECK_EQUAL(1,res);
+    unsigned res = three->complexity();
+
+    CHECK_EQUAL(1, res);
 }
 
 TEST(Complexity, fraction)
 {
-    BasePtr fraction = Numeric::create(2,3);
-    unsigned res = fraction->complexity();
-    CHECK_EQUAL(2,res);
+    const BasePtr fraction = Numeric::create(2, 3);
+
+    CHECK_EQUAL(2, fraction->complexity());
 }
 
 TEST(Complexity, double)
 {
-    unsigned res = doubleval->complexity();
-    CHECK_EQUAL(3,res);
+    const BasePtr doubleNumeric= Numeric::create(2.7665454894445454);
+
+    CHECK_EQUAL(3, doubleNumeric->complexity());
 }
 
 TEST(Complexity, constant)
 {
-    unsigned res = constant->complexity();
-    CHECK_EQUAL(4,res);
+    CHECK_EQUAL(4, pi->complexity());
 }
 
 TEST(Complexity, symbol)
 {
-    unsigned res = symbol->complexity();
-    CHECK_EQUAL(5, res);
+    CHECK_EQUAL(5, a->complexity());
 }
 
 TEST(Complexity, sum)
 {
-    BasePtr sum = Sum::create(integer,symbol);
-    unsigned res = sum->complexity();
-    CHECK_EQUAL(5 + 1 + 5,res );
+    const BasePtr sum = Sum::create(three, a);
+
+    CHECK_EQUAL(5 + 1 + 5, sum->complexity());
 }
 
 TEST(Complexity, product)
 {
-    unsigned res = prod->complexity();
-    CHECK_EQUAL(5 + 1 + 5 + 4,res );
+    const BasePtr product = Product::create(three, a, pi);
+
+    CHECK_EQUAL(5 + 1 + 5 + 4, product->complexity());
 }
 
 TEST(Complexity, power)
 {
-    unsigned res = power->complexity();
-    CHECK_EQUAL(5 + 1 + 2*5,res );
+    const BasePtr pow = Power::create(three, a);
+
+    CHECK_EQUAL(5 + 1 + 2*5, pow->complexity());
 }
 
-TEST(Complexity, trigonometric)
+TEST(Complexity, sinA)
 {
-    unsigned res = sinus->complexity();
-    CHECK_EQUAL(6 + 5,res );
+    const BasePtr sinA = Trigonometric::createSin(a);
+
+    CHECK_EQUAL(6 + 5, sinA->complexity());
 }
 
-TEST(Complexity, logarithm)
+TEST(Complexity, logarithmOfSymbol)
 {
-    unsigned res = ln->complexity();
-    CHECK_EQUAL(6 + 5,res );
+    const unsigned res = Logarithm::create(a)->complexity();
+
+    CHECK_EQUAL(6 + 5, res);
 }
 
-TEST(Complexity, largeterm)
+TEST(Complexity, largerSum)
 {
-    unsigned expected = 5 + 15 + 5 + 3 + 11 + 16 + 11 + 4;
-    std::initializer_list<BasePtr> list = {prod,symbol,doubleval,sinus,power,ln,constant};
-    BasePtrList largetermlist(list);
-    BasePtr largeterm = Sum::create(largetermlist);
-    unsigned res = largeterm->complexity();
-    CHECK_EQUAL(expected,res );
+    const BasePtr sinA = Trigonometric::createSin(a);
+    const BasePtr product = Product::create(three, b, pi);
+    const BasePtr doubleNum = Numeric::create(-10.20394820938409243);
+    const BasePtr pow = Power::create(three, a);
+    const BasePtr sum = Sum::create({ product, a, doubleNum, sinA, pow, Logarithm::create(a), pi});
+
+    CHECK_EQUAL(5 + 15 + 5 + 3 + 11 + 16 + 11 + 4, sum->complexity());
 }
