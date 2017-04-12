@@ -332,10 +332,10 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
 
 void tsym::Matrix::compPartialPivots(Vector *b)
 {
-    for (size_t j = 0; j + 1 < nCol; ++j){
+    for (size_t j = 0; j+1  < nCol; ++j){
         size_t highestcomplpos = 0;
         unsigned highestcompl = data[j][j].getBasePtr()->complexity();
-        for (size_t i = j + 1; i < nRow; ++i){
+        for (size_t i = j+1 ; i < nRow; ++i){
             unsigned curr_complexity = data[i][j].getBasePtr()->complexity();
             if (curr_complexity>highestcompl){
                 highestcompl=curr_complexity;

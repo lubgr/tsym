@@ -682,13 +682,13 @@ TEST(Matrix, illegalLinearEqSetZeroDimension)
 
 TEST(Matrix, simpleSymbolDet)
 {
-    const Var expected(a*0 - b*c);
+    const Var expected(0*d - b*c);
     Matrix A(2, 2);
 
-    A(0, 0) = a;
+    A(0, 0) = 0;
     A(0, 1) = b;
     A(1, 0) = c;
-    A(1, 1) = 0;
+    A(1, 1) = d;
     std::cout<<"Before: "<< A << std::endl;
     CHECK_EQUAL(expected, A.det());
     std::cout<<"After: "<< A << std::endl;
