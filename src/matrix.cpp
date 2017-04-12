@@ -313,6 +313,7 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
     Vector x(nRow);
     PLU.compPartialPivots(&b);
     PLU.factorizeLU();
+
     if (PLU.detFromLU().isZero()) {
         TSYM_WARNING("Can't solve system of equations with singular coefficient matrix!");
         x = Vector();
@@ -331,7 +332,7 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
 
 void tsym::Matrix::compPartialPivots(Vector *b)
 {
-    for (size_t j = 0; j + 1 < nCol; ++j) {
+    for (size_t j = 0; j + 1 < nCol; ++j){
         size_t highestcomplpos = 0;
         unsigned highestcompl = data[j][j].getBasePtr()->complexity();
         for (size_t i = j + 1; i < nRow; ++i){
@@ -439,8 +440,11 @@ tsym::Var tsym::Matrix::checkedDet() const
 {
     Matrix PLU(*this);
 
+    std::cout<<"Inside Before: "<< PLU << std::endl;
     PLU.compPartialPivots(nullptr);
+    std::cout<<"Inside Middle: "<< PLU << std::endl;
     PLU.factorizeLU();
+    std::cout<<"Inside After: "<< PLU << std::endl;
     return PLU.detFromLU();
 }
 
