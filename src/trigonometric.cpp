@@ -398,7 +398,6 @@ tsym::Number tsym::Trigonometric::numericEval() const
 
 unsigned tsym::Trigonometric::complexity() const
 {
-
     return 6 + ops.complexitySum();
 }
 
