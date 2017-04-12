@@ -101,3 +101,8 @@ int tsym::Undefined::degree(const BasePtr&) const
 {
     return 0;
 }
+
+unsigned tsym::Undefined::complexity() const
+{
+    return 0;
+}

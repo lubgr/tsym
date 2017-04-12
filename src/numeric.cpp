@@ -115,6 +115,19 @@ size_t tsym::Numeric::hash() const
     return std::hash<Number>{}(number);
 }
 
+unsigned tsym::Numeric::complexity() const
+{
+    /* A numeric object must not be instantiated from an undefined Number in the first place: */
+    assert(!number.isUndefined());
+
+    if (number.isInt())
+        return 1;
+    else if(number.isFrac())
+        return 2;
+    else
+        return 3;
+}
+
 bool tsym::Numeric::isNumericallyEvaluable() const
 {
     return true;

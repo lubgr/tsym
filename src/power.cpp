@@ -150,6 +150,11 @@ size_t tsym::Power::hash() const
     return std::hash<BasePtrList>{}(ops);
 }
 
+unsigned tsym::Power::complexity() const
+{
+    return 5 + baseRef->complexity() + 2*expRef->complexity();
+}
+
 bool tsym::Power::isExponentRationalNumeric() const
 {
     return expRef->isNumericallyEvaluable() && expRef->numericEval().isRational();

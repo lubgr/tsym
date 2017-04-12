@@ -274,6 +274,15 @@ tsym::BasePtrList tsym::BasePtrList::getNonConstElements() const
 
     return items;
 }
+unsigned tsym::BasePtrList::getComplexitySum() const
+{
+    unsigned complexitySum = 0;
+
+    for (const auto& item : list)
+        complexitySum += item->complexity();
+
+    return complexitySum;
+}
 
 tsym::BasePtr tsym::BasePtrList::expandAsProduct() const
 {

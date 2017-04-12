@@ -58,6 +58,7 @@ namespace tsym {
             Var **data;
             size_t nRow;
             size_t nCol;
+            bool swapEven = true;
     };
 
     bool operator == (const Matrix& lhs, const Matrix& rhs);
