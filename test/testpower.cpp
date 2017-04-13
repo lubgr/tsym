@@ -301,6 +301,7 @@ TEST(Power, splittableExpFracBaseFrac)
     const BasePtr base = Numeric::create(54, 4375);
     BasePtr res;
 
+    NumPowerSimpl::setMaxPrimeResolution(1000);
     res = Power::create(base, oneThird);
 
     CHECK(res->isPower());
@@ -327,6 +328,8 @@ TEST(Power, splittableBaseNumeratorExpFrac)
     const BasePtr expectedPow = Power::create(Numeric::create(10, 17), exp);
     BasePtr res;
 
+    NumPowerSimpl::setMaxPrimeResolution(100000);
+
     res = Power::create(origBase, exp);
 
     CHECK(res->isPower());
@@ -347,12 +350,15 @@ TEST(Power, splittalbeBaseDenomExpFrac)
     /* (21/10648)^(5/3) = 21/5153632*21^(2/3), if the limit value for prime factorization is high
      * enough. */
 {
+    const Int baseDenom(10648);
     const BasePtr origExp = Numeric::create(5, 3);
-    const BasePtr origBase = Numeric::create(21, 10648);
+    const BasePtr origBase = Numeric::create(21, baseDenom);
     const BasePtr resultingExp = Numeric::create(2, 3);
     const BasePtr expectedPow = Power::create(Numeric::create(21), resultingExp);
     const BasePtr expectedNumeric = Numeric::create(21, 5153632);
     BasePtr res;
+
+    NumPowerSimpl::setMaxPrimeResolution(baseDenom - 1);
 
     res = Power::create(origBase, origExp);
 
@@ -360,7 +366,7 @@ TEST(Power, splittalbeBaseDenomExpFrac)
     CHECK_EQUAL(origExp, res->exp());
     CHECK_EQUAL(origBase, res->base());
 
-    NumPowerSimpl::setMaxPrimeResolution(10648);
+    NumPowerSimpl::setMaxPrimeResolution(baseDenom);
 
     res = Power::create(origBase, origExp);
 

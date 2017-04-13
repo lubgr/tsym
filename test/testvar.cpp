@@ -39,9 +39,9 @@ TEST_GROUP(Var)
         one = Var(1);
         two = Var(2);
         three = Var(3);
-        sqrtTwo = sqrt(2);
-        sqrtThree = sqrt(3);
-        sqrtSix = sqrt(6);
+        sqrtTwo = tsym::sqrt(2);
+        sqrtThree = tsym::sqrt(3);
+        sqrtSix = tsym::sqrt(6);
     }
 };
 
@@ -391,7 +391,7 @@ TEST(Var, unaryMinusOperator)
 TEST(Var, divisionToPower)
     /* (1/b)*a = a*b^(-1). */
 {
-    const Var expected(a*pow(b, -1));
+    const Var expected(a*tsym::pow(b, -1));
 
     CHECK_EQUAL(expected, 1/b*a);
 }
@@ -409,19 +409,19 @@ TEST(Var, productDividedByNumber)
 TEST(Var, multiplicationOfExpPosSymbol)
 {
     const Var aPos("a", Var::Sign::POSITIVE);
-    const Var expected(pow(aPos, Var(10, 3)));
-    Var pow(aPos);
+    const Var expected(tsym::pow(aPos, Var(10, 3)));
+    Var res(aPos);
 
-    pow = pow.toThe(2);
-    pow = pow.toThe(5);
-    pow = pow.toThe(Var(1, 3));
+    res = res.toThe(2);
+    res = res.toThe(5);
+    res = res.toThe(Var(1, 3));
 
-    CHECK_EQUAL(expected, pow);
+    CHECK_EQUAL(expected, res);
 }
 
 TEST(Var, noMultiplicationOfExpUnclearSymbol)
 {
-    Var res(pow(a, Var(1, 3)));
+    Var res(tsym::pow(a, Var(1, 3)));
 
     res = res.toThe(3);
 
@@ -430,12 +430,12 @@ TEST(Var, noMultiplicationOfExpUnclearSymbol)
 
 TEST(Var, multiplicationOfExpUnclearSymbol)
 {
-    const Var expected(pow(a, Var(-2, 3)));
-    Var pow(1/a);
+    const Var expected(tsym::pow(a, Var(-2, 3)));
+    Var res(1/a);
 
-    pow = pow.toThe(Var(2, 3));
+    res = res.toThe(Var(2, 3));
 
-    CHECK_EQUAL(expected, pow);
+    CHECK_EQUAL(expected, res);
 }
 
 TEST(Var, expansionPowerOfProduct)
@@ -444,7 +444,7 @@ TEST(Var, expansionPowerOfProduct)
     Var res;
 
     res = a*b*c;
-    res = pow(res, 2);
+    res = tsym::pow(res, 2);
 
     CHECK_EQUAL(expected, res);
 }
@@ -465,7 +465,7 @@ TEST(Var, fracOfSymbolsMultipliedByInverse)
 
 TEST(Var, expAdditionEqualBase)
 {
-    const Var expected(pow(a*b, 23));
+    const Var expected(tsym::pow(a*b, 23));
     Var pow1(a*b);
     Var pow2(b*a);
 
@@ -539,8 +539,8 @@ TEST(Var, productOfSymbolAndSum)
 }
 
 TEST(Var, productOfConstantSumAndSum)
-    /* A sum of constants is treated as a constant when multiplied with a sum: (2 + sqrt(2))*(a + b)
-     * = (2 + sqrt(2))*a + (2 + sqrt(2))*b. */
+    /* A sum of constants is treated as a constant when multiplied with a sum:
+     * (2 + sqrt(2))*(a + b) = (2 + sqrt(2))*a + (2 + sqrt(2))*b. */
 {
     Var res;
 
@@ -601,7 +601,7 @@ TEST(Var, productOfTwoConstantSums)
 TEST(Var, minusOneSquare)
     /* (-1)^2 = 1. */
 {
-    const Var res = pow(Var(-1), 2);
+    const Var res = tsym::pow(Var(-1), 2);
 
     CHECK_EQUAL(1, res);
 }
@@ -609,7 +609,7 @@ TEST(Var, minusOneSquare)
 TEST(Var, minusOneCubic)
     /* (-1)^3 = -1. */
 {
-    const Var res = pow(Var(-1), 3);
+    const Var res = tsym::pow(Var(-1), 3);
 
     CHECK_EQUAL(-1, res);
 }
@@ -617,7 +617,7 @@ TEST(Var, minusOneCubic)
 TEST(Var, numPowerToUndefined)
     /* (-1)^(1/3) is undefined. */
 {
-    const Var res = pow(Var(-1), Var(1, 3));
+    const Var res = tsym::pow(Var(-1), Var(1, 3));
 
     CHECK_EQUAL(Var::Type::UNDEFINED, res.type());
 }
@@ -625,7 +625,7 @@ TEST(Var, numPowerToUndefined)
 TEST(Var, numPowerToUndefinedEvenDenomExp)
     /* (-1)^(5/4) is undefined. */
 {
-    const Var res = pow(Var(-1), Var(4, 5));
+    const Var res = tsym::pow(Var(-1), Var(4, 5));
 
     CHECK_EQUAL(Var::Type::UNDEFINED, res.type());
 }
@@ -633,7 +633,7 @@ TEST(Var, numPowerToUndefinedEvenDenomExp)
 TEST(Var, numPowerToUndefinedFractionBase)
     /* (-1/2)^(1/2) is undefined. */
 {
-    const Var res = sqrt(Var(-1, 2));
+    const Var res = tsym::sqrt(Var(-1, 2));
 
     CHECK_EQUAL(Var::Type::UNDEFINED, res.type());
 }
@@ -641,7 +641,7 @@ TEST(Var, numPowerToUndefinedFractionBase)
 TEST(Var, simpleNumericPowerSimplification)
     /* 2/3*sqrt(3) = 2*3^(-1/2). */
 {
-    const Var expected(2*pow(3, Var(-1, 2)));
+    const Var expected(2*tsym::pow(3, Var(-1, 2)));
     Var twoThird(2, 3);
 
     CHECK_EQUAL(expected, twoThird*sqrtThree);
@@ -651,10 +651,10 @@ TEST(Var, numericPowerSimplification)
     /* (9/11)^(-12/23)*2^(-12/23)*(1/7)^(12/23) = (126/11)^(-12/23). */
 {
     const Var exp(12, 23);
-    const Var expected(pow(Var(126, 11), -exp));
+    const Var expected(tsym::pow(Var(126, 11), -exp));
     Var res;
 
-    res = pow(Var(9, 11), -exp)*pow(2, -exp)*pow(Var(1, 7), exp);
+    res = tsym::pow(Var(9, 11), -exp)*tsym::pow(2, -exp)*tsym::pow(Var(1, 7), exp);
 
     CHECK_EQUAL(expected, res);
 }
@@ -662,10 +662,10 @@ TEST(Var, numericPowerSimplification)
 TEST(Var, simpleNumPowExtraction)
     /* 3/2*(1/3)^(1/3) = 1/2*3^(2/3). */
 {
-    const Var expected(Var(1, 2)*pow(3, Var(2, 3)));
+    const Var expected(Var(1, 2)*tsym::pow(3, Var(2, 3)));
     Var res;
 
-    res = Var(3, 2)*pow(Var(1, 3), Var(1, 3));
+    res = Var(3, 2)*tsym::pow(Var(1, 3), Var(1, 3));
 
     CHECK_EQUAL(expected, res);
 }
@@ -683,10 +683,10 @@ TEST(Var, orderingOfProductOfConstants)
 TEST(Var, constProductsEqualBaseAfterExtraction)
     /* 17^(2/3)*sqrt(833) = 7*17^(1/6). */
 {
-    const Var expected(119*pow(17, Var(1, 6)));
+    const Var expected(119*tsym::pow(17, Var(1, 6)));
     Var res;
 
-    res = pow(17, Var(2, 3))*sqrt(833);
+    res = tsym::pow(17, Var(2, 3))*tsym::sqrt(833);
 
     CHECK_EQUAL(expected, res);
 }
@@ -695,12 +695,13 @@ TEST(Var, orderingOfLargeProductOfConstants)
     /* 5*(2/9)*sqrt(3)*2^(1/5)*sqrt(17)*(10/11)*sqrt(2)*sqrt(7)*4^(1/5)*17^(2/3)*(1/4)*sqrt(7) =
      * 25/33*2^(3/5)*17^(2/3)*sqrt(1666/3). */
 {
-    const Var expected(Var(25, 33)*pow(2, Var(3, 5))*pow(17, Var(2, 3))*sqrt(Var(1666, 3)));
+    const Var expected(Var(25, 33)*tsym::pow(2, Var(3, 5))*tsym::pow(17, Var(2, 3))
+        *tsym::sqrt(Var(1666, 3)));
     Var res;
 
-    res = 5*Var(2, 9)*sqrt(3)*pow(2, Var(1, 5))*sqrt(17)*Var(10, 11)
-        *sqrt(2)*sqrt(7)*pow(4, Var(1, 5))*pow(17, Var(2, 3))*Var(1, 4)
-        *sqrt(7);
+    res = 5*Var(2, 9)*tsym::sqrt(3)*tsym::pow(2, Var(1, 5))*tsym::sqrt(17)*Var(10, 11)
+        *tsym::sqrt(2)*tsym::sqrt(7)*tsym::pow(4, Var(1, 5))*tsym::pow(17, Var(2, 3))*Var(1, 4)
+        *tsym::sqrt(7);
 
     CHECK_EQUAL(expected, res);
 }
@@ -710,7 +711,7 @@ TEST(Var, constPowerfracExpGreaterThanOne)
 {
     Var res;
 
-    res = pow(2, Var(3, 2));
+    res = tsym::pow(2, Var(3, 2));
 
     CHECK_EQUAL(Var::Type::PRODUCT, res.type());
     CHECK_EQUAL(2*sqrtTwo, res);
@@ -721,9 +722,9 @@ TEST(Var, piInSum)
 {
     Var res;
 
-    res = 2 + Pi + 3*sqrt(5)*Pi + 5 + Pi;
+    res = 2 + Pi + 3*tsym::sqrt(5)*Pi + 5 + Pi;
 
-    CHECK_EQUAL(7 + 2*Pi + 3*sqrt(5)*Pi, res);
+    CHECK_EQUAL(7 + 2*Pi + 3*tsym::sqrt(5)*Pi, res);
 }
 
 TEST(Var, simpleSumWithEqualNonConstTerms)
@@ -766,7 +767,7 @@ TEST(Var, expandProductOfConstTerms)
     res = (1 + 2*sqrtTwo*sqrtThree)*a + (2 + sqrtTwo*sqrtThree)*a;
 
     CHECK_EQUAL(Var::Type::SUM, res.type());
-    CHECK_EQUAL(3*a + 3*sqrt(6)*a, res);
+    CHECK_EQUAL(3*a + 3*tsym::sqrt(6)*a, res);
 }
 
 TEST(Var, simpleExpansion)
@@ -784,8 +785,8 @@ TEST(Var, simpleExpansion)
 TEST(Var, dontCollectProductOfConstTerms)
     /* 2*sqrt(3)*sqrt(2) + 3*sqrt(3)*sqrt(5) = 2*sqrt(6) + 3*sqrt(15). */
 {
-    const Var sqrtFive(sqrt(5));
-    const Var sqrtFifteen(sqrt(15));
+    const Var sqrtFive(tsym::sqrt(5));
+    const Var sqrtFifteen(tsym::sqrt(15));
     Var res;
 
     res = 2*sqrtThree*sqrtTwo + 3*sqrtThree*sqrtFive;
@@ -848,9 +849,9 @@ TEST(Var, expandNumPowFactorResultingInZero)
 TEST(Var, expandPowerFactorResultingInZero)
     /* d*a^(b + c) - d*a^(b + c) = 0. */
 {
-    Var res(d*pow(a, b + c));
+    Var res(d*tsym::pow(a, b + c));
 
-    res -= d*pow(a, b + c);
+    res -= d*tsym::pow(a, b + c);
 
     CHECK_EQUAL(zero, res);
 }
@@ -870,11 +871,13 @@ TEST(Var, largeMixedTerm01)
     /* a + 2*sqrt(2)*b + 3*c - 7*a*sqrt(2)*sqrt(3)*5^(1/3) + 4*d^(2*b + 2*a) - b*2/sqrt(2) -
      * b*sqrt(2) = (1 - 7*5^(1/3)*sqrt(6))*a + 3*c + 4*d^(2*a + 2*b). */
 {
-    const Var expected((1 - 7*pow(5, Var(1, 3))*sqrt(6))*a + 3*c + 4*pow(d, 2*a + 2*b));
+    const Var expected((1 - 7*tsym::pow(5, Var(1, 3))*tsym::sqrt(6))*a + 3*c + 4*tsym::pow(d, 2*a +
+    2*b));
     Var res;
 
-    res = a + 2*sqrt(2)*b + 3*c - 7*a*sqrt(2)*sqrt(3)*pow(5, Var(1, 3)) + 4*pow(d, 2*b + 2*a) -
-        b*2/sqrt(2) - b*sqrt(2);
+    res = a + 2*tsym::sqrt(2)*b + 3*c - 7*a*tsym::sqrt(2)*tsym::sqrt(3)*tsym::pow(5, Var(1, 3)) + 4
+    *tsym::pow(d, 2*b + 2*a) -
+        b*2/tsym::sqrt(2) - b*tsym::sqrt(2);
 
     CHECK_EQUAL(expected, res);
 }
@@ -883,11 +886,12 @@ TEST(Var, largeMixedTerm02)
     /* 2^(1/3)*(a + b)*2^(1/4)*sqrt(2) + (b + a)*2^(1/12) + (a + b)*(d + c) = 3*2^(1/12)*a +
      * 3*2^(1/12)*b + (a + b)*(d + c). */
 {
-    const Var fac(3*pow(2, Var(1, 12)));
+    const Var fac(3*tsym::pow(2, Var(1, 12)));
     const Var expected(fac*a + fac*b + (a + b)*(c + d));
     Var res;
 
-    res = pow(2, Var(1, 3))*(a + b)*pow(2, Var(1, 4))*sqrt(2) + (b + a)*pow(2, Var(1, 12))
+    res = tsym::pow(2, Var(1, 3))*(a + b)*tsym::pow(2, Var(1, 4))*tsym::sqrt(2) + (b + a)*tsym::pow
+    (2, Var(1, 12))
         + (a + b)*(d + c);
 
     CHECK_EQUAL(expected, res);
@@ -896,20 +900,22 @@ TEST(Var, largeMixedTerm02)
 TEST(Var, largeMixedTerm03)
     /* (c*a*b*(d + e)^(d + e))/(a*e*d*(e + d))*14/15 = 14/15*(b*c)/(d*e)*(d + e)^(-1 + d + e). */
 {
-    const Var expected(Var(14, 15)*b*c*pow(d, -1)*pow(e, -1)*pow(d + e, -1 + d + e));
+    const Var expected(Var(14, 15)*b*c*tsym::pow(d, -1)*tsym::pow(e, -1)
+            *tsym::pow(d + e, -1 + d + e));
     Var res;
 
-    res = (c*a*b*pow(d + e, d + e))/(a*e*d*(e + d))*Var(14, 15);
+    res = (c*a*b*tsym::pow(d + e, d + e))/(a*e*d*(e + d))*Var(14, 15);
 
     CHECK_EQUAL(expected, res);
 }
 
 TEST(Var, largeMixedTerm04)
 {
-    const Var expected((10 + sqrtTwo)*a + 100*pow(a, 2) + (3 + sqrtTwo)*b + 2*c + Var(13, 9)*d);
+    const Var expected((10 + sqrtTwo)*a + 100*tsym::pow(a, 2) + (3 + sqrtTwo)*b + 2*c + Var(13, 9)*
+        d);
     Var res;
 
-    res = (a + 2*b + 2*c) + (9*a + b + d) + sqrt(2)*(a + b) + 4*d/9 + 100*a*a;
+    res = (a + 2*b + 2*c) + (9*a + b + d) + tsym::sqrt(2)*(a + b) + 4*d/9 + 100*a*a;
 
     CHECK_EQUAL(expected, res);
 }
@@ -918,11 +924,11 @@ TEST(Var, largeMixedTerm05)
     /* a^(2/3)*e*sqrt(2)*sqrt(3)*b*2*d*e*(e + 2)*a*c*sqrt(3)*a^(1/5)*sqrt(5)*sqrt(3) =
      * 6*sqrt(30)*a^(28/15)*b*c*d*e^2*(2 + e). */
 {
-    const Var expected(6*sqrt(30)*pow(a, Var(28, 15))*b*c*d*pow(e, 2)*(2 + e));
+    const Var expected(6*tsym::sqrt(30)*tsym::pow(a, Var(28, 15))*b*c*d*tsym::pow(e, 2)*(2 + e));
     Var res;
 
-    res = pow(a, Var(2, 3))*e*sqrt(2)*sqrt(3)*b*2*d*e*(e + 2)*a*c*sqrt(3)*pow(a, Var(1, 5))
-        *sqrt(5)*sqrt(3);
+    res = tsym::pow(a, Var(2, 3))*e*tsym::sqrt(2)*tsym::sqrt(3)*b*2*d*e*(e + 2)*a*c*tsym::sqrt(3)*
+    tsym::pow(a, Var(1, 5))*tsym::sqrt(5)*tsym::sqrt(3);
 
     CHECK_EQUAL(expected, res);
     CHECK_EQUAL(8, res.operands().size());
@@ -955,7 +961,7 @@ TEST(Var, atan2OfNonResolvableNumericallyEvaluableArgs)
 
 TEST(Var, diffOfSum)
 {
-    const Var sum(2*pow(a, 3) + a*b);
+    const Var sum(2*tsym::pow(a, 3) + a*b);
     const Var result(sum.diff(a));
     const Var expected(6*a*a + b);
 
@@ -1070,7 +1076,7 @@ TEST(Var, printerOperatorTypeEnumSumProductPower)
     const std::string expected("SumProductPower");
     std::stringstream stream;
 
-    stream << (a + b).type() << (a*b).type() << pow(a, b).type();
+    stream << (a + b).type() << (a*b).type() << tsym::pow(a, b).type();
 
     CHECK_EQUAL(expected, stream.str());
 }

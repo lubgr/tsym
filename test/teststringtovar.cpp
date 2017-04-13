@@ -560,7 +560,7 @@ TEST(StringToVar, unrecognizedTokensAfterValidExpression)
 
 TEST(StringToVar, unrecognizedTokensInsideValidExpression)
 {
-    const Var expected = a*b*sqrt(12*pow(c, 2) - c) - 40;
+    const Var expected = a*b*tsym::sqrt(12*tsym::pow(c, 2) - c) - 40;
     disableLog();
     const StringToVar stv("[äüa*b*sqrt(12*c^2 - &c) - 40üä]\\");
     enableLog();
@@ -647,7 +647,7 @@ TEST(StringToVar, mixedTerm02)
 {
     const StringToVar stvFrac("a*atan(1/sqrt(17))*cos(c*d)*sin(a*b)^2*tan(a*b)");
     const StringToVar stvNoFrac("a*atan(17^(-1/2))*cos(c*d)*sin(a*b)^2*tan(a*b)");
-    const Var expected = a*atan(1/tsym::sqrt(17))*cos(c*d)*pow(sin(a*b), 2)*tan(a*b);
+    const Var expected = a*atan(1/tsym::sqrt(17))*cos(c*d)*tsym::pow(sin(a*b), 2)*tan(a*b);
 
     checkSuccess(expected, stvFrac);
     checkSuccess(expected, stvNoFrac);
@@ -656,7 +656,8 @@ TEST(StringToVar, mixedTerm02)
 TEST(StringToVar, mixedTerm03)
 {
     const StringToVar stv("-a^(2/3)*b^(2/3*c - d)*c^((a + b)^2)");
-    const Var expected = -pow(a, Var(2, 3))*pow(b, 2*c/3 - d)*pow(c, pow(a + b, 2));
+    const Var expected =
+        -tsym::pow(a, Var(2, 3))*tsym::pow(b, 2*c/3 - d)*pow(c, tsym::pow(a + b, 2));
 
     checkSuccess(expected, stv);
 }
@@ -664,7 +665,7 @@ TEST(StringToVar, mixedTerm03)
 TEST(StringToVar, powerOperator)
 {
     const StringToVar stv("a^(b^2 + c)^2^3");
-    const Var expected = pow(a, pow(b*b + c, 8));
+    const Var expected = tsym::pow(a, tsym::pow(b*b + c, 8));
 
     checkSuccess(expected, stv);
 }
@@ -713,7 +714,7 @@ TEST(StringToVar, pi)
 TEST(StringToVar, piInMixedTerm)
 {
     const StringToVar stv("2*sin(pi) + pi*cos(pI)*sqrt(PI)");
-    const Var expected = -Pi*sqrt(Pi);
+    const Var expected = -Pi*tsym::sqrt(Pi);
 
     checkSuccess(expected, stv);
 }

@@ -66,6 +66,7 @@ namespace tsym {
             bool hasSumElements() const;
             bool areElementsNumericallyEvaluable() const;
             bool areAllElementsConst() const;
+            unsigned complexitySum() const;
             /* Here, the Constant class is treated as a variable, only Numerics and a numeric Power
              * are considered as constant items. */
             BasePtrList getConstElements() const;

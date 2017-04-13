@@ -146,3 +146,8 @@ bool tsym::Logarithm::isNegative() const
 {
     return checkSign(&Base::isNegative);
 }
+
+unsigned tsym::Logarithm::complexity() const
+{
+    return 6 + arg->complexity();
+}

@@ -156,6 +156,5 @@ find /usr -type f -path '*plic/buildinfo.h' -exec sed -rn '/python/Is/^.*"(.*)"/
 
 Additional notes
 ----------------
-* Avoid `using namespace tsym` when compiling with g++ < 4.9, because `sqrt` and `pow` from math.h
-  are in the global namespace. `sqrt(2)` will thus be evaluated to a `double`, while `tsym::sqrt(2)`
-  gives the desired result. The problem vanishes with more recent gcc versions, though.
+* Avoid `using namespace tsym` because `sqrt` and `pow` from math.h are in the global namespace.
+  `sqrt(2)` will thus be evaluated to a `double`, while `tsym::sqrt(2)` gives the desired result.
