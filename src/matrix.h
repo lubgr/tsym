@@ -47,13 +47,13 @@ namespace tsym {
             void deleteMem();
             void multiplyChecked(const Matrix& other);
             Vector solveChecked(const Vector& rhs) const;
-            void compPartialPivots(Vector *b);
+            unsigned compPartialPivots(Vector *b);
             void swapRows(size_t index1, size_t index2);
             void factorizeLU();
             void compXFromLU(Vector& x, Vector& b) const;
             Matrix checkedInverse() const;
             Var checkedDet() const;
-            Var detFromLU() const;
+            Var detFromLU(unsigned nPivotSwaps) const;
 
             Var **data;
             size_t nRow;

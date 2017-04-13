@@ -307,15 +307,16 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
 {
     auto ts = std::chrono::high_resolution_clock::now();
     std::chrono::microseconds ms;
+    unsigned nPivotSwaps;
     decltype(ts) te;
     Matrix PLU(*this);
     Vector b(rhs);
     Vector x(nRow);
 
-    PLU.compPartialPivots(&b);
+    nPivotSwaps = PLU.compPartialPivots(&b);
     PLU.factorizeLU();
 
-    if (PLU.detFromLU().isZero()) {
+    if (PLU.detFromLU(nPivotSwaps).isZero()) {
         TSYM_WARNING("Can't solve system of equations with singular coefficient matrix!");
         x = Vector();
     } else {
@@ -331,8 +332,11 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
     return x;
 }
 
-void tsym::Matrix::compPartialPivots(Vector *b)
+unsigned tsym::Matrix::compPartialPivots(Vector *b)
+    /* Returns the number of row swaps. */
 {
+    unsigned swapCount = 0;
+
     for (size_t j = 0; j + 1 < nCol; ++j) {
         if (!data[j][j].isZero())
             continue;
@@ -340,11 +344,17 @@ void tsym::Matrix::compPartialPivots(Vector *b)
         for (size_t i = j + 1; i < nRow; ++i)
             if (!data[i][j].isZero()) {
                 swapRows(i, j);
+
                 if (b != nullptr)
                     std::swap(b->data[j], b->data[i]);
+
+                ++swapCount;
+
                 break;
             }
     }
+
+    return swapCount;
 }
 
 void tsym::Matrix::swapRows(size_t index1, size_t index2)
@@ -427,16 +437,18 @@ tsym::Var tsym::Matrix::det() const
 tsym::Var tsym::Matrix::checkedDet() const
 {
     Matrix PLU(*this);
+    unsigned nPivotSwaps;
 
-    PLU.compPartialPivots(nullptr);
+    nPivotSwaps = PLU.compPartialPivots(nullptr);
+
     PLU.factorizeLU();
 
-    return PLU.detFromLU();
+    return PLU.detFromLU(nPivotSwaps);
 }
 
-tsym::Var tsym::Matrix::detFromLU() const
+tsym::Var tsym::Matrix::detFromLU(unsigned nPivotSwaps) const
 {
-    Var det(1);
+    Var det(nPivotSwaps % 2 == 0 ? 1 : -1);
 
     for (size_t i = 0; i < nRow; ++i)
         det *= data[i][i];

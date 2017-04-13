@@ -542,7 +542,7 @@ TEST(Matrix, luDecompPivoting)
     CHECK_EQUAL((2*c + 3*b*c - 4*c*a*a - 3*b*b + 3*a*a*b)/(2*c), x(3));
 }
 
-TEST(Matrix, signSwitchDuringLUDecompWithPivoting)
+TEST(Matrix, signSwitchDuringLUDecompWithPivoting2x2)
 {
     const Matrix A {{ 0, 1 }, { 1, 0 }};
     const Vector rhs { a, b };
@@ -552,6 +552,22 @@ TEST(Matrix, signSwitchDuringLUDecompWithPivoting)
     x = A.solve(rhs);
 
     CHECK_EQUAL(expected, x);
+}
+
+TEST(Matrix, signSwitchDuringLUDecompWithPivoting3x3)
+{
+    const Matrix A {{ 0, 1, a }, { b, 0, 2 }, { a, Var(-1, 2), 0 }};
+    const Var expected(-a*b/2 + 2*a);
+
+    CHECK_EQUAL(expected, A.det());
+}
+
+TEST(Matrix, noSignSwitchDuringLUDecompWithPivoting4x4)
+{
+    const Matrix A {{ 0, 1, a, 3 }, { b, 0, 2, 0 }, { a, Var(-1, 2), 0 , 2}, { 0, b, 3, 0 }};
+    const Var expected(-6*a*b - 2*a*b*b + 21*b/2);
+
+    CHECK_EQUAL(expected, A.det());
 }
 
 TEST(Matrix, linearEqSetDim2)
