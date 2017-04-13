@@ -337,24 +337,36 @@ unsigned tsym::Matrix::compPartialPivots(Vector *b)
 {
     unsigned swapCount = 0;
 
-    for (size_t j = 0; j + 1 < nCol; ++j) {
-        if (!data[j][j].isZero())
-            continue;
+    for (size_t j = 0; j + 1 < nCol; ++j){
+        size_t lowestComplexityPosition = 0;
 
-        for (size_t i = j + 1; i < nRow; ++i)
-            if (!data[i][j].isZero()) {
-                swapRows(i, j);
+        unsigned lowestComplexity = data[j][j].getBasePtr()->complexity();
 
-                if (b != nullptr)
-                    std::swap(b->data[j], b->data[i]);
+        for (size_t i = j + 1; i < nRow; ++i){
+            unsigned currentComplexity = data[i][j].getBasePtr()->complexity();
 
-                ++swapCount;
-
-                break;
+            if (currentComplexity<=lowestComplexity && !data[i][j].isZero()){
+                lowestComplexity=currentComplexity;
+                lowestComplexityPosition = i;
             }
-    }
+        }
 
-    return swapCount;
+        if(data[lowestComplexityPosition][j].isZero() && data[j][j].isZero()){
+            for(size_t i = j + 1; i < nRow; ++i)
+                if(!data[i][j].isZero()){
+                    lowestComplexityPosition=i;
+                    break;
+                }
+
+        }
+
+        swapRows(lowestComplexityPosition, j);
+
+        if (b != nullptr)
+            std::swap(b->data[j], b->data[lowestComplexityPosition]);
+        ++swapCount;
+    }
+    return swapCount; 
 }
 
 void tsym::Matrix::swapRows(size_t index1, size_t index2)
