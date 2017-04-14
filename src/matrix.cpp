@@ -340,7 +340,7 @@ unsigned tsym::Matrix::compPartialPivots(Vector *b)
     for (size_t j = 0; j + 1 < nCol; ++j){
         size_t lowestComplexityPosition = 0;
 
-        unsigned lowestComplexity = data[j][j].getBasePtr()->complexity();
+        unsigned lowestComplexity = 10000000000000;
 
         for (size_t i = j + 1; i < nRow; ++i){
             unsigned currentComplexity = data[i][j].getBasePtr()->complexity();
@@ -351,11 +351,6 @@ unsigned tsym::Matrix::compPartialPivots(Vector *b)
             }
         }
 
-        if(!data[j][j].isZero()){
-            if((lowestComplexity>data[j][j].getBasePtr()->complexity()) && !data[j][j].isZero()){
-                continue;
-            }
-        }
         if(data[j][j].isZero() && lowestComplexityPosition==j)
             TSYM_ERROR("Can't keep zero on diagonal slot", j);
         if(data[lowestComplexityPosition][j].isZero())
