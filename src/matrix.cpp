@@ -340,12 +340,12 @@ unsigned tsym::Matrix::compPartialPivots(Vector *b)
     for (size_t j = 0; j + 1 < nCol; ++j){
         size_t lowestComplexityPosition = j;
 
-        unsigned lowestComplexity = 10000000000000;
+        unsigned lowestComplexity = 10000000;
 
         for (size_t i = j + 1; i < nRow; ++i){
             unsigned currentComplexity = data[i][j].getBasePtr()->complexity();
 
-            if (currentComplexity<=lowestComplexity && !data[i][j].isZero()){
+            if (currentComplexity<lowestComplexity && !data[i][j].isZero()){
                 lowestComplexity=currentComplexity;
                 lowestComplexityPosition = i;
             }
@@ -355,6 +355,9 @@ unsigned tsym::Matrix::compPartialPivots(Vector *b)
             TSYM_ERROR("Can't keep zero on diagonal slot", j);
         if(data[lowestComplexityPosition][j].isZero())
             TSYM_ERROR("Can't write zero on diagonal slot", j);
+
+        if(lowestComplexityPosition== j)
+            continue;
 
         swapRows(lowestComplexityPosition, j);
 
@@ -446,10 +449,12 @@ tsym::Var tsym::Matrix::checkedDet() const
 {
     Matrix PLU(*this);
     unsigned nPivotSwaps;
-
+    std::cout<< "Vorher Matrix: " << PLU << std::endl; 
     nPivotSwaps = PLU.compPartialPivots(nullptr);
+    std::cout<< "NachPivot Matrix: " << PLU << std::endl; 
 
     PLU.factorizeLU();
+    std::cout<< "NachLU Matrix: " << PLU << std::endl; 
 
     return PLU.detFromLU(nPivotSwaps);
 }
