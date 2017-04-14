@@ -312,9 +312,14 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
     Matrix PLU(*this);
     Vector b(rhs);
     Vector x(nRow);
+    std::cout<< "Vorher Matrix: " << PLU << std::endl; 
 
     nPivotSwaps = PLU.compPartialPivots(&b);
+        std::cout<< "NachPivot Matrix: " << PLU << std::endl; 
+
     PLU.factorizeLU();
+        std::cout<< "NachLU Matrix: " << PLU << std::endl; 
+
 
     if (PLU.detFromLU(nPivotSwaps).isZero()) {
         TSYM_WARNING("Can't solve system of equations with singular coefficient matrix!");
