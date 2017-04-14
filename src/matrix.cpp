@@ -361,6 +361,8 @@ unsigned tsym::Matrix::compPartialPivots(Vector *b)
         if(data[lowestComplexityPosition][j].isZero())
             TSYM_ERROR("Can't write zero on diagonal slot", j);
 
+        if(lowestComplexity>data[j][j].getBasePtr()->complexity() && !data[j][j].isZero())
+            continue;
         if(lowestComplexityPosition== j)
             continue;
 
