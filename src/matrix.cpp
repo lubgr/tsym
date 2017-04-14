@@ -338,7 +338,7 @@ unsigned tsym::Matrix::compPartialPivots(Vector *b)
     unsigned swapCount = 0;
 
     for (size_t j = 0; j + 1 < nCol; ++j){
-        size_t lowestComplexityPosition = 0;
+        size_t lowestComplexityPosition = j;
 
         unsigned lowestComplexity = 10000000000000;
 
