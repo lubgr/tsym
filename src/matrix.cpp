@@ -351,14 +351,15 @@ unsigned tsym::Matrix::compPartialPivots(Vector *b)
             }
         }
 
-        if(data[lowestComplexityPosition][j].isZero() && data[j][j].isZero()){
-            for(size_t i = j + 1; i < nRow; ++i)
-                if(!data[i][j].isZero()){
-                    lowestComplexityPosition=i;
-                    break;
-                }
-
+        if(!data[j][j].isZero()){
+            if((lowestComplexity>data[j][j].getBasePtr()->complexity()) && !data[j][j].isZero()){
+                continue;
+            }
         }
+        if(data[j][j].isZero() && lowestComplexityPosition==j)
+            TSYM_ERROR("Can't keep zero on diagonal slot", j);
+        if(data[lowestComplexityPosition][j].isZero())
+            TSYM_ERROR("Can't write zero on diagonal slot", j);
 
         swapRows(lowestComplexityPosition, j);
 
