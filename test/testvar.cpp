@@ -177,9 +177,16 @@ TEST(Var, numberRequest)
     CHECK_EQUAL(1, one.toInt());
 }
 
-TEST(Var, fitsIntoInt)
+TEST(Var, smallIntegerfitsIntoInt)
 {
     CHECK(three.fitsIntoInt());
+}
+
+TEST(Var, nonIntegerfitsIntoInt)
+{
+    const Var fraction(2, 3);
+
+    CHECK_FALSE(fraction.fitsIntoInt());
 }
 
 TEST(Var, doesntFitIntoInt)
