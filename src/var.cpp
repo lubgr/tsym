@@ -93,6 +93,13 @@ tsym::Var::Var(const Var& other) :
     rep(new BasePtr(*other.rep))
 {}
 
+tsym::Var::Var(Var&& other)
+{
+    rep = other.rep;
+
+    other.rep = new BasePtr(Numeric::zero());
+}
+
 tsym::Var& tsym::Var::operator = (const Var& rhs)
 {
     if (this == &rhs)
@@ -101,6 +108,17 @@ tsym::Var& tsym::Var::operator = (const Var& rhs)
     delete rep;
 
     rep = new BasePtr(*rhs.rep);
+
+    return *this;
+}
+
+tsym::Var& tsym::Var::operator = (Var&& rhs)
+{
+    delete rep;
+
+    rep = rhs.rep;
+
+    rhs.rep = new BasePtr(Numeric::zero());
 
     return *this;
 }
