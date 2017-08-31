@@ -42,11 +42,11 @@ TEST(Complexity, fraction)
     CHECK_EQUAL(2, fraction->complexity());
 }
 
-TEST(Complexity, double)
+TEST(Complexity, floatingPoint)
 {
-    const BasePtr doubleNumeric= Numeric::create(2.7665454894445454);
+    const BasePtr n = Numeric::create(2.7665454894445454);
 
-    CHECK_EQUAL(3, doubleNumeric->complexity());
+    CHECK_EQUAL(3, n->complexity());
 }
 
 TEST(Complexity, constant)
