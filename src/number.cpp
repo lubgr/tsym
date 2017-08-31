@@ -127,9 +127,7 @@ void tsym::Number::tryDoubleToFraction()
 
 void tsym::Number::cancel()
 {
-    /* The overload of std::abs doesn't seem to work correctly here, compiler warnings for possibly
-     * dangerous implicit conversions demand for the implicit cast to int. */
-    const Int divisor(gcd(num, denom).abs());
+    const Int divisor(num.gcd(denom));
 
     if (num == 0)
         denom = 1;
@@ -139,14 +137,6 @@ void tsym::Number::cancel()
 
     num /= divisor;
     denom /= divisor;
-}
-
-tsym::Int tsym::Number::gcd(const Int& a, const Int& b) const
-{
-    if (b == 0)
-        return a;
-
-    return gcd(b, a % b);
 }
 
 tsym::Number& tsym::Number::operator += (const Number& rhs)
@@ -173,7 +163,7 @@ bool tsym::Number::isThisOrOtherDouble(const Number& other) const
 
 void tsym::Number::addRational(const Number& other)
 {
-    const Int multiple(lcm(denom, other.denom));
+    const Int multiple(denom.lcm(other.denom));
     Int newDenom;
     Int newNum;
 
@@ -186,15 +176,6 @@ void tsym::Number::addRational(const Number& other)
     }
 
     setAndSimplify(newNum, newDenom, 0.0);
-}
-
-tsym::Int tsym::Number::lcm(const Int& a, const Int& b) const
-    /* Returns the smallest common multiple of the given two integers, This method is only called
-     * during addition, the arguments are denominators of two numbers and thus positive. */
-{
-    const Int divisor(gcd(a, b));
-
-    return a/divisor*b;
 }
 
 tsym::Number& tsym::Number::operator -= (const Number& rhs)

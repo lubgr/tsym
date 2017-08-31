@@ -44,6 +44,8 @@ namespace tsym {
             /* Returns 0 if the exponent < 0: */
             Int toThe(const Int& exp) const;
             Int abs() const;
+            Int gcd(const Int& other) const;
+            Int lcm(const Int& other) const;
 
             bool equal(const Int& rhs) const;
             bool lessThan(const Int& rhs) const;

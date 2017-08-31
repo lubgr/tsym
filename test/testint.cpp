@@ -51,6 +51,60 @@ TEST(Int, changeOfSign)
     CHECK_EQUAL(expected, result);
 }
 
+TEST(Int, gcdBothOperandsZero)
+{
+    const Int zero(0);
+    Int result;
+
+    result = zero.gcd(0);
+
+    CHECK_EQUAL(0, result);
+}
+
+TEST(Int, trivialGcd)
+{
+    const Int four(4);
+    Int result;
+
+    result = four.gcd(3);
+
+    CHECK_EQUAL(1, result);
+}
+
+TEST(Int, largeGcd)
+{
+    const Int n1("2268768101928008863115135358527391507");
+    const Int n2("471097608789240594631830432");
+    const Int expected("2309482093840923");
+    Int result;
+
+    result = n1.gcd(n2);
+
+    CHECK_EQUAL(expected, result);
+}
+
+TEST(Int, lcmBothZero)
+{
+    const Int zero(0);
+    Int result;
+
+    result = zero.lcm(0);
+
+    CHECK_EQUAL(0, result);
+}
+
+TEST(Int, largeLcm)
+{
+    const Int expected("47116200935874995263669584298436552275884098991145738935519645420");
+    const Int n1("2309820438092849280938402209384209");
+    const Int n2("20398209384092840982094382094380");
+    Int result;
+
+    result = n1.lcm(n2);
+
+    CHECK_EQUAL(expected, result);
+}
+
 TEST(Int, constructFromMaxLong)
 {
     Int n(maxLong);

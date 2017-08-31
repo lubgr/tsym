@@ -188,6 +188,24 @@ tsym::Int tsym::Int::abs() const
     return result;
 }
 
+tsym::Int tsym::Int::gcd(const Int& other) const
+{
+    Int result;
+
+    mpz_gcd(result.handle, handle, other.handle);
+
+    return result;
+}
+
+tsym::Int tsym::Int::lcm(const Int& other) const
+{
+    Int result;
+
+    mpz_lcm(result.handle, handle, other.handle);
+
+    return result;
+}
+
 bool tsym::Int::equal(const Int& rhs) const
 {
     return mpz_cmp(handle, rhs.handle) == 0;

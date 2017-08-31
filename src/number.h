@@ -62,11 +62,9 @@ namespace tsym {
             void simplify();
             void tryDoubleToFraction();
             void cancel();
-            Int gcd(const Int& a, const Int& b) const;
             bool isThisOrOtherUndefined(const Number& other) const;
             bool isThisOrOtherDouble(const Number& other) const;
             void addRational(const Number& other);
-            Int lcm(const Int& a, const Int& b) const;
             Number flipSign() const;
             void timesRational(const Number& other);
             bool processTrivialPowers(const Number& exponent, Number& result) const;
