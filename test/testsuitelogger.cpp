@@ -50,7 +50,7 @@ void TestSuiteLogger::info(const std::string& file, int line, const std::string&
 void TestSuiteLogger::warning(const std::string& file, int line, const std::string& msg) const
 {
     std::vector<std::FILE*> fpList = { debugFp, infoFp };
-    
+
     if (logToStdout)
         fpList.push_back(stdout);
 
