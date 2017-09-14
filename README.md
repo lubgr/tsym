@@ -26,12 +26,12 @@ series expansion.
 
 Installation
 ------------
-To compile tsym, you need the [plic](https://github.com/lubgr/plic) library for logging,
-[gmp](https://gmplib.org) together with its development headers (`gmp-devel` in Fedora/Suse or
-`libgmp-dev` in Debian-base distributions), flex and bison (or their non-GPL counterparts),
-C and C++ compiler recent enough to support C++11 and [scons](http://scons.org) as a build system.
-For unit tests, [CppUTest](https://github.com/cpputest/cpputest) is required. tsym should build on
-all major Linux distributions by e.g.
+To compile tsym, you need the [gmp](https://gmplib.org) library together with its development
+headers (`gmp-devel` in Fedora/Suse or `libgmp-dev` in Debian-base distributions), flex and bison
+(or their non-GPL counterparts), C and C++ compiler recent enough to support C++11 and
+[scons](http://scons.org) as a build system. For unit tests,
+[CppUTest](https://github.com/cpputest/cpputest) is required. tsym should build on all major Linux
+distributions by e.g.
 ```bash
 scons CFLAGS=-O2 CXXFLAGS="-march=native -O2" lib
 ```
@@ -146,15 +146,15 @@ Compiling the example code
 
 The exemplary C++ program from above can be compiled with
 ```bash
-g++ -o example main-function-from-above.cpp -ltsym -lplic -lpython3.4m -lgmp
+g++ -o example main-function-from-above.cpp -ltsym -lgmp
 ```
-for less recent compiler versions, `-std=c++11` should be manually enabled. Note that the version of
-the python library should match the one plic is compiled and linked against. If you are unsure, run
-```bash
-find /usr -type f -path '*plic/buildinfo.h' -exec sed -rn '/python/Is/^.*"(.*)"/\1/p' '{}' \;
-```
+for less recent compiler versions, `-std=c++11` should be manually enabled.
 
 Additional notes
 ----------------
 * Avoid `using namespace tsym` because `sqrt` and `pow` from math.h are in the global namespace.
   `sqrt(2)` will thus be evaluated to a `double`, while `tsym::sqrt(2)` gives the desired result.
+* Control over logging output can be implemented by providing a subclass of `tsym::Logger` that
+  overrides the debug/info/warning/error/critical methods. An instance of that subclass must then be
+  registered to replace the default behavior (print warning, error and critical messages to standard
+  output) by `tsym::Logger::setInstance(&customLogger);`

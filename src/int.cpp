@@ -172,7 +172,7 @@ tsym::Int tsym::Int::nonTrivialPower(const Int& exp) const
     Int result;
 
     if (!mpz_fits_ulong_p(exp.handle))
-        TSYM_ERROR("Can't evaluate integer power with huge exponent: ", exp);
+        TSYM_ERROR("Can't evaluate integer power with huge exponent: %S", exp);
 
     mpz_pow_ui(result.handle, handle, mpz_get_ui(exp.handle));
 

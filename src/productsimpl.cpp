@@ -234,7 +234,7 @@ tsym::BasePtrList tsym::ProductSimpl::mergeNonEmpty(const BasePtrList& p, const 
     else if (res.isEqual(q1p1))
         return BasePtrList(q1, merge(p, qRest));
 
-    TSYM_ERROR("ProductSimpl: Error merging ", p1, " and ", q1, " to ", res);
+    TSYM_ERROR("ProductSimpl: Error merging %S and %S to %S", p1, q1, res);
 
     return BasePtrList();
 }
@@ -314,8 +314,8 @@ tsym::BasePtrList tsym::ProductSimpl::simplNumAndConst(const BasePtr& numeric,
     else if (constant->isPower())
         return BasePtrList(numeric, constant);
 
-    TSYM_ERROR("Wrong type during ProductSimpl of two const. expressions! Got ",
-            numeric, " as Numeric and ", constant, " as const.!");
+    TSYM_ERROR("Wrong type during ProductSimpl of two const. expressions!"
+            "Got %S as Numeric and %S as const.!", numeric, constant);
 
     return BasePtrList(numeric, constant);
 }
@@ -558,7 +558,7 @@ void tsym::ProductSimpl::contractTwoConst(BasePtrList::iterator& it1,
         *it1 = res.front();
         *it2 = res.back();
     } else
-        TSYM_ERROR("Error contracting ", *it1, " and ", *it2, " to ", res);
+        TSYM_ERROR("Error contracting %S and %S to %S", *it1, *it2, res);
 }
 
 tsym::BasePtrList tsym::ProductSimpl::simplPreparedFactors(const BasePtrList& u)

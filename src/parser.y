@@ -51,7 +51,7 @@ expr: function
     | textual
     | DOUBLE_RANGE {
         tsym_parserAdapter_logParsingError("Float out of representable range: ", $1);
-        result = $$ = tsym_parserAdapter_createMaxDouble("Continue with maximum double: ");
+        result = $$ = tsym_parserAdapter_createMaxDouble("Continue with maximum double: %S");
     }
     | LONG {
         result = $$ = tsym_parserAdapter_createInteger($1);

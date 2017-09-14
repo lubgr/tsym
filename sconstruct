@@ -10,7 +10,7 @@ LIBNAME = 'lib%s' % NAME
 DEFAULT_PREFIX = '/usr/local'
 DEFAULT_BUILDDIR = './build'
 TEST_EXEC = 'runtests'
-PUBLIC_HEADER = ['globals', 'matrix', 'var', 'vector', 'version', 'buildinfo']
+PUBLIC_HEADER = ['globals', 'logger', 'matrix', 'var', 'vector', 'version', 'buildinfo']
 CONFIG_FILE = 'config.py'
 
 def publicHeaderList():
@@ -108,7 +108,7 @@ variables.AddVariables(
         ('CFLAGS', 'C compiler flags'),
         ('CPPFLAGS', 'Preprocessor flags, e.g. -I /usr/local/include'),
         ('LDFLAGS', 'Linker flags for test executable, e.g. -L /usr/local/lib'),
-        ('LIBS', 'Libraries for the test executable, e.g. -lplic'),
+        ('LIBS', 'Libraries for the test executable, e.g. -lgmp'),
         BoolVariable('RELEASE', 'Build with  predefined release flags', 1),
         BoolVariable('DEBUG', 'Build with predefined debug flags (overrides RELEASE)', 0),
         BoolVariable('COVERAGE', 'Add compiler flags for test coverage meta data', 0),
@@ -196,7 +196,7 @@ libEnv.CFile(parser, 'src/parser.y')
 testEnv.VariantDir(testEnv.buildDir(), 'test')
 testEnv.Append(CPPPATH = [libEnv.buildDir(), testEnv.buildDir()])
 if not testEnv.concat('LIBS'):
-    testEnv.Append(LIBS = ['CppUTest', 'tsym', 'plic', 'gmp', 'python3.6m'])
+    testEnv.Append(LIBS = ['CppUTest', 'tsym', 'gmp'])
 testEnv.Append(RPATH = env.buildDir())
 testEnv.Append(LIBPATH = env.buildDir())
 

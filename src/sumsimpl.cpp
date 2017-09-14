@@ -72,7 +72,7 @@ tsym::BasePtrList tsym::SumSimpl::mergeNonEmpty(const BasePtrList& p, const Base
     else if (res.isEqual(q1p1))
         return BasePtrList(q1, merge(p, qRest));
 
-    TSYM_ERROR("Error merging non-empty lists: ", p, ", ", q);
+    TSYM_ERROR("Error merging non-empty lists: %S, %S", p, q);
 
     return BasePtrList();
 }

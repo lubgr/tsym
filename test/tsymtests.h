@@ -55,8 +55,7 @@ extern \
 TEST_##testGroup##_##testName##_TestShell TEST_##testGroup##_##testName##_TestShell_instance; \
 class TEST_##testGroup##_##testName##_Test : public TEST_GROUP_##CppUTestGroup##testGroup \
 { public: TEST_##testGroup##_##testName##_Test () : TEST_GROUP_##CppUTestGroup##testGroup () \
-{ plic::info("CppUTest") \
-    << CPPUTEST_QUOTE(testGroup) << "/" << CPPUTEST_QUOTE(testName);}\
+{ TSYM_INFO("CppUTest - %s/%s", CPPUTEST_QUOTE(testGroup), CPPUTEST_QUOTE(testName) ); }\
 void testBody(); }; \
 class TEST_##testGroup##_##testName##_TestShell : public UtestShell \
 { virtual Utest* createTest() _override { return new TEST_##testGroup##_##testName##_Test; } } \

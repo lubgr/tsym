@@ -58,8 +58,8 @@ tsym::Var::Var(const char *str)
         return;
     }
 
-    TSYM_ERROR("Parsing symbol or integer from '%s' failed, result: ", str,
-            tmp, " (", tmp.type(), "). Create undefined Var object");
+    TSYM_ERROR("Parsing symbol or integer from '%s' failed, result: %S (%S)."
+            "Create undefined Var object", str, tmp, tmp.type());
 
     rep = new BasePtr(Undefined::create());
 }
@@ -80,7 +80,7 @@ tsym::Var::Var(const char *str, Var::Sign sign)
     }
 
     if (type == Type::INT && (*withoutSign.rep)->numericEval() < 0)
-        TSYM_WARNING("Ignore positive flag for negative int (", withoutSign, ")");
+        TSYM_WARNING("Ignore positive flag for negative int (%S)", withoutSign);
 
     rep = new BasePtr(*withoutSign.rep);
 }
@@ -208,7 +208,7 @@ tsym::Var tsym::Var::normal() const
     ms = std::chrono::duration_cast<std::chrono::microseconds>(te - ts);
 
     if (!normalized->isEqual(*rep))
-        TSYM_DEBUG("Normalized ", *rep, " to ", normalized, " in %.2f ms.",
+        TSYM_DEBUG("Normalized %S to %S in %.2f ms.", *rep, normalized,
                 static_cast<float>(ms.count())/1000.0);
 
     return Var(normalized);
@@ -270,7 +270,7 @@ tsym::Var::Type tsym::Var::numericType() const
         return Type::FRACTION;
 
     /* This should never happened, as the BasePtr must be Undefined in the first place. */
-    TSYM_ERROR("Illegal number ", number, " in Var!");
+    TSYM_ERROR("Illegal number %S in Var!", number);
 
     return Type::UNDEFINED;
 }
@@ -316,7 +316,7 @@ bool tsym::Var::isInteger() const
 int tsym::Var::toInt() const
 {
     if (!isInteger())
-        TSYM_ERROR("Requesting integer from ", type());
+        TSYM_ERROR("Requesting integer from %S", type());
 
     return (*rep)->numericEval().numerator().toInt();
 }

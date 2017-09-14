@@ -18,11 +18,6 @@ before_install:
   - make
   - sudo make install
   - cd ..
-  - git clone https://github.com/lubgr/plic
-  - cd plic
-  - scons CXX=g++-6 PYVERSION=3.4m
-  - sudo scons install CXX=g++-6 PYVERSION=3.4m PREFIX=/usr/
-  - cd ..
   - gem install coveralls-lcov
 
 addons:
@@ -45,9 +40,9 @@ matrix:
       env: COMPILER=g++-6
 
 script:
-  - scons CXX=$COMPILER COVERAGE=1 LIBS='-lCppUTest -ltsym -lplic -lpython3.4m -lgmp' lib
+  - scons CXX=$COMPILER COVERAGE=1 LIBS='-lCppUTest -ltsym -lgmp' lib
   - cat build/src/buildinfo.h
-  - scons CXX=$COMPILER COVERAGE=1 LIBS='-lCppUTest -ltsym -lplic -lpython3.4m -lgmp' test
+  - scons CXX=$COMPILER COVERAGE=1 LIBS='-lCppUTest -ltsym -lgmp' test
   - ./build/runtests
 
 after_success:

@@ -192,8 +192,8 @@ tsym::Matrix& tsym::Matrix::operator += (const Matrix& rhs)
             for (size_t j = 0; j < nCol; ++j)
                 data[i][j] += rhs.data[i][j];
     } else
-        TSYM_ERROR("Matrix dimensions %zu and %zu don't match!", nRow, rhs.nRow,
-                " Return unmodified left hand side.");
+        TSYM_ERROR("Matrix dimensions %zu and %zu don't match! Return unmodified left hand side.",
+                nRow, rhs.nRow);
 
     return *this;
 }
@@ -205,8 +205,8 @@ tsym::Matrix& tsym::Matrix::operator -= (const Matrix& rhs)
             for (size_t j = 0; j < nCol; ++j)
                 data[i][j] -= rhs.data[i][j];
     } else
-        TSYM_ERROR("Matrix dimensions %zu and %zu don't match!", nRow, rhs.nRow,
-                " Return unmodified left hand side.");
+        TSYM_ERROR("Matrix dimensions %zu and %zu don't match! Return unmodified left hand side.",
+                nRow, rhs.nRow);
 
     return *this;
 }
@@ -216,8 +216,8 @@ tsym::Matrix& tsym::Matrix::operator *= (const Matrix& rhs)
     if (nCol == rhs.nRow)
         multiplyChecked(rhs);
     else
-        TSYM_ERROR("Matrix dimensions %zu and %zu don't match!", nRow, rhs.nRow,
-            " Return matrix with zero entries.");
+        TSYM_ERROR("Matrix dimensions %zu and %zu don't match! Return matrix with zero entries.",
+                nRow, rhs.nRow);
 
     return *this;
 }
@@ -254,8 +254,8 @@ tsym::Vector tsym::Matrix::operator * (const Vector& rhs) const
             for (size_t j = 0; j < nCol; ++j)
                 result.data[i] += data[i][j]*rhs.data[j];
     else
-        TSYM_ERROR("%zu matrix columns don't match vector size (%zu)!", nCol, rhs.dim,
-                " Return vector with zero entries.");
+        TSYM_ERROR("%zu matrix columns don't match vector size (%zu)! Return empty vector.", nCol,
+                rhs.dim);
 
     return result;
 }
@@ -428,8 +428,8 @@ tsym::Var tsym::Matrix::det() const
     if (nRow == nCol && nRow != 0)
         return checkedDet();
 
-    TSYM_ERROR("Illegal determinant request for %zux%zu matrix!", nRow, nCol,
-            " Return zero determinant.");
+    TSYM_ERROR("Illegal determinant request for %zux%zu matrix! Return zero determinant.", nRow,
+            nCol);
 
     return constZero();
 }

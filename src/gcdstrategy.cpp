@@ -18,7 +18,7 @@ tsym::BasePtr tsym::GcdStrategy::compute(const BasePtr& u, const BasePtr& v) con
     if (polyInfo.isInputValid())
         return compute(u, v, polyInfo.listOfSymbols());
 
-    TSYM_ERROR("Invalid gcd input: ", u, " and ", v);
+    TSYM_ERROR("Invalid gcd input: %S and %S", u, v);
 
     return Undefined::create();
 }
@@ -166,9 +166,9 @@ tsym::Number tsym::GcdStrategy::normalizationFactor(const BasePtr& arg, BasePtrL
     fac = lCoeff->numericEval();
 
     if (!fac.isRational())
-        TSYM_ERROR(arg, " has a non-rational leading coefficient!");
+        TSYM_ERROR("%S has a non-rational leading coefficient!", arg);
     else if (fac.isZero())
-        TSYM_ERROR("Gcd result has a zero leading coefficient: ", arg);
+        TSYM_ERROR("Gcd result %S has a zero leading coefficient.", arg);
 
     return fac.sign();
 }

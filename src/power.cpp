@@ -65,7 +65,7 @@ tsym::BasePtr tsym::Power::createNonTrivial(const BasePtr& base, const BasePtr& 
     res = simpl.simplify(base, exponent);
 
     if (res.size() != 2) {
-        TSYM_ERROR("Obtained wrong list from PowerSimpl: ", res, ". Return Undefined.");
+        TSYM_ERROR("Obtained wrong list from PowerSimpl: %S. Return Undefined", res);
         return Undefined::create();
     }
 
@@ -189,7 +189,7 @@ tsym::BasePtr tsym::Power::expandIntegerExponent() const
         return expandSumBaseIntExp();
     else if (baseRef->isProduct())
         /* Should have been resolved during standard product simplification. */
-        TSYM_ERROR("Illegal power expression, base: ", baseRef, ", exp.: ", expRef);
+        TSYM_ERROR("Illegal power expression, base: %S, exponent: %S.", baseRef, expRef);
 
     return Power::create(baseRef, expRef);
 }
@@ -248,8 +248,7 @@ int tsym::Power::degree(const BasePtr& variable) const
             && nExp.toDouble() > std::numeric_limits<int>::min()/(double)baseDegree)
         return nExp.toInt()*baseDegree;
 
-    TSYM_ERROR("Degree of ", clone(),
-            " doens't fit into a primitive integer! Return 0 as degree.");
+    TSYM_ERROR("Degree of %S doens't fit into a primitive integer! Return 0 as degree.", clone());
 
     return 0;
 }

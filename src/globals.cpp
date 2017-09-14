@@ -76,7 +76,7 @@ tsym::Var tsym::parse(const std::string& str, bool *success)
     const StringToVar stv(str);
     const Var result(stv.get());
 
-    TSYM_DEBUG("Parsed '", str, "' with result: ", result);
+    TSYM_DEBUG("Parsed '%s' with result: %S", str.c_str(), result);
 
     for (const auto& msg : stv.errorMessages())
         TSYM_ERROR(msg);

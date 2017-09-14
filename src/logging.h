@@ -2,19 +2,20 @@
 #define TSYM_LOGGING_H
 
 #include <cstring>
-#include "plic/plic.h"
+#include "logger.h"
+#include "sgfy.h"
 
 #define TSYM_FILE (std::strrchr(__FILE__, '/') ? std::strrchr(__FILE__, '/') + 1 : __FILE__)
 
-#define TSYM_DEBUG(...) plic::debug("tsym", plic::FILENAME, TSYM_FILE, plic::LINE, __LINE__, \
-        __VA_ARGS__)
-#define TSYM_INFO(...) plic::info("tsym", plic::FILENAME, TSYM_FILE, plic::LINE, __LINE__, \
-        __VA_ARGS__)
-#define TSYM_WARNING(...) plic::warning("tsym", plic::FILENAME, TSYM_FILE, plic::LINE, __LINE__, \
-        __VA_ARGS__)
-#define TSYM_ERROR(...) plic::error("tsym", plic::FILENAME, TSYM_FILE, plic::LINE, __LINE__, \
-        __VA_ARGS__)
-#define TSYM_CRITICAL(...) plic::critical("tsym", plic::FILENAME, TSYM_FILE, plic::LINE, __LINE__, \
-        __VA_ARGS__)
+#define TSYM_DEBUG(...) tsym::Logger::getInstance()->debug(TSYM_FILE, __LINE__, \
+        sgfy::str(__VA_ARGS__))
+#define TSYM_INFO(...) tsym::Logger::getInstance()->info(TSYM_FILE, __LINE__, \
+        sgfy::str(__VA_ARGS__))
+#define TSYM_WARNING(...) tsym::Logger::getInstance()->warning(TSYM_FILE, __LINE__, \
+        sgfy::str(__VA_ARGS__))
+#define TSYM_ERROR(...) tsym::Logger::getInstance()->error(TSYM_FILE, __LINE__, \
+        sgfy::str(__VA_ARGS__))
+#define TSYM_CRITICAL(...) tsym::Logger::getInstance()->critical(TSYM_FILE, __LINE__, \
+        sgfy::str(__VA_ARGS__))
 
 #endif

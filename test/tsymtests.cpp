@@ -2,6 +2,7 @@
 #include <sstream>
 #include "base.h"
 #include "logging.h"
+#include "testsuitelogger.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -20,12 +21,12 @@ void disableLog()
 {
     TSYM_INFO("Following warnings/errors are probably an intended part of testing");
 
-    plic::configFile("test/logdisable.py");
+    TestSuiteLogger::disableStdout();
 }
 
 void enableLog()
 {
     TSYM_INFO("Warnings/errors aren't intended from now on!");
 
-    plic::configFile("test/logenable.py");
+    TestSuiteLogger::enableStdout();
 }

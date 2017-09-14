@@ -420,7 +420,7 @@ bool tsym::Number::isZero() const
     else if (isUndefined())
         return false;
 
-    TSYM_ERROR("Unknown number type ", *this, " during zero request.");
+    TSYM_ERROR("Unknown number type %S during zero request.", *this);
 
     return false;
 }

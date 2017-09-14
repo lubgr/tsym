@@ -9,7 +9,9 @@
 #include "poly.h"
 #include "name.h"
 #include "abc.h"
-#include "plic/plic.h"
+#include "logging.h"
+#include "testsuitelogger.h"
+#include "tsymtests.h"
 #include "CppUTest/CommandLineTestRunner.h"
 
 void initConstructOnFirstUse()
@@ -44,17 +46,19 @@ void initConstructOnFirstUse()
     emptyVec(1);
 
     tsym::Var("a").type();
-
-    plic::debug("CppUTest", "initialize plic local static variables by %%");
 }
 
 int main(int argc, char** argv)
 {
+    TestSuiteLogger logger("misc/test-logfiles/debug.log", "misc/test-logfiles/info.log");
+
+    tsym::Logger::setInstance(&logger);
+
+    disableLog();
     initConstructOnFirstUse();
+    enableLog();
 
     tsym::Printer::disableFractions();
-
-    plic::configFile("test/logconfig.py");
 
     return CommandLineTestRunner::RunAllTests(argc, argv);
 }
