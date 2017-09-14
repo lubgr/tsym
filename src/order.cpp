@@ -67,6 +67,11 @@ bool tsym::doPermuteBothSymbol(const BasePtr& left, const BasePtr& right)
     const Name& lName(left->name());
     const Name& rName(right->name());
 
+    if (lName == rName)
+        if (left->isPositive() != right->isPositive())
+            /* For equal names and different signs, put the pos. symbol first: */
+            return right->isPositive();
+
     return lName > rName;
 }
 

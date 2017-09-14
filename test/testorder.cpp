@@ -72,6 +72,14 @@ TEST(Order, twoEqualSymbols)
     CHECK(order::isCorrect(a, a));
 }
 
+TEST(Order, twoSymbolsOnePositive)
+{
+    const BasePtr aPos = Symbol::createPositive("a");
+
+    CHECK(order::isCorrect(aPos, a));
+    CHECK(order::doPermute(a, aPos));
+}
+
 TEST(Order, twoSymbolsCapitalSmall)
 {
     const BasePtr A = Symbol::create("A");
