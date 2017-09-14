@@ -207,3 +207,17 @@ TEST(PolyPseudoDivide, cohenExample02)
     CHECK_EQUAL(expectedQuotient, result.front());
     CHECK_EQUAL(expectedRemainder, result.back());
 }
+
+TEST(PolyPseudoDivide, illegalInput)
+{
+    const BasePtr u = Power::create(a, Numeric::create(1.23456789));
+    const BasePtr v = Trigonometric::createSin(a);
+    BasePtrList result;
+
+    disableLog();
+    result = poly::pseudoDivide(u, v, a);
+    enableLog();
+
+    CHECK(result.front()->isUndefined());
+    CHECK(result.back()->isUndefined());
+}

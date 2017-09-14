@@ -103,6 +103,17 @@ TEST(PolyMinDegree, minDegreeInvalidInput)
     const BasePtr arg = Trigonometric::createSin(a);
     int result;
 
+    result = poly::minDegree(arg, a);
+
+    CHECK_EQUAL(0, result);
+}
+
+TEST(PolyMinDegree, minDegreeLargeExp)
+{
+    const Int largeExp("1000000000000000000000000000000000000000");
+    const BasePtr arg = Power::create(a, Numeric::create(largeExp));
+    int result;
+
     disableLog();
     result = poly::minDegree(arg, a);
     enableLog();
