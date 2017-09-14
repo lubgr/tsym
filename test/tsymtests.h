@@ -43,12 +43,6 @@ void enableLog();
 
 #undef TEST
 
-/* In CppUTest versions > 4.3, the C++11 override keyword is used via a macro _override. For older
- * versions of CppUTest and C++ standard in use, it's necessary to define an empty _override. */
-#if !defined(_override) && defined(__cplusplus) &&__cplusplus < 201103L
-#define _override
-#endif
-
 #define TEST(testGroup, testName) \
 class TEST_##testGroup##_##testName##_TestShell; \
 extern \
