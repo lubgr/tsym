@@ -1,4 +1,5 @@
 
+#include <memory>
 #include "printer.h"
 #include "numeric.h"
 #include "logarithm.h"
@@ -50,9 +51,10 @@ void initConstructOnFirstUse()
 
 int main(int argc, char** argv)
 {
-    TestSuiteLogger logger("misc/test-logfiles/debug.log", "misc/test-logfiles/info.log");
+    auto logger = std::make_shared<const TestSuiteLogger>("misc/test-logfiles/debug.log",
+            "misc/test-logfiles/info.log");
 
-    tsym::Logger::setInstance(&logger);
+    tsym::Logger::setInstance(logger);
 
     disableLog();
     initConstructOnFirstUse();

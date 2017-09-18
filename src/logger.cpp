@@ -2,7 +2,7 @@
 #include "logger.h"
 #include <iostream>
 
-tsym::Logger *tsym::Logger::instance = new Logger();
+std::shared_ptr<const tsym::Logger> tsym::Logger::instance = std::make_shared<const tsym::Logger>();
 
 void tsym::Logger::debug(const std::string&, int, const std::string&) const
 {
@@ -27,17 +27,12 @@ void tsym::Logger::critical(const std::string&, int, const std::string& msg) con
     std::cout << msg << std::endl;
 }
 
-void tsym::Logger::setInstance(Logger *logger)
+void tsym::Logger::setInstance(std::shared_ptr<const Logger> logger)
 {
-    if (instance == logger)
-        return;
-    else if (instance != nullptr)
-        delete instance;
-
     instance = logger;
 }
 
-const tsym::Logger *tsym::Logger::getInstance()
+const std::shared_ptr<const tsym::Logger>& tsym::Logger::getInstance()
 {
     return instance;
 }
