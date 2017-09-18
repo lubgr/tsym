@@ -13,7 +13,7 @@ options=('!strip')
 source=("${pkgname%-git}::git+file://${PWD}/../..")
 md5sums=('SKIP')
 
-makedepends=('git' 'scons' 'trlog')
+makedepends=('git' 'scons')
 provides=(${pkgname%-git})
 conflicts=(${pkgname%-git})
 
@@ -25,10 +25,20 @@ pkgver() {
     git log -1 --pretty=format:'%h'
 }
 
+check() {
+    cd "${srcdir}/${pkgname%-git}"
+
+    unset CC CXX CFLAGS CXXFLAGS CPPFLAGS
+
+    scons DEBUG=1 test
+
+    ./build/runtests
+}
+
 build() {
     cd "${srcdir}/${pkgname%-git}"
 
-    unset CC CXX CFLAGS CXXFLAGS
+    unset CC CXX CFLAGS CXXFLAGS CPPFLAGS
 
     scons DEBUG=1 lib
 }
@@ -36,7 +46,7 @@ build() {
 package() {
     cd "${srcdir}/${pkgname%-git}"
 
-    unset CC CXX CFLAGS CXXFLAGS
+    unset CC CXX CFLAGS CXXFLAGS CPPFLAGS
 
     mkdir "${pkgdir}/usr"
 
