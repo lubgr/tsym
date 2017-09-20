@@ -15,9 +15,21 @@ namespace sgfy {
     void append(std::ostream& stream, const char *fmt, std::va_list args);
     void macroAppend(std::ostream& stream, const char *fmt, ...);
 
+    template<class T> typename
+    std::enable_if<std::is_trivial<T>::value, const T&>::type pass(const T& arg)
+    {
+        return arg;
+    }
+
+    template<class T> typename
+    std::enable_if<!std::is_trivial<T>::value, const char *>::type pass(const T&)
+    {
+        return "";
+    }
+
     template<class ...T> void append(std::ostream& stream, const std::string& fmt, const T&... args)
     {
-        macroAppend(stream, fmt.c_str(), args...);
+        macroAppend(stream, fmt.c_str(), pass(args)...);
     }
 
     class ArgProcessor {
