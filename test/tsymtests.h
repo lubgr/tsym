@@ -6,7 +6,6 @@
  * assertions, suppress warning logs (if intended) and the like. */
 
 #include <sstream>
-#include <string>
 #include "logging.h"
 #include "CppUTest/TestHarness.h"
 #include "CppUTest/SimpleString.h"
@@ -57,4 +56,5 @@ TEST_##testGroup##_##testName##_TestShell_instance; \
 static TestInstaller TEST_##testGroup##_##testName##_Installer( \
     TEST_##testGroup##_##testName##_TestShell_instance, #testGroup, #testName, __FILE__,__LINE__); \
     void TEST_##testGroup##_##testName##_Test::testBody()
+
 #endif
