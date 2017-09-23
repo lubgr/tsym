@@ -28,6 +28,15 @@ namespace tsym {
 
     extern const Var Pi;
     extern const Var Euler;
+
+    enum class Option {
+        USE_OPTIONAL_CACHING,
+        PRINT_UTF8,
+        PRINT_FRACTIONS,
+        MAX_PRIME_INTEGER
+    };
+
+    template<class T> void setOption(Option key, const T& value);
 }
 
 #endif
