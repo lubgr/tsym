@@ -4,7 +4,6 @@
 #include <memory>
 #include <unordered_map>
 #include <string>
-#include "options.h"
 
 namespace tsym {
     template<class S, class T, bool forceCaching = false> class Cache {
