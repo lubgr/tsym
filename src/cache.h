@@ -43,38 +43,26 @@ namespace tsym {
             std::unordered_map<S, T> rep;
     };
 
+#ifdef TSYM_NO_OPTIONAL_CACHE
     template<class S, class T> class Cache<S, T, false> {
         public:
-            Cache() :
-                useOptionalCaching(options::get<bool>(Option::USE_OPTIONAL_CACHING))
-            {
-                if (useOptionalCaching)
-                    rep = std::unique_ptr<std::unordered_map<S, T>>(new std::unordered_map<S, T>());
-            };
-
+            Cache() = default;
             ~Cache() = default;
             Cache(const Cache& other) = delete;
             const Cache& operator = (const Cache& rhs) = delete;
 
-            const T& insertAndReturn(const S& key, const T& value)
+            const T& insertAndReturn(const S&, const T& value)
             {
-                return useOptionalCaching ? (*rep)[key] = value : value;
+                return value;
             }
 
-            const T *retrieve(const S& key) const
+            const T *retrieve(const S&) const
             {
-                if (!useOptionalCaching)
-                    return nullptr;
-
-                const auto lookup = rep->find(key);
-
-                return lookup != rep->end() ? &lookup->second : nullptr;
+                return nullptr;
             }
-
-        private:
-            const bool useOptionalCaching;
-            std::unique_ptr<std::unordered_map<S, T>> rep;
     };
+#endif
+
 }
 
 #endif

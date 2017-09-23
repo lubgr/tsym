@@ -1,6 +1,5 @@
 
 #include <memory>
-#include "globals.h"
 #include "printer.h"
 #include "numeric.h"
 #include "logarithm.h"
@@ -56,8 +55,6 @@ int main(int argc, char** argv)
             "misc/test-logfiles/info.log");
 
     tsym::Logger::setInstance(logger);
-
-    tsym::setOption(tsym::Option::USE_OPTIONAL_CACHING, false);
 
     disableLog();
     initConstructOnFirstUse();

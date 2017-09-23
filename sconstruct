@@ -166,7 +166,7 @@ if not env['CXXFLAGS']:
 if env['RELEASE']:
     env.Append(CPPDEFINES = 'NDEBUG')
 else:
-    env.Append(CPPDEFINES = [NAME.upper() + '_DEBUG_STRINGS'])
+    env.Append(CPPDEFINES = [NAME.upper() + '_DEBUG_STRINGS', NAME.upper() + '_NO_OPTIONAL_CACHE'])
 
 libEnv = env.Clone()
 testEnv = env.Clone()

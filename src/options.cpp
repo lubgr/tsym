@@ -19,7 +19,6 @@ namespace tsym {
 
             if (names.empty()) {
 #define STRINGIFY(option) names[Option::option] = #option
-                STRINGIFY(USE_OPTIONAL_CACHING);
                 STRINGIFY(MAX_PRIME_INTEGER);
                 STRINGIFY(PRINT_FRACTIONS);
                 STRINGIFY(PRINT_UTF8);
@@ -40,7 +39,6 @@ void tsym::options::setDefaultOptions()
 {
     isInitiated = true;
 
-    setOption<bool>(Option::USE_OPTIONAL_CACHING, true);
     setOption<bool>(Option::PRINT_UTF8, false);
     setOption<bool>(Option::PRINT_FRACTIONS, true);
     setOption<int>(Option::MAX_PRIME_INTEGER, 1000);
@@ -48,10 +46,12 @@ void tsym::options::setDefaultOptions()
 
 template<class T> const T& tsym::options::get(Option key)
 {
+    typename std::map<Option, T>::const_iterator lookup;
+
     if (!areOptionsInitiated())
         setDefaultOptions();
 
-    const auto lookup = getMap<T>().find(key);
+    lookup = getMap<T>().find(key);
 
     if (lookup == getMap<T>().end())
         TSYM_ERROR("Option %s not found!", optionName(key));
