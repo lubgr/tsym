@@ -1,7 +1,6 @@
 #ifndef TSYM_INT_H
 #define TSYM_INT_H
 
-#include <iostream>
 #include <cstddef>
 #include <functional>
 #include "gmp.h"
