@@ -58,8 +58,8 @@ tsym::Var::Var(const char *str)
         return;
     }
 
-    TSYM_ERROR("Parsing symbol or integer from '%s' failed, result: %S (%S)."
-            "Create undefined Var object", str, tmp, tmp.type());
+    TSYM_ERROR("Parsing symbol or integer from '%s' failed, result: %S (%S). "
+            "Create undefined Var object.", str, tmp, tmp.type());
 
     rep = new BasePtr(Undefined::create());
 }
