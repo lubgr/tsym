@@ -20,7 +20,7 @@ namespace tsym {
             BasePtr replaceTmpSymbolsBackFrom(const BasePtr& ptr);
 
         private:
-            Cache<BasePtr, BasePtr> cache;
+            Cache<BasePtr, BasePtr, true> cache;
     };
 }
 

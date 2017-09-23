@@ -21,7 +21,7 @@ tsym::BasePtr tsym::SymbolMap::replaceTmpSymbolsBackFrom(const BasePtr& orig)
 {
     BasePtr result(orig);
 
-    for (const auto& entry : cache.getUnderlyingMap())
+    for (const auto& entry : cache)
         result = result->subst(entry.second, entry.first);
 
     if (result->isUndefined())
