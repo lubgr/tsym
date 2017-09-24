@@ -24,7 +24,7 @@ bool tsym::Undefined::isEqual(const BasePtr& other) const
 bool tsym::Undefined::isEqualDifferentBase(const BasePtr& other) const
 {
     if (other->isUndefined())
-        TSYM_WARNING("Equality request between two undefined expressions! Returns false.");
+        TSYM_ERROR("Equality request between two undefined expressions! Returns false.");
 
     return false;
 }
