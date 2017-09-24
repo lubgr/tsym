@@ -5,7 +5,7 @@
 #include "logger.h"
 #include "sgfy.h"
 
-#define TSYM_FILE (std::strrchr(__FILE__, '/') ? std::strrchr(__FILE__, '/') + 1 : __FILE__)
+#define TSYM_FILE (std::strrchr(__FILE__, '/') + 1)
 
 #define TSYM_DEBUG(...) tsym::Logger::getInstance()->debug(TSYM_FILE, __LINE__, \
         sgfy::str(__VA_ARGS__))
