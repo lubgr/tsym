@@ -364,19 +364,17 @@ TEST(NumberPower, invertNegativeFraction)
 
 TEST(NumberPower, undefined)
 {
-    Number zero;
+    const Number zero;
+    Number result;
 
     disableLog();
-    zero = zero.toThe(-1);
+    result = zero.toThe(-1);
     enableLog();
 
-    CHECK(zero.isUndefined());
-    CHECK_FALSE(zero.isInt());
-    CHECK_FALSE(zero.isDouble());
-    CHECK_FALSE(zero.isFrac());
-
-    CHECK(zero != 0);
-    CHECK(zero != 1);
+    CHECK(result.isUndefined());
+    CHECK_FALSE(result.isInt());
+    CHECK_FALSE(result.isDouble());
+    CHECK_FALSE(result.isFrac());
 }
 
 TEST(NumberPower, intExponent)
@@ -809,6 +807,59 @@ TEST(UndefinedNumber, powerWithValidBase)
     base = base.toThe(undefined);
 
     CHECK(base.isUndefined());
+}
+
+TEST(UndefinedNumber, toDouble)
+{
+    double result;
+
+    disableLog();
+    result = undefined.toDouble();
+    enableLog();
+
+    DOUBLES_EQUAL(0.0, result, TOL);
+}
+
+TEST(UndefinedNumber, numeratorRequest)
+{
+    Int result;
+
+    disableLog();
+    result = undefined.numerator();
+    enableLog();
+
+    CHECK_EQUAL(0, result);
+}
+
+TEST(UndefinedNumber, demoniatorRequest)
+{
+    Int result;
+
+    disableLog();
+    result = undefined.denominator();
+    enableLog();
+
+    CHECK_EQUAL(1, result);
+}
+
+TEST(UndefinedNumber, comparisonBetweenUndefined)
+{
+    const Number u1(Number::createUndefined());
+    const Number u2(Number::createUndefined());
+
+    disableLog();
+
+    CHECK_FALSE(u1 == u2);
+    CHECK(u1 != u2);
+
+    CHECK_FALSE(u1 < u2);
+    CHECK_FALSE(u1 > u2);
+
+    /* Not intuitive but unavoidable: */
+    CHECK(u1 <= u2);
+    CHECK(u1 >= u2);
+
+    enableLog();
 }
 
 TEST_GROUP(Operators)

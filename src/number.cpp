@@ -251,7 +251,7 @@ bool tsym::Number::processTrivialPowers(const Number& exponent, Number& result) 
         result = createUndefined();
         return true;
     } else if (isZero() && exponent.num < 0) {
-        TSYM_WARNING("Number division by zero! Result is undefined.");
+        TSYM_ERROR("Number division by zero! Result is undefined.");
         result = createUndefined();
         return true;
     } else if (isZero() || isOne() || exponent.isOne()) {
@@ -370,9 +370,10 @@ bool tsym::Number::equal(const Number& rhs) const
 {
     if (areBothRational(rhs))
         return num == rhs.num && denom == rhs.denom;
-    else if (isThisOrOtherUndefined(rhs))
+    else if (isThisOrOtherUndefined(rhs)) {
+        TSYM_ERROR("Equality request between two undefined Numbers! Returns false.");
         return false;
-    else
+    } else
         return equalViaDouble(rhs);
 }
 
@@ -399,9 +400,10 @@ bool tsym::Number::equalViaDouble(const Number& rhs) const
 
 bool tsym::Number::lessThan(const Number& rhs) const
 {
-    if (isThisOrOtherUndefined(rhs))
+    if (isThisOrOtherUndefined(rhs)) {
+        TSYM_WARNING("Comparison between two undefined Numbers!");
         return false;
-    else if (areBothRational(rhs)) {
+    } else if (areBothRational(rhs)) {
         if (num == rhs.num && denom == rhs.denom)
             return false;
         else if (num < rhs.num && denom >= rhs.denom)
@@ -457,11 +459,17 @@ bool tsym::Number::isUndefined() const
 
 const tsym::Int& tsym::Number::numerator() const
 {
+    if (isUndefined())
+        TSYM_WARNING("Requesting numerator of undefined number");
+
     return num;
 }
 
 const tsym::Int& tsym::Number::denominator() const
 {
+    if (isUndefined())
+        TSYM_WARNING("Requesting denominator of undefined number");
+
     return denom;
 }
 
@@ -471,8 +479,11 @@ double tsym::Number::toDouble() const
         return num.toDouble();
     else if (isFrac())
         return num.toDouble()/denom.toDouble();
-    else
-        return dValue;
+
+    if (isUndefined())
+        TSYM_WARNING("Requesting double evaluation of undefined number");
+
+    return dValue;
 }
 
 tsym::Number tsym::Number::abs() const
