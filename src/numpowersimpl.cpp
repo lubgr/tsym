@@ -1,6 +1,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <algorithm>
 #include "numpowersimpl.h"
 #include "logging.h"
 
@@ -75,7 +76,9 @@ void tsym::NumPowerSimpl::compute()
 {
     initFromOrig();
 
-    if (newBase < 0 && !newExp.isInt())
+    if (areOneOrMoreUndefined())
+        setUndefined();
+    else if (newBase < 0 && !newExp.isInt())
         setUndefined();
     else if (newBase.isDouble() || newExp.isDouble())
         computeNonRational();
@@ -89,6 +92,15 @@ void tsym::NumPowerSimpl::initFromOrig()
     newExp = origExp;
     preFac = origPreFac;
     isPreFacNegative = false;
+}
+
+bool tsym::NumPowerSimpl::areOneOrMoreUndefined() const
+{
+    for (const auto& number : { newBase, newExp, preFac })
+        if (number.isUndefined())
+            return true;
+
+    return false;
 }
 
 void tsym::NumPowerSimpl::setUndefined()

@@ -45,6 +45,7 @@ namespace tsym {
             void computeAndSetFlag();
             void compute();
             void initFromOrig();
+            bool areOneOrMoreUndefined() const;
             void setUndefined();
             void computeNonRational();
             void computeRational();
