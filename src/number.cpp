@@ -88,6 +88,10 @@ void tsym::Number::setUndefined()
 {
     setAndSimplify(0, 1, 0.0);
     undefined = true;
+
+#ifdef TSYM_DEBUG_STRINGS
+    prettyStr = "Undefined";
+#endif
 }
 
 void tsym::Number::simplify()
