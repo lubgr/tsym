@@ -152,6 +152,8 @@ for less recent compiler versions, `-std=c++11` should be manually enabled.
 
 Additional notes
 ----------------
+* `Var` objects can be used as keys in `std::unordered_map` containers, as `std::hash` is specified
+  for this class.
 * Avoid `using namespace tsym` because `sqrt` and `pow` from math.h are in the global namespace.
   `sqrt(2)` will thus be evaluated to a `double`, while `tsym::sqrt(2)` gives the desired result.
 * Control over logging output can be implemented by providing a subclass of `tsym::Logger` that

@@ -1,4 +1,5 @@
 
+#include <unordered_map>
 #include <sstream>
 #include <limits>
 #include <algorithm>
@@ -1119,4 +1120,27 @@ TEST(Var, printerOperatorTypeEnumUndefined)
     stream << u;
 
     CHECK_EQUAL(expected, stream.str());
+}
+
+TEST(Var, unorderedMapInsertion)
+{
+    std::unordered_map<tsym::Var, int> map;
+
+    map[a] = 0;
+    map[b] = 1;
+    map[c + d] = 2;
+
+    CHECK_EQUAL(0, map[a]);
+    CHECK_EQUAL(1, map[b]);
+    CHECK_EQUAL(2, map[c + d]);
+}
+
+TEST(Var, equalHashes)
+{
+    CHECK_EQUAL(std::hash<Var>{}(a + b + c), std::hash<Var>{}(a + b + c));
+}
+
+TEST(Var, differentHashes)
+{
+    CHECK_FALSE(std::hash<Var>{}(a) == std::hash<Var>{}(2*a));
 }

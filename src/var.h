@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <functional>
 
 namespace tsym { class BasePtr; }
 
@@ -90,6 +91,14 @@ namespace tsym {
 
     std::ostream& operator << (std::ostream& stream, const Var& rhs);
     std::ostream& operator << (std::ostream& stream, const Var::Type& rhs);
+}
+
+namespace std
+{
+    template<> struct hash<tsym::Var>
+    {
+        size_t operator () (const tsym::Var& var) const;
+    };
 }
 
 #endif
