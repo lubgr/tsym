@@ -252,7 +252,7 @@ void tsym::NumTrigoSimpl::compShiftedSin()
 }
 
 const tsym::BasePtr *tsym::NumTrigoSimpl::getValue(
-        const std::vector< std::pair<BasePtr, BasePtr> >& table) const
+        const std::vector<std::pair<BasePtr, BasePtr>>& table) const
     /* Returns a pointer to the exact value (thus, the second entry of an element in the given
      * table), if one matches the argument. Numerical evaluation is carried out for all elements,
      * that don't exactly match. The latter could be made optional. However, the chance that the
@@ -436,7 +436,7 @@ void tsym::NumTrigoSimpl::asin()
 }
 
 const tsym::BasePtr *tsym::NumTrigoSimpl::getKey(
-        const std::vector< std::pair<BasePtr, BasePtr> >& table) const
+        const std::vector<std::pair<BasePtr, BasePtr>>& table) const
 {
     const Number nArg(arg->numericEval());
 
