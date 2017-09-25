@@ -36,8 +36,8 @@ namespace tsym {
             const Var& get() const;
 
         private:
-            StringToVar(const StringToVar& other);
-            const StringToVar& operator = (const StringToVar& rhs);
+            StringToVar(const StringToVar& other) = delete;
+            const StringToVar& operator = (const StringToVar& rhs) = delete;
 
             void parse();
 

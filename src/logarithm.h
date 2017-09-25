@@ -20,8 +20,8 @@ namespace tsym {
 
         private:
             Logarithm(const BasePtr& arg);
-            Logarithm(const Logarithm& other);
-            Logarithm& operator = (const Logarithm& other);
+            Logarithm(const Logarithm& other) = delete;
+            Logarithm& operator = (const Logarithm& other) = delete;
             ~Logarithm();
 
             static bool isInvalidArg(const BasePtr& arg);
