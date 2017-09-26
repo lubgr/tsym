@@ -30,41 +30,41 @@ void TestSuiteLogger::open(std::FILE **fp, const char *filename)
         std::cerr << "Couldn't open " << filename << " for logging output" << std::endl;
 }
 
-void TestSuiteLogger::log(const std::string& file, int line, const std::string& msg,
+void TestSuiteLogger::log(const Logger::Message& msg,
         const std::vector<std::FILE*> filePointer) const
 {
     for (auto&& fp : filePointer)
-        std::fprintf(fp, "%s +%d: %s\n", file.c_str(), line, msg.c_str());
+        std::fprintf(fp, "%s +%d: %s\n", msg.file.c_str(), msg.line, msg.payload.c_str());
 }
 
-void TestSuiteLogger::debug(const std::string& file, int line, const std::string& msg) const
+void TestSuiteLogger::debug(const Logger::Message& msg) const
 {
-    log(file, line, msg, { debugFp });
+    log(msg, { debugFp });
 }
 
-void TestSuiteLogger::info(const std::string& file, int line, const std::string& msg) const
+void TestSuiteLogger::info(const Logger::Message& msg) const
 {
-    log(file, line, msg, { debugFp, infoFp });
+    log(msg, { debugFp, infoFp });
 }
 
-void TestSuiteLogger::warning(const std::string& file, int line, const std::string& msg) const
+void TestSuiteLogger::warning(const Logger::Message& msg) const
 {
     std::vector<std::FILE*> fpList = { debugFp, infoFp };
 
     if (logToStdout)
         fpList.push_back(stdout);
 
-    log(file, line, msg, fpList);
+    log(msg, fpList);
 }
 
-void TestSuiteLogger::error(const std::string& file, int line, const std::string& msg) const
+void TestSuiteLogger::error(const Logger::Message& msg) const
 {
-    warning(file, line, msg);
+    warning(msg);
 }
 
-void TestSuiteLogger::critical(const std::string& file, int line, const std::string& msg) const
+void TestSuiteLogger::critical(const Logger::Message& msg) const
 {
-    warning(file, line, msg);
+    warning(msg);
 }
 
 void TestSuiteLogger::disableStdout()

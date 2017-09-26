@@ -10,11 +10,21 @@ namespace tsym {
             Logger() = default;
             virtual ~Logger() = default;
 
-            virtual void debug(const std::string& file, int line, const std::string& msg) const;
-            virtual void info(const std::string& file, int line, const std::string& msg) const;
-            virtual void warning(const std::string& file, int line, const std::string& msg) const;
-            virtual void error(const std::string& file, int line, const std::string& msg) const;
-            virtual void critical(const std::string& file, int line, const std::string& msg) const;
+            struct Message {
+                Message(const Message& other) = delete;
+                Message& operator =(const Message& rhs) = delete;
+
+                const std::string ident;
+                const std::string file;
+                const int line;
+                const std::string payload;
+            };
+
+            virtual void debug(const Message& msg) const;
+            virtual void info(const Message& msg) const;
+            virtual void warning(const Message& msg) const;
+            virtual void error(const Message& msg) const;
+            virtual void critical(const Message& msg) const;
 
             static void setInstance(std::shared_ptr<const Logger> logger);
             static const std::shared_ptr<const Logger>& getInstance();

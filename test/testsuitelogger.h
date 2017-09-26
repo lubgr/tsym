@@ -9,18 +9,18 @@ class TestSuiteLogger : public tsym::Logger {
         TestSuiteLogger(const char *debugFilename, const char *infoFilename);
         ~TestSuiteLogger();
 
-        void debug(const std::string& file, int line, const std::string& msg) const;
-        void info(const std::string& file, int line, const std::string& msg) const;
-        void warning(const std::string& file, int line, const std::string& msg) const;
-        void error(const std::string& file, int line, const std::string& msg) const;
-        void critical(const std::string& file, int line, const std::string& msg) const;
+        void debug(const Logger::Message& msg) const;
+        void info(const Logger::Message& msg) const;
+        void warning(const Logger::Message& msg) const;
+        void error(const Logger::Message& msg) const;
+        void critical(const Logger::Message& msg) const;
 
         static void disableStdout();
         static void enableStdout();
 
     private:
         void open(std::FILE **fp, const char *filename);
-        void log(const std::string& file, int line, const std::string& msg,
+        void log(const Logger::Message& msg,
                 const std::vector<std::FILE*> filePointer) const;
 
         static std::FILE *debugFp;
