@@ -312,9 +312,14 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
     Matrix PLU(*this);
     Vector b(rhs);
     Vector x(nRow);
+    std::cout<< "Vorher Matrix: " << PLU << std::endl; 
 
     nPivotSwaps = PLU.compPartialPivots(&b);
+        std::cout<< "NachPivot Matrix: " << PLU << std::endl; 
+
     PLU.factorizeLU();
+        std::cout<< "NachLU Matrix: " << PLU << std::endl; 
+
 
     if (PLU.detFromLU(nPivotSwaps).isZero()) {
         TSYM_WARNING("Can't solve system of equations with singular coefficient matrix!");
@@ -337,24 +342,37 @@ unsigned tsym::Matrix::compPartialPivots(Vector *b)
 {
     unsigned swapCount = 0;
 
-    for (size_t j = 0; j + 1 < nCol; ++j) {
-        if (!data[j][j].isZero())
+    for (size_t j = 0; j + 1 < nCol; ++j){
+        size_t lowestComplexityPosition = j;
+
+        unsigned lowestComplexity = 10000000;
+
+        for (size_t i = j + 1; i < nRow; ++i){
+            unsigned currentComplexity = data[i][j].getBasePtr()->complexity();
+
+            if (currentComplexity<lowestComplexity && !data[i][j].isZero()){
+                lowestComplexity=currentComplexity;
+                lowestComplexityPosition = i;
+            }
+        }
+
+        if(data[j][j].isZero() && lowestComplexityPosition==j)
+            TSYM_ERROR("Can't keep zero on diagonal slot", j);
+        if(data[lowestComplexityPosition][j].isZero())
+            TSYM_ERROR("Can't write zero on diagonal slot", j);
+
+        if(lowestComplexity>data[j][j].getBasePtr()->complexity() && !data[j][j].isZero())
+            continue;
+        if(lowestComplexityPosition== j)
             continue;
 
-        for (size_t i = j + 1; i < nRow; ++i)
-            if (!data[i][j].isZero()) {
-                swapRows(i, j);
+        swapRows(lowestComplexityPosition, j);
 
-                if (b != nullptr)
-                    std::swap(b->data[j], b->data[i]);
-
-                ++swapCount;
-
-                break;
-            }
+        if (b != nullptr)
+            std::swap(b->data[j], b->data[lowestComplexityPosition]);
+        ++swapCount;
     }
-
-    return swapCount;
+    return swapCount; 
 }
 
 void tsym::Matrix::swapRows(size_t index1, size_t index2)
@@ -438,10 +456,12 @@ tsym::Var tsym::Matrix::checkedDet() const
 {
     Matrix PLU(*this);
     unsigned nPivotSwaps;
-
+    std::cout<< "Vorher Matrix: " << PLU << std::endl; 
     nPivotSwaps = PLU.compPartialPivots(nullptr);
+    std::cout<< "NachPivot Matrix: " << PLU << std::endl; 
 
     PLU.factorizeLU();
+    std::cout<< "NachLU Matrix: " << PLU << std::endl; 
 
     return PLU.detFromLU(nPivotSwaps);
 }
