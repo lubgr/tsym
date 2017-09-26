@@ -65,9 +65,10 @@ def writeBuildInfoHeader(target, source, env):
             info.append(('UNSTABLE', None))
 
     info += [('CPP_COMPILER', env['CXX'] + ' ' + env['CXXVERSION']),
-            ('CPP_FLAGS', env['CCFLAGS'] + env['CXXFLAGS']),
+            ('CXXFLAGS', env['CCFLAGS'] + env['CXXFLAGS']),
+            ('CPP_MACROS', ' '.join(env['CPPDEFINES'])),
             ('C_COMPILER', env['CC'] + ' ' + env['CCVERSION']),
-            ('C_FLAGS', env['CCFLAGS'] + env['CFLAGS']),
+            ('CFLAGS', env['CCFLAGS'] + env['CFLAGS']),
             ('PARSER_GENERATOR', env['YACC']), ('LEXICAL_ANALYZER', env['LEX']),
             ('BUILD_OS', ' '.join(os.uname())), ('BUILD_DATE', timeStr)]
 
