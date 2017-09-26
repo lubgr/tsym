@@ -188,21 +188,6 @@ void tsym::NumPowerSimpl::shiftNegPreFac()
 
 void tsym::NumPowerSimpl::computeAllPos()
 {
-    if (hasUndefinedComponents()) {
-        setUndefined();
-        return;
-    }
-
-    computeAllPosAndDefined();
-}
-
-bool tsym::NumPowerSimpl::hasUndefinedComponents() const
-{
-    return newBase.isUndefined() || newExp.isUndefined() || preFac.isUndefined();
-}
-
-void tsym::NumPowerSimpl::computeAllPosAndDefined()
-{
     if (areValuesSmallEnough())
         cancel();
     else if (newExp.isInt())

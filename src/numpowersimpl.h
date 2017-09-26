@@ -56,8 +56,6 @@ namespace tsym {
             void computePosExpPosBase();
             void shiftNegPreFac();
             void computeAllPos();
-            bool hasUndefinedComponents() const;
-            void computeAllPosAndDefined();
             bool areValuesSmallEnough() const;
             void cancel();
             void defNewBasePrimes();
