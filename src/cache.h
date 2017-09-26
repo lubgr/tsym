@@ -61,7 +61,6 @@ namespace tsym {
             }
     };
 #endif
-
 }
 
 #endif

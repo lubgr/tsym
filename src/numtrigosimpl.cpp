@@ -79,7 +79,6 @@ namespace tsym {
                 { timesPi(1, 2), Undefined::create() }
             };
 
-
             return map;
         }
     }
