@@ -16,6 +16,72 @@ namespace tsym {
         {
             return Product::create(Numeric::create(num, denom), Constant::createPi());
         }
+
+        const std::unordered_map<BasePtr, BasePtr>& sineTable()
+        {
+            static const BasePtr& zero(Numeric::zero());
+            static const BasePtr two(Numeric::create(2));
+            static const BasePtr half(Numeric::create(1, 2));
+            static const BasePtr fourth(Numeric::create(1, 4));
+            static const BasePtr sqrtTwo(Power::sqrt(two));
+            static const BasePtr sqrtSix(Power::sqrt(Numeric::create(6)));
+            static const std::unordered_map<BasePtr, BasePtr> map {
+                /* sin(0) = 0. */
+                { zero, zero },
+                /* sin(1/12*pi) = (sqrt(6) - sqrt(2))/4. */
+                { timesPi(1, 12), Product::create(fourth,
+                        Sum::create(sqrtSix, Product::minus(sqrtTwo))) },
+                /* sin(1/8*pi) = sqrt(2 - sqrt(2))/2. */
+                { timesPi(1, 8), Product::create(half,
+                        Power::sqrt(Sum::create(two, Product::minus(sqrtTwo)))) },
+                /* sin(1/6*pi) = 1/2. */
+                { timesPi(1, 6), half },
+                /* sin(1/4*pi) = 1/sqrt(2). */
+                { timesPi(1, 4), Power::oneOver(sqrtTwo) },
+                /* sin(1/3*pi) = sqrt(3)/2. */
+                { timesPi(1, 3), Product::create(half, Power::sqrt(Numeric::create(3))) },
+                /* sin(3/8*pi) = sqrt(2 + sqrt(2))/2. */
+                { timesPi(3, 8), Product::create(half, Power::sqrt(Sum::create(two, sqrtTwo))) },
+                /* sin(5/12*pi) = (sqrt(6) + sqrt(2))/4. */
+                { timesPi(5, 12), Product::create(fourth, Sum::create(sqrtSix, sqrtTwo)) },
+                /* sin(pi/2) = 1. */
+                { timesPi(1, 2), Numeric::create(1) },
+            };
+
+            return map;
+        }
+
+        const std::unordered_map<BasePtr, BasePtr>& xtanTable()
+        {
+            static const BasePtr& zero(Numeric::zero());
+            static const BasePtr& one(Numeric::one());
+            static const BasePtr two(Numeric::create(2));
+            static const BasePtr sqrtTwo(Power::sqrt(two));
+            static const BasePtr sqrtThree(Power::sqrt(Numeric::create(3)));
+            static const std::unordered_map<BasePtr, BasePtr> map {
+                /* tan(0) = 0. */
+                { zero, zero },
+                /* tan(1/12*pi) = 2 - sqrt(3). */
+                { timesPi(1, 12), Sum::create(two, Product::minus(sqrtThree)) },
+                /* tan(1/8*pi) = sqrt(2) - 1. */
+                { timesPi(1, 8), Sum::create(sqrtTwo, Product::minus(one)) },
+                /* tan(1/6*pi) = 1/sqrt(3). */
+                { timesPi(1, 6), Power::oneOver(sqrtThree) },
+                /* tan(1/4*pi) = 1. */
+                { timesPi(1, 4), one },
+                /* tan(1/3*pi) = sqrt(3). */
+                { timesPi(1, 3), sqrtThree },
+                /* tan(3/8*pi) = sqrt(2) + 1. */
+                { timesPi(3, 8), Sum::create(sqrtTwo, one) },
+                /* tan(5/12*pi) = 2 + sqrt(3). */
+                { timesPi(5, 12), Sum::create(two, sqrtThree) },
+                /* tan(pi/2) = Undefined. */
+                { timesPi(1, 2), Undefined::create() }
+            };
+
+
+            return map;
+        }
     }
 }
 
@@ -25,58 +91,7 @@ tsym::NumTrigoSimpl::NumTrigoSimpl() :
     type(Trigonometric::Type::SIN), /* Dummy value. */
     isSimplified(false),
     sign(1)
-{
-    const BasePtr& zero(Numeric::zero());
-    const BasePtr& one(Numeric::one());
-    const BasePtr two(Numeric::create(2));
-    const BasePtr half(Numeric::create(1, 2));
-    const BasePtr fourth(Numeric::create(1, 4));
-    const BasePtr sqrtTwo(Power::sqrt(two));
-    const BasePtr sqrtThree(Power::sqrt(Numeric::create(3)));
-    const BasePtr sqrtSix(Power::sqrt(Numeric::create(6)));
-
-    /* sin(0) = 0. */
-    sinTable.push_back(std::make_pair(zero, zero));
-    /* sin(1/12*pi) = (sqrt(6) - sqrt(2))/4. */
-    sinTable.push_back(std::make_pair(timesPi(1, 12),
-                Product::create(fourth, Sum::create(sqrtSix, Product::minus(sqrtTwo)))));
-    /* sin(1/8*pi) = sqrt(2 - sqrt(2))/2. */
-    sinTable.push_back(std::make_pair(timesPi(1, 8),
-                Product::create(half, Power::sqrt(Sum::create(two, Product::minus(sqrtTwo))))));
-    /* sin(1/6*pi) = 1/2. */
-    sinTable.push_back(std::make_pair(timesPi(1, 6), half));
-    /* sin(1/4*pi) = 1/sqrt(2). */
-    sinTable.push_back(std::make_pair(timesPi(1, 4), Power::oneOver(sqrtTwo)));
-    /* sin(1/3*pi) = sqrt(3)/2. */
-    sinTable.push_back(std::make_pair(timesPi(1, 3), Product::create(half, sqrtThree)));
-    /* sin(3/8*pi) = sqrt(2 + sqrt(2))/2. */
-    sinTable.push_back(std::make_pair(timesPi(3, 8),
-                Product::create(half, Power::sqrt(Sum::create(two, sqrtTwo)))));
-    /* sin(5/12*pi) = (sqrt(6) + sqrt(2))/4. */
-    sinTable.push_back(std::make_pair(timesPi(5, 12),
-                Product::create(fourth, Sum::create(sqrtSix, sqrtTwo))));
-    /* sin(pi/2) = 1. */
-    sinTable.push_back(std::make_pair(timesPi(1, 2), one));
-    /* tan(0) = 0. */
-    tanTable.push_back(std::make_pair(zero, zero));
-    /* tan(1/12*pi) = 2 - sqrt(3). */
-    tanTable.push_back(std::make_pair(timesPi(1, 12), Sum::create(two,
-                    Product::minus(sqrtThree))));
-    /* tan(1/8*pi) = sqrt(2) - 1. */
-    tanTable.push_back(std::make_pair(timesPi(1, 8), Sum::create(sqrtTwo, Product::minus(one))));
-    /* tan(1/6*pi) = 1/sqrt(3). */
-    tanTable.push_back(std::make_pair(timesPi(1, 6), Power::oneOver(sqrtThree)));
-    /* tan(1/4*pi) = 1. */
-    tanTable.push_back(std::make_pair(timesPi(1, 4), one));
-    /* tan(1/3*pi) = sqrt(3). */
-    tanTable.push_back(std::make_pair(timesPi(1, 3), sqrtThree));
-    /* tan(3/8*pi) = sqrt(2) + 1. */
-    tanTable.push_back(std::make_pair(timesPi(3, 8), Sum::create(sqrtTwo, one)));
-    /* tan(5/12*pi) = 2 + sqrt(3). */
-    tanTable.push_back(std::make_pair(timesPi(5, 12), Sum::create(two, sqrtThree)));
-    /* tan(pi/2) = Undefined. */
-    tanTable.push_back(std::make_pair(timesPi(1, 2), Undefined::create()));
-}
+{}
 
 void tsym::NumTrigoSimpl::setType(Trigonometric::Type type)
 {
@@ -241,7 +256,7 @@ void tsym::NumTrigoSimpl::shiftToFirstQuadrant(unsigned quadrant)
 
 void tsym::NumTrigoSimpl::compShiftedSin()
 {
-    const BasePtr *exact(getValue(sinTable));
+    const BasePtr *exact(getValue(sineTable()));
 
     if (exact != nullptr)
         setResult(*exact);
@@ -252,18 +267,24 @@ void tsym::NumTrigoSimpl::compShiftedSin()
 }
 
 const tsym::BasePtr *tsym::NumTrigoSimpl::getValue(
-        const std::vector<std::pair<BasePtr, BasePtr>>& table) const
+        const std::unordered_map<BasePtr, BasePtr>& table) const
     /* Returns a pointer to the exact value (thus, the second entry of an element in the given
      * table), if one matches the argument. Numerical evaluation is carried out for all elements,
      * that don't exactly match. The latter could be made optional. However, the chance that the
      * following equality leads to a match by accident is extremely low. */
 {
+    const auto lookup = table.find(arg);
+
+    return lookup == table.end() ? getValueNumEval(table) : &lookup->second;
+}
+
+const tsym::BasePtr *tsym::NumTrigoSimpl::getValueNumEval(
+        const std::unordered_map<BasePtr, BasePtr>& table) const
+{
     const Number nArg(arg->numericEval());
 
     for (const auto& entry : table)
-        if (arg->isEqual(entry.first))
-            return &entry.second;
-        else if (nArg == entry.first->numericEval())
+        if (nArg == entry.first->numericEval())
             return &entry.second;
 
     return nullptr;
@@ -319,7 +340,7 @@ void tsym::NumTrigoSimpl::cos()
 void tsym::NumTrigoSimpl::tan()
 {
     const unsigned quadrant = getQuadrant();
-    const BasePtr *exact(getValue(tanTable));
+    const BasePtr *exact(getValue(xtanTable()));
 
     setTanSign(quadrant);
 
@@ -425,7 +446,7 @@ void tsym::NumTrigoSimpl::detourAsinAcosAtan()
 
 void tsym::NumTrigoSimpl::asin()
 {
-    const BasePtr *exact(getKey(sinTable));
+    const BasePtr *exact(getKey(sineTable()));
 
     if (exact != nullptr)
         setResult(*exact);
@@ -436,7 +457,7 @@ void tsym::NumTrigoSimpl::asin()
 }
 
 const tsym::BasePtr *tsym::NumTrigoSimpl::getKey(
-        const std::vector<std::pair<BasePtr, BasePtr>>& table) const
+        const std::unordered_map<BasePtr, BasePtr>& table) const
 {
     const Number nArg(arg->numericEval());
 
@@ -474,7 +495,7 @@ void tsym::NumTrigoSimpl::acosFromAsinResult()
 
 void tsym::NumTrigoSimpl::atan()
 {
-    const BasePtr *exact(getKey(tanTable));
+    const BasePtr *exact(getKey(xtanTable()));
 
     if (exact != nullptr)
         setResult(*exact);

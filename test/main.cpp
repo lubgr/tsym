@@ -4,6 +4,7 @@
 #include "numeric.h"
 #include "logarithm.h"
 #include "trigonometric.h"
+#include "numtrigosimpl.h"
 #include "baseptrlist.h"
 #include "constant.h"
 #include "matrix.h"
@@ -22,6 +23,7 @@ void initConstructOnFirstUse()
     const tsym::BasePtrList emptyList;
     const tsym::Matrix emptyMatrix;
     const tsym::Vector emptyVec;
+    tsym::NumTrigoSimpl nts;
     tsym::BasePtr undefined;
     tsym::Number n(1);
 
@@ -45,6 +47,12 @@ void initConstructOnFirstUse()
 
     emptyMatrix(1, 1);
     emptyVec(1);
+
+    nts.setType(tsym::Trigonometric::Type::SIN);
+    nts.setArg(0);
+    nts.compute();
+    nts.setType(tsym::Trigonometric::Type::TAN);
+    nts.compute();
 
     tsym::Var("a").type();
 }

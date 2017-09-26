@@ -2,6 +2,7 @@
 #define TSYM_NUMTRIGOSIMPL_H
 
 #include <vector>
+#include <unordered_map>
 #include "trigonometric.h"
 
 namespace tsym {
@@ -46,7 +47,8 @@ namespace tsym {
             void setSinSign(unsigned quadrant);
             void shiftToFirstQuadrant(unsigned quadrant);
             void compShiftedSin();
-            const BasePtr *getValue(const std::vector<std::pair<BasePtr, BasePtr>>& table) const;
+            const BasePtr *getValue(const std::unordered_map<BasePtr, BasePtr>& table) const;
+            const BasePtr *getValueNumEval(const std::unordered_map<BasePtr, BasePtr>& table) const;
             void setResult(const BasePtr& result);
             bool isDoubleNumeric(const BasePtr& ptr) const;
             void compNumericalSin();
@@ -67,15 +69,13 @@ namespace tsym {
             void detourAsinAcosAtan();
 
             void asin();
-            const BasePtr *getKey(const std::vector<std::pair<BasePtr, BasePtr>>& table) const;
+            const BasePtr *getKey(const std::unordered_map<BasePtr, BasePtr>& table) const;
 
             void acos();
             void acosFromAsinResult();
 
             void atan();
 
-            std::vector<std::pair<BasePtr, BasePtr>> sinTable;
-            std::vector<std::pair<BasePtr, BasePtr>> tanTable;
             const BasePtr Pi;
             const Number PI;
 
