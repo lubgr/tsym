@@ -293,7 +293,7 @@ TEST(Trigonometric, sinOfAsin)
 TEST(Trigonometric, sinOfNegativeSum)
 {
     const BasePtr arg = Sum::create(Product::minus(a, b, c),
-            Product::create(Numeric::create(-7,8), a),
+            Product::create(Numeric::create(-7, 8), a),
             Product::minus(a, Trigonometric::createCos(b)));
     const BasePtr expected = Product::minus(Trigonometric::createSin(Product::minus(arg)));
     const BasePtr res = Trigonometric::createSin(arg);
