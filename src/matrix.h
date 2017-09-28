@@ -2,6 +2,7 @@
 #define TSYM_MATRIX_H
 
 #include <initializer_list>
+#include <set>
 #include "var.h"
 #include "vector.h"
 
@@ -48,7 +49,11 @@ namespace tsym {
             void multiplyChecked(const Matrix& other);
             Vector solveChecked(const Vector& rhs) const;
             unsigned compPartialPivots(Vector *b);
-            void swapRows(size_t index1, size_t index2);
+            void collectAndSort(std::vector<std::vector<size_t>>& indices) const;
+            void collectAndSort(size_t i, std::vector<size_t>& lineIndices) const;
+            void selectPivots(std::vector<std::vector<size_t>>& indices) const;
+            bool isLineMissing(std::set<size_t>& pivots) const;
+            unsigned swapCount(std::vector<std::vector<size_t>>& indices) const;
             void factorizeLU();
             void compXFromLU(Vector& x, Vector& b) const;
             Matrix checkedInverse() const;

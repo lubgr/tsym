@@ -1,4 +1,5 @@
 
+#include <algorithm>
 #include <cassert>
 #include <chrono>
 #include "matrix.h"
@@ -335,70 +336,143 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
 unsigned tsym::Matrix::compPartialPivots(Vector *b)
     /* Returns the number of row swaps. */
 {
-    unsigned swapCount = 0;
+    std::vector<std::vector<size_t>> pivotIndices(nRow);
+    Vector *rhsCopy = b == nullptr ? nullptr : new Vector(*b);
+    Matrix coefficientCopy(*this);
+    size_t targetLine = 0;
 
-    for (size_t j = 0; j + 1 < nCol; ++j) {
-        if (!data[j][j].isZero())
+    collectAndSort(pivotIndices);
+    selectPivots(pivotIndices);
+
+    for (size_t i = 0; i < nRow; ++i) {
+        assert(pivotIndices[i].size() == 1);
+
+        targetLine = pivotIndices[i][0];
+
+        for (size_t j = 0; j < nCol; ++j)
+            data[targetLine][j] = coefficientCopy.data[i][j];
+
+        if (b != nullptr)
+            b->data[targetLine] = rhsCopy->data[i];
+    }
+
+    return swapCount(pivotIndices);
+}
+
+void tsym::Matrix::collectAndSort(std::vector<std::vector<size_t>>& indices) const
+{
+    for (size_t i = 0; i < nRow; ++i)
+        collectAndSort(i, indices[i]);
+}
+
+void tsym::Matrix::collectAndSort(size_t i, std::vector<size_t>& lineIndices) const
+{
+    const auto localData = data;
+    auto sortByComplexity = [i, localData] (size_t pivotA, size_t pivotB) {
+        return localData[i][pivotA].complexity() < localData[i][pivotB].complexity();
+    };
+
+    for (size_t j = 0; j < nCol; ++j)
+        if (!data[i][j].isZero())
+            lineIndices.push_back(j);
+
+    assert(lineIndices.size() > 0);
+
+    std::sort(lineIndices.begin(), lineIndices.end(), sortByComplexity);
+}
+
+void tsym::Matrix::selectPivots(std::vector<std::vector<size_t>>& indices) const
+/* Decides how lines are reordered based on pivot, i.e., divisor complexity. As conflicts might
+ * appear, permutation and recursion continue until a pivot distribution is found. This is a
+ * trial-and-error logic, and there is no guarantee that the selected reordering yields the lowest
+ * pivot complexity. However, as long as the coefficient matrix is not singular, an order is
+ * provided that ensures no division by zero will happen during LU decomposition. */
+{
+    std::vector<size_t> selectedPivots(nRow);
+    std::set<size_t> targetLineIndices;
+
+    for (size_t i = 0; i < nRow; ++i)
+        for (const auto& pivotIndex : indices[i])
+            if (targetLineIndices.count(pivotIndex) == 0) {
+                targetLineIndices.insert(pivotIndex);
+                selectedPivots[i] = pivotIndex;
+                break;
+            }
+
+    if (isLineMissing(targetLineIndices)) {
+        std::rotate(indices.begin(), indices.begin() + 1, indices.end());
+        selectPivots(indices);
+        std::rotate(indices.rbegin(), indices.rbegin() + 1, indices.rend());
+    } else
+        for (size_t i = 0; i < nRow; ++i)
+            indices[i] = { selectedPivots[i] };
+}
+
+bool tsym::Matrix::isLineMissing(std::set<size_t>& pivots) const
+{
+    const auto end = pivots.end();
+
+    for (size_t i = 0; i < nRow; ++i)
+        if (pivots.find(i) == end)
+            return true;
+
+    return false;
+}
+
+unsigned tsym::Matrix::swapCount(std::vector<std::vector<size_t>>& indices) const
+{
+    unsigned count = 0;
+
+    for (size_t i = 0; i < nRow; ++i) {
+        if (indices[i][0] == i)
             continue;
 
-        for (size_t i = j + 1; i < nRow; ++i)
-            if (!data[i][j].isZero()) {
-                swapRows(i, j);
-
-                if (b != nullptr)
-                    std::swap(b->data[j], b->data[i]);
-
-                ++swapCount;
-
+        for (size_t n = i + 1; n < nRow; ++n)
+            if (i == indices[n][0]) {
+                std::swap(indices[n], indices[i]);
+                ++count;
                 break;
             }
     }
 
-    return swapCount;
-}
-
-void tsym::Matrix::swapRows(size_t index1, size_t index2)
-{
-    for (size_t j = 0; j < nCol; ++j)
-        std::swap(data[index1][j], data[index2][j]);
+    return count;
 }
 
 void tsym::Matrix::factorizeLU()
 {
-    for (size_t j = 0; j + 1 < nCol; ++j) {
-        for (size_t i = j + 1; i < nRow; ++i) {
-            data[i][j] /= data[j][j];
-                for (size_t k = j + 1; k < nCol; ++k)
-                    data[i][k] -= data[i][j]*data[j][k];
-        }
+    for (size_t j = 0; j + 1 < nCol; ++j)
+	for (size_t i = j + 1; i < nRow; ++i) {
+	    data[i][j] /= data[j][j];
+	    for (size_t k = j + 1; k < nCol; ++k)
+		data[i][k] -= data[i][j]*data[j][k];
     }
 }
 
 void tsym::Matrix::compXFromLU(Vector& x, Vector& b) const
 {
     for (size_t i = 0; i < nRow; ++i)
-        for (size_t j = 0; j < i; ++j)
-            b.data[i] -= data[i][j]*b.data[j];
+	for (size_t j = 0; j < i; ++j)
+	    b.data[i] -= data[i][j]*b.data[j];
 
     assert(areAllItemsZero(x));
 
     for (size_t i = nRow - 1; i + 1 > 0; --i) {
-        for (size_t j = i + 1; j < nCol; ++j) {
-            x.data[i] -= data[i][j]*x.data[j];
-        }
+	for (size_t j = i + 1; j < nCol; ++j) {
+	    x.data[i] -= data[i][j]*x.data[j];
+	}
 
-        x.data[i] = ((b.data[i] + x.data[i])/data[i][i]).normal();
+	x.data[i] = ((b.data[i] + x.data[i])/data[i][i]).normal();
     }
 }
 
 tsym::Matrix tsym::Matrix::inverse() const
 {
     if (!isSquare())
-        TSYM_ERROR("Inversion for %zux%zu maxtrix impossible!", nRow, nCol);
+	TSYM_ERROR("Inversion for %zux%zu maxtrix impossible!", nRow, nCol);
     else if (det() == 0)
-        TSYM_ERROR("Matrix is singular, no inversion possible!");
+	TSYM_ERROR("Matrix is singular, no inversion possible!");
     else
-        return checkedInverse();
+	return checkedInverse();
 
     TSYM_ERROR("Return zero dimension matrix.");
 

@@ -542,6 +542,28 @@ TEST(Matrix, luDecompPivoting)
     CHECK_EQUAL((2*c + 3*b*c - 4*c*a*a - 3*b*b + 3*a*a*b)/(2*c), x(3));
 }
 
+TEST(Matrix, luDecompPivotingByCycling)
+{
+    Matrix A(3, 3);
+    Vector rhs(3);
+    Vector x;
+
+    A(0, 0) = a;
+    A(0, 1) = 2;
+    A(1, 1) = 1;
+    A(2, 2) = 3;
+
+    rhs(0) = 4;
+    rhs(1) = 2;
+    rhs(2) = 9;
+
+    x = A.solve(rhs);
+
+    CHECK_EQUAL(0, x(0));
+    CHECK_EQUAL(2, x(1));
+    CHECK_EQUAL(3, x(2));
+}
+
 TEST(Matrix, signSwitchDuringLUDecompWithPivoting2x2)
 {
     const Matrix A {{ 0, 1 }, { 1, 0 }};
