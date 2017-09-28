@@ -258,6 +258,11 @@ tsym::Var::Type tsym::Var::type() const
     return lookup->second;
 }
 
+unsigned tsym::Var::complexity() const
+{
+    return (*rep)->complexity();
+}
+
 tsym::Var::Type tsym::Var::numericType() const
 {
     const Number number((*rep)->numericEval());

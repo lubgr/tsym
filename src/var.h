@@ -59,6 +59,7 @@ namespace tsym {
             bool isZero() const;
             bool isPositive() const;
             bool isNegative() const;
+            unsigned complexity() const;
             Type type() const;
             Var numerator() const;
             Var denominator() const;
