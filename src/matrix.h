@@ -31,10 +31,12 @@ namespace tsym {
             const Matrix& operator + () const;
             Matrix operator - () const;
 
+            enum class Pivoting { LEAST_COMPLEXITY, FIRST_NON_ZERO };
+
             Matrix transpose() const;
-            Vector solve(const Vector& rhs) const;
+            Vector solve(const Vector& rhs, Pivoting option = Pivoting::LEAST_COMPLEXITY) const;
             Matrix inverse() const;
-            Var det() const;
+            Var det(Pivoting option = Pivoting::LEAST_COMPLEXITY) const;
 
             size_t rowSize() const;
             size_t colSize() const;
@@ -47,17 +49,20 @@ namespace tsym {
             void copyValuesFromMatrix(const Matrix& other);
             void deleteMem();
             void multiplyChecked(const Matrix& other);
-            Vector solveChecked(const Vector& rhs) const;
-            unsigned compPartialPivots(Vector *b);
+            Vector solveChecked(const Vector& rhs, Pivoting option) const;
+            unsigned compPartialPivots(Pivoting option, Vector *b);
+            unsigned partialPivotByLeastComplexity(Vector *b);
             void collectAndSort(std::vector<std::vector<size_t>>& indices) const;
             void collectAndSort(size_t i, std::vector<size_t>& lineIndices) const;
             void selectPivots(std::vector<std::vector<size_t>>& indices) const;
             bool isLineMissing(std::set<size_t>& pivots) const;
             unsigned swapCount(std::vector<std::vector<size_t>>& indices) const;
+            unsigned partialPivotFirstNonZero(Vector *b);
+            void swapRows(size_t index1, size_t index2);
             void factorizeLU();
             void compXFromLU(Vector& x, Vector& b) const;
             Matrix checkedInverse() const;
-            Var checkedDet() const;
+            Var checkedDet(Pivoting option) const;
             Var detFromLU(unsigned nPivotSwaps) const;
 
             Var **data;

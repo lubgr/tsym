@@ -286,7 +286,7 @@ TEST(Globals, solveWithSingularMatrix)
     CHECK_EQUAL(0, x.size());
 }
 
-TEST(Globals, solveLinearSystemDim3a)
+TEST(Globals, solveLinearSystemDim3)
 {
     Matrix A(3, 3);
     Vector rhs(3);
@@ -313,31 +313,34 @@ TEST(Globals, solveLinearSystemDim3a)
     CHECK_EQUAL(b, x(2));
 }
 
-TEST(Globals, solveLinearSystemDim3b)
+TEST(Globals, solveLinearSystemDim4)
 {
-    Matrix A(3, 3);
-    Vector rhs(3);
+    Matrix A(4, 4);
+    Vector rhs(4);
     Vector x;
     bool res;
 
-    A(0, 0) = tsym::pow(a, 2*sin(b));
-    A(0, 1) = 17*b/29;
-    A(1, 1) = 1/(a*b*c);
-    A(1, 2) = tsym::pow(12, d);
-    A(2, 0) = 1;
-    A(2, 1) = 4*a;
+    A(0, 0) = a;
+    A(0, 1) = 1;
+    A(1, 1) = b;
+    A(1, 0) = tsym::pow(a, 3);
+    A(1, 3) = 2;
+    A(2, 2) = c;
+    A(3, 0) = a;
+    A(3, 2) = b;
 
-    rhs(0) = tsym::pow(a, 2*sin(b))*d + 17*a*b/116;
-    rhs(1) = tsym::pow(b, cos(b))*tsym::pow(12, d) + 1/(4*b*c);
-    rhs(2) = d + a*a;
+    rhs(0) = 1;
+    rhs(1) = 2;
+    rhs(2) = 3;
+    rhs(3) = 4;
 
     res = solve(A, rhs, x);
 
     CHECK(res);
-    CHECK_EQUAL(3, x.size());
-    CHECK_EQUAL(d, x(0));
-    CHECK_EQUAL(a/4, x(1));
-    CHECK_EQUAL(tsym::pow(b, cos(b)), x(2));
+    CHECK_EQUAL((4*c - 3*b)/(a*c), x(0));
+    CHECK_EQUAL(3*(b - c)/c, x(1));
+    CHECK_EQUAL(3/c, x(2));
+    CHECK_EQUAL((2*c + 3*b*c - 4*c*a*a - 3*b*b + 3*a*a*b)/(2*c), x(3));
 }
 
 TEST(Globals, solveWithoutRhs)

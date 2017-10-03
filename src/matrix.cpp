@@ -288,7 +288,7 @@ tsym::Matrix tsym::Matrix::transpose() const
     return res;
 }
 
-tsym::Vector tsym::Matrix::solve(const Vector& rhs) const
+tsym::Vector tsym::Matrix::solve(const Vector& rhs, Pivoting option) const
 {
     if (!isSquare())
         TSYM_ERROR("Matrix (%zu, %zu) isn't square!", nRow , nCol);
@@ -297,14 +297,14 @@ tsym::Vector tsym::Matrix::solve(const Vector& rhs) const
     else if (nRow == 0)
         TSYM_ERROR("Matrix and vector with zero dimension can't be solved!");
     else
-        return solveChecked(rhs);
+        return solveChecked(rhs, option);
 
     TSYM_ERROR("Return vector with zero dimension.");
 
     return Vector();
 }
 
-tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
+tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs, Pivoting option) const
 {
     auto ts = std::chrono::high_resolution_clock::now();
     std::chrono::microseconds ms;
@@ -314,7 +314,7 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
     Vector b(rhs);
     Vector x(nRow);
 
-    nPivotSwaps = PLU.compPartialPivots(&b);
+    nPivotSwaps = PLU.compPartialPivots(option, &b);
     PLU.factorizeLU();
 
     if (PLU.detFromLU(nPivotSwaps).isZero()) {
@@ -333,8 +333,19 @@ tsym::Vector tsym::Matrix::solveChecked(const Vector& rhs) const
     return x;
 }
 
-unsigned tsym::Matrix::compPartialPivots(Vector *b)
+unsigned tsym::Matrix::compPartialPivots(Pivoting option, Vector *b)
     /* Returns the number of row swaps. */
+{
+    switch (option) {
+        case Pivoting::LEAST_COMPLEXITY:
+            return partialPivotByLeastComplexity(b);
+        case Pivoting::FIRST_NON_ZERO:
+        default:
+            return partialPivotFirstNonZero(b);
+    }
+}
+
+unsigned tsym::Matrix::partialPivotByLeastComplexity(Vector *b)
 {
     std::vector<std::vector<size_t>> pivotIndices(nRow);
     Vector *rhsCopy = b == nullptr ? nullptr : new Vector(*b);
@@ -438,6 +449,36 @@ unsigned tsym::Matrix::swapCount(std::vector<std::vector<size_t>>& indices) cons
     return count;
 }
 
+unsigned tsym::Matrix::partialPivotFirstNonZero(Vector *b)
+{
+    unsigned swapCount = 0;
+
+    for (size_t j = 0; j + 1 < nCol; ++j) {
+        if (!data[j][j].isZero())
+            continue;
+
+        for (size_t i = j + 1; i < nRow; ++i)
+            if (!data[i][j].isZero()) {
+                swapRows(i, j);
+
+                if (b != nullptr)
+                    std::swap(b->data[j], b->data[i]);
+
+                ++swapCount;
+
+                break;
+            }
+    }
+
+    return swapCount;
+}
+
+void tsym::Matrix::swapRows(size_t index1, size_t index2)
+{
+    for (size_t j = 0; j < nCol; ++j)
+        std::swap(data[index1][j], data[index2][j]);
+}
+
 void tsym::Matrix::factorizeLU()
 {
     for (size_t j = 0; j + 1 < nCol; ++j)
@@ -497,23 +538,22 @@ tsym::Matrix tsym::Matrix::checkedInverse() const
     return inverse;
 }
 
-tsym::Var tsym::Matrix::det() const
+tsym::Var tsym::Matrix::det(Pivoting option) const
 {
     if (nRow == nCol && nRow != 0)
-        return checkedDet();
+        return checkedDet(option);
 
-    TSYM_ERROR("Illegal determinant request for %zux%zu matrix! Return zero determinant.", nRow,
-            nCol);
+    TSYM_ERROR("Determinant request for %zux%zu matrix! Return zero determinant.", nRow, nCol);
 
     return constZero();
 }
 
-tsym::Var tsym::Matrix::checkedDet() const
+tsym::Var tsym::Matrix::checkedDet(Pivoting option) const
 {
-    Matrix PLU(*this);
     unsigned nPivotSwaps;
+    Matrix PLU(*this);
 
-    nPivotSwaps = PLU.compPartialPivots(nullptr);
+    nPivotSwaps = PLU.compPartialPivots(option, nullptr);
 
     PLU.factorizeLU();
 

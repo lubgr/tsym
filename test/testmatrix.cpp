@@ -480,7 +480,7 @@ TEST(Matrix, luDecompWithoutPivoting)
     b(1) = 7;
     b(2) = 74;
 
-    x = A.solve(b);
+    x = A.solve(b, Matrix::Pivoting::FIRST_NON_ZERO);
 
     CHECK_EQUAL(1, x(0));
     CHECK_EQUAL(2, x(1));
@@ -514,32 +514,29 @@ TEST(Matrix, numericLuDecompPivoting)
     CHECK_EQUAL(3, x(2));
 }
 
-TEST(Matrix, luDecompPivoting)
+TEST(Matrix, simplePivoting3x3)
 {
-    Matrix A(4, 4);
-    Vector rhs(4);
+    Matrix A(3, 3);
+    Vector rhs(3);
     Vector x;
 
-    A(0, 0) = a;
-    A(0, 1) = 1;
-    A(1, 1) = b;
-    A(1, 0) = tsym::pow(a, 3);
-    A(1, 3) = 2;
-    A(2, 2) = c;
-    A(3, 0) = a;
-    A(3, 2) = b;
+    A(0, 0) = tsym::pow(a, 2*sin(b));
+    A(0, 1) = 17*b/29;
+    A(1, 1) = 1/(a*b*c);
+    A(1, 2) = tsym::pow(12, d);
+    A(2, 0) = 1;
+    A(2, 1) = 4*a;
 
-    rhs(0) = 1;
-    rhs(1) = 2;
-    rhs(2) = 3;
-    rhs(3) = 4;
+    rhs(0) = tsym::pow(a, 2*sin(b))*d + 17*a*b/116;
+    rhs(1) = tsym::pow(b, cos(b))*tsym::pow(12, d) + 1/(4*b*c);
+    rhs(2) = d + a*a;
 
-    x = A.solve(rhs);
+    x = A.solve(rhs, Matrix::Pivoting::FIRST_NON_ZERO);
 
-    CHECK_EQUAL((4*c - 3*b)/(a*c), x(0));
-    CHECK_EQUAL(3*(b - c)/c, x(1));
-    CHECK_EQUAL(3/c, x(2));
-    CHECK_EQUAL((2*c + 3*b*c - 4*c*a*a - 3*b*b + 3*a*a*b)/(2*c), x(3));
+    CHECK_EQUAL(3, x.size());
+    CHECK_EQUAL(d, x(0));
+    CHECK_EQUAL(a/4, x(1));
+    CHECK_EQUAL(tsym::pow(b, cos(b)), x(2));
 }
 
 TEST(Matrix, luDecompPivotingByCycling)
@@ -574,6 +571,10 @@ TEST(Matrix, signSwitchDuringLUDecompWithPivoting2x2)
     x = A.solve(rhs);
 
     CHECK_EQUAL(expected, x);
+
+    x = A.solve(rhs, Matrix::Pivoting::FIRST_NON_ZERO);
+
+    CHECK_EQUAL(expected, x);
 }
 
 TEST(Matrix, signSwitchDuringLUDecompWithPivoting3x3)
@@ -582,6 +583,7 @@ TEST(Matrix, signSwitchDuringLUDecompWithPivoting3x3)
     const Var expected(-a*b/2 + 2*a);
 
     CHECK_EQUAL(expected, A.det());
+    CHECK_EQUAL(expected, A.det(Matrix::Pivoting::FIRST_NON_ZERO));
 }
 
 TEST(Matrix, noSignSwitchDuringLUDecompWithPivoting4x4)
@@ -590,6 +592,7 @@ TEST(Matrix, noSignSwitchDuringLUDecompWithPivoting4x4)
     const Var expected(-6*a*b - 2*a*b*b + 21*b/2);
 
     CHECK_EQUAL(expected, A.det());
+    CHECK_EQUAL(expected, A.det(Matrix::Pivoting::FIRST_NON_ZERO));
 }
 
 TEST(Matrix, linearEqSetDim2)
