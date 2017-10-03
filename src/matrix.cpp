@@ -431,6 +431,8 @@ bool tsym::Matrix::isLineMissing(std::set<size_t>& pivots) const
 }
 
 unsigned tsym::Matrix::swapCount(std::vector<std::vector<size_t>>& indices) const
+/* Uses the selected indices as a sparse representation of a perturbed unit matrix and swaps rows
+ * until the original distribution of diagonal elements is retained. */
 {
     unsigned count = 0;
 

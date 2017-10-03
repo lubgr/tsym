@@ -31,6 +31,13 @@ namespace tsym {
             const Matrix& operator + () const;
             Matrix operator - () const;
 
+            /* Solution of linear systems of equations and the computation of determinants are
+             * implemented by LU factorization with partial pivoting. There are two options for
+             * choosing pivots: either every row with a zero diagonal element is exchanged with the
+             * first row that has a non-zero diagonal element, or the complexity of every non-zero
+             * entry of every row is used to find pivots that have the least complexity. Which
+             * method is better suited seems to depend on the coefficients and the right hand side,
+             * there is no rule of thumb for a choice. */
             enum class Pivoting { LEAST_COMPLEXITY, FIRST_NON_ZERO };
 
             Matrix transpose() const;
