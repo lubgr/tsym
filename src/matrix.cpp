@@ -441,38 +441,38 @@ unsigned tsym::Matrix::swapCount(std::vector<std::vector<size_t>>& indices) cons
 void tsym::Matrix::factorizeLU()
 {
     for (size_t j = 0; j + 1 < nCol; ++j)
-	for (size_t i = j + 1; i < nRow; ++i) {
-	    data[i][j] /= data[j][j];
-	    for (size_t k = j + 1; k < nCol; ++k)
-		data[i][k] -= data[i][j]*data[j][k];
-    }
+        for (size_t i = j + 1; i < nRow; ++i) {
+            data[i][j] /= data[j][j];
+            for (size_t k = j + 1; k < nCol; ++k)
+                data[i][k] -= data[i][j]*data[j][k];
+        }
 }
 
 void tsym::Matrix::compXFromLU(Vector& x, Vector& b) const
 {
     for (size_t i = 0; i < nRow; ++i)
-	for (size_t j = 0; j < i; ++j)
-	    b.data[i] -= data[i][j]*b.data[j];
+        for (size_t j = 0; j < i; ++j)
+            b.data[i] -= data[i][j]*b.data[j];
 
     assert(areAllItemsZero(x));
 
     for (size_t i = nRow - 1; i + 1 > 0; --i) {
-	for (size_t j = i + 1; j < nCol; ++j) {
-	    x.data[i] -= data[i][j]*x.data[j];
-	}
+        for (size_t j = i + 1; j < nCol; ++j) {
+            x.data[i] -= data[i][j]*x.data[j];
+        }
 
-	x.data[i] = ((b.data[i] + x.data[i])/data[i][i]).normal();
+        x.data[i] = ((b.data[i] + x.data[i])/data[i][i]).normal();
     }
 }
 
 tsym::Matrix tsym::Matrix::inverse() const
 {
     if (!isSquare())
-	TSYM_ERROR("Inversion for %zux%zu maxtrix impossible!", nRow, nCol);
+        TSYM_ERROR("Inversion for %zux%zu maxtrix impossible!", nRow, nCol);
     else if (det() == 0)
-	TSYM_ERROR("Matrix is singular, no inversion possible!");
+        TSYM_ERROR("Matrix is singular, no inversion possible!");
     else
-	return checkedInverse();
+        return checkedInverse();
 
     TSYM_ERROR("Return zero dimension matrix.");
 
