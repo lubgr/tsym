@@ -48,7 +48,7 @@ def getRepoInfo():
     branch = git('rev-parse', '--abbrev-ref', 'HEAD').strip()
     commit = git('log', '--pretty=format:%h', '-n 1')
     tag = git('name-rev', '--name-only', '--tags', 'HEAD').strip()
-    stable = tag.startswith('v')
+    stable = tag.startswith(b'v')
 
     return branch, commit, stable
 
@@ -220,9 +220,9 @@ installLib = libEnv.InstallAs(libPath, libTarget)
 installHeader = libEnv.Install(headerTargetDir, [publicHeaderList(), libHeader])
 
 for target in installHeader:
-    libEnv.AddPostAction(target, Chmod('$TARGET', 0644))
+    libEnv.AddPostAction(target, Chmod('$TARGET', '0644'))
 for target in [env['PREFIX'], headerTargetDir, libDir, includeDir, installLib]:
-    libEnv.AddPostAction(target, Chmod('$TARGET', 0755))
+    libEnv.AddPostAction(target, Chmod('$TARGET', '0755'))
 
 uninstall = libEnv.Command('uninstall', None, Delete(FindInstalledFiles()))
 libEnv.AddPostAction(uninstall, Delete(headerTargetDir))
