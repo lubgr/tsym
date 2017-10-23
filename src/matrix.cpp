@@ -367,6 +367,9 @@ unsigned tsym::Matrix::partialPivotByLeastComplexity(Vector *b)
             b->data[targetLine] = rhsCopy->data[i];
     }
 
+    if (rhsCopy != nullptr)
+        delete rhsCopy;
+
     return swapCount(pivotIndices);
 }
 
