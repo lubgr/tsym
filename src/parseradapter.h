@@ -2,6 +2,8 @@
 #define TSYM_PARSERADAPTER_H
 
 #ifdef __cplusplus
+
+#include <vector>
 #include "baseptr.h"
 
 namespace tsym {
