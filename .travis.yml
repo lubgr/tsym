@@ -40,10 +40,9 @@ matrix:
       env: COMPILER=g++-6
 
 script:
-  - scons CXX=$COMPILER COVERAGE=1 LIBS='-lCppUTest -ltsym -lgmp' lib
+  - make CXX=$COMPILER COVERAGE="--coverage" lib
   - cat build/src/buildinfo.h
-  - scons CXX=$COMPILER COVERAGE=1 LIBS='-lCppUTest -ltsym -lgmp' test
-  - ./build/runtests
+  - make CXX=$COMPILER COVERAGE="--coverage" test
 
 after_success:
   - lcov -c --no-external -d build/src -o build/coverage.info
