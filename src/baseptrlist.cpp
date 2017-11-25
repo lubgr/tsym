@@ -1,4 +1,7 @@
 
+#include <functional>
+#include <iterator>
+#include <algorithm>
 #include "baseptrlist.h"
 #include "numeric.h"
 #include "product.h"
@@ -212,54 +215,35 @@ tsym::BasePtrList tsym::BasePtrList::rest() const
 
 bool tsym::BasePtrList::hasUndefinedElements() const
 {
-    return isTrueForAtLeastOneElement(&Base::isUndefined);
-}
-
-bool tsym::BasePtrList::isTrueForAtLeastOneElement(bool (Base::*method)() const) const
-{
-    for (const auto& item : list)
-        if (((*item).*method)())
-            return true;
-
-    return false;
+    return std::any_of(list.begin(), list.end(), std::mem_fn(&Base::isUndefined));
 }
 
 bool tsym::BasePtrList::hasZeroElements() const
 {
-    return isTrueForAtLeastOneElement(&Base::isZero);
+    return std::any_of(list.begin(), list.end(), std::mem_fn(&Base::isZero));
 }
 
 bool tsym::BasePtrList::hasSumElements() const
 {
-    return isTrueForAtLeastOneElement(&Base::isSum);
+    return std::any_of(list.begin(), list.end(), std::mem_fn(&Base::isSum));
 }
 
 bool tsym::BasePtrList::areElementsNumericallyEvaluable() const
 {
-    return isTrueForAllElements(&Base::isNumericallyEvaluable);
-}
-
-bool tsym::BasePtrList::isTrueForAllElements(bool (Base::*method)() const) const
-{
-    for (const auto& item : list)
-        if (!((*item).*method)())
-            return false;
-
-    return true;
+    return std::all_of(list.begin(), list.end(), std::mem_fn(&Base::isNumericallyEvaluable));
 }
 
 bool tsym::BasePtrList::areAllElementsConst() const
 {
-    return isTrueForAllElements(&Base::isConst);
+    return std::all_of(list.begin(), list.end(), std::mem_fn(&Base::isConst));
 }
 
 tsym::BasePtrList tsym::BasePtrList::getConstElements() const
 {
     BasePtrList items;
 
-    for (const auto& item : list)
-        if (item->isConst())
-            items.push_back(item);
+    std::copy_if(list.begin(), list.end(), std::back_inserter(items.list),
+            std::mem_fn(&Base::isConst));
 
     return items;
 }
@@ -268,9 +252,8 @@ tsym::BasePtrList tsym::BasePtrList::getNonConstElements() const
 {
     BasePtrList items;
 
-    for (const auto& item : list)
-        if (!item->isConst())
-            items.push_back(item);
+    std::copy_if(list.begin(), list.end(), std::back_inserter(items.list), [](const BasePtr& bp) {
+            return !bp->isConst(); });
 
     return items;
 }

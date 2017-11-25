@@ -76,8 +76,6 @@ namespace tsym {
             BasePtrList subst(const BasePtr& from, const BasePtr& to) const;
 
         private:
-            bool isTrueForAtLeastOneElement(bool (Base::*method)() const) const;
-            bool isTrueForAllElements(bool (Base::*method)() const) const;
             void set(const BasePtrList& l1, const BasePtrList& l2);
             void defScalarAndSums(BasePtr& scalar, BasePtrList& sums) const;
             BasePtr expandProductOf(BasePtrList& sums) const;
