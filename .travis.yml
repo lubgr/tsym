@@ -41,7 +41,7 @@ matrix:
 
 script:
   - make CXX=$COMPILER COVERAGE="--coverage" lib
-  - cat build/src/buildinfo.h
+  - cat build/buildinfo.h
   - make CXX=$COMPILER COVERAGE="--coverage" test
 
 after_success:

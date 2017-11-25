@@ -2,13 +2,13 @@
 include $(wildcard makefile.in Makefile.in)
 
 BUILD ?= build
-CPPFLAGS ?= -I src -I build
 CXXFLAGS ?= -O2 -g -pedantic -Wall -Wextra -Werror=conversion -DNDEBUG -std=c++11
 CFLAGS ?= -pedantic -Wall -Wextra -Wno-sign-compare -Wno-unused-label -Wno-unused-function \
 	  -Wno-unneeded-internal-declaration -Wno-write-strings
+CPPFLAGS += -I src
 COVERAGE ?=
 LIBS ?= -lgmp
-LDFLAGS ?= -L $(BUILD) -Wl,-rpath $(BUILD)
+LDFLAGS += -L $(BUILD) -Wl,-rpath $(BUILD)
 LEX ?= flex
 YACC ?= bison
 TAGS ?= $(BUILD)/tags
