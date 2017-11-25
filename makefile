@@ -26,7 +26,8 @@ LIB_HEADER = $(BUILD)/$(NAME).h
 PUBLIC_HEADER = globals logger matrix var vector version
 
 LIB_SRC = $(wildcard src/*.cpp)
-LIB_OBJ = $(LIB_SRC:%.cpp=$(BUILD)/%.o) $(BUILD)/src/scanner.o $(BUILD)/src/parser.o
+LIB_PARSER_H = $(BUILD)/src/parser.h
+LIB_OBJ = $(LIB_SRC:%.cpp=$(BUILD)/%.o) $(BUILD)/src/scanner.o $(LIB_PARSER_H:%.h=%.o)
 TEST_SRC = $(wildcard test/*.cpp)
 TEST_OBJ = $(TEST_SRC:%.cpp=$(BUILD)/%.o)
 DEPS = $(LIB_OBJ:%.o=%.d) $(TEST_OBJ:%.o=%.d)
@@ -47,8 +48,10 @@ $(LIB_TARGET): $(LIB_OBJ) $(BUILDINFO)
 $(BUILD)/src/%.o: src/%.cpp | $(BUILD)/src
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(COVERAGE) -fPIC -o $@ -c $<
 
-$(BUILD)/src/%.o: $(BUILD)/src/%.c
+$(BUILD)/src/%.o: $(BUILD)/src/%.c $(LIB_PARSER_H)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -fPIC -o $@ -c $<
+
+$(LIB_PARSER_H): $(LIB_PARSER_H:%.h=%.c)
 
 $(BUILD)/src/%.c: src/%.l | $(BUILD)/src
 	$(LEX) -o $@ $<
@@ -102,7 +105,7 @@ test: tests
 	@$(TEST_EXEC)
 
 clean:
-	$(RM) $(LIB_OBJ) $(LIB_TARGET) $(BUILDINFO)
+	$(RM) $(LIB_OBJ) $(LIB_TARGET) $(LIB_PARSER_H) $(BUILDINFO)
 	$(RM) $(TEST_OBJ) $(TEST_EXEC)
 	$(RM) $(DEPS)
 	$(RM) $(BUILD)/src/*.c
