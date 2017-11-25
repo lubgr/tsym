@@ -72,7 +72,7 @@ tsym::Var::Var(const char *str, Var::Sign sign)
     assert(sign == Var::Sign::POSITIVE);
 
     /* To avoid an unused variable warning: */
-    (void)sign;
+    (void) sign;
 
     if (type == Type::SYMBOL) {
         rep = new BasePtr(Symbol::createPositive((*withoutSign.rep)->name()));
