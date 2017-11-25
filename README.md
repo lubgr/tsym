@@ -29,18 +29,18 @@ Installation
 To compile tsym, you need the [gmp](https://gmplib.org) library together with its development
 headers (`gmp-devel` in Fedora/Suse or `libgmp-dev` in Debian-base distributions), flex and bison
 (or their non-GPL counterparts), C and C++ compiler recent enough to support C++11 and
-[scons](http://scons.org) as a build system. For unit tests,
+(GNU-)[make](https://www.gnu.org/software/make/). For unit tests,
 [CppUTest](https://github.com/cpputest/cpputest) is required. tsym should build on all major Linux
 distributions by e.g.
 ```bash
-scons CFLAGS=-O2 CXXFLAGS="-march=native -O2" lib
+make CXXFLAGS="-march=native -O2" lib
 ```
-where the flag specifications are of course optional. See `scons -h` for details. To install header
-files and the shared library:
+where the flag specifications are of course optional. All standard variables will be recognized
+(`LIBS`, `LDFLAGS`, `CC`, `CXX`, `DESTDIR`... see the top of the makefile for all variables) and can
+be saved in a `makefile.in`. To install header files and the shared library:
 ```bash
 scons install PREFIX=/usr/local
 ```
-For all available build options and targets, see `scons -h` for details.
 
 Usage
 -----
