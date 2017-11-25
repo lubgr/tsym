@@ -45,6 +45,5 @@ script:
   - make CXX=$COMPILER COVERAGE="--coverage" test
 
 after_success:
-  - lcov -c --no-external -d build/src -o build/coverage.info
-  - sed -i 's/\(^SF:.*\)build\/src/\1src/' build/coverage.info
+  - lcov -c --no-external -d . -o build/coverage.info
   - coveralls-lcov build/coverage.info
