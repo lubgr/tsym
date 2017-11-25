@@ -39,7 +39,7 @@ where the flag specifications are of course optional. All standard variables wil
 (`LIBS`, `LDFLAGS`, `CC`, `CXX`, `DESTDIR`... see the top of the makefile for all variables) and can
 be saved in a `makefile.in`. To install header files and the shared library:
 ```bash
-scons install PREFIX=/usr/local
+make install PREFIX=/usr/local
 ```
 
 Usage
