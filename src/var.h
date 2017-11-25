@@ -37,7 +37,7 @@ namespace tsym {
             Var(Var&& other);
             Var& operator = (const Var& rhs);
             Var& operator = (Var&& rhs);
-            ~Var();
+            virtual ~Var();
 
             Var& operator += (const Var& rhs);
             Var& operator -= (const Var& rhs);
