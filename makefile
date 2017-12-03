@@ -94,8 +94,8 @@ $(LIB_HEADER):
 	@echo generate library header $(LIB_HEADER)
 	@echo "#ifndef TSYM_TSYM_H" > $(LIB_HEADER)
 	@echo -e "#define TSYM_TSYM_H\n" >> $(LIB_HEADER)
-	@for header in $(PUBLIC_HEADER) buildinfo; do echo "#include $${header}.h" >> $(LIB_HEADER); done
-	@echo -e "\n#endif TSYM_TSYM_H" >> $(LIB_HEADER)
+	@for header in $(PUBLIC_HEADER) buildinfo; do echo "#include \"$${header}.h\"" >> $(LIB_HEADER); done
+	@echo -e "\n#endif" >> $(LIB_HEADER)
 
 uninstall:
 	$(RM) $(DESTDIR)$(PREFIX)/lib/$(notdir $(LIB_TARGET))
