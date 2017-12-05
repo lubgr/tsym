@@ -1,6 +1,7 @@
 
 #include <functional>
 #include <iterator>
+#include <numeric>
 #include <algorithm>
 #include "baseptrlist.h"
 #include "numeric.h"
@@ -373,12 +374,8 @@ std::ostream& tsym::operator << (std::ostream& stream, const BasePtrList& list)
 
 size_t std::hash<tsym::BasePtrList>::operator () (const tsym::BasePtrList& bpList) const
 {
-    size_t result = 0;
-
-    for (const auto& item : bpList)
-        result = result ^ (std::hash<tsym::BasePtr>{}(item) << 1);
-
-    return result;
+    return std::accumulate(bpList.begin(), bpList.end(), 0, [](size_t hashResult, const tsym::BasePtr& item) {
+            return hashResult = hashResult ^ (std::hash<tsym::BasePtr>{}(item) << 1); });
 }
 
 bool std::equal_to<tsym::BasePtrList>::operator () (const tsym::BasePtrList& lhs,
