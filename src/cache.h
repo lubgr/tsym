@@ -18,7 +18,9 @@ namespace tsym {
 
             const T& insertAndReturn(const S& key, const T& value)
             {
-                return rep[key] = value;
+                rep.insert(std::make_pair(key, value));
+
+                return value;
             }
 
             const T *retrieve(const S& key) const
@@ -39,7 +41,7 @@ namespace tsym {
             }
 
         private:
-            std::unordered_map<S, T> rep;
+            std::unordered_multimap<S, T> rep;
     };
 
 #ifdef TSYM_NO_OPTIONAL_CACHE
