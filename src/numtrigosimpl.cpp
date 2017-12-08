@@ -51,7 +51,7 @@ namespace tsym {
             return map;
         }
 
-        const std::unordered_map<BasePtr, BasePtr>& xtanTable()
+        const std::unordered_map<BasePtr, BasePtr>& tanTable()
         {
             static const BasePtr& zero(Numeric::zero());
             static const BasePtr& one(Numeric::one());
@@ -339,7 +339,7 @@ void tsym::NumTrigoSimpl::cos()
 void tsym::NumTrigoSimpl::tan()
 {
     const unsigned quadrant = getQuadrant();
-    const BasePtr *exact(getValue(xtanTable()));
+    const BasePtr *exact(getValue(tanTable()));
 
     setTanSign(quadrant);
 
@@ -494,7 +494,7 @@ void tsym::NumTrigoSimpl::acosFromAsinResult()
 
 void tsym::NumTrigoSimpl::atan()
 {
-    const BasePtr *exact(getKey(xtanTable()));
+    const BasePtr *exact(getKey(tanTable()));
 
     if (exact != nullptr)
         setResult(*exact);
