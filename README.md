@@ -28,7 +28,7 @@ Installation
 ------------
 To compile tsym, you need the [gmp](https://gmplib.org) library together with its development
 headers (`gmp-devel` in Fedora/Suse or `libgmp-dev` in Debian-base distributions), flex and bison
-(or their non-GPL counterparts), C and C++ compiler recent enough to support C++11 and
+(or their non-GPL counterparts), C and C++ compiler recent enough to support C++14 and
 (GNU-)[make](https://www.gnu.org/software/make/). For unit tests,
 [CppUTest](https://github.com/cpputest/cpputest) is required. tsym should build on all major Linux
 distributions by e.g.
@@ -148,7 +148,7 @@ The exemplary C++ program from above can be compiled with
 ```bash
 g++ -o example main-function-from-above.cpp -ltsym -lgmp
 ```
-for less recent compiler versions, `-std=c++11` should be manually enabled.
+for less recent compiler versions, `-std=c++14` should be manually enabled.
 
 Additional notes
 ----------------
