@@ -19,82 +19,30 @@ namespace tsym {
 }
 
 tsym::BasePtr::BasePtr() :
-    bp(undefinedBaseForNoArgCtor().bp)
-{
-    /* Necessary to not destroy the static object above, when this particular undefined BasePtr goes
-     * out of scope somewhere. */
-    ++bp->refCount;
-}
+    rep(undefinedBaseForNoArgCtor().rep)
+{}
 
 tsym::BasePtr::BasePtr(const Base *base) :
-    bp(base)
+    rep(base)
 {
     if (base == nullptr) {
         TSYM_CRITICAL("Initiate Base class with null pointer!");
-        bp = undefinedBaseForNoArgCtor().bp;
+        rep = undefinedBaseForNoArgCtor().rep;
     }
-
-    ++bp->refCount;
 }
 
-tsym::BasePtr::BasePtr(const BasePtr& other) :
-    bp(other.bp)
-{
-    ++bp->refCount;
-}
-
-tsym::BasePtr::BasePtr(BasePtr&& other) noexcept :
-    bp(std::move(other.bp))
-{
-    other.bp = undefinedBaseForNoArgCtor().bp;
-    ++other.bp->refCount;
-}
-
-const tsym::BasePtr& tsym::BasePtr::operator = (const BasePtr& other)
-{
-    const Base* const old = bp;
-
-    bp = other.bp;
-
-    ++bp->refCount;
-
-    if (--old->refCount == 0)
-        delete old;
-
-    return *this;
-}
-
-const tsym::BasePtr& tsym::BasePtr::operator = (BasePtr&& other)
-{
-    const Base* const old = bp;
-
-    bp = other.bp;
-
-    other.bp = undefinedBaseForNoArgCtor().bp;
-    ++other.bp->refCount;
-
-    if (--old->refCount == 0)
-        delete old;
-
-    return *this;
-}
-
-tsym::BasePtr::~BasePtr()
-{
-    --bp->refCount;
-
-    if (bp->refCount == 0)
-        delete bp;
-}
+tsym::BasePtr::BasePtr(const std::shared_ptr<const Base>& rep) :
+    rep(rep)
+{}
 
 const tsym::Base *tsym::BasePtr::operator -> () const
 {
-    return bp;
+    return rep.get();
 }
 
 const tsym::Base& tsym::BasePtr::operator* () const
 {
-    return *bp;
+    return *rep.get();
 }
 
 std::ostream& tsym::operator << (std::ostream& stream, const BasePtr& ptr)

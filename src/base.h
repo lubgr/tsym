@@ -1,6 +1,7 @@
 #ifndef TSYM_BASE_H
 #define TSYM_BASE_H
 
+#include <memory>
 #include "number.h"
 #include "baseptrlist.h"
 #include "fraction.h"
@@ -9,10 +10,9 @@
 namespace tsym { class SymbolMap; }
 
 namespace tsym {
-    class Base {
+    class Base : public std::enable_shared_from_this<const Base> {
         /* Abstract base class for all mathematical classes (Power, Product etc.). References to
-         * this class are managed by intrusive reference counting inside of the BasePtr class.
-         * Objects of this type will be passed around most of the time.
+         * this class are managed by reference counting inside of the BasePtr type.
          *
          * The Base class and its subclasses can be understood as an implementation of the GoF
          * Composite pattern, where all objects are immutable (thus, no adding/removing of
@@ -23,10 +23,8 @@ namespace tsym {
          * e.g. accessing the operands for leafs will return a reference to an empty BasePtr
          * container or the name() methods returns an empty Name for all subclasses except Function,
          * Symbol or Constant. This clutters the interface a bit, but provides easy access to all
-         * information without using casts or other runtime informations. */
+         * information without using casts. */
         public:
-            friend class BasePtr;
-
             virtual bool isEqualDifferentBase(const BasePtr& other) const = 0;
             virtual bool sameType(const BasePtr& other) const = 0;
             virtual Number numericEval() const = 0;
@@ -83,8 +81,11 @@ namespace tsym {
         protected:
             Base();
             Base(const BasePtrList& operands);
+
+        public:
             virtual ~Base();
 
+        protected:
             bool isEqualByTypeAndOperands(const BasePtr& other) const;
             void setDebugString();
 
@@ -94,7 +95,6 @@ namespace tsym {
             BasePtr normalViaCache() const;
             BasePtr normalWithoutCache() const;
 
-            mutable unsigned refCount;
 #ifdef TSYM_DEBUG_STRINGS
             /* A member to be accessed by a gdb pretty printing plugin. As the class is immutable,
              * it has to be filled with content during initialization only. */
