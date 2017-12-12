@@ -441,5 +441,5 @@ std::ostream& tsym::operator << (std::ostream& stream, const Var::Type& type)
 
 size_t std::hash<tsym::Var>::operator () (const tsym::Var& var) const
 {
-    return std::hash<std::string>{}("tsym::Var") ^ (var.getBasePtr()->hash() << 1);
+    return var.getBasePtr()->hash();
 }
