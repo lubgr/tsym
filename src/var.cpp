@@ -32,20 +32,20 @@ namespace tsym {
 }
 
 tsym::Var::Var() :
-    rep(new BasePtr(Numeric::zero()))
+    rep(std::make_unique<BasePtr>(Numeric::zero()))
 {}
 
 tsym::Var::Var(int value) :
-    rep(new BasePtr(Numeric::create(value)))
+    rep(std::make_unique<BasePtr>(Numeric::create(value)))
 {}
 
 tsym::Var::Var(double value) :
-    rep(new BasePtr(Numeric::create(value)))
+    rep(std::make_unique<BasePtr>(Numeric::create(value)))
 {}
 
 tsym::Var::Var(int numerator, int denominator) :
     /* Zero denominator is checked inside of the Numeric::create method. */
-    rep(new BasePtr(Numeric::create(numerator, denominator)))
+    rep(std::make_unique<BasePtr>(Numeric::create(numerator, denominator)))
 {}
 
 tsym::Var::Var(const char *str)
@@ -54,14 +54,14 @@ tsym::Var::Var(const char *str)
     const Var tmp(parse(str, &success));
 
     if (success && (tmp.type() == Type::SYMBOL || tmp.type() == Type::INT)) {
-        rep = new BasePtr(*tmp.rep);
+        rep = std::make_unique<BasePtr>(*tmp.rep);
         return;
     }
 
     TSYM_ERROR("Parsing symbol or integer from '%s' failed, result: %S (%S). "
             "Create undefined Var object.", str, tmp, tmp.type());
 
-    rep = new BasePtr(Undefined::create());
+    rep = std::make_unique<BasePtr>(Undefined::create());
 }
 
 tsym::Var::Var(const char *str, Var::Sign sign)
@@ -75,99 +75,61 @@ tsym::Var::Var(const char *str, Var::Sign sign)
     (void) sign;
 
     if (type == Type::SYMBOL) {
-        rep = new BasePtr(Symbol::createPositive((*withoutSign.rep)->name()));
+        rep = std::make_unique<BasePtr>(Symbol::createPositive((*withoutSign.rep)->name()));
         return;
     }
 
     if (type == Type::INT && (*withoutSign.rep)->numericEval() < 0)
         TSYM_WARNING("Ignore positive flag for negative int (%S)", withoutSign);
 
-    rep = new BasePtr(*withoutSign.rep);
+    rep = std::make_unique<BasePtr>(*withoutSign.rep);
 }
 
 tsym::Var::Var(const BasePtr& ptr) :
-    rep(new BasePtr(ptr))
+    rep(std::make_unique<BasePtr>(ptr))
 {}
 
 tsym::Var::Var(const Var& other) :
-    rep(new BasePtr(*other.rep))
+    rep(std::make_unique<BasePtr>(*other.rep))
 {}
 
-tsym::Var::Var(Var&& other)
+tsym::Var& tsym::Var::operator = (const Var& lhs)
 {
-    rep = other.rep;
-
-    other.rep = new BasePtr(Numeric::zero());
-}
-
-tsym::Var& tsym::Var::operator = (const Var& rhs)
-{
-    if (this == &rhs)
-        return *this;
-
-    delete rep;
-
-    rep = new BasePtr(*rhs.rep);
+    rep = std::make_unique<BasePtr>(*lhs.rep);
 
     return *this;
 }
 
-tsym::Var& tsym::Var::operator = (Var&& rhs)
-{
-    delete rep;
+tsym::Var::Var(Var&& other) = default;
 
-    rep = rhs.rep;
+tsym::Var& tsym::Var::operator = (Var&& rhs) = default;
 
-    rhs.rep = new BasePtr(Numeric::zero());
-
-    return *this;
-}
-
-tsym::Var::~Var()
-{
-    delete rep;
-}
+tsym::Var::~Var() = default;
 
 tsym::Var& tsym::Var::operator += (const Var& rhs)
 {
-    const BasePtr *ref(rep);
-
-    rep = new BasePtr(Sum::create(*rep, *rhs.rep));
-
-    delete ref;
+    rep = std::make_unique<BasePtr>(Sum::create(*rep, *rhs.rep));
 
     return *this;
 }
 
 tsym::Var& tsym::Var::operator -= (const Var& rhs)
 {
-    const BasePtr *ref(rep);
-
-    rep = new BasePtr(Sum::create(*rep, Product::minus(*rhs.rep)));
-
-    delete ref;
+    rep = std::make_unique<BasePtr>(Sum::create(*rep, Product::minus(*rhs.rep)));
 
     return *this;
 }
 
 tsym::Var& tsym::Var::operator *= (const Var& rhs)
 {
-    const BasePtr *ref(rep);
-
-    rep = new BasePtr(Product::create(*rep, *rhs.rep));
-
-    delete ref;
+    rep = std::make_unique<BasePtr>(Product::create(*rep, *rhs.rep));
 
     return *this;
 }
 
 tsym::Var& tsym::Var::operator /= (const Var& rhs)
 {
-    const BasePtr *ref(rep);
-
-    rep = new BasePtr(Product::create(*rep, Power::oneOver(*rhs.rep)));
-
-    delete ref;
+    rep = std::make_unique<BasePtr>(Product::create(*rep, Power::oneOver(*rhs.rep)));
 
     return *this;
 }
@@ -200,7 +162,7 @@ tsym::Var tsym::Var::expand() const
 tsym::Var tsym::Var::normal() const
 {
     auto ts = std::chrono::high_resolution_clock::now();
-    const BasePtr normalized((*rep)->normal());
+    const auto normalized((*rep)->normal());
     std::chrono::microseconds ms;
     decltype(ts) te;
 
@@ -246,12 +208,10 @@ bool tsym::Var::isNegative() const
 
 tsym::Var::Type tsym::Var::type() const
 {
-    std::map<std::string, Type>::const_iterator lookup;
-
     if ((*rep)->isNumeric())
         return numericType();
 
-    lookup = typeStringMap().find((*rep)->typeStr());
+    const auto lookup = typeStringMap().find((*rep)->typeStr());
 
     assert(lookup != typeStringMap().end());
 

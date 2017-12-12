@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <functional>
+#include <memory>
 
 namespace tsym { class BasePtr; }
 
@@ -79,7 +80,7 @@ namespace tsym {
             void collectSymbols(const BasePtr& ptr, std::vector<Var>& symbols) const;
             void insertSymbolIfNotPresent(const BasePtr& symbol, std::vector<Var>& symbols) const;
 
-            BasePtr *rep;
+            std::unique_ptr<BasePtr> rep;
     };
 
     bool operator == (const Var& lhs, const Var& rhs);
