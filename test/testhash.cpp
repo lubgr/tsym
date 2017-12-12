@@ -162,3 +162,11 @@ TEST(Hash, equalSums)
 
     CHECK_EQUAL(sumHash1, sumHash2);
 }
+
+TEST(Hash, sumAndProductEqualOperands)
+{
+    const size_t sumHash = hash(Sum::create(a, b, c));
+    const size_t productHash = hash(Product::create(a, b, c));
+
+    CHECK_FALSE(sumHash == productHash);
+}
