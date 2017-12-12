@@ -374,8 +374,10 @@ std::ostream& tsym::operator << (std::ostream& stream, const BasePtrList& list)
 
 size_t std::hash<tsym::BasePtrList>::operator () (const tsym::BasePtrList& bpList) const
 {
-    return std::accumulate(bpList.begin(), bpList.end(), 0, [](size_t hashResult, const tsym::BasePtr& item) {
-            return hashResult = hashResult ^ (std::hash<tsym::BasePtr>{}(item) << 1); });
+    const auto combineHash = [](size_t hashResult, const tsym::BasePtr& item) {
+        return hashResult = hashResult ^ (std::hash<tsym::BasePtr>{}(item) << 1); };
+
+    return std::accumulate(bpList.begin(), bpList.end(), (size_t)0, combineHash);
 }
 
 bool std::equal_to<tsym::BasePtrList>::operator () (const tsym::BasePtrList& lhs,
