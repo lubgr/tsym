@@ -6,5 +6,7 @@ misc/test-logfiles/*
 *.swp
 .tags
 .clang*
+!.clang-format
+.ackrc
 .vimrc
 [Mm]akefile.in
