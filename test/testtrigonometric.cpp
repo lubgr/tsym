@@ -13,7 +13,7 @@ using namespace tsym;
 
 TEST_GROUP(Trigonometric)
 {
-    const BasePtr undefined;
+    BasePtr undefined;
     BasePtr minusHalf;
     BasePtr sqrtTwo;
     BasePtr sqrtThree;
@@ -23,6 +23,7 @@ TEST_GROUP(Trigonometric)
 
     void setup()
     {
+        undefined = Undefined::create();
         minusHalf = Numeric::create(-1, 2);
         sqrtTwo = Power::sqrt(two);
         sqrtThree = Power::sqrt(three);

@@ -8,20 +8,13 @@ using namespace tsym;
 
 TEST_GROUP(BasePtr) {};
 
-TEST(BasePtr, noArgumentCtor)
-{
-    BasePtr ptr;
-
-    CHECK(ptr->isUndefined());
-}
-
 TEST(BasePtr, initWithNullPointer)
 {
     disableLog();
     const BasePtr ptr(nullptr);
     enableLog();
 
-    CHECK(ptr->isUndefined());
+    CHECK(&*ptr == nullptr);
 }
 
 TEST(BasePtr, pointerAccess)

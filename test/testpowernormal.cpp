@@ -13,7 +13,6 @@ using namespace tsym;
 TEST_GROUP(PowerNormal)
 {
     SymbolMap *map;
-    const BasePtr undefined;
     BasePtr zeroByExpansion;
     BasePtr zeroByNormal;
     BasePtr abSum;

@@ -14,7 +14,7 @@ using namespace tsym;
 
 TEST_GROUP(Comparison)
 {
-    BasePtr undefined;
+    const BasePtr undefined = Undefined::create();
 };
 
 TEST(Comparison, differentTypes)

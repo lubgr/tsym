@@ -13,13 +13,14 @@ using namespace tsym;
 
 TEST_GROUP(Normal)
 {
-    const BasePtr undefined;
+    BasePtr undefined;
     BasePtr argToZero;
     SymbolMap *map;
     BasePtr pi;
 
     void setup()
     {
+        undefined = Undefined::create();
         const BasePtr denom = Power::oneOver(Sum::create(b, c));
         argToZero = Sum::create(a, Product::create(Numeric::mOne(), a, b, denom),
                 Product::create(Numeric::mOne(), a, c, denom));

@@ -6,29 +6,15 @@
 #include "printer.h"
 #include "logging.h"
 
-/* For use in the default constructor only. */
-namespace tsym {
-    namespace {
-        const BasePtr& undefinedBaseForNoArgCtor()
-        {
-            static BasePtr undefined(Undefined::create());
-
-            return undefined;
-        }
-    }
-}
-
 tsym::BasePtr::BasePtr() :
-    rep(undefinedBaseForNoArgCtor().rep)
+    rep(nullptr)
 {}
 
 tsym::BasePtr::BasePtr(const Base *base) :
     rep(base)
 {
-    if (base == nullptr) {
+    if (base == nullptr)
         TSYM_CRITICAL("Initiate Base class with null pointer!");
-        rep = undefinedBaseForNoArgCtor().rep;
-    }
 }
 
 tsym::BasePtr::BasePtr(const std::shared_ptr<const Base>& rep) :

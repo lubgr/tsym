@@ -43,7 +43,7 @@ TEST(Diff, constant)
 
 TEST(Diff, undefined)
 {
-    const BasePtr undefined;
+    const BasePtr undefined = Undefined::create();
     const BasePtr result = undefined->diff(a);
 
     CHECK(result->isUndefined());

@@ -12,7 +12,7 @@ namespace tsym {
          * passed around, used as an operand etc. As the object it is pointing to, instances of this
          * class are immutable. */
         public:
-            /* Creates an Undefined Base class: */
+            /* Creates an object holding a nullptr: */
             BasePtr();
             explicit BasePtr(const Base *base);
             explicit BasePtr(const std::shared_ptr<const Base>& rep);

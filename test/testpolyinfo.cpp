@@ -12,7 +12,7 @@ using namespace tsym;
 
 TEST_GROUP(PolyInfo)
 {
-    BasePtr undefined;
+    const BasePtr undefined = Undefined::create();
     BasePtr abSum;
     PolyInfo info;
 
