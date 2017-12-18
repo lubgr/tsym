@@ -30,10 +30,11 @@ namespace tsym {
 
         private:
             enum class Type { PI, E };
-            Constant(Type type, const Name& name);
+            Constant(Type type, Name&& name);
             Constant(const Constant& other) = delete;
             Constant& operator = (const Constant& other) = delete;
             ~Constant();
+            static BasePtr create(Type type, Name&& name);
 
             const Type type;
             const Name constantName;

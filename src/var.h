@@ -6,7 +6,7 @@
 #include <functional>
 #include <memory>
 
-namespace tsym { class BasePtr; }
+namespace tsym { class Base; }
 
 namespace tsym {
     class Var {
@@ -32,13 +32,11 @@ namespace tsym {
              * sufficient, for longer subscripts, use a_{10}. */
             explicit Var(const char *str);
             explicit Var(const char *str, Sign sign);
-            /* To be used only internally: */
-            explicit Var(const BasePtr& ptr);
-            Var(const Var& other);
-            Var(Var&& other);
-            Var& operator = (const Var& rhs);
-            Var& operator = (Var&& rhs);
-            virtual ~Var();
+            Var(const Var& other) = default;
+            Var(Var&& other) = default;
+            Var& operator = (const Var& rhs) = default;
+            Var& operator = (Var&& rhs) = default;
+            virtual ~Var() = default;
 
             Var& operator += (const Var& rhs);
             Var& operator -= (const Var& rhs);
@@ -71,6 +69,11 @@ namespace tsym {
             const std::string& name() const;
             std::vector<Var> operands() const;
             std::vector<Var> collectSymbols() const;
+
+        public:
+            /* Can only be used internally: */
+            typedef std::shared_ptr<const Base> BasePtr;
+            explicit Var(const BasePtr& ptr);
             const BasePtr& getBasePtr() const;
 
         private:
@@ -80,7 +83,7 @@ namespace tsym {
             void collectSymbols(const BasePtr& ptr, std::vector<Var>& symbols) const;
             void insertSymbolIfNotPresent(const BasePtr& symbol, std::vector<Var>& symbols) const;
 
-            std::unique_ptr<BasePtr> rep;
+            BasePtr rep;
     };
 
     bool operator == (const Var& lhs, const Var& rhs);

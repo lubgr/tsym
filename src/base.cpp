@@ -9,14 +9,22 @@
 #include "printer.h"
 #include "logging.h"
 
-tsym::Base::Base()
-{}
-
 tsym::Base::Base(const BasePtrList& operands) :
     ops(operands)
 {}
 
-tsym::Base::~Base() {}
+tsym::BasePtr tsym::Base::instantiate(std::function<const Base*()>&& create)
+{
+    try {
+        auto instance = BasePtr(create(), [](auto *base) { delete base; });
+        return instance;
+    } catch (const std::bad_alloc& e) {
+        TSYM_CRITICAL("Couldn't allocate Base subclass");
+        throw e;
+    }
+
+    return {};
+}
 
 bool tsym::Base::isZero() const
 {

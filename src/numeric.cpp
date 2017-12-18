@@ -40,7 +40,7 @@ tsym::BasePtr tsym::Numeric::create(const Number& number)
     if (number.isUndefined())
         return Undefined::create();
     else
-        return BasePtr(new Numeric(number));
+        return instantiate([&number]() { return new Numeric(number); });
 }
 
 const tsym::BasePtr& tsym::Numeric::zero()

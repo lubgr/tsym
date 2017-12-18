@@ -25,6 +25,8 @@ namespace tsym {
          * Symbol or Constant. This clutters the interface a bit, but provides easy access to all
          * information without using casts. */
         public:
+            virtual ~Base() = default;
+
             virtual bool isEqualDifferentBase(const BasePtr& other) const = 0;
             virtual bool sameType(const BasePtr& other) const = 0;
             virtual Number numericEval() const = 0;
@@ -78,18 +80,16 @@ namespace tsym {
             BasePtr diff(const BasePtr& symbol) const;
             const BasePtrList& operands() const;
 
-        protected:
-            Base();
-            Base(const BasePtrList& operands);
-
-        public:
-            virtual ~Base();
-
-        protected:
             bool isEqualByTypeAndOperands(const BasePtr& other) const;
             void setDebugString();
 
             const BasePtrList ops;
+
+        protected:
+            Base() = default;
+            Base(const BasePtrList& operands);
+            /* Creates Base subclasses for use within a smart pointer: */
+            static BasePtr instantiate(std::function<const Base*()>&& create);
 
         private:
             BasePtr normalViaCache() const;

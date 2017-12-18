@@ -43,7 +43,12 @@ tsym::BasePtr tsym::Logarithm::create(const BasePtr& arg)
     else if (arg->isPower())
         return createFromPower(arg);
     else
-        return BasePtr(new Logarithm(arg));
+        return createInstance(arg);
+}
+
+tsym::BasePtr tsym::Logarithm::createInstance(const BasePtr& arg)
+{
+    return instantiate([&arg]() { return new Logarithm(arg); });
 }
 
 bool tsym::Logarithm::isInvalidArg(const BasePtr& arg)
@@ -76,7 +81,7 @@ tsym::BasePtr tsym::Logarithm::createNumerically(const BasePtr& arg)
     assert(nArg != 0 && nArg != 1 && !nArg.isUndefined());
 
     if (nArg.isRational())
-        return BasePtr(new Logarithm(arg));
+        return createInstance(arg);
     else
         return Numeric::create(std::log(nArg.toDouble()));
 }
@@ -86,7 +91,7 @@ tsym::BasePtr tsym::Logarithm::createFromConstant(const BasePtr& arg)
     if (arg->isEqual(euler()))
         return Numeric::one();
     else
-        return BasePtr(new Logarithm(arg));
+        return createInstance(arg);
 }
 
 tsym::BasePtr tsym::Logarithm::createFromPower(const BasePtr& arg)

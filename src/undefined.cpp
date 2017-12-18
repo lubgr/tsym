@@ -13,7 +13,7 @@ tsym::Undefined::~Undefined() {}
 
 tsym::BasePtr tsym::Undefined::create()
 {
-    return BasePtr(new Undefined());
+    return instantiate([]() { return new Undefined(); });
 }
 
 bool tsym::Undefined::isEqual(const BasePtr& other) const

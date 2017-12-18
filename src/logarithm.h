@@ -25,6 +25,7 @@ namespace tsym {
             ~Logarithm();
 
             static bool isInvalidArg(const BasePtr& arg);
+            static BasePtr createInstance(const BasePtr& arg);
             static BasePtr createNumerically(const BasePtr& arg);
             static BasePtr createFromConstant(const BasePtr& arg);
             static BasePtr createFromPower(const BasePtr& arg);

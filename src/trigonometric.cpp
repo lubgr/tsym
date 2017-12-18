@@ -83,7 +83,7 @@ tsym::BasePtr tsym::Trigonometric::createAtan2(const BasePtr& y, const BasePtr& 
     else if (x->isNumericallyEvaluable() && y->isNumericallyEvaluable())
         return createAtan2Numerically(y, x);
     else
-        return BasePtr(new Trigonometric(BasePtrList(y, x), Type::ATAN2));
+        return createInstance(Type::ATAN2, { y, x });
 }
 
 tsym::BasePtr tsym::Trigonometric::create(Type type, const BasePtr& arg)
@@ -97,7 +97,12 @@ tsym::BasePtr tsym::Trigonometric::create(Type type, const BasePtr& arg)
     else if (arg->isNumericallyEvaluable())
         return createNumerically(type, arg);
     else
-        return BasePtr(new Trigonometric(BasePtrList(arg), type));
+        return createInstance(type, { arg });
+}
+
+tsym::BasePtr tsym::Trigonometric::createInstance(Type type, const BasePtrList& args)
+{
+    return instantiate([type, &args]() { return new Trigonometric(args, type); });
 }
 
 bool tsym::Trigonometric::doesSymmetryApply(const BasePtr& arg)
@@ -146,7 +151,7 @@ tsym::BasePtr tsym::Trigonometric::createNumerically(Type type, const BasePtr& a
     else if (arg->isNegative())
         return createNumericallyBySymmetry(type, arg);
     else
-        return BasePtr(new Trigonometric(BasePtrList(arg), type));
+        return createInstance(type, { arg });
 }
 
 tsym::BasePtr tsym::Trigonometric::createNumericallyBySymmetry(Type type, const BasePtr& arg)
@@ -154,7 +159,7 @@ tsym::BasePtr tsym::Trigonometric::createNumericallyBySymmetry(Type type, const 
      * cycle again, as this can cause infinite loops. */
 {
     const BasePtr positiveArg(Product::minus(arg));
-    const BasePtr shiftedResult(new Trigonometric(BasePtrList(positiveArg), type));
+    const BasePtr shiftedResult(createInstance(type, { positiveArg }));
 
     if (type == Type::COS)
         return shiftedResult;
@@ -169,7 +174,7 @@ tsym::BasePtr tsym::Trigonometric::createFromFunction(Type type, const BasePtr& 
     const Trigonometric *trigo(tryCast(arg));
 
     if (trigo == nullptr)
-        return BasePtr(new Trigonometric(BasePtrList(arg), type));
+        return createInstance(type, { arg });
     else
         return createFromTrigo(type, arg);
 }
@@ -293,7 +298,7 @@ tsym::BasePtr tsym::Trigonometric::createFromTrigoNoInverse(Type type, const Bas
     else if (type == Type::TAN && otherType == Type::ACOS)
         return Fraction(aux1, other->arg1).eval()->normal();
     else
-        return BasePtr(new Trigonometric(BasePtrList(arg), type));
+        return createInstance(type, { arg });
 }
 
 tsym::BasePtr tsym::Trigonometric::createAtan2Numerically(const BasePtr& y, const BasePtr& x)
@@ -338,7 +343,7 @@ tsym::BasePtr tsym::Trigonometric::simplAtan2(const BasePtr& y, const BasePtr& x
     else if (atan2Arg->isNegative())
         return createBySymmetry(Type::ATAN, atan2Arg);
     else
-        return BasePtr(new Trigonometric(BasePtrList(atan2Arg), Type::ATAN));
+        return createInstance(Type::ATAN, { atan2Arg });
 }
 
 tsym::BasePtr tsym::Trigonometric::shiftAtanResultIntoRange(BasePtr result, BasePtr summand)

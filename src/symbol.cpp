@@ -45,8 +45,8 @@ tsym::BasePtr tsym::Symbol::create(const Name& name, bool positive)
 
 tsym::BasePtr tsym::Symbol::createNonEmptyName(const Name& name, bool positive)
 {
+    const BasePtr symbol(instantiate([&name, positive]() { return new Symbol(name, positive); }));
     static Cache<BasePtr, BasePtr> pool;
-    const BasePtr symbol(new Symbol(name, positive));
     const BasePtr *cached = pool.retrieve(symbol);
 
     if (cached != nullptr)
@@ -67,7 +67,9 @@ tsym::BasePtr tsym::Symbol::createPositive(const Name& name)
 
 tsym::BasePtr tsym::Symbol::createTmpSymbol(bool positive)
 {
-    return BasePtr(new Symbol(++tmpCounter, positive));
+    ++tmpCounter;
+
+    return instantiate([positive]() { return new Symbol(tmpCounter, positive); });
 }
 
 bool tsym::Symbol::isEqualDifferentBase(const BasePtr& other) const

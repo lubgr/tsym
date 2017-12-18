@@ -4,25 +4,9 @@
 #include <functional>
 #include <memory>
 
-namespace tsym { class Base; }
-
 namespace tsym {
-    class BasePtr {
-        /* Intrusive reference counting custodian of the Base math object. This class is to be
-         * passed around, used as an operand etc. As the object it is pointing to, instances of this
-         * class are immutable. */
-        public:
-            /* Creates an object holding a nullptr: */
-            BasePtr();
-            explicit BasePtr(const Base *base);
-            explicit BasePtr(const std::shared_ptr<const Base>& rep);
-
-            const Base *operator -> () const;
-            const Base& operator * () const;
-
-        private:
-            std::shared_ptr<const Base> rep;
-    };
+    class Base;
+    typedef std::shared_ptr<const Base> BasePtr;
 
     std::ostream& operator << (std::ostream& stream, const BasePtr& ptr);
 }

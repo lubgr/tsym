@@ -40,6 +40,7 @@ namespace tsym {
             ~Trigonometric();
 
             static BasePtr create(Type type, const BasePtr& arg);
+            static BasePtr createInstance(Type type, const BasePtrList& args);
             static bool doesSymmetryApply(const BasePtr& arg);
             static bool haveAllNegativePrefactors(const BasePtrList& operands);
             static BasePtr createBySymmetry(Type type, const BasePtr& negativeArg);

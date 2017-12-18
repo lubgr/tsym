@@ -22,7 +22,7 @@ template<class T> SimpleString StringFrom(const T& obj)
 }
 
 /* For using the CHECK_EQUAL macro on BasePtr objects: */
-namespace tsym { class BasePtr; }
+#include "baseptr.h"
 bool operator == (const tsym::BasePtr& lhs, const tsym::BasePtr& rhs);
 bool operator != (const tsym::BasePtr& lhs, const tsym::BasePtr& rhs);
 

@@ -80,7 +80,7 @@ tsym::BasePtr tsym::Product::createSimplifiedProduct(const BasePtrList& factors)
     else if (needsExpansion(res))
         return res.expandAsProduct();
     else
-        return BasePtr(new Product(res));
+        return instantiate([&res]() { return new Product(res); });
 }
 
 bool tsym::Product::needsExpansion(const BasePtrList& factors)

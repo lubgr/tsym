@@ -4,21 +4,26 @@
 #include "symbolmap.h"
 #include "numeric.h"
 
-tsym::Constant::Constant(Type type, const Name& name) :
+tsym::Constant::Constant(Type type, Name&& name) :
     type(type),
-    constantName(name)
+    constantName(std::move(name))
 {
     setDebugString();
 }
 
 tsym::BasePtr tsym::Constant::createPi()
 {
-    return BasePtr(new Constant(Type::PI, Name("pi")));
+    return create(Type::PI, Name("pi"));
 }
 
 tsym::BasePtr tsym::Constant::createE()
 {
-    return BasePtr(new Constant(Type::E, Name("e")));
+    return create(Type::E, Name("e"));
+}
+
+tsym::BasePtr tsym::Constant::create(Type type, Name&& name)
+{
+    return instantiate([type, &name]() { return new Constant(type, std::move(name)); });
 }
 
 tsym::Constant::~Constant() {}

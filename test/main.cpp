@@ -49,7 +49,7 @@ void initConstructOnFirstUse()
     emptyVec(1);
 
     nts.setType(tsym::Trigonometric::Type::SIN);
-    nts.setArg(0);
+    nts.setArg(tsym::Numeric::zero());
     nts.compute();
     nts.setType(tsym::Trigonometric::Type::TAN);
     nts.compute();

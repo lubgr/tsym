@@ -54,7 +54,7 @@ tsym::BasePtr tsym::Sum::createSimplifiedSum(const BasePtrList& summands)
     else if (res.size() == 1)
         return res.front();
     else
-        return BasePtr(new Sum(res));
+        return instantiate([&res]() { return new Sum(res); });
 }
 
 bool tsym::Sum::isEqualDifferentBase(const BasePtr& other) const
