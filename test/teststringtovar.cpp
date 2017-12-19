@@ -15,18 +15,10 @@ using namespace tsym;
 
 TEST_GROUP(StringToVar)
 {
-    Var a;
-    Var b;
-    Var c;
-    Var d;
-
-    void setup()
-    {
-        a = Var("a");
-        b = Var("b");
-        c = Var("c");
-        d = Var("d");
-    }
+    const Var a = Var("a");
+    const Var b = Var("b");
+    const Var c = Var("c");
+    const Var d = Var("d");
 
     Var getSymbol(const char *name, const char *subscript = "", const char *superscript = "")
     {

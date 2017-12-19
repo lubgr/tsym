@@ -14,20 +14,11 @@ using namespace tsym;
 
 TEST_GROUP(Sign)
 {
-    BasePtr aPos;
-    BasePtr bPos;
-    BasePtr cPos;
-    BasePtr sqrtTwo;
-    BasePtr pi;
-
-    void setup()
-    {
-        aPos = Symbol::createPositive("a");
-        bPos = Symbol::createPositive("b");
-        cPos = Symbol::createPositive("c");
-        sqrtTwo = Power::sqrt(two);
-        pi = Constant::createPi();
-    }
+    const BasePtr aPos = Symbol::createPositive("a");
+    const BasePtr bPos = Symbol::createPositive("b");
+    const BasePtr cPos = Symbol::createPositive("c");
+    const BasePtr sqrtTwo = Power::sqrt(two);
+    const BasePtr pi = Constant::createPi();
 
     void checkPos(const BasePtr& arg)
     {

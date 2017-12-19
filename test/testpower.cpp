@@ -20,28 +20,15 @@ const double TOL = 1.e-10;
 
 TEST_GROUP(Power)
 {
-    BasePtr aPos;
-    BasePtr bPos;
-    BasePtr half;
-    BasePtr oneThird;
-    BasePtr minusHalf;
-    BasePtr sqrtTwo;
-    BasePtr undefPtr;
-    BasePtr pi;
-    Int defaultPrimeFacLimit;
-
-    void setup()
-    {
-        aPos = Symbol::createPositive("a");
-        bPos = Symbol::createPositive("b");
-        half = Numeric::create(1, 2);
-        oneThird = Numeric::create(1, 3);
-        minusHalf = Numeric::create(-1, 2);
-        sqrtTwo = Power::sqrt(two);
-        undefPtr = Undefined::create();
-        pi = Constant::createPi();
-        defaultPrimeFacLimit = NumPowerSimpl::getMaxPrimeResolution();
-    }
+    const Int defaultPrimeFacLimit = NumPowerSimpl::getMaxPrimeResolution();
+    const BasePtr aPos = Symbol::createPositive("a");
+    const BasePtr bPos = Symbol::createPositive("b");
+    const BasePtr half = Numeric::create(1, 2);
+    const BasePtr oneThird = Numeric::create(1, 3);
+    const BasePtr minusHalf = Numeric::create(-1, 2);
+    const BasePtr sqrtTwo = Power::sqrt(two);
+    const BasePtr undefPtr = Undefined::create();
+    const BasePtr pi = Constant::createPi();
 
     void teardown()
     {

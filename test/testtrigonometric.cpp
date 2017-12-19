@@ -13,24 +13,13 @@ using namespace tsym;
 
 TEST_GROUP(Trigonometric)
 {
-    BasePtr undefined;
-    BasePtr minusHalf;
-    BasePtr sqrtTwo;
-    BasePtr sqrtThree;
-    BasePtr aSquare;
-    BasePtr pi;
-    BasePtr sinA;
-
-    void setup()
-    {
-        undefined = Undefined::create();
-        minusHalf = Numeric::create(-1, 2);
-        sqrtTwo = Power::sqrt(two);
-        sqrtThree = Power::sqrt(three);
-        aSquare = Power::create(a, two);
-        pi = Constant::createPi();
-        sinA = Trigonometric::createSin(a);
-    }
+    const BasePtr undefined = Undefined::create();
+    const BasePtr minusHalf = Numeric::create(-1, 2);
+    const BasePtr sqrtTwo = Power::sqrt(two);
+    const BasePtr sqrtThree = Power::sqrt(three);
+    const BasePtr aSquare = Power::create(a, two);
+    const BasePtr pi = Constant::createPi();
+    const BasePtr sinA = Trigonometric::createSin(a);
 };
 
 TEST(Trigonometric, typeRequest)

@@ -8,20 +8,11 @@ using namespace tsym;
 
 TEST_GROUP(Globals)
 {
-    Var a;
-    Var b;
-    Var c;
-    Var d;
-    Var half;
-
-    void setup()
-    {
-        a = Var("a");
-        b = Var("b");
-        c = Var("c");
-        d = Var("d");
-        half = Var(1, 2);
-    }
+    const Var a = Var("a");
+    const Var b = Var("b");
+    const Var c = Var("c");
+    const Var d = Var("d");
+    const Var half = Var(1, 2);
 
     void checkSolveFailure(const Matrix& A, const Vector& rhs, Vector& x)
     {

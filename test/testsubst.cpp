@@ -13,14 +13,8 @@ using namespace tsym;
 
 TEST_GROUP(Subst)
 {
-    BasePtr undefined;
-    BasePtr pi;
-
-    void setup()
-    {
-        undefined = Undefined::create();
-        pi = Constant::createPi();
-    }
+    const BasePtr undefined = Undefined::create();
+    const BasePtr pi = Constant::createPi();
 };
 
 TEST(Subst, undefinedToSymbol)

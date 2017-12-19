@@ -1,4 +1,5 @@
 
+#include <memory>
 #include "abc.h"
 #include "powernormal.h"
 #include "constant.h"
@@ -12,32 +13,20 @@ using namespace tsym;
 
 TEST_GROUP(PowerNormal)
 {
-    SymbolMap *map;
-    BasePtr zeroByExpansion;
-    BasePtr zeroByNormal;
-    BasePtr abSum;
-    BasePtr pi;
+    const BasePtr oneOverB = Power::oneOver(b);
+    const BasePtr abSum = Sum::create(a, b);
+    const BasePtr pi = Constant::createPi();
+    /* a/b + (c - a)/b - c/b becomes 0 by normalization. */
+    const BasePtr zeroByNormal = Sum::create(Product::create(a, oneOverB), Product::minus(c, oneOverB),
+        Product::create(Sum::create(c, Product::minus(a)), oneOverB));
+    /* a*b + a*c - a*(b + c) is zero after expansion. */
+    const BasePtr zeroByExpansion = Sum::create(Product::create(a, b), Product::create(a, c),
+            Product::minus(a, Sum::create(b, c)));
+    std::unique_ptr<SymbolMap> map;
 
     void setup()
     {
-        const BasePtr oneOverB = Power::oneOver(b);
-
-        abSum = Sum::create(a, b);
-        pi = Constant::createPi();
-
-        /* a/b + (c - a)/b - c/b becomes 0 by normalization. */
-        zeroByNormal = Sum::create(Product::create(a, oneOverB), Product::minus(c, oneOverB),
-            Product::create(Sum::create(c, Product::minus(a)), oneOverB));
-        /* a*b + a*c - a*(b + c) is zero after expansion. */
-        zeroByExpansion = Sum::create(Product::create(a, b), Product::create(a, c),
-                Product::minus(a, Sum::create(b, c)));
-
-        map = new SymbolMap();
-    }
-
-    void teardown()
-    {
-        delete map;
+        map = std::make_unique<SymbolMap>();
     }
 };
 

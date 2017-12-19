@@ -10,16 +10,9 @@ const double TOL = 1.e-10;
 
 TEST_GROUP(Rational)
 {
-    Number a;
-    Number b;
-    Number c;
-
-    void setup()
-    {
-        a = Number(2, 33);
-        b = Number(5, 67);
-        c = Number(43, 7);
-    }
+    const Number a = Number(2, 33);
+    const Number b = Number(5, 67);
+    const Number c = Number(43, 7);
 };
 
 TEST(Rational, defaultZero)
@@ -75,31 +68,30 @@ TEST(Rational, zeroDenominator)
 
 TEST(Rational, posDoubleToFraction)
 {
-    a = Number(0.125);
+    const Number frac = Number(0.125);
 
-    CHECK(a.isFrac());
-    CHECK_EQUAL(Number(1, 8), a);
+    CHECK(frac.isFrac());
+    CHECK_EQUAL(Number(1, 8), frac);
 }
 
 TEST(Rational, zeroDoubleToFraction)
 {
-    a = Number(0.0);
-    CHECK_EQUAL(0, a);
+    const Number zero = Number(0.0);
+
+    CHECK_EQUAL(0, zero);
 }
 
 TEST(Rational, negDoubleToFraction)
 {
-    a = Number(-0.125);
+    const Number frac = Number(-0.125);
 
-    CHECK(a.isFrac());
-    CHECK_EQUAL(Number(-1, 8), a);
+    CHECK(frac.isFrac());
+    CHECK_EQUAL(Number(-1, 8), frac);
 }
 
 TEST(Rational, simpleFractionSum)
 {
-    Number res;
-
-    res = Number(1, 2) + Number(3, 8);
+    const Number res = Number(1, 2) + Number(3, 8);
 
     CHECK(res.isFrac());
     CHECK_EQUAL(7, res.numerator());
@@ -108,9 +100,7 @@ TEST(Rational, simpleFractionSum)
 
 TEST(Rational, primeFractionSum)
 {
-    Number res;
-
-    res = Number(1, 7) + Number(1, 17);
+    const Number res = Number(1, 7) + Number(1, 17);
 
     CHECK(res.isFrac());
     CHECK_EQUAL(24, res.numerator());
@@ -119,9 +109,7 @@ TEST(Rational, primeFractionSum)
 
 TEST(Rational, sumWithOtherFraction)
 {
-    Number res;
-
-    res = a + b;
+    const Number res = a + b;
 
     CHECK_EQUAL(299, res.numerator());
     CHECK_EQUAL(2211, res.denominator());
@@ -130,9 +118,7 @@ TEST(Rational, sumWithOtherFraction)
 TEST(Rational, sumWithDouble)
 {
     const Number n(1.23456789);
-    Number res;
-
-    res = a + n;
+    const Number res = a + n;
 
     CHECK(res.isDouble());
 
@@ -141,9 +127,7 @@ TEST(Rational, sumWithDouble)
 
 TEST(Rational, difference)
 {
-    Number res;
-
-    res = b - c;
+    const Number res = b - c;
 
     CHECK_EQUAL(-2846, res.numerator());
     CHECK_EQUAL(469, res.denominator());
@@ -151,9 +135,7 @@ TEST(Rational, difference)
 
 TEST(Rational, zeroByIdentityDifference)
 {
-    Number res;
-
-    res = a - a;
+    const Number res = a - a;
 
     CHECK_EQUAL(0, res.numerator());
     CHECK_EQUAL(1, res.denominator());
@@ -163,18 +145,14 @@ TEST(Rational, simpleProduct)
 {
     const Number minusTwo(-2);
     const Number half(1, 2);
-    Number res;
-
-    res = minusTwo*half;
+    const Number res = minusTwo*half;
 
     CHECK_EQUAL(-1, res);
 }
 
 TEST(Rational, productWithOtherFraction)
 {
-    Number res;
-
-    res = a*b*c;
+    const Number res = a*b*c;
 
     CHECK_EQUAL(430, res.numerator());
     CHECK_EQUAL(15477, res.denominator());
@@ -183,9 +161,7 @@ TEST(Rational, productWithOtherFraction)
 TEST(Rational, productWithDouble)
 {
     const Number n(1.23456789);
-    Number res;
-
-    res = b*n;
+    const Number res = b*n;
 
     CHECK(n.isDouble());
     DOUBLES_EQUAL(0.09213193208955223, res.toDouble(), TOL);
@@ -193,9 +169,7 @@ TEST(Rational, productWithDouble)
 
 TEST(Rational, divisionByOtherFraction)
 {
-    Number res;
-
-    res = a/b;
+    const Number res = a/b;
 
     CHECK_EQUAL(134, res.numerator());
     CHECK_EQUAL(165, res.denominator());
@@ -253,27 +227,13 @@ TEST(Rational, negativeSign)
 
 TEST_GROUP(NumberPower)
 {
-    Number zero;
-    Number one;
-    Number two;
-    Number three;
-
-    Number half;
-    Number third;
-    Number fourth;
-
-    void setup()
-    {
-        zero = Number(0);
-
-        one = Number(1);
-        two = Number(2);
-        three = Number(3);
-
-        half = Number(1, 2);
-        third = Number(1, 3);
-        fourth = Number(1, 4);
-    }
+    const Number zero = Number(0);
+    const Number one = Number(1);
+    const Number two = Number(2);
+    const Number three = Number(3);
+    const Number half = Number(1, 2);
+    const Number third = Number(1, 3);
+    const Number fourth = Number(1, 4);
 };
 
 TEST(NumberPower, exponentOne)
@@ -287,11 +247,11 @@ TEST(NumberPower, exponentOne)
 
 TEST(NumberPower, baseOne)
 {
-    one = one.toThe(fourth);
-    CHECK_EQUAL(1, one);
+    Number pow = one.toThe(fourth);
+    CHECK_EQUAL(1, pow);
 
-    one = one.toThe(three);
-    CHECK_EQUAL(1, one);
+    pow = one.toThe(three);
+    CHECK_EQUAL(1, pow);
 }
 
 TEST(NumberPower, baseMinusOne)
@@ -319,9 +279,9 @@ TEST(NumberPower, baseMinusOne)
 
 TEST(NumberPower, baseZero)
 {
-    zero = zero.toThe(two);
+    const Number pow = zero.toThe(two);
 
-    CHECK_EQUAL(0, zero);
+    CHECK_EQUAL(0, pow);
 }
 
 TEST(NumberPower, exponentZero)
@@ -571,12 +531,7 @@ TEST(NumberPower, staticPower)
 
 TEST_GROUP(Integer)
 {
-    Number five;
-
-    void setup()
-    {
-        five = Number(5);
-    }
+    const Number five = Number(5);
 };
 
 TEST(Integer, simpleAddition)
@@ -732,12 +687,7 @@ TEST(Double, positiveSign)
 
 TEST_GROUP(UndefinedNumber)
 {
-    Number undefined;
-
-    void setup()
-    {
-        undefined = Number::createUndefined();
-    }
+    const Number undefined = Number::createUndefined();
 };
 
 TEST(UndefinedNumber, typeRequests)
@@ -794,10 +744,9 @@ TEST(UndefinedNumber, productWithValidNumber)
 TEST(UndefinedNumber, powerWithValidExponent)
 {
     const Number exp(1, 2);
+    const Number res = undefined.toThe(exp);
 
-    undefined = undefined.toThe(exp);
-
-    CHECK(undefined.isUndefined());
+    CHECK(res.isUndefined());
 }
 
 TEST(UndefinedNumber, powerWithValidBase)
@@ -864,15 +813,9 @@ TEST(UndefinedNumber, comparisonBetweenUndefined)
 
 TEST_GROUP(Operators)
 {
-    Number two;
-    Number ten;
+    const Number two = Number(2);
+    const Number ten = Number(10);
     Number res;
-
-    void setup()
-    {
-        two = Number(2);
-        ten = Number(10);
-    }
 
     void teardown()
     {

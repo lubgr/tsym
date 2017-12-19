@@ -7,12 +7,7 @@ using namespace tsym;
 
 TEST_GROUP(Undefined)
 {
-    BasePtr undefined;
-
-    void setup()
-    {
-        undefined = Undefined::create();
-    }
+    const BasePtr undefined = Undefined::create();
 };
 
 TEST(Undefined, numericalEvaluation)

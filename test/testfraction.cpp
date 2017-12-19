@@ -9,12 +9,7 @@ using namespace tsym;
 
 TEST_GROUP(Fraction)
 {
-    Fraction aOverB;
-
-    void setup()
-    {
-        aOverB = Fraction(a, b);
-    }
+    const Fraction aOverB = Fraction(a, b);
 };
 
 TEST(Fraction, constructionWithoutParameter)

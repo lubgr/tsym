@@ -9,24 +9,15 @@ using namespace tsym;
 
 TEST_GROUP(NumPowerSimpl)
 {
-    Int defaultMaxPrimeLimit;
-    NumPowerSimpl nps;
-    Number half;
-    Number third;
-    double TOL;
-
-    void setup()
-    {
-        half = Number(1, 2);
-        third = Number(1, 3);
-        TOL = 1.e-10;
-
-        defaultMaxPrimeLimit = NumPowerSimpl::getMaxPrimeResolution();
-    }
+    Int defaultMaxPrimeLimit = NumPowerSimpl::getMaxPrimeResolution();
+    const Number half = Number(1, 2);
+    const Number third = Number(1, 3);
+    const double TOL = 1.e-10;
+    NumPowerSimpl nps {};
 
     void teardown()
     {
-        nps = NumPowerSimpl();
+        nps = NumPowerSimpl{};
         enableLog();
 
         NumPowerSimpl::setMaxPrimeResolution(defaultMaxPrimeLimit);

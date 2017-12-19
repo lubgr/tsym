@@ -10,25 +10,18 @@ using namespace tsym;
 
 TEST_GROUP(Matrix)
 {
-    const Var zero;
+    const Var zero = 0;
+    const Var a = Var("a");
+    const Var b = Var("b");
+    const Var c = Var("c");
+    const Var d = Var("d");
+    const Var e = Var("e");
+    const Var f = Var("f");
+    const Var power = tsym::pow(a, 2*d);
     Matrix m;
-    Var a;
-    Var b;
-    Var c;
-    Var d;
-    Var e;
-    Var f;
-    Var power;
 
     void setup()
     {
-        a = Var("a");
-        b = Var("b");
-        c = Var("c");
-        d = Var("d");
-        e = Var("e");
-        f = Var("f");
-        power = tsym::pow(a, 2*d);
 
         m = Matrix(3, 3);
         m(0, 0) = a;
@@ -62,7 +55,7 @@ TEST_GROUP(Matrix)
 
 TEST(Matrix, rowAndColumnSize)
 {
-    Matrix m(5, 17);
+    const Matrix m(5, 17);
 
     CHECK_EQUAL(5, m.rowSize());
     CHECK_EQUAL(17, m.colSize());
@@ -70,7 +63,7 @@ TEST(Matrix, rowAndColumnSize)
 
 TEST(Matrix, defaultZero)
 {
-    Matrix zeroMatrix(2, 4);
+    const Matrix zeroMatrix(2, 4);
 
     for (unsigned i = 0; i < 2; ++i)
         for (unsigned j = 0; j < 4; ++j)
@@ -79,7 +72,7 @@ TEST(Matrix, defaultZero)
 
 TEST(Matrix, copyConstructor)
 {
-    Matrix copy(m);
+    const Matrix copy(m);
 
     checkMatrixM(copy);
 }

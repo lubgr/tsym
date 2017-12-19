@@ -12,14 +12,8 @@ using namespace tsym;
 
 TEST_GROUP(Degree)
 {
-    BasePtr abSum;
-    BasePtr abProduct;
-
-    void setup()
-    {
-        abSum = Sum::create(a, b);
-        abProduct = Product::create(a, b);
-    }
+    const BasePtr abSum = Sum::create(a, b);
+    const BasePtr abProduct = Product::create(a, b);
 };
 
 /* All types other than Numeric should return 1 for a degree request with the variable being equal

@@ -16,7 +16,6 @@ using namespace tsym;
 
 TEST_GROUP(Printer)
 {
-    BasePtr undefined;
     std::stringstream stream;
     Printer printer;
 

@@ -14,11 +14,9 @@ TEST_GROUP(Diff)
 {
     void checkWrongDiffToUndefined(const BasePtr& arg1, const BasePtr& arg2)
     {
-        BasePtr result;
-
         disableLog();
 
-        result = arg1->diff(arg2);
+        const BasePtr result = arg1->diff(arg2);
         CHECK(result->isUndefined());
 
         enableLog();

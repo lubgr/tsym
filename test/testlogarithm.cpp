@@ -12,12 +12,7 @@ using namespace tsym;
 
 TEST_GROUP(Logarithm)
 {
-    BasePtr e;
-
-    void setup()
-    {
-        e = Constant::createE();
-    }
+    const BasePtr e = Constant::createE();
 };
 
 TEST(Logarithm, logOfZero)

@@ -16,26 +16,14 @@ using namespace tsym;
 
 TEST_GROUP(Product)
 {
-    BasePtr half;
-    BasePtr minusOneHalf;
-    BasePtr sqrtTwo;
-    BasePtr sqrtThree;
-    BasePtr sqrtSix;
-    BasePtr oneThird;
-    BasePtr oneFourth;
-    Int numPowerSimplLimit;
-
-    void setup()
-    {
-        half = Numeric::create(1, 2);
-        minusOneHalf = Numeric::create(-1, 2);
-        sqrtTwo = Power::sqrt(two);
-        sqrtThree = Power::sqrt(three);
-        sqrtSix = Power::sqrt(six);
-        oneThird = Numeric::create(1, 3);
-        oneFourth = Numeric::create(1, 4);
-        numPowerSimplLimit = NumPowerSimpl::getMaxPrimeResolution();
-    }
+    const Int numPowerSimplLimit = NumPowerSimpl::getMaxPrimeResolution();
+    const BasePtr half = Numeric::create(1, 2);
+    const BasePtr minusOneHalf = Numeric::create(-1, 2);
+    const BasePtr sqrtTwo = Power::sqrt(two);
+    const BasePtr sqrtThree = Power::sqrt(three);
+    const BasePtr sqrtSix = Power::sqrt(six);
+    const BasePtr oneThird = Numeric::create(1, 3);
+    const BasePtr oneFourth = Numeric::create(1, 4);
 
     void teardown()
     {

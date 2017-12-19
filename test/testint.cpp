@@ -8,14 +8,8 @@ using namespace tsym;
 
 TEST_GROUP(Int)
 {
-    long maxLong;
-    int maxInt;
-
-    void setup()
-    {
-        maxInt = std::numeric_limits<int>::max();
-        maxLong = std::numeric_limits<long>::max();
-    }
+    const long maxLong = std::numeric_limits<long>::max();
+    const int maxInt = std::numeric_limits<int>::max();
 };
 
 TEST(Int, equality)

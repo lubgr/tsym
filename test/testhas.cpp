@@ -11,20 +11,11 @@ using namespace tsym;
 
 TEST_GROUP(Has)
 {
-    BasePtr undefined;
-    BasePtr pi;
-    BasePtr twoPiAbProduct;
-    BasePtr onePlusATimesB;
-    BasePtr aPlusBSquare;
-
-    void setup()
-    {
-        undefined = Undefined::create();
-        pi = Constant::createPi();
-        twoPiAbProduct = Product::create(two, a, b, pi);
-        onePlusATimesB = Sum::create(one, Product::create(a, b));
-        aPlusBSquare = Power::create(Sum::create(a, b), two);
-    }
+    const BasePtr undefined = Undefined::create();
+    const BasePtr pi = Constant::createPi();
+    const BasePtr twoPiAbProduct = Product::create(two, a, b, pi);
+    const BasePtr onePlusATimesB = Sum::create(one, Product::create(a, b));
+    const BasePtr aPlusBSquare = Power::create(Sum::create(a, b), two);
 };
 
 TEST(Has, equalSymbols)

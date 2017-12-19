@@ -8,22 +8,10 @@ using namespace tsym;
 
 TEST_GROUP(Vector)
 {
-    Var a;
-    Var b;
-    Var c;
-    Vector abcVec;
-
-    void setup()
-    {
-        a = Var("a");
-        b = Var("b");
-        c = Var("c");
-
-        abcVec = Vector(3);
-        abcVec(0) = a;
-        abcVec(1) = b;
-        abcVec(2) = c;
-    }
+    const Var a = Var("a");
+    const Var b = Var("b");
+    const Var c = Var("c");
+    Vector abcVec { a, b, c };
 
     void checkAbcVector(const Vector& vec)
     {

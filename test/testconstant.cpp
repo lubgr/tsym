@@ -8,14 +8,8 @@ using namespace tsym;
 
 TEST_GROUP(Constant)
 {
-    BasePtr pi;
-    BasePtr e;
-
-    void setup()
-    {
-        pi = Constant::createPi();
-        e = Constant::createE();
-    }
+    const BasePtr pi = Constant::createPi();
+    const BasePtr e = Constant::createE();
 };
 
 TEST(Constant, typeString)

@@ -12,23 +12,13 @@ using namespace tsym;
 
 TEST_GROUP(NumTrigoSimpl)
 {
-    NumTrigoSimpl nts;
-    BasePtr minusOne;
-    BasePtr half;
-    BasePtr sqrtTwo;
-    BasePtr sqrtThree;
-    BasePtr sqrtSix;
-    BasePtr pi;
-
-    void setup()
-    {
-        minusOne = Numeric::mOne();
-        half = Numeric::create(1, 2);
-        sqrtTwo = Power::sqrt(two);
-        sqrtThree = Power::sqrt(three);
-        sqrtSix = Power::sqrt(six);
-        pi = Constant::createPi();
-    }
+    const BasePtr minusOne = Numeric::mOne();
+    const BasePtr half = Numeric::create(1, 2);
+    const BasePtr sqrtTwo = Power::sqrt(two);
+    const BasePtr sqrtThree = Power::sqrt(three);
+    const BasePtr sqrtSix = Power::sqrt(six);
+    const BasePtr pi = Constant::createPi();
+    NumTrigoSimpl nts {};
 
     void check(const BasePtr& expectedSin, const BasePtr& expectedCos, const BasePtr& expectedTan)
     {

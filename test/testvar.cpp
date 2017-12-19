@@ -16,34 +16,18 @@ using namespace tsym;
 
 TEST_GROUP(Var)
 {
-    Var zero;
-    Var a;
-    Var b;
-    Var c;
-    Var d;
-    Var e;
-    Var one;
-    Var two;
-    Var three;
-    Var sqrtTwo;
-    Var sqrtThree;
-    Var sqrtSix;
-
-    void setup()
-    {
-        a = Var("a");
-        b = Var("b");
-        c = Var("c");
-        d = Var("d");
-        e = Var("e");
-        zero = Var(0);
-        one = Var(1);
-        two = Var(2);
-        three = Var(3);
-        sqrtTwo = tsym::sqrt(2);
-        sqrtThree = tsym::sqrt(3);
-        sqrtSix = tsym::sqrt(6);
-    }
+    const Var zero = Var(0);
+    const Var a = Var("a");
+    const Var b = Var("b");
+    const Var c = Var("c");
+    const Var d = Var("d");
+    const Var e = Var("e");
+    const Var one = Var(1);
+    const Var two = Var(2);
+    const Var three = Var(3);
+    const Var sqrtTwo = tsym::sqrt(2);
+    const Var sqrtThree = tsym::sqrt(3);
+    const Var sqrtSix = tsym::sqrt(6);
 };
 
 TEST(Var, undefinedType)
@@ -216,9 +200,9 @@ TEST(Var, illegalNumberRequest)
 
 TEST(Var, powerType)
 {
-    a = a.toThe(2);
+    const Var res = a.toThe(2);
 
-    CHECK_EQUAL(Var::Type::POWER, a.type());
+    CHECK_EQUAL(Var::Type::POWER, res.type());
 }
 
 TEST(Var, productType)
@@ -279,13 +263,6 @@ TEST(Var, defaultAssignment)
     var = Var();
 
     CHECK(var.isZero());
-}
-
-TEST(Var, selfAssignment)
-{
-    a = a;
-
-    CHECK_EQUAL(a, a);
 }
 
 TEST(Var, equalityOfSymbols)
@@ -493,10 +470,10 @@ TEST(Var, powerWithZeroBase)
 TEST(Var, powerWithZeroBaseNegExp)
 {
     disableLog();
-    zero = zero.toThe(-2);
+    const Var res = zero.toThe(-2);
     enableLog();
 
-    CHECK_EQUAL(Var::Type::UNDEFINED, zero.type());
+    CHECK_EQUAL(Var::Type::UNDEFINED, res.type());
 }
 
 TEST(Var, powerWithBaseOne)

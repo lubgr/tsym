@@ -13,13 +13,8 @@ using namespace tsym;
 TEST_GROUP(PolyInfo)
 {
     const BasePtr undefined = Undefined::create();
-    BasePtr abSum;
-    PolyInfo info;
-
-    void setup()
-    {
-        abSum = Sum::create(a, b);
-    }
+    const BasePtr abSum = Sum::create(a, b);
+    PolyInfo info {};
 
     bool contains(const BasePtrList& symbolList, const BasePtr& symbol)
     {

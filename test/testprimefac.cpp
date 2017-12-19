@@ -6,17 +6,10 @@ using namespace tsym;
 
 TEST_GROUP(PrimeFac)
 {
+    const Number half = Number(1, 2);
+    const Number third = Number(1, 3);
+    const Number twoThird = Number(2, 3);
     PrimeFac pf;
-    Number half;
-    Number third;
-    Number twoThird;
-
-    void setup()
-    {
-        half = Number(1, 2);
-        third = Number(1, 3);
-        twoThird = Number(2, 3);
-    }
 
     void checkNum(int p1, int p2 = 0, int p3 = 0, int p4 = 0, int p5 = 0, int p6 = 0)
     {

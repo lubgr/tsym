@@ -14,18 +14,10 @@ using namespace tsym;
 
 TEST_GROUP(Order)
 {
-    BasePtr half;
-    BasePtr sqrtTwo;
-    BasePtr sqrtThree;
-    BasePtr pi;
-
-    void setup()
-    {
-        half = Numeric::create(1, 2);
-        sqrtTwo = Power::sqrt(two);
-        sqrtThree = Power::sqrt(three);
-        pi = Constant::createPi();
-    }
+    const BasePtr half = Numeric::create(1, 2);
+    const BasePtr sqrtTwo = Power::sqrt(two);
+    const BasePtr sqrtThree = Power::sqrt(three);
+    const BasePtr pi = Constant::createPi();
 };
 
 TEST(Order, twoUndefined)

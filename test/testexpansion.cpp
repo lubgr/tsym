@@ -12,26 +12,15 @@ using namespace tsym;
 
 TEST_GROUP(Expansion)
 {
-    BasePtr abSum;
-    BasePtr cdSum;
-    BasePtr abProduct;
-    BasePtr i;
-
-    void setup()
-    {
-        abSum = Sum::create(a, b);
-        cdSum = Sum::create(c, d);
-        abProduct = Product::create(a, b);
-        i = Symbol::create("i");
-    }
+    const BasePtr abSum = Sum::create(a, b);
+    const BasePtr cdSum = Sum::create(c, d);
+    const BasePtr abProduct = Product::create(a, b);
+    const BasePtr i = Symbol::create("i");
 
     BasePtr getProduct(const BasePtr& f1, const BasePtr& f2,
             const BasePtr& f3 = Undefined::create(), const BasePtr& f4 = Undefined::create())
     {
-        BasePtrList fac;
-
-        fac.push_back(f1);
-        fac.push_back(f2);
+        BasePtrList fac { f1, f2 };
 
         if (!f3->isUndefined())
             fac.push_back(f3);

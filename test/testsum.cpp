@@ -16,20 +16,11 @@ using namespace tsym;
 
 TEST_GROUP(Sum)
 {
-    BasePtr sinA;
-    BasePtr cosA;
-    BasePtr sqrtTwo;
-    BasePtr sqrtThree;
-    BasePtr pi;
-
-    void setup()
-    {
-        sinA = Trigonometric::createSin(a);
-        cosA = Trigonometric::createCos(a);
-        sqrtTwo = Power::sqrt(two);
-        sqrtThree = Power::sqrt(three);
-        pi = Constant::createPi();
-    }
+    const BasePtr sinA = Trigonometric::createSin(a);
+    const BasePtr cosA = Trigonometric::createCos(a);
+    const BasePtr sqrtTwo = Power::sqrt(two);
+    const BasePtr sqrtThree = Power::sqrt(three);
+    const BasePtr pi = Constant::createPi();
 };
 
 TEST(Sum, typeString)

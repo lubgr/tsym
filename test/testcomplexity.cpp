@@ -13,12 +13,7 @@ using namespace tsym;
 
 TEST_GROUP(Complexity)
 {
-    BasePtr pi;
-
-    void setup()
-    {
-        pi = Constant::createPi();
-    }
+    const BasePtr pi = Constant::createPi();
 };
 
 TEST(Complexity, undefined)

@@ -1,4 +1,5 @@
 
+#include <memory>
 #include "abc.h"
 #include "constant.h"
 #include "sum.h"
@@ -13,25 +14,16 @@ using namespace tsym;
 
 TEST_GROUP(Normal)
 {
-    BasePtr undefined;
-    BasePtr argToZero;
-    SymbolMap *map;
-    BasePtr pi;
+    const BasePtr undefined = Undefined::create();
+    const BasePtr denom = Power::oneOver(Sum::create(b, c));
+    const BasePtr argToZero = Sum::create(a, Product::create(Numeric::mOne(), a, b, denom),
+            Product::create(Numeric::mOne(), a, c, denom));
+    const BasePtr pi = Constant::createPi();
+    std::unique_ptr<SymbolMap> map {};
 
     void setup()
     {
-        undefined = Undefined::create();
-        const BasePtr denom = Power::oneOver(Sum::create(b, c));
-        argToZero = Sum::create(a, Product::create(Numeric::mOne(), a, b, denom),
-                Product::create(Numeric::mOne(), a, c, denom));
-
-        pi = Constant::createPi();
-        map = new SymbolMap();
-    }
-
-    void teardown()
-    {
-        delete map;
+        map = std::make_unique<SymbolMap>();
     }
 };
 
