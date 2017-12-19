@@ -14,7 +14,7 @@ namespace tsym {
          * Conveniece shortcut functions for numeric evaluation of powers can be found as static
          * methods of this class (Pow/Sqrt). */
         public:
-            Number();
+            Number() = default;
             Number(int value);
             Number(double value);
             Number(int numerator, int denominator);
@@ -55,7 +55,6 @@ namespace tsym {
             static Number Pow(const Number& base, const Number& exp);
 
         private:
-            void setAndSimplify(int num, int denom, double dValue);
             void setAndSimplify(const Int& num, const Int& denom, double dValue);
             void set(const Int& num, const Int& denom, double dValue);
             void setUndefined();
@@ -78,10 +77,10 @@ namespace tsym {
             bool areBothRational(const Number& other) const;
             bool equalViaDouble(const Number& rhs) const;
 
-            Int num;
-            Int denom;
-            double dValue;
-            bool undefined;
+            Int num { 0 };
+            Int denom { 1 };
+            double dValue { 0.0 };
+            bool undefined = false;
             static const double TOL;
             static const double ZERO_TOL;
 

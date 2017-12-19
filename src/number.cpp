@@ -10,38 +10,24 @@
 const double tsym::Number::ZERO_TOL = std::numeric_limits<double>::epsilon();
 const double tsym::Number::TOL = 100.0*ZERO_TOL;
 
-tsym::Number::Number() :
-    undefined(false)
-{
-    setAndSimplify(0, 1, 0.0);
-}
-
 tsym::Number::Number(int value) :
-    undefined(false)
-{
-    setAndSimplify(value, 1, 0.0);
-}
+    Number(value, 1)
+{}
 
 tsym::Number::Number(int numerator, int denominator) :
-    undefined(false)
-{
-    setAndSimplify(numerator, denominator, 0.0);
-}
+    Number(Int(numerator), Int(denominator))
+{}
 
-tsym::Number::Number(double value) :
-    undefined(false)
+tsym::Number::Number(double value)
 {
     setAndSimplify(0, 1, value);
 }
 
 tsym::Number::Number(const Int& value) :
-    undefined(false)
-{
-    setAndSimplify(value, 1, 0.0);
-}
+    Number(value, 1)
+{}
 
-tsym::Number::Number(const Int& numerator, const Int& denominator) :
-    undefined(false)
+tsym::Number::Number(const Int& numerator, const Int& denominator)
 {
     setAndSimplify(numerator, denominator, 0.0);
 }
@@ -53,11 +39,6 @@ tsym::Number tsym::Number::createUndefined()
     undefined.setUndefined();
 
     return undefined;
-}
-
-void tsym::Number::setAndSimplify(int num, int denom, double dValue)
-{
-    setAndSimplify(Int(num), Int(denom), dValue);
 }
 
 void tsym::Number::setAndSimplify(const Int& num, const Int& denom, double dValue)

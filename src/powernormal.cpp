@@ -1,11 +1,9 @@
 
 #include "powernormal.h"
-#include "numeric.h"
 #include "power.h"
 #include "product.h"
 
 tsym::PowerNormal::PowerNormal(SymbolMap& map) :
-    one(Numeric::one()),
     map(map)
 {}
 

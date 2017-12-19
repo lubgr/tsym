@@ -4,8 +4,6 @@
 #include "primefac.h"
 #include "logging.h"
 
-tsym::PrimeFac::PrimeFac() {}
-
 tsym::PrimeFac::PrimeFac(const Number& n)
 {
     checkAndFactorize(n);

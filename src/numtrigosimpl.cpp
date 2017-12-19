@@ -2,7 +2,6 @@
 #include <cassert>
 #include <cmath>
 #include "numtrigosimpl.h"
-#include "constant.h"
 #include "numeric.h"
 #include "product.h"
 #include "sum.h"
@@ -83,14 +82,6 @@ namespace tsym {
         }
     }
 }
-
-tsym::NumTrigoSimpl::NumTrigoSimpl() :
-    Pi(Constant::createPi()),
-    PI(Pi->numericEval()),
-    type(Trigonometric::Type::SIN), /* Dummy value. */
-    isSimplified(false),
-    sign(1)
-{}
 
 void tsym::NumTrigoSimpl::setType(Trigonometric::Type type)
 {

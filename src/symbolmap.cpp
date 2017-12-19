@@ -2,8 +2,6 @@
 #include "symbolmap.h"
 #include "symbol.h"
 
-tsym::SymbolMap::SymbolMap() {}
-
 tsym::BasePtr tsym::SymbolMap::getTmpSymbolAndStore(const BasePtr& ptr)
 {
     const BasePtr *existingReplacement(cache.retrieve(ptr));

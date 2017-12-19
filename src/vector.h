@@ -9,7 +9,7 @@ namespace tsym {
         /* This simple vector class wraps around a primitive pointer to dynamically allocated
          * storage, while the memory managment is hidden. */
         public:
-            Vector();
+            Vector() = default;
             explicit Vector(size_t size);
             explicit Vector(std::initializer_list<Var> data);
             Vector(const Vector& other);
@@ -40,8 +40,8 @@ namespace tsym {
             void deleteMem();
             void copyValuesFromVector(const Vector& other);
 
-            Var *data;
-            size_t dim;
+            Var *data = nullptr;
+            size_t dim = 0;
     };
 
     bool operator == (const Vector& lhs, const Vector& rhs);

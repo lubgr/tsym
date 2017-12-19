@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include "constant.h"
 #include "trigonometric.h"
 
 namespace tsym {
@@ -20,7 +21,7 @@ namespace tsym {
      * Everything else is not simplified. */
     class NumTrigoSimpl {
         public:
-            NumTrigoSimpl();
+            NumTrigoSimpl() = default;
 
             void setType(Trigonometric::Type type);
             void setArg(const Number& arg);
@@ -76,15 +77,15 @@ namespace tsym {
 
             void atan();
 
-            const BasePtr Pi;
-            const Number PI;
+            const BasePtr Pi { Constant::createPi() };
+            const Number PI { Pi->numericEval() };
 
-            Trigonometric::Type type;
-            bool isSimplified;
-            int sign;
-            BasePtr origArg;
-            BasePtr arg;
-            BasePtr res;
+            Trigonometric::Type type { Trigonometric::Type::SIN };
+            bool isSimplified = false;
+            int sign = 1;
+            BasePtr origArg {};
+            BasePtr arg {};
+            BasePtr res {};
     };
 }
 

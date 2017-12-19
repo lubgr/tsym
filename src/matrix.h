@@ -10,7 +10,7 @@ namespace tsym {
     class Matrix {
         /* Simple wrapper class around plain pointers, with some common matrix operations. */
         public:
-            Matrix();
+            Matrix() = default;
             Matrix(size_t nRow, size_t nCol);
             explicit Matrix(std::initializer_list<std::initializer_list<Var>> data);
             Matrix(const Matrix& other);
@@ -72,9 +72,9 @@ namespace tsym {
             Var checkedDet(Pivoting option) const;
             Var detFromLU(unsigned nPivotSwaps) const;
 
-            Var **data;
-            size_t nRow;
-            size_t nCol;
+            Var **data = nullptr;
+            size_t nRow = 0;
+            size_t nCol = 0;
     };
 
     bool operator == (const Matrix& lhs, const Matrix& rhs);

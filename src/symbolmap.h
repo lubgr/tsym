@@ -12,7 +12,7 @@ namespace tsym {
          * replacing any BasePtr object with a temporary, unique Symbol. This replacement is saved
          * internally in a map for a back-replacement after further steps of normalization. */
         public:
-            SymbolMap();
+            SymbolMap() = default;
             SymbolMap(const SymbolMap& other) = delete;
             const SymbolMap& operator = (const SymbolMap& rhs) = delete;
 

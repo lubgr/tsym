@@ -16,13 +16,6 @@ namespace tsym {
     }
 }
 
-tsym::NumPowerSimpl::NumPowerSimpl() :
-    origPreFac(1),
-    preFac(1),
-    needsComputation(true),
-    isPreFacNegative(false)
-{}
-
 void tsym::NumPowerSimpl::setPower(const Number& base, const Number& exp)
 {
     origBase = base;

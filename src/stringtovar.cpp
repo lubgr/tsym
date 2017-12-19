@@ -3,8 +3,7 @@
 #include "parseradapter.h"
 
 tsym::StringToVar::StringToVar(const std::string& source) :
-    source(source),
-    errorIndex(0)
+    source(source)
 {
     parse();
 }

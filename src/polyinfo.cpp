@@ -43,14 +43,9 @@ namespace tsym {
     }
 }
 
-tsym::PolyInfo::PolyInfo() :
-    needsUpdate(true)
-{}
-
 tsym::PolyInfo::PolyInfo(const BasePtr& u, const BasePtr& v) :
     u(u),
-    v(v),
-    needsUpdate(true)
+    v(v)
 {}
 
 void tsym::PolyInfo::set(const BasePtr& u, const BasePtr& v)

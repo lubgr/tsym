@@ -8,7 +8,7 @@ namespace tsym {
     class PolyInfo {
         /* Utility class for operations on two multivariate polynomials. */
         public:
-            PolyInfo();
+            PolyInfo() = default;
             PolyInfo(const BasePtr& u, const BasePtr& v);
 
             void set(const BasePtr& u, const BasePtr& v);
@@ -33,10 +33,10 @@ namespace tsym {
             void addSymbols(const BasePtrList& list);
             bool hasCommonSymbol() const;
 
-            BasePtr u;
-            BasePtr v;
-            BasePtrList symbolList;
-            bool needsUpdate;
+            BasePtr u {};
+            BasePtr v {};
+            BasePtrList symbolList {};
+            bool needsUpdate = true;
     };
 }
 

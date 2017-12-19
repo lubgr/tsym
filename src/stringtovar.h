@@ -29,6 +29,8 @@ namespace tsym {
          * input.  */
         public:
             StringToVar(const std::string& source);
+            StringToVar(const StringToVar& other) = delete;
+            StringToVar& operator = (const StringToVar& rhs) = delete;
 
             bool success() const;
             const std::vector<std::string>& errorMessages() const;
@@ -36,14 +38,11 @@ namespace tsym {
             const Var& get() const;
 
         private:
-            StringToVar(const StringToVar& other) = delete;
-            const StringToVar& operator = (const StringToVar& rhs) = delete;
-
             void parse();
 
             const std::string source;
             std::vector<std::string> errors;
-            unsigned errorIndex;
+            unsigned errorIndex = 0;
             Var result;
     };
 }

@@ -12,7 +12,7 @@ namespace tsym {
          * Extraction of prime numbers for a given rational exponent is additionaly provided. In
          * that case, the exponent may be changed, too.*/
         public:
-            PrimeFac();
+            PrimeFac() = default;
             explicit PrimeFac(const Number& n);
 
             void set(const Number& n);

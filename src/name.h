@@ -10,7 +10,7 @@ namespace tsym {
              * the default constructor does), because it can be queried for
              * non-Symbol/-Function/-Constant types. It may be an unsigned integer for the
              * construction of temporary symbols. */
-            Name();
+            Name() = default;
             explicit Name(const std::string& name);
             Name(const std::string& name, const std::string& subscript);
             Name(const std::string& name, const std::string& subscript,
@@ -43,7 +43,7 @@ namespace tsym {
             std::string subscript;
             std::string superscript;
             std::string plainText;
-            unsigned numeric;
+            unsigned numeric = 0;
     };
 
     bool operator == (const Name& lhs, const Name& rhs);

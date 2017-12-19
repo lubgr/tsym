@@ -3,6 +3,7 @@
 
 #include "symbolmap.h"
 #include "fraction.h"
+#include "numeric.h"
 
 namespace tsym {
     class PowerNormal {
@@ -29,10 +30,10 @@ namespace tsym {
             Fraction normalNumEvalNegExp();
             Fraction normalNonNumEvalExp();
 
-            const BasePtr one;
+            const BasePtr& one { Numeric::one() };
+            Fraction rationalBase {};
+            BasePtr rationalExp {};
             SymbolMap& map;
-            Fraction rationalBase;
-            BasePtr rationalExp;
     };
 }
 

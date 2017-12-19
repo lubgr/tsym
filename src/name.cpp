@@ -1,21 +1,15 @@
 
 #include "name.h"
 
-tsym::Name::Name() :
-    numeric(0)
-{}
-
 tsym::Name::Name(const std::string& name) :
     name(name),
-    plainText(name),
-    numeric(0)
+    plainText(name)
 {}
 
 tsym::Name::Name(const std::string& name, const std::string& subscript) :
     name(name),
     subscript(subscript),
-    plainText(name),
-    numeric(0)
+    plainText(name)
 {
     if (!subscript.empty())
         plainText.append("_").append(subscript);
@@ -26,8 +20,7 @@ tsym::Name::Name(const std::string& name, const std::string& subscript,
     name(name),
     subscript(subscript),
     superscript(superscript),
-    plainText(name),
-    numeric(0)
+    plainText(name)
 {
     if (!subscript.empty())
         plainText.append("_").append(subscript);

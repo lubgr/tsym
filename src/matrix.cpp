@@ -36,14 +36,7 @@ namespace tsym {
     }
 }
 
-tsym::Matrix::Matrix() :
-    data(nullptr),
-    nRow(0),
-    nCol(0)
-{}
-
 tsym::Matrix::Matrix(size_t nRow, size_t nCol) :
-    data(nullptr),
     nRow(nRow),
     nCol(nCol)
 {

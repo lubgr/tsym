@@ -28,7 +28,7 @@ namespace tsym {
          * resulting number n (in case the power could be resolved to a number, e.g. 4^(1/2) = 2) is
          * 1*n^1. */
         public:
-            NumPowerSimpl();
+            NumPowerSimpl() = default;
 
             void setPower(const Number& base, const Number& exp);
             /* The prefactor is one when not specified: */
@@ -67,14 +67,14 @@ namespace tsym {
             void adjustExpSignAndBase();
             void shiftPreFacSignBack();
 
-            Number origBase;
-            Number origExp;
-            Number origPreFac;
-            Number newBase;
-            Number newExp;
-            Number preFac;
-            bool needsComputation;
-            bool isPreFacNegative;
+            Number origBase {0};
+            Number origExp {0};
+            Number origPreFac {1};
+            Number newBase {0};
+            Number newExp {0};
+            Number preFac {0};
+            bool needsComputation = true;
+            bool isPreFacNegative = false;
             PrimeFac nbPrimes;
             PrimeFac pfPrimes;
     };
