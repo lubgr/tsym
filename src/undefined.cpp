@@ -9,8 +9,6 @@ tsym::Undefined::Undefined()
     setDebugString();
 }
 
-tsym::Undefined::~Undefined() {}
-
 tsym::BasePtr tsym::Undefined::create()
 {
     return instantiate([]() { return new Undefined(); });

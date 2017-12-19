@@ -14,8 +14,6 @@ tsym::Sum::Sum(const BasePtrList& summands) :
     setDebugString();
 }
 
-tsym::Sum::~Sum() {}
-
 tsym::BasePtr tsym::Sum::create(const BasePtr& s1, const BasePtr& s2)
 {
     return create(BasePtrList(s1, s2));

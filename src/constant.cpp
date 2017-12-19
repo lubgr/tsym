@@ -26,8 +26,6 @@ tsym::BasePtr tsym::Constant::create(Type type, Name&& name)
     return instantiate([type, &name]() { return new Constant(type, std::move(name)); });
 }
 
-tsym::Constant::~Constant() {}
-
 bool tsym::Constant::isEqualDifferentBase(const BasePtr& other) const
 {
     if (other->isConstant())

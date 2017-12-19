@@ -28,8 +28,6 @@ tsym::Logarithm::Logarithm(const BasePtr& arg) :
     setDebugString();
 }
 
-tsym::Logarithm::~Logarithm() {}
-
 tsym::BasePtr tsym::Logarithm::create(const BasePtr& arg)
 {
     if (isInvalidArg(arg))

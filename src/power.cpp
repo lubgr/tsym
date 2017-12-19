@@ -21,8 +21,6 @@ tsym::Power::Power(const BasePtr& base, const BasePtr& exponent) :
     setDebugString();
 }
 
-tsym::Power::~Power() {}
-
 tsym::BasePtr tsym::Power::create(const BasePtr& base, const BasePtr& exponent)
 {
     if (exponent->isUndefined() || base->isUndefined())

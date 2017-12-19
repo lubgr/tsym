@@ -33,7 +33,7 @@ namespace tsym {
             Constant(Type type, Name&& name);
             Constant(const Constant& other) = delete;
             Constant& operator = (const Constant& other) = delete;
-            ~Constant();
+            ~Constant() = default;
             static BasePtr create(Type type, Name&& name);
 
             const Type type;

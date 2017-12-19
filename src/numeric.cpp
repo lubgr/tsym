@@ -8,8 +8,6 @@ tsym::Numeric::Numeric(const Number& number) :
     setDebugString();
 }
 
-tsym::Numeric::~Numeric() {}
-
 tsym::BasePtr tsym::Numeric::create(int value)
 {
     return create(Number(value));

@@ -41,7 +41,7 @@ namespace tsym {
             Power(const BasePtr& base, const BasePtr& exponent);
             Power(const Power& other) = delete;
             Power& operator = (Power const& other) = delete;
-            ~Power();
+            ~Power() = default;
 
             static BasePtr createNotUndefined(const BasePtr& base, const BasePtr& exponent);
             static BasePtr createNonTrivial(const BasePtr& base, const BasePtr& exponent);

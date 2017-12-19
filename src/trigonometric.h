@@ -37,7 +37,7 @@ namespace tsym {
             Trigonometric(const BasePtrList& args, Type type);
             Trigonometric(const Trigonometric& other);
             Trigonometric& operator = (const Trigonometric& other);
-            ~Trigonometric();
+            ~Trigonometric() = default;
 
             static BasePtr create(Type type, const BasePtr& arg);
             static BasePtr createInstance(Type type, const BasePtrList& args);

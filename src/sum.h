@@ -37,7 +37,7 @@ namespace tsym {
             explicit Sum(const BasePtrList& summands);
             Sum(const Sum& other) = delete;
             Sum& operator = (const Sum& other) = delete;
-            ~Sum();
+            ~Sum() = default;
 
             static BasePtr createSimplifiedSum(const BasePtrList& summands);
             Fraction toCommonDenom(const std::vector<Fraction>& operands) const;

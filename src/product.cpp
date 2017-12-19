@@ -15,8 +15,6 @@ tsym::Product::Product(const BasePtrList& factors) :
     setDebugString();
 }
 
-tsym::Product::~Product() {}
-
 tsym::BasePtr tsym::Product::create(const BasePtr& f1, const BasePtr& f2)
 {
     return create(BasePtrList(f1, f2));

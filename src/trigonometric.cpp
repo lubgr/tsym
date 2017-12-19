@@ -43,8 +43,6 @@ tsym::Trigonometric::Trigonometric(const BasePtrList& args, Type type) :
     setDebugString();
 }
 
-tsym::Trigonometric::~Trigonometric() {}
-
 tsym::BasePtr tsym::Trigonometric::createSin(const BasePtr& arg)
 {
     return create(Type::SIN, arg);

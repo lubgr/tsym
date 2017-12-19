@@ -33,7 +33,7 @@ namespace tsym {
             Undefined();
             Undefined(const Undefined& other) = delete;
             Undefined& operator = (Undefined const& other) = delete;
-            ~Undefined();
+            ~Undefined() = default;
     };
 }
 

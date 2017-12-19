@@ -35,7 +35,7 @@ namespace tsym {
             Function(const BasePtrList& args, const std::string& name);
             Function(const Function& other) = delete;
             Function& operator = (const Function& other) = delete;
-            virtual ~Function();
+            virtual ~Function() = default;
 
         private:
             const Name functionName;

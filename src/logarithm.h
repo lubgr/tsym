@@ -22,7 +22,7 @@ namespace tsym {
             Logarithm(const BasePtr& arg);
             Logarithm(const Logarithm& other) = delete;
             Logarithm& operator = (const Logarithm& other) = delete;
-            ~Logarithm();
+            ~Logarithm() = default;
 
             static bool isInvalidArg(const BasePtr& arg);
             static BasePtr createInstance(const BasePtr& arg);
