@@ -32,11 +32,6 @@ namespace tsym {
              * sufficient, for longer subscripts, use a_{10}. */
             explicit Var(const char *str);
             explicit Var(const char *str, Sign sign);
-            Var(const Var& other) = default;
-            Var(Var&& other) = default;
-            Var& operator = (const Var& rhs) = default;
-            Var& operator = (Var&& rhs) = default;
-            virtual ~Var() = default;
 
             Var& operator += (const Var& rhs);
             Var& operator -= (const Var& rhs);
