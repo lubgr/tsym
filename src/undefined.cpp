@@ -9,9 +9,11 @@ tsym::Undefined::Undefined()
     setDebugString();
 }
 
-tsym::BasePtr tsym::Undefined::create()
+const tsym::BasePtr& tsym::Undefined::create()
 {
-    return instantiate([]() { return new Undefined(); });
+    static const auto instance = instantiate([]() { return new Undefined(); });
+
+    return instance;
 }
 
 bool tsym::Undefined::isEqual(const BasePtr& other) const

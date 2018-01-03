@@ -6,7 +6,8 @@
 namespace tsym {
     class Undefined : public Base {
         public:
-            static BasePtr create();
+            /* There is only one instance, because no state is needed: */
+            static const BasePtr& create();
 
             /* Returns always false: */
             bool isEqual(const BasePtr& other) const;
