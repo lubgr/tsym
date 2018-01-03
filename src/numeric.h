@@ -17,6 +17,12 @@ namespace tsym {
             /* Shortcuts for frequently used constant numbers. */
             static const BasePtr& zero();
             static const BasePtr& one();
+            static const BasePtr& two();
+            static const BasePtr& three();
+            static const BasePtr& four();
+            static const BasePtr& half();
+            static const BasePtr& third();
+            static const BasePtr& fourth();
             static const BasePtr& mOne();
 
             /* Implentations of pure virtual methods of Base. */

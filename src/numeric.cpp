@@ -41,25 +41,60 @@ tsym::BasePtr tsym::Numeric::create(const Number& number)
         return instantiate([&number]() { return new Numeric(number); });
 }
 
+namespace tsym {
+    namespace {
+        template<int num, int denom = 1> const tsym::BasePtr& refToLocalStatic()
+        {
+            static const auto n = Numeric::create(num, denom);
+
+            return n;
+        }
+    }
+}
+
 const tsym::BasePtr& tsym::Numeric::zero()
 {
-    static const BasePtr n(create(0));
-
-    return n;
+    return refToLocalStatic<0>();
 }
 
 const tsym::BasePtr& tsym::Numeric::one()
 {
-    static const BasePtr n(create(1));
+    return refToLocalStatic<1>();
+}
 
-    return n;
+const tsym::BasePtr& tsym::Numeric::two()
+{
+    return refToLocalStatic<2>();
+}
+
+const tsym::BasePtr& tsym::Numeric::three()
+{
+    return refToLocalStatic<3>();
+}
+
+const tsym::BasePtr& tsym::Numeric::four()
+{
+    return refToLocalStatic<4>();
+}
+
+const tsym::BasePtr& tsym::Numeric::half()
+{
+    return refToLocalStatic<1, 2>();
+}
+
+const tsym::BasePtr& tsym::Numeric::third()
+{
+    return refToLocalStatic<1, 3>();
+}
+
+const tsym::BasePtr& tsym::Numeric::fourth()
+{
+    return refToLocalStatic<1, 4>();
 }
 
 const tsym::BasePtr& tsym::Numeric::mOne()
 {
-    static const BasePtr n(create(-1));
-
-    return n;
+    return refToLocalStatic<-1>();
 }
 
 bool tsym::Numeric::isEqualDifferentBase(const BasePtr& other) const
