@@ -361,7 +361,7 @@ TEST(Sign, mixedNegativeAndUnclear)
 {
     const BasePtr s1 = Product::minus(ten, Power::create(a, six));
     const BasePtr s2 = Product::minus(two, aPos, bPos, cPos);
-    const BasePtr s3 = Product::minus(Numeric::create(1, 3), pi);
+    const BasePtr s3 = Product::minus(Numeric::third(), pi);
     const BasePtr s4 = Product::minus(aPos, bPos);
     const BasePtr res = Sum::create(s1, s2, s3, s4);
 

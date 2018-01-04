@@ -43,7 +43,7 @@ TEST(PolyDivide, twoFractionsEmptyList)
     /* (1/3)/(4/5) = 5/12. */
 {
     const BasePtr expected = Numeric::create(5, 12);
-    const BasePtrList result = poly::divide(Numeric::create(1, 3), Numeric::create(4, 5),
+    const BasePtrList result = poly::divide(Numeric::third(), Numeric::create(4, 5),
             BasePtrList());
 
     CHECK_EQUAL(expected, result.front());
@@ -127,7 +127,7 @@ TEST(PolyDivide, noQuotient)
 TEST(PolyDivide, quotientWithRationalCoeff)
     /* (-a^2*b + b^3)/(-2*b) = 1/2*a^2 - 1/2*b^2. */
 {
-    const BasePtr half = Numeric::create(1, 2);
+    const BasePtr& half = Numeric::half();
     const BasePtr u = Sum::create(Product::minus(a, a, b), Power::create(b, three));
     const BasePtr v = Product::minus(two, b);
     const BasePtr expected = Sum::create(Product::create(half, a, a), Product::minus(half, b, b));

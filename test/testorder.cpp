@@ -14,7 +14,7 @@ using namespace tsym;
 
 TEST_GROUP(Order)
 {
-    const BasePtr half = Numeric::create(1, 2);
+    const BasePtr& half = Numeric::half();
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr sqrtThree = Power::sqrt(three);
     const BasePtr pi = Constant::createPi();
@@ -396,14 +396,14 @@ TEST(Order, functionAndSum)
 
 TEST(Order, numericFraction)
 {
-    const BasePtr n = Numeric::create(1, 3);
+    const BasePtr n = Numeric::third();
 
     CHECK(order::isCorrect(n, n));
 }
 
 TEST(Order, numericPower)
 {
-    const BasePtr pow = Power::create(two, Numeric::create(1, 3));
+    const BasePtr pow = Power::create(two, Numeric::third());
 
     CHECK(order::isCorrect(pow, pow));
 }

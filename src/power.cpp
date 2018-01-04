@@ -36,7 +36,7 @@ tsym::BasePtr tsym::Power::oneOver(const BasePtr& base)
 
 tsym::BasePtr tsym::Power::sqrt(const BasePtr& base)
 {
-    return create(base, Numeric::create(1, 2));
+    return create(base, Numeric::half());
 }
 
 tsym::BasePtr tsym::Power::createNotUndefined(const BasePtr& base, const BasePtr& exponent)

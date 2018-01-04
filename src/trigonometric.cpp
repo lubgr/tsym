@@ -16,7 +16,7 @@ namespace tsym {
         /* Local helper functions for simplification below. */
         BasePtr square(const BasePtr& arg)
         {
-            return Power::create(arg, Numeric::create(2));
+            return Power::create(arg, Numeric::two());
         }
 
         BasePtr timesPi(int num, int denom = 1)
@@ -252,7 +252,7 @@ tsym::BasePtr tsym::Trigonometric::shiftArgIntoRange(Type type, BasePtr arg)
         arg = Sum::create(arg, timesPi(2));
 
     if (arg->numericEval() >= interval[1]->numericEval())
-        arg = Sum::create(Product::create(endFactor, Numeric::create(2), interval[1]),
+        arg = Sum::create(Product::create(endFactor, Numeric::two(), interval[1]),
                 Product::minus(endFactor, arg));
 
     return arg;

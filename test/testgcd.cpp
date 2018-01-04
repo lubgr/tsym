@@ -65,10 +65,9 @@ TEST(Gcd, twoIntegerNumerics)
 TEST(Gcd, twoRationalNumerics)
     /* Gcd(1/3, 1/15) = 1. */
 {
-    const BasePtr oneThird = Numeric::create(1, 3);
     const BasePtr oneOverFifteen = Numeric::create(1, 15);
 
-    check(one, oneThird, oneOverFifteen);
+    check(one, Numeric::third(), oneOverFifteen);
 }
 
 TEST(Gcd, twoIntegerNumericsWithGcdOne)
@@ -218,7 +217,7 @@ TEST(Gcd, simpleMultivarPolyCohenExample)
 TEST(Gcd, rationalCoefficients)
     /* Gcd(1/3*a, a) = a/3. */
 {
-    const BasePtr aThird = Product::create(a, Numeric::create(1, 3));
+    const BasePtr aThird = Product::create(a, Numeric::third());
 
     check(a, aThird, a);
 }
@@ -233,13 +232,13 @@ TEST(Gcd, simpleFractionCoefficients)
     BasePtr u;
     BasePtr v;
 
-    u = Sum::create( Product::create(Numeric::create(1, 2), Power::create(a, two), b, d),
+    u = Sum::create( Product::create(Numeric::half(), Power::create(a, two), b, d),
             Product::create(Numeric::create(-1, 3), a, c, d),
-            Product::create(Numeric::create(1, 2), Power::create(a, three), Power::create(d, two)));
+            Product::create(Numeric::half(), Power::create(a, three), Power::create(d, two)));
 
     v = Sum::create(Product::create(a, c, d),
             Product::minus(two, Power::create(a, three), Power::create(d, two)),
-            Product::create(Numeric::create(2), a, Power::create(b, seven), d));
+            Product::create(two, a, Power::create(b, seven), d));
 
     check(expected, u, v);
 }

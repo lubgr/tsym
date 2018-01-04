@@ -278,7 +278,7 @@ TEST(Sum, collectionOfNumericPowers)
 TEST(Sum, collectionOfNumericPowersInProduct)
     /* 2*sqrt(2)*3^(1/4) + sqrt(2)*3^(1/4) = 3*sqrt(2)*3^(1/4). */
 {
-    const BasePtr product = Product::create(sqrtTwo, Power::create(three, Numeric::create(1, 4)));
+    const BasePtr product = Product::create(sqrtTwo, Power::create(three, Numeric::fourth()));
     const BasePtr res = Sum::create(Product::create(two, product), product);
 
     CHECK(res->isProduct());

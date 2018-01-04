@@ -354,7 +354,7 @@ TEST(Printer, omitFirstNumeratorFactorIfMinusOne)
 TEST(Printer, powerOfSymbolAndPosFrac)
 {
     const std::string expected("a^(1/4)");
-    const BasePtr pow = Power::create(a, Numeric::create(1, 4));
+    const BasePtr pow = Power::create(a, Numeric::fourth());
 
     printer.set(pow);
 
@@ -584,7 +584,6 @@ TEST(Printer, productWithConstantPi)
 TEST(Printer, productOfEqualExpPowers)
 {
     const std::string expected("sqrt(a)*sqrt(b)");
-    const BasePtr half = Numeric::create(1, 2);
     const BasePtr product = Product::create(Power::sqrt(a), Power::sqrt(b));
 
     printer.set(product);

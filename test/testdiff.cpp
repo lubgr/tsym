@@ -141,7 +141,7 @@ TEST(Diff, logOfSymbolWrtToDifferentSymbol)
 
 TEST(Diff, sinOfSum)
 {
-    const BasePtr sum = Sum::create(Product::create(Numeric::create(1, 2), a, a), b,
+    const BasePtr sum = Sum::create(Product::create(Numeric::half(), a, a), b,
             Product::create(two, c));
     const BasePtr expected = Product::create(a, Trigonometric::createCos(sum));
     const BasePtr sin = Trigonometric::createSin(sum);

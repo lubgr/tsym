@@ -37,7 +37,7 @@ TEST(Numeric, creationByUndefinedNumber)
 
 TEST(Numeric, creationByInt)
 {
-    const BasePtr ptr = Numeric::create(1);
+    const BasePtr ptr = Numeric::one();
 
     CHECK(ptr->isNumeric());
     CHECK_EQUAL(1, ptr->numericEval());
@@ -45,7 +45,7 @@ TEST(Numeric, creationByInt)
 
 TEST(Numeric, creationByFraction)
 {
-    const BasePtr res = Numeric::create(1, 4);
+    const BasePtr res = Numeric::fourth();
 
     CHECK(res->isNumeric());
     CHECK_EQUAL(Number(1, 4), res->numericEval());

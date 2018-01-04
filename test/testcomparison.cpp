@@ -55,7 +55,7 @@ TEST(Comparison, equalNumerics)
 
 TEST(Comparison, differentNumerics)
 {
-    CHECK(two->isDifferent(Numeric::create(1, 2)));
+    CHECK(two->isDifferent(Numeric::half()));
 }
 
 TEST(Comparison, twoUndefined)

@@ -27,7 +27,7 @@ TEST(PolyUnit, undefined)
 TEST(PolyUnit, illegalNumPowerInput)
 {
     const BasePtr illegal = Product::create(two,
-            Sum::create(Power::create(five, Numeric::create(1, 3)), b));
+            Sum::create(Power::create(five, Numeric::third()), b));
     const BasePtr sum = Sum::create(a, illegal);
 
     disableLog();
@@ -99,7 +99,7 @@ TEST(PolyUnit, mixedInverseSignPolynomial)
 TEST(PolyUnit, positiveSignPolynomial)
     /* Unit(1/2*a*b^2 + a^2*b^3 + a^3*b^5, a) = 1. */
 {
-    const BasePtr polynomial = Sum::create(Product::create(Numeric::create(1, 2), a, b, b),
+    const BasePtr polynomial = Sum::create(Product::create(Numeric::half(), a, b, b),
             Product::create(a, a, Power::create(b, three)),
             Product::create(Power::create(a, three), Power::create(b, five)));
 

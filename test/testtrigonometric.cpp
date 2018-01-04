@@ -129,7 +129,7 @@ TEST(Trigonometric, cos345Degree)
 {
     const BasePtr arg = Product::create(Numeric::create(23, 12), pi);
     BasePtr res;
-    const BasePtr expected = Product::create(Numeric::create(1, 4),
+    const BasePtr expected = Product::create(Numeric::fourth(),
             Sum::create(Power::sqrt(six), sqrtTwo));
 
     res = Trigonometric::createCos(arg);
@@ -195,7 +195,7 @@ TEST(Trigonometric, atan2ThirdQuadrantResolvable)
 
 TEST(Trigonometric, atan2FourthQuadrantNonResolvable)
 {
-    const BasePtr expected = Product::minus(Trigonometric::createAtan(Numeric::create(1, 2)));
+    const BasePtr expected = Product::minus(Trigonometric::createAtan(Numeric::half()));
     const BasePtr result = Trigonometric::createAtan2(one, Numeric::create(-2));
 
     CHECK_EQUAL(expected, result);
@@ -215,7 +215,7 @@ TEST(Trigonometric, atan2XZeroEvaluable)
     const BasePtr negativeX = Trigonometric::createAtan2(Product::minus(two, sqrtTwo), zero);
     const BasePtr positiveX = Trigonometric::createAtan2(sqrtTwo, zero);
 
-    CHECK_EQUAL(Product::create(Numeric::create(1, 2), pi), positiveX);
+    CHECK_EQUAL(Product::create(Numeric::half(), pi), positiveX);
     CHECK_EQUAL(Product::create(Numeric::create(3, 2), pi), negativeX);
 }
 
@@ -294,7 +294,7 @@ TEST(Trigonometric, sinOfNegativeSum)
 TEST(Trigonometric, sinOfNegativeProduct)
 {
     const BasePtr arg = Product::create(Numeric::create(-1, 5),
-            Power::create(two, Numeric::create(1, 3)), a);
+            Power::create(two, Numeric::third()), a);
     const BasePtr res = Trigonometric::createSin(arg);
     const BasePtr expected = Product::minus(Trigonometric::createSin(Product::minus(arg)));
 
@@ -473,7 +473,7 @@ TEST(Trigonometric, acosOfMinusCos)
 TEST(Trigonometric, asinOfSinOfNumEvalNoShift)
     /* Asin(sin(-1/sqrt(5))) = -1/sqrt(5). */
 {
-    const BasePtr arg = Power::oneOver(Product::minus(Power::create(five, Numeric::create(1, 2))));
+    const BasePtr arg = Power::oneOver(Product::minus(Power::create(five, Numeric::half())));
     const BasePtr res = Trigonometric::createAsin(Trigonometric::createSin(arg));
 
     CHECK_EQUAL(arg, res);
@@ -535,7 +535,7 @@ TEST(Trigonometric, asinOfSinOfNumEvalPosShift2)
 TEST(Trigonometric, asinOfMinusAsinNumEval)
     /* Asin(-sin(1/2)) = -1/2. */
 {
-    const BasePtr mSin = Product::minus(Trigonometric::createSin(Numeric::create(1, 2)));
+    const BasePtr mSin = Product::minus(Trigonometric::createSin(Numeric::half()));
     const BasePtr res = Trigonometric::createAsin(mSin);
 
     CHECK_EQUAL(Numeric::create(-1, 2), res);
@@ -544,7 +544,7 @@ TEST(Trigonometric, asinOfMinusAsinNumEval)
 TEST(Trigonometric, atanOfTanNumEvalNoShift)
     /* Atan(tan(1/2)) = 1/2. */
 {
-    const BasePtr half = Numeric::create(1, 2);
+    const BasePtr& half = Numeric::half();
     const BasePtr tan = Trigonometric::createTan(half);
     const BasePtr res = Trigonometric::createAtan(tan);
 
@@ -584,13 +584,13 @@ TEST(Trigonometric, atanOfMinusTanNumEval)
     const BasePtr mTan = Product::minus(Trigonometric::createTan(Numeric::create(-1, 2)));
     const BasePtr res = Trigonometric::createAtan(mTan);
 
-    CHECK_EQUAL(Numeric::create(1, 2), res);
+    CHECK_EQUAL(Numeric::half(), res);
 }
 
 TEST(Trigonometric, acosOfCosNumEvalNoShift)
     /* Acos(cos(1/2)) = 1/2. */
 {
-    const BasePtr half = Numeric::create(1, 2);
+    const BasePtr& half = Numeric::half();
     const BasePtr cos = Trigonometric::createCos(half);
     const BasePtr res = Trigonometric::createAcos(cos);
 
@@ -614,7 +614,7 @@ TEST(Trigonometric, acosOfCosNumEvalPosShift)
 TEST(Trigonometric, acosOfCosNumEvalNegShift)
     /* Acos(cos(11/7*pi + 2^(1/3) + 0.123456)) = 2^(1/3) + 0.123456 - 3/7*pi. */
 {
-    const BasePtr pow = Power::create(two, Numeric::create(1, 3));
+    const BasePtr pow = Power::create(two, Numeric::third());
     const BasePtr sum = Sum::create(Numeric::create(0.123456), pow);
     const BasePtr arg = Sum::create(Product::create(Numeric::create(11, 7), pi), sum);
     const BasePtr res = Trigonometric::createAcos(Trigonometric::createCos(arg));
@@ -647,7 +647,7 @@ TEST(Trigonometric, acosOfCosNumEvalPosShiftAndCorrection)
 TEST(Trigonometric, acosOfNegativeCosNumEvalWithShift)
     /* Acos(-cos(1/2)) = pi - 1/2. */
 {
-    const BasePtr arg = Product::minus(Trigonometric::createCos(Numeric::create(1, 2)));
+    const BasePtr arg = Product::minus(Trigonometric::createCos(Numeric::half()));
     const BasePtr res = Trigonometric::createAcos(arg);
 
     CHECK_EQUAL(Sum::create(pi, Numeric::create(-1, 2)), res);
@@ -732,7 +732,7 @@ TEST(Trigonometric, atan2OfNumericsNotResolvableArg)
 
 TEST(Trigonometric, atan2OfNumEvaluableNotResolvable)
 {
-    const BasePtr y = Logarithm::create(Trigonometric::createTan(Numeric::create(1, 2)));
+    const BasePtr y = Logarithm::create(Trigonometric::createTan(Numeric::half()));
     const BasePtr x = Sum::create(Product::create(sqrtTwo, Constant::createE()), five,
             Trigonometric::createCos(two));
     const BasePtr res = Trigonometric::createAtan2(y, x);

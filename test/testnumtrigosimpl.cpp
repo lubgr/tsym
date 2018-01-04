@@ -12,8 +12,8 @@ using namespace tsym;
 
 TEST_GROUP(NumTrigoSimpl)
 {
-    const BasePtr minusOne = Numeric::mOne();
-    const BasePtr half = Numeric::create(1, 2);
+    const BasePtr& minusOne = Numeric::mOne();
+    const BasePtr& half = Numeric::half();
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr sqrtThree = Power::sqrt(three);
     const BasePtr sqrtSix = Power::sqrt(six);
@@ -105,7 +105,7 @@ TEST(NumTrigoSimpl, piFourth)
 {
     const BasePtr sinCos = Power::create(two, Numeric::create(-1, 2));
 
-    nts.setArg(Product::create(pi, Numeric::create(1, 4)));
+    nts.setArg(Product::create(pi, Numeric::fourth()));
 
     check(sinCos, sinCos, one);
 }
@@ -170,7 +170,7 @@ TEST(NumTrigoSimpl, cosLeadsToNewAdjustment)
 TEST(NumTrigoSimpl, unresolvableNumeric)
     /* Sin/cos/tan(1/4) shouldn't be simplified. */
 {
-    nts.setArg(Numeric::create(1, 4));
+    nts.setArg(Numeric::fourth());
 
     checkUnsimplified();
 }
@@ -186,9 +186,9 @@ TEST(NumTrigoSimpl, unresolvableNumericPower)
 TEST(NumTrigoSimpl, exactFromDouble)
     /* Sin/cos/tan(Pi/12.0) = (sqrt(6) - sqrt(2))/4, (sqrt(6) + sqrt(2))/4, 2 - sqrt(3). */
 {
-    const BasePtr expectedSin = Product::create(Numeric::create(1, 4), Sum::create(sqrtSix,
+    const BasePtr expectedSin = Product::create(Numeric::fourth(), Sum::create(sqrtSix,
                 Product::minus(sqrtTwo)));
-    const BasePtr expectedCos = Product::create(Numeric::create(1, 4), Sum::create(sqrtSix,
+    const BasePtr expectedCos = Product::create(Numeric::fourth(), Sum::create(sqrtSix,
                 sqrtTwo));
     const BasePtr expectedTan = Sum::create(two, Product::minus(sqrtThree));
 
@@ -203,7 +203,7 @@ TEST(NumTrigoSimpl, exactFromNumericallyEvaluable)
 {
     const BasePtr expectedSin = Power::oneOver(sqrtTwo);
     const BasePtr arg = Product::create({ Numeric::create(0.176351684975302), sqrtThree,
-            Power::create(Numeric::create(17), Numeric::create(1, 3)) });
+            Power::create(Numeric::create(17), Numeric::third()) });
 
     nts.setArg(arg);
 
@@ -257,7 +257,7 @@ TEST(NumTrigoSimpl, inverseZero)
 TEST(NumTrigoSimpl, inverseOneOverSqrtTwo)
     /* Asin/acos/atan(1/sqrt(2)) = Pi/4, Pi/4, unsimplified. */
 {
-    const BasePtr piFourth = Product::create(pi, Numeric::create(1, 4));
+    const BasePtr piFourth = Product::create(pi, Numeric::fourth());
 
     nts.setArg(Power::oneOver(sqrtTwo));
 
@@ -283,7 +283,7 @@ TEST(NumTrigoSimpl, inverseNegativeArg)
 TEST(NumTrigoSimpl, inverseFromSum)
     /* Asin/acos/atan((sqrt(6) - sqrt(2))/4  = Pi/12, 5*Pi/12, unsimplified. */
 {
-    const BasePtr arg = Product::create(Numeric::create(1, 4), Sum::create(sqrtSix,
+    const BasePtr arg = Product::create(Numeric::fourth(), Sum::create(sqrtSix,
                 Product::minus(sqrtTwo)));
     const BasePtr expectedAsin = Product::create(Numeric::create(1, 12), pi);
     const BasePtr expectedAcos = Product::create(Numeric::create(5, 12), pi);
@@ -443,9 +443,9 @@ TEST(NumTrigoSimpl, largeNumericEvaluationToExact)
     /* A product of numerically evaluable factors, that matches an entry of the exact tables of the
      * class will lead to an exact result. */
 {
-    const BasePtr piFourth = Product::create(pi, Numeric::create(1, 4));
+    const BasePtr piFourth = Product::create(pi, Numeric::fourth());
     const BasePtr arg = Product::create({ Numeric::create(0.6258398439057556), Power::sqrt(five),
-            Power::oneOver(pi), Power::create(four, Numeric::create(1, 3)) });
+            Power::oneOver(pi), Power::create(four, Numeric::third()) });
 
     nts.setArg(arg);
 

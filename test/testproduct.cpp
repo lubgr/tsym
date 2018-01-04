@@ -17,13 +17,13 @@ using namespace tsym;
 TEST_GROUP(Product)
 {
     const Int numPowerSimplLimit = NumPowerSimpl::getMaxPrimeResolution();
-    const BasePtr half = Numeric::create(1, 2);
+    const BasePtr& half = Numeric::half();
     const BasePtr minusOneHalf = Numeric::create(-1, 2);
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr sqrtThree = Power::sqrt(three);
     const BasePtr sqrtSix = Power::sqrt(six);
-    const BasePtr oneThird = Numeric::create(1, 3);
-    const BasePtr oneFourth = Numeric::create(1, 4);
+    const BasePtr& oneThird = Numeric::third();
+    const BasePtr& oneFourth = Numeric::fourth();
 
     void teardown()
     {
@@ -69,8 +69,7 @@ TEST(Product, twoNumericFactors)
 TEST(Product, twoNumericFactorsResultingInOne)
     /* (1/2)*2 = 1. */
 {
-    const BasePtr half = Numeric::create(1, 2);
-    const BasePtr p = Product::create(two, half);
+    const BasePtr p = Product::create(two, Numeric::half());
 
     CHECK(p->isNumeric());
     CHECK_EQUAL(1, p->numericEval());
@@ -193,7 +192,7 @@ TEST(Product, numberAndNumericPowerEqualBase)
 TEST(Product, numericPowersEqualBase)
     /* 2^(1/2)*2^(1/3) = 2^(2/3) */
 {
-    const BasePtr twoToTheThird = Power::create(two, Numeric::create(1, 3));
+    const BasePtr twoToTheThird = Power::create(two, Numeric::third());
     const BasePtr p = Product::create(sqrtTwo, twoToTheThird);
 
     CHECK(p->isNumericPower());
@@ -319,7 +318,7 @@ TEST(Product, numericPowersDifferentExpSign)
 TEST(Product, contractionOfNumerics)
     /* (1/4)*(2/5)*11*(3/7) = 33/70. */
 {
-    const BasePtr res = Product::create({ Numeric::create(1, 4), Numeric::create(2, 5),
+    const BasePtr res = Product::create({ Numeric::fourth(), Numeric::create(2, 5),
             Numeric::create(11), Numeric::create(3, 7) });
 
     CHECK_EQUAL(Numeric::create(33, 70), res);
@@ -436,7 +435,7 @@ TEST(Product, contractNumSqrt)
 TEST(Product, contractNumPowWithEqualExp)
     /* 2^(1/3)*sqrt(3)*4^(1/3)*5^(1/3)*6^(1/3)*7^(1/4)*8^(1/3) = 4*sqrt(3)*7^(1/4)*30^(1/3). */
 {
-    const BasePtr sevenToTheFourth = Power::create(seven, Numeric::create(1, 4));
+    const BasePtr sevenToTheFourth = Power::create(seven, Numeric::fourth());
     BasePtr expected;
     BasePtrList fac;
     BasePtr res;
@@ -800,7 +799,7 @@ TEST(Product, numPowEqualDenomInMixedSignExp)
 TEST(Product, numPowEqualDenomExpToProduct)
     /* 6^(1/3)*3^(2/3) = 3*2^(1/3). */
 {
-    const BasePtr exp = Numeric::create(1, 3);
+    const BasePtr& exp = Numeric::third();
     const BasePtr pow1 = Power::create(six, exp);
     const BasePtr pow2 = Power::create(three, Numeric::create(2, 3));
     const BasePtr result = Product::create(pow1, pow2);
@@ -818,7 +817,7 @@ TEST(Product, numPowEqualDenomExpToProductInLargeList)
     BasePtr res;
 
     fac.push_back(two);
-    fac.push_back(Power::create(six, Numeric::create(1, 3)));
+    fac.push_back(Power::create(six, Numeric::third()));
     fac.push_back(Power::sqrt(five));
     fac.push_back(Numeric::create(12));
     fac.push_back(Power::sqrt(Numeric::create(17)));
@@ -950,7 +949,7 @@ TEST(Product, sinOverCosineWithExpTimesCosine)
     const BasePtr cos = Trigonometric::createCos(a);
     const BasePtr cosPow = Power::create(cos, Numeric::create(-2, 3));
     const BasePtr res = Product::create(sinPow, cosPow, cos);
-    const BasePtr expected = Product::create(sinPow, Power::create(cos, Numeric::create(1, 3)));
+    const BasePtr expected = Product::create(sinPow, Power::create(cos, Numeric::third()));
 
     CHECK_EQUAL(expected, res);
 }
@@ -1006,7 +1005,7 @@ TEST(Product, mixedTrigonometricFunctions01)
 
     factors.push_back(sinA);
     factors.push_back(cosB);
-    factors.push_back(Power::create(tanA, Numeric::create(1, 3)));
+    factors.push_back(Power::create(tanA, Numeric::third()));
     factors.push_back(Power::create(sinB, Numeric::create(-2)));
     factors.push_back(Power::create(cosA, three));
 

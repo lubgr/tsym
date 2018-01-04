@@ -12,9 +12,9 @@ const tsym::BasePtr h(tsym::Symbol::create("h"));
 
 const tsym::BasePtr zero(tsym::Numeric::zero());
 const tsym::BasePtr one(tsym::Numeric::one());
-const tsym::BasePtr two(tsym::Numeric::create(2));
-const tsym::BasePtr three = tsym::Numeric::create(3);
-const tsym::BasePtr four = tsym::Numeric::create(4);
+const tsym::BasePtr two(tsym::Numeric::two());
+const tsym::BasePtr three = tsym::Numeric::three();
+const tsym::BasePtr four = tsym::Numeric::four();
 const tsym::BasePtr five = tsym::Numeric::create(5);
 const tsym::BasePtr six = tsym::Numeric::create(6);
 const tsym::BasePtr seven = tsym::Numeric::create(7);

@@ -153,7 +153,7 @@ TEST(Subst, atan2ToPiFourth)
 {
     const BasePtr orig = Trigonometric::createAtan2(b, a);
     const BasePtr firstSubst = orig->subst(b, two);
-    const BasePtr expected = Product::create(Numeric::create(1, 4), pi);
+    const BasePtr expected = Product::create(Numeric::fourth(), pi);
     BasePtr secondSubst;
 
     CHECK(firstSubst->isFunction());
@@ -281,7 +281,7 @@ TEST(Subst, mixedTerm)
      * for sqrt(3) = a and c + d = 17^(1/3). */
 {
     const BasePtr sqrtThree = Power::sqrt(three);
-    const BasePtr numPow = Power::create(Numeric::create(17), Numeric::create(1, 3));
+    const BasePtr numPow = Power::create(Numeric::create(17), Numeric::third());
     const BasePtr expected = Sum::create(Product::create(four, numPow, a),
             Product::create(two, numPow, b));
     BasePtrList fac;

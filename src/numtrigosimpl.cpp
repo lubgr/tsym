@@ -19,9 +19,9 @@ namespace tsym {
         const std::unordered_map<BasePtr, BasePtr>& sineTable()
         {
             static const BasePtr& zero(Numeric::zero());
-            static const BasePtr two(Numeric::create(2));
-            static const BasePtr half(Numeric::create(1, 2));
-            static const BasePtr fourth(Numeric::create(1, 4));
+            static const BasePtr& two(Numeric::two());
+            static const BasePtr& half(Numeric::half());
+            static const BasePtr& fourth(Numeric::fourth());
             static const BasePtr sqrtTwo(Power::sqrt(two));
             static const BasePtr sqrtSix(Power::sqrt(Numeric::create(6)));
             static const std::unordered_map<BasePtr, BasePtr> map {
@@ -38,13 +38,13 @@ namespace tsym {
                 /* sin(1/4*pi) = 1/sqrt(2). */
                 { timesPi(1, 4), Power::oneOver(sqrtTwo) },
                 /* sin(1/3*pi) = sqrt(3)/2. */
-                { timesPi(1, 3), Product::create(half, Power::sqrt(Numeric::create(3))) },
+                { timesPi(1, 3), Product::create(half, Power::sqrt(Numeric::three())) },
                 /* sin(3/8*pi) = sqrt(2 + sqrt(2))/2. */
                 { timesPi(3, 8), Product::create(half, Power::sqrt(Sum::create(two, sqrtTwo))) },
                 /* sin(5/12*pi) = (sqrt(6) + sqrt(2))/4. */
                 { timesPi(5, 12), Product::create(fourth, Sum::create(sqrtSix, sqrtTwo)) },
                 /* sin(pi/2) = 1. */
-                { timesPi(1, 2), Numeric::create(1) },
+                { timesPi(1, 2), Numeric::one() },
             };
 
             return map;
@@ -54,9 +54,9 @@ namespace tsym {
         {
             static const BasePtr& zero(Numeric::zero());
             static const BasePtr& one(Numeric::one());
-            static const BasePtr two(Numeric::create(2));
+            static const BasePtr& two(Numeric::two());
             static const BasePtr sqrtTwo(Power::sqrt(two));
-            static const BasePtr sqrtThree(Power::sqrt(Numeric::create(3)));
+            static const BasePtr sqrtThree(Power::sqrt(Numeric::three()));
             static const std::unordered_map<BasePtr, BasePtr> map {
                 /* tan(0) = 0. */
                 { zero, zero },

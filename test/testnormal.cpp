@@ -41,7 +41,7 @@ TEST(Normal, numericDouble)
 
 TEST(Normal, numericFraction)
 {
-    const BasePtr frac = Numeric::create(1, 3);
+    const BasePtr frac = Numeric::third();
 
     CHECK_EQUAL(frac, frac->normal());
 }
@@ -123,12 +123,11 @@ TEST(Normal, simpleProduct)
 TEST(Normal, product)
     /* (1/4)*(2*c + 2*b^2 + a*b^2 + a*c)(2*a + a^2)^(-1) becomes 1/4*a^(-1)*(b^2 + c). */
 {
-    const BasePtr oneFourth = Numeric::create(1, 4);
     const BasePtr num = Sum::create(Product::create(two, c), Product::create(two, b, b),
             Product::create(a, b, b), Product::create(a, c));
     const BasePtr denom = Sum::create(Product::create(two, a), Power::create(a, two));
-    const BasePtr orig = Product::create(oneFourth, num, Power::oneOver(denom));
-    const BasePtr expected = Product::create(oneFourth, Sum::create(Power::create(b, two), c),
+    const BasePtr orig = Product::create(Numeric::fourth(), num, Power::oneOver(denom));
+    const BasePtr expected = Product::create(Numeric::fourth(), Sum::create(Power::create(b, two), c),
             Power::oneOver(a));
     const BasePtr expectedNum = Sum::create(Power::create(b, two), c);
     const BasePtr expectedDenom = Product::create(four, a);

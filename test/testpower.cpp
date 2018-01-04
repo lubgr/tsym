@@ -23,8 +23,8 @@ TEST_GROUP(Power)
     const Int defaultPrimeFacLimit = NumPowerSimpl::getMaxPrimeResolution();
     const BasePtr aPos = Symbol::createPositive("a");
     const BasePtr bPos = Symbol::createPositive("b");
-    const BasePtr half = Numeric::create(1, 2);
-    const BasePtr oneThird = Numeric::create(1, 3);
+    const BasePtr& half = Numeric::half();
+    const BasePtr& oneThird = Numeric::third();
     const BasePtr minusHalf = Numeric::create(-1, 2);
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr undefPtr = Undefined::create();
@@ -98,7 +98,7 @@ TEST(Power, largeBaseIntegerExp)
 TEST(Power, expFracGreaterThanOne)
     /* 2^(10/3) = 8*2^(1/3). */
 {
-    const BasePtr expectedPow = Power::create(two, Numeric::create(1, 3));
+    const BasePtr expectedPow = Power::create(two, Numeric::third());
     const BasePtr res = Power::create(two, Numeric::create(10, 3));
 
     CHECK(res->isProduct());
@@ -203,7 +203,7 @@ TEST(Power, fracBaseNoChange)
 TEST(Power, resolvableExpFracBaseInt)
     /* 8^(1/3) = 2. */
 {
-    const BasePtr exp = Numeric::create(1, 3);
+    const BasePtr exp = Numeric::third();
     const BasePtr res = Power::create(eight, exp);
 
     CHECK(res->isNumeric());
@@ -265,7 +265,7 @@ TEST(Power, splittableNegExpFracBaseOneThirtyHalf)
 
     CHECK(res->isProduct());
     CHECK_EQUAL(2, res->operands().size());
-    CHECK_EQUAL(Numeric::create(1, 4), res->operands().front());
+    CHECK_EQUAL(Numeric::fourth(), res->operands().front());
     CHECK_EQUAL(expectedPow, res->operands().back());
 }
 
@@ -489,7 +489,7 @@ TEST(Power, unclearBaseExpContraction)
     /* (a^7)^(1/4) = a^(7/4). This works because a is assumed to be real, not possibly complex (this
      * is different in most CAS). */
 {
-    const BasePtr res = Power::create(Power::create(a, seven), Numeric::create(1, 4));
+    const BasePtr res = Power::create(Power::create(a, seven), Numeric::fourth());
     const BasePtr expected = Power::create(a, Numeric::create(7, 4));
 
     CHECK_EQUAL(expected, res);
@@ -925,13 +925,13 @@ TEST(Power, unclearBaseNoExpContractionWithConstantSecondExp)
 TEST(Power, unclearBaseNoExpContractionWithSymbolSecondExp)
     /* (a^(1/4))^b isn't simplified because a^(1/4) can be Undefined, while b = 4 is possible. */
 {
-    const BasePtr res = Power::create(Power::create(a, Numeric::create(1, 4)), b);
+    const BasePtr res = Power::create(Power::create(a, Numeric::fourth()), b);
 
     CHECK(res->isPower());
     CHECK_EQUAL(b, res->exp());
 
     CHECK(res->base()->isPower());
-    CHECK_EQUAL(Numeric::create(1, 4), res->base()->exp());
+    CHECK_EQUAL(Numeric::fourth(), res->base()->exp());
     CHECK_EQUAL(a, res->base()->base());
 }
 
