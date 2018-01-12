@@ -654,12 +654,3 @@ tsym::Matrix tsym::operator * (const Var& lhs, Matrix rhs)
 
     return rhs;
 }
-
-std::ostream& tsym::operator << (std::ostream& stream, const Matrix& m)
-{
-    Printer printer(m);
-
-    printer.print(stream);
-
-    return stream;
-}

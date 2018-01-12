@@ -1075,13 +1075,3 @@ TEST(Matrix, unaryMinusOperator)
     CHECK_EQUAL(-5, res(2, 1));
     CHECK_EQUAL(-b, res(2, 2));
 }
-
-TEST(Matrix, printerOperator)
-{
-    const std::string expect("[ a    1/2        b ]\n[ 0  c + d  a^(2*d) ]\n[ 1      5        b ]");
-    std::stringstream stream;
-
-    stream << m;
-
-    CHECK_EQUAL(expect, stream.str());
-}

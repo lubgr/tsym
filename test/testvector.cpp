@@ -325,13 +325,3 @@ TEST(Vector, compoundMinusOperator)
     CHECK_EQUAL(0, abcVec(1));
     CHECK_EQUAL(c, abcVec(2));
 }
-
-TEST(Vector, printerOperator)
-{
-    const std::string expected("[ a ]\n[ b ]\n[ c ]");
-    std::stringstream stream;
-
-    stream << abcVec;
-
-    CHECK_EQUAL(expected, stream.str());
-}

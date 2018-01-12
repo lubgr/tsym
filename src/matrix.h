@@ -85,8 +85,6 @@ namespace tsym {
     Matrix operator * (Matrix lhs, const Matrix& rhs);
     Matrix operator * (Matrix lhs, const Var& rhs);
     Matrix operator * (const Var& lhs, Matrix rhs);
-
-    std::ostream& operator << (std::ostream& stream, const Matrix& m);
 }
 
 #endif

@@ -52,8 +52,6 @@ namespace tsym {
 
     Vector operator * (Vector lhs, const Var& rhs);
     Vector operator * (const Var& lhs, Vector rhs);
-
-    std::ostream& operator << (std::ostream& stream, const Vector& v);
 }
 
 #endif

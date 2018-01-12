@@ -249,12 +249,3 @@ tsym::Vector tsym::operator * (const Var& lhs, Vector rhs)
 
     return rhs;
 }
-
-std::ostream& tsym::operator << (std::ostream& stream, const Vector& v)
-{
-    Printer printer(v);
-
-    printer.print(stream);
-
-    return stream;
-}
