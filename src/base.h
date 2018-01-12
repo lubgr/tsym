@@ -87,7 +87,7 @@ namespace tsym {
 
         protected:
             Base() = default;
-            Base(const BasePtrList& operands);
+            explicit Base(const BasePtrList& operands);
             /* Creates Base subclasses for use within a smart pointer: */
             static BasePtr instantiate(std::function<const Base*()>&& create);
 
