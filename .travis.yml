@@ -19,6 +19,7 @@ before_install:
   - sudo make install
   - cd ..
   - gem install coveralls-lcov
+  - sudo apt-get -qq update
 
 addons:
   apt:
@@ -27,6 +28,7 @@ addons:
     packages:
       - g++-5
       - g++-6
+      - g++-5
       - lcov
 
 matrix:
@@ -38,6 +40,14 @@ matrix:
     - os: linux
       compiler: gcc
       env: COMPILER=g++-6
+
+    - os: linux
+      compiler: gcc
+      env: COMPILER=g++-7
+
+    - os: linux
+      compiler: clang
+      env: COMPILER=clang++
 
 script:
   - make CXX=$COMPILER COVERAGE="--coverage" lib
