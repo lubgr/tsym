@@ -1,4 +1,5 @@
 
+#include <sstream>
 #include "base.h"
 #include "baseptr.h"
 #include "baseptrlist.h"
@@ -6,6 +7,7 @@
 #include "symbolmap.h"
 #include "product.h"
 #include "cache.h"
+#include "plaintextprintengine.h"
 #include "printer.h"
 #include "logging.h"
 
@@ -257,9 +259,11 @@ bool tsym::Base::isEqualByTypeAndOperands(const BasePtr& other) const
 void tsym::Base::setDebugString()
 {
 #ifdef TSYM_DEBUG_STRINGS
-    /* When this class is instantiated, the reference count is zero. Construction and
-     * destruction of a BasePtr will then delete the object, to circumvent this, we artificially
-     * increment the reference count temporarily here. */
-    prettyStr = Printer(BasePtr(this)).getStr();
+    std::ostringstream stream;
+    PlaintextPrintEngine engine(stream, PlaintextPrintEngine::CharSet::ASCII);
+
+    printer::print(engine, *this);
+
+    prettyStr = stream.str();
 #endif
 }

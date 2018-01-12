@@ -8,607 +8,463 @@
 #include "trigonometric.h"
 #include "product.h"
 #include "sum.h"
-#include "vector.h"
-#include "matrix.h"
+#include "plaintextprintengine.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
 TEST_GROUP(Printer)
 {
+    const BasePtr pi = Constant::createPi();
     std::stringstream stream;
-    Printer printer;
 
     void setup()
     {
         stream.str("");
-
-        printer.enableFractions();
-        printer.enableUtf8();
     }
 
-    void teardown()
+    template<class Engine, class T> std::string print(Engine& engine, const T& toBePrinted)
     {
-        printer.disableFractions();
+        printer::print(engine, toBePrinted);
+
+        return stream.str();
+    }
+
+    template<class T> std::string print(const T& toBePrinted)
+    {
+        PlaintextPrintEngine engine(stream);
+
+        return print(engine, toBePrinted);
+    }
+
+    std::string printDebug(const BasePtr& toBePrinted)
+    {
+        PlaintextPrintEngine engine(stream);
+
+        printer::printDebug(engine, *toBePrinted);
+
+        return stream.str();
     }
 };
 
 TEST(Printer, positiveIntNumber)
 {
-    const Printer printer(five);
-    const std::string expected("5");
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("5", print(five));
 }
 
 TEST(Printer, negativeIntNumber)
 {
-    const Number minusFive = Number(-5);
-    const std::string expected("-5");
-
-    printer.set(minusFive);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("-5", print(-5));
 }
 
 TEST(Printer, doubleNumber)
 {
-    const std::string expected("0.123456");
-    const Number n(0.123456);
-
-    printer.set(n);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("0.123456", print(0.123456));
 }
 
 TEST(Printer, undefinedNumber)
 {
-    const std::string expected("Undefined");
-    Number u;
-
-    disableLog();
-    u = Number(1, 0);
-    enableLog();
-
-    printer.set(u);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("Undefined", print(Number::createUndefined()));
 }
 
 TEST(Printer, fractionNumber)
 {
-    const std::string expected("2/33");
-    const Number n(2, 33);
-
-    printer.set(n);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("2/33", print(Number(2, 33)));
 }
 
 TEST(Printer, operatorWithNumber)
 {
-    const std::string expected("-4/17");
     const Number frac(-4, 17);
-    std::stringstream stream;
 
     stream << frac;
 
-    CHECK_EQUAL(expected, stream.str());
+    CHECK_EQUAL("-4/17", stream.str());
 }
 
-TEST(Printer, pi)
+TEST(Printer, piUnicode)
 {
-    printer.set(Constant::createPi());
+    CHECK_EQUAL("\u03c0", print(pi));
+}
 
-    CHECK_EQUAL("\u03c0", printer.getStr());
+TEST(Printer, piAscii)
+{
+    PlaintextPrintEngine engine(stream, PlaintextPrintEngine::CharSet::ASCII);
 
-    Printer::disableUtf8();
-
-    printer.set(Constant::createPi());
-
-    CHECK_EQUAL("pi", printer.getStr());
+    CHECK_EQUAL("pi", print(engine, pi));
 }
 
 TEST(Printer, e)
 {
-    const std::string expected("e");
-
-    printer.set(Constant::createE());
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("e", print(Constant::createE()));
 }
 
 TEST(Printer, function)
 {
-    const std::string expected("sin(a)");
-    const BasePtr sin = Trigonometric::createSin(a);
-
-    printer.set(sin);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("sin(a)", print(Trigonometric::createSin(a)));
 }
 
 TEST(Printer, functionWithMoreThanOneArgument)
 {
-    const std::string expected("atan2(2*a, b)");
     const BasePtr atan2 = Trigonometric::createAtan2(Product::create(two, a), b);
 
-    printer.set(atan2);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("atan2(2*a, b)", print(atan2));
 }
 
 TEST(Printer, symbol)
 {
-    const std::string expected("abcde");
-    const Var sym("abcde");
-    Printer printer(sym);
+    const std::string name("abcde");
 
-    CHECK_EQUAL(expected, printer.getStr());
-
-    printer.set(sym);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL(name, print(Symbol::create(name)));
 }
 
 TEST(Printer, positiveSymbol)
 {
-    const std::string expected("a\u208A");
     const BasePtr aPos = Symbol::createPositive("a");
 
-    printer.set(aPos);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("a\u208A", print(aPos));
 }
 
 TEST(Printer, positiveSymbolWithSubAndSuperscript)
 {
-    const std::string expected("a_b_c\u208A");
     const Name name("a", "b", "c");
     const BasePtr aPos = Symbol::createPositive(name);
 
-    printer.set(aPos);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("a_b_c\u208A", print(aPos));
 }
 
 TEST(Printer, positiveSymbolUtf8Disabled)
 {
+    PlaintextPrintEngine engine(stream, PlaintextPrintEngine::CharSet::ASCII);
     const BasePtr aPos = Symbol::createPositive("a");
 
-    printer.disableUtf8();
-
-    printer.set(aPos);
-
-    CHECK_EQUAL("a", printer.getStr());
+    CHECK_EQUAL("a", print(engine, aPos));
 }
 
-TEST(Printer, symbolGreekLetterWithAndWithoutUtf8)
+TEST(Printer, symbolGreekLetterWithoutUnicode)
+{
+    const std::string name("omega");
+    const BasePtr omega = Symbol::create(name);
+    PlaintextPrintEngine engine(stream, PlaintextPrintEngine::CharSet::ASCII);
+
+    CHECK_EQUAL(name, print(engine, omega));
+}
+
+TEST(Printer, symbolGreekLetterWithUnicode)
 {
     const BasePtr omega = Symbol::create("omega");
 
-    printer.set(omega);
-
-    CHECK_EQUAL("\u03C9", printer.getStr());
-
-    printer.disableUtf8();
-
-    printer.set(omega);
-
-    CHECK_EQUAL("omega", printer.getStr());
+    CHECK_EQUAL("\u03C9", print(omega));
 }
 
 TEST(Printer, capitalOmega)
 {
     const BasePtr omega = Symbol::create("Omega");
 
-    printer.set(omega);
-
-    CHECK_EQUAL("\u03a9", printer.getStr());
+    CHECK_EQUAL("\u03a9", print(omega));
 }
 
-TEST(Printer, alpha)
+TEST(Printer, lowerCaseAlpha)
 {
     const BasePtr alpha = Symbol::create("alpha");
+
+    CHECK_EQUAL("\u03B1", print(alpha));
+}
+
+TEST(Printer, upperCaseAlpha)
+{
     const BasePtr capitalAlpha = Symbol::create("Alpha");
-
-    printer.set(alpha);
-
-    CHECK_EQUAL("\u03B1", printer.getStr());
-
-    printer.set(capitalAlpha);
-
-    CHECK_EQUAL("\u0391", printer.getStr());
+    
+    CHECK_EQUAL("\u0391", print(capitalAlpha));
 }
 
-TEST(Printer, symbolAsVar)
+TEST(Printer, sumWithPi)
 {
-    const std::string expected("a");
-    const Var s("a");
+    const BasePtr sum = Sum::create(two, a, b, pi);
 
-    printer.set(s);
-
-    CHECK_EQUAL(expected, printer.getStr());
-}
-
-TEST(Printer, sumWithConstantPi)
-{
-    const std::string expected("2 + \u03c0 + a + b");
-    const BasePtr sum = Sum::create(two, a, b, Constant::createPi());
-
-    printer.set(sum);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("2 + \u03c0 + a + b", print(sum));
 }
 
 TEST(Printer, sumWithFunction)
 {
-    const std::string expected("a + acos(b) + tan(c)");
     const BasePtr sum = Sum::create(a, Trigonometric::createTan(c), Trigonometric::createAcos(b));
 
-    printer.set(sum);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("a + acos(b) + tan(c)", print(sum));
 }
 
 TEST(Printer, product)
 {
-    const std::string expected("a*b*c*d");
     const BasePtr product = Product::create(a, b, c, d);
 
-    printer.set(product);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("a*b*c*d", print(product));
 }
 
 TEST(Printer, negSymbolAsProduct)
 {
-    const std::string expected("-a");
-
-    printer.set(Product::minus(a));
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("-a", print(Product::minus(a)));
 }
 
 TEST(Printer, powerOfSymbolAndPositiveInteger)
 {
-    const std::string expected("a^2");
     const BasePtr pow = Power::create(a, two);
-    Printer printer(pow);
 
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("a^2", print(pow));
 }
 
 TEST(Printer, powerOfSymbolAndNegInt)
 {
-    const std::string expected("1/a^3");
     const BasePtr pow = Power::create(a, Numeric::create(-3));
 
-    printer.set(pow);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("1/a^3", print(pow));
 }
 
 TEST(Printer, powerOfSymbolAndMinusOne)
 {
-    const std::string expectedFrac("1/a");
-    const std::string expectedNoFrac("a^(-1)");
     const BasePtr pow = Power::create(a, Numeric::mOne());
 
-    printer.set(pow);
+    CHECK_EQUAL("1/a", print(pow));
+}
 
-    CHECK_EQUAL(expectedFrac, printer.getStr());
+TEST(Printer, powerOfSymbolAndMinusOneDebugPrint)
+{
+    const BasePtr pow = Power::create(a, Numeric::mOne());
 
-    printer.disableFractions();
-    printer.set(pow);
-
-    CHECK_EQUAL(expectedNoFrac, printer.getStr());
+    CHECK_EQUAL("a^(-1)", printDebug(pow));
 }
 
 TEST(Printer, powerOfProductAndMinusOne)
 {
-    const std::string expected("1/(2*a*b)");
     const BasePtr pow = Power::create(Product::create(two, a, b), Numeric::mOne());
 
-    printer.set(pow);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("1/(2*a*b)", print(pow));
 }
 
 TEST(Printer, powerOfPowerOfPowerOfPower)
 {
-    const std::string expected("(((a^b)^c)^(-1/4*\u03c0))^d");
     const BasePtr pow1 = Power::create(a, b);
     const BasePtr pow2 = Power::create(pow1, c);
     const BasePtr pow3 = Power::create(pow2, Product::create(Numeric::create(-1, 4),
                 Constant::createPi()));
     const BasePtr pow4 = Power::create(pow3, d);
 
-    printer.set(pow4);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("(((a^b)^c)^(-1/4*\u03c0))^d", print(pow4));
 }
 
 TEST(Printer, omitFirstNumeratorFactorIfOne)
 {
-    const std::string expected("c/(2*a*b)");
     const BasePtr product = Product::create(c,
             Power::create(Product::create(two, a, b), Numeric::mOne()));
 
-    printer.set(product);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("c/(2*a*b)", print(product));
 }
 
 TEST(Printer, omitFirstNumeratorFactorIfMinusOne)
 {
-    const std::string expected("-c/(2*a*b)");
     const BasePtr product = Product::minus(c,
             Power::create(Product::create(two, a, b), Numeric::mOne()));
 
-    printer.set(product);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("-c/(2*a*b)", print(product));
 }
 
 TEST(Printer, powerOfSymbolAndPosFrac)
 {
-    const std::string expected("a^(1/4)");
     const BasePtr pow = Power::create(a, Numeric::fourth());
 
-    printer.set(pow);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("a^(1/4)", print(pow));
 }
 
 TEST(Printer, sqrtPower)
 {
-    const std::string expected("sqrt(a*b)");
     const BasePtr pow = Power::sqrt(Product::create(a, b));
 
-    printer.set(pow);
+    CHECK_EQUAL("sqrt(a*b)", print(pow));
+}
 
-    CHECK_EQUAL(expected, printer.getStr());
+TEST(Printer, oneOverSqrtPowerDebugPrint)
+{
+    const std::string expectedNoFrac();
+    const BasePtr exp = Numeric::create(-1, 2);
+    const BasePtr product = Product::create(Power::create(a, exp), Power::create(b, exp));
+    
+    CHECK_EQUAL("a^(-1/2)*b^(-1/2)", printDebug(product));
 }
 
 TEST(Printer, oneOverSqrtPower)
 {
-    const std::string expectedNoFrac("a^(-1/2)*b^(-1/2)");
-    const std::string expectedFrac("1/(sqrt(a)*sqrt(b))");
     const BasePtr exp = Numeric::create(-1, 2);
     const BasePtr product = Product::create(Power::create(a, exp), Power::create(b, exp));
 
-    printer.set(product);
+    CHECK_EQUAL("1/(sqrt(a)*sqrt(b))", print(product));
+}
 
-    CHECK_EQUAL(expectedFrac, printer.getStr());
+TEST(Printer, powerOfSymbolAndNegFracDebugPrint)
+{
+    const BasePtr pow = Power::create(a, Numeric::create(-2, 3));
 
-    printer.disableFractions();
-    printer.set(product);
-
-    CHECK_EQUAL(expectedNoFrac, printer.getStr());
+    CHECK_EQUAL("a^(-2/3)", printDebug(pow));
 }
 
 TEST(Printer, powerOfSymbolAndNegFrac)
 {
-    const std::string expectedNoFrac("a^(-2/3)");
-    const std::string expectedFrac("1/a^(2/3)");
     const BasePtr pow = Power::create(a, Numeric::create(-2, 3));
 
-    printer.set(pow);
-
-    CHECK_EQUAL(expectedFrac, printer.getStr());
-
-    printer.disableFractions();
-    printer.set(pow);
-
-    CHECK_EQUAL(expectedNoFrac, printer.getStr());
+    CHECK_EQUAL("1/a^(2/3)", print(pow));
 }
 
 TEST(Printer, powerOfFraction)
 {
-    const std::string expected("(5/7)^a");
     const BasePtr n = Numeric::create(5, 7);
     const BasePtr pow = Power::create(n, a);
 
-    printer.set(pow);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("(5/7)^a", print(pow));
 }
 
 TEST(Printer, powerWithPiBase)
 {
-    const std::string expected("\u03c0^(a + b)");
-    const BasePtr pi = Constant::createPi();
     const BasePtr pow = Power::create(pi, Sum::create(a, b));
 
-    printer.set(pow);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("\u03c0^(a + b)", print(pow));
 }
 
 TEST(Printer, powerWithPiExp)
 {
-    const std::string expected("(a + b)^\u03c0");
-    const BasePtr pi = Constant::createPi();
+    const std::string expected();
     const BasePtr pow = Power::create(Sum::create(a, b), pi);
 
-    printer.set(pow);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("(a + b)^\u03c0", print(pow));
 }
 
 TEST(Printer, powerOfSymbolAndSymbol)
 {
-    const std::string expected("a^b");
     const BasePtr pow = Power::create(a, b);
 
-    printer.set(pow);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("a^b", print(pow));
 }
 
 TEST(Printer, powerOfSumAndNumber)
 {
-    const std::string expected("(a + b)^2");
     const BasePtr sum = Sum::create(a, b);
     const BasePtr pow = Power::create(sum, two);
 
-    printer.set(pow);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("(a + b)^2", print(pow));
 }
 
 TEST(Printer, powerOfNumberAndSum)
 {
-    const std::string expected("2^(a + b)");
     const BasePtr sum = Sum::create(a, b);
     const BasePtr pow = Power::create(two, sum);
 
-    printer.set(pow);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("2^(a + b)", print(pow));
 }
 
 TEST(Printer, powerOfFunctionAndNumber)
 {
-    const std::string expected("sin(a)^2");
     const BasePtr pow = Power::create(Trigonometric::createSin(a), two);
 
-    printer.set(pow);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("sin(a)^2", print(pow));
 }
 
 TEST(Printer, powerOfSumAndFunction)
 {
-    const std::string expected("(2 + b + sin(a))^asin(1/5)");
     const BasePtr sum = Sum::create(two, b, Trigonometric::createSin(a));
     const BasePtr pow = Power::create(sum, Trigonometric::createAsin(Numeric::create(1, 5)));
 
-    printer.set(pow);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("(2 + b + sin(a))^asin(1/5)", print(pow));
 }
 
 TEST(Printer, powerOfProductAndNumber)
 {
-    const std::string expected("a^2*b^2");
     const BasePtr product = Product::create(a, b);
     const BasePtr pow = Power::create(product, two);
 
-    printer.set(pow);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("a^2*b^2", print(pow));
 }
 
 TEST(Printer, powerOfProductAndNegNumber)
 {
-    const std::string expectedFrac("1/(a^2*b^2)");
-    const std::string expectedNoFrac("a^(-2)*b^(-2)");
     const BasePtr product = Product::create(a, b);
     const BasePtr pow = Power::create(product, Numeric::create(-2));
 
-    printer.set(pow);
-
-    CHECK_EQUAL(expectedFrac, printer.getStr());
-
-    printer.disableFractions();
-    printer.set(pow);
-
-    CHECK_EQUAL(expectedNoFrac, printer.getStr());
+    CHECK_EQUAL("1/(a^2*b^2)", print(pow));
 }
 
-TEST(Printer, largeProductOfPowersWithFrac)
+TEST(Printer, powerOfProductAndNegNumberDebugPrint)
 {
-    const std::string expectedFrac("a*b*(a + c)*f^a/(d*e^2)");
-    const std::string expectedNoFrac("a*b*(a + c)*d^(-1)*e^(-2)*f^a");
+    const BasePtr product = Product::create(a, b);
+    const BasePtr pow = Power::create(product, Numeric::create(-4));
+
+    CHECK_EQUAL("a^(-4)*b^(-4)", printDebug(pow));
+}
+
+TEST(Printer, largeProductOfPowers)
+{
     const BasePtr product = Product::create({ a, b, Sum::create(a, c), Power::create(f, a),
             Power::oneOver(d), Power::create(e, Numeric::create(-2)) });
 
-    printer.set(product);
+    CHECK_EQUAL("a*b*(a + c)*f^a/(d*e^2)", print(product));
+}
 
-    CHECK_EQUAL(expectedFrac, printer.getStr());
-
-    printer.disableFractions();
-    printer.set(product);
-
-    CHECK_EQUAL(expectedNoFrac, printer.getStr());
+TEST(Printer, largeProductOfPowersDebugPrint)
+{
+    const BasePtr product = Product::create({ a, b, Sum::create(a, c), Power::create(f, a),
+            Power::oneOver(d), Power::create(e, Numeric::create(-2)) });
+    
+    CHECK_EQUAL("a*b*(a + c)*d^(-1)*e^(-2)*f^a", printDebug(product));
 }
 
 TEST(Printer, simpleDivisionOfSymbols)
 {
-    const std::string expectedFrac("a/b");
-    const std::string expectedNoFrac("a*b^(-1)");
     const BasePtr product = Product::create(a, Power::oneOver(b));
 
-    printer.set(product);
+    CHECK_EQUAL("a/b", print(product));
+}
 
-    CHECK_EQUAL(expectedFrac, printer.getStr());
+TEST(Printer, simpleDivisionOfSymbolsDebugPrint)
+{
+    const BasePtr product = Product::create(a, Power::oneOver(b));
 
-    printer.disableFractions();
-    printer.set(product);
-
-    CHECK_EQUAL(expectedNoFrac, printer.getStr());
+    CHECK_EQUAL("a*b^(-1)", printDebug(product));
 }
 
 TEST(Printer, negProductFactorMinusOne)
 {
-    const std::string expected("-a*b");
     const BasePtr product = Product::minus(a, b);
 
-    printer.set(product);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("-a*b", print(product));
 }
 
 TEST(Printer, negProductNonTrivialFactor)
 {
-    const std::string expected("-2*a*b");
     const BasePtr product = Product::create(a, b, Numeric::create(-2));
 
-    printer.set(product);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("-2*a*b", print(product));
 }
 
 TEST(Printer, productWithConstantPi)
 {
-    const std::string expected("-2*\u03c0*a*b");
-    const BasePtr product = Product::create({ Numeric::create(-2), a, b, Constant::createPi() });
+    const BasePtr product = Product::create({ Numeric::create(-2), a, b, pi });
 
-    printer.set(product);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("-2*\u03c0*a*b", print(product));
 }
 
 TEST(Printer, productOfEqualExpPowers)
 {
-    const std::string expected("sqrt(a)*sqrt(b)");
     const BasePtr product = Product::create(Power::sqrt(a), Power::sqrt(b));
 
-    printer.set(product);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("sqrt(a)*sqrt(b)", print(product));
 }
 
 TEST(Printer, negProductOfEqualExpPowers)
 {
-    const std::string expected("-a^(2/3)*b^(2/3)");
     const BasePtr exp = Numeric::create(2, 3);
     const BasePtr product = Product::create({ Numeric::mOne(), Power::create(a, exp),
             Power::create(b, exp) });
 
-    printer.set(product);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("-a^(2/3)*b^(2/3)", print(product));
 }
 
 TEST(Printer, productOfFunctions)
 {
-    const std::string expectedFrac("a*atan(1/sqrt(17))*cos(c*d)*sin(a*b)^3/cos(a*b)");
-    const std::string expectedNoFrac("a*atan(17^(-1/2))*cos(a*b)^(-1)*cos(c*d)*sin(a*b)^3");
     BasePtrList fac;
-    BasePtr product;
 
     fac.push_back(a);
     fac.push_back(Trigonometric::createAtan(Power::create(Numeric::create(17),
@@ -617,154 +473,78 @@ TEST(Printer, productOfFunctions)
     fac.push_back(Power::create(Trigonometric::createSin(Product::create(a, b)), two));
     fac.push_back(Trigonometric::createTan(Product::create(a, b)));
 
-    product = Product::create(fac);
-    printer.set(product);
+    const BasePtr product = Product::create(fac);
+    
+    CHECK_EQUAL("a*atan(1/sqrt(17))*cos(c*d)*sin(a*b)^3/cos(a*b)", print(product));
+}
 
-    CHECK_EQUAL(expectedFrac, printer.getStr());
+TEST(Printer, productOfFunctionsDebugPrint)
+{
+    BasePtrList fac;
 
-    printer.disableFractions();
-    printer.set(product);
+    fac.push_back(a);
+    fac.push_back(Trigonometric::createAtan(Power::create(Numeric::create(17),
+                    Numeric::create(-1, 2))));
+    fac.push_back(Trigonometric::createCos(Product::create(c, d)));
+    fac.push_back(Power::create(Trigonometric::createSin(Product::create(a, b)), two));
+    fac.push_back(Trigonometric::createTan(Product::create(a, b)));
 
-    CHECK_EQUAL(expectedNoFrac, printer.getStr());
+    const BasePtr product = Product::create(fac);
+
+    CHECK_EQUAL("a*atan(17^(-1/2))*cos(a*b)^(-1)*cos(c*d)*sin(a*b)^3", printDebug(product));
 }
 
 TEST(Printer, fracOfSumAndProduct)
 {
-    const std::string expected("(a + b)/(c*d)");
     const BasePtr sum = Sum::create(a, b);
     const BasePtr product = Product::create(c, d);
     const BasePtr frac = Product::create(sum, Power::oneOver(product));
 
-    printer.set(frac);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("(a + b)/(c*d)", print(frac));
 }
 
 TEST(Printer, fracOfTwoProducts)
 {
-    const std::string expected("a*b/(c*d)");
     const BasePtr prod1 = Product::create(a, b);
     const BasePtr prod2 = Product::create(c, d);
     const BasePtr frac = Product::create(prod1, Power::oneOver(prod2));
 
-    printer.set(frac);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("a*b/(c*d)", print(frac));
 }
 
 TEST(Printer, fracOfPowerAndSum)
 {
-    const std::string expected("a^b/(c + d)");
     const BasePtr pow = Power::create(a, b);
     const BasePtr sum = Sum::create(c, d);
     const BasePtr frac = Product::create(pow, Power::oneOver(sum));
 
-    printer.set(frac);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("a^b/(c + d)", print(frac));
 }
 
 TEST(Printer, negTermsInSum)
 {
-    const std::string expected("a - b");
     const BasePtr sum = Sum::create(a, Product::minus(b));
 
-    printer.set(sum);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("a - b", print(sum));
 }
 
 TEST(Printer, posProductInSum)
 {
-    const std::string expected("a + b*c");
     const BasePtr sum = Sum::create(a, Product::create(b, c));
 
-    printer.set(sum);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("a + b*c", print(sum));
 }
 
 TEST(Printer, negSumInProduct)
 {
-    const std::string expected("a*(b + c)");
     const BasePtr product = Product::create(a, Sum::create(b, c));
 
-    printer.set(product);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("a*(b + c)", print(product));
 }
 
 TEST(Printer, posSumInProduct)
 {
-    const std::string expected("a*(-b + c)");
     const BasePtr product = Product::create(a, Sum::create(Product::minus(b), c));
 
-    printer.set(product);
-
-    CHECK_EQUAL(expected, printer.getStr());
-}
-
-TEST(Printer, vectorOfSymbols)
-{
-    const std::string expected("[   a ]\n[ 2*b ]\n[   c ]");
-    Vector v(3);
-
-    v(0) = Var("a");
-    v(1) = 2*Var("b");
-    v(2) = Var("c");
-
-    printer.set(v);
-
-    CHECK_EQUAL(expected, printer.getStr());
-}
-
-TEST(Printer, vectorOfNumerics)
-{
-    const std::string expected("[   1 ]\n[ 2/3 ]\n[  -4 ]");
-    Vector v(3);
-
-    v(0) = 1;
-    v(1) = Var(2, 3);
-    v(2) = -4;
-
-    printer.set(v);
-
-    CHECK_EQUAL(expected, printer.getStr());
-}
-
-TEST(Printer, emptyVector)
-{
-    const std::string expected("[ ]");
-    Vector v;
-    Printer printer(v);
-
-    printer.set(v);
-
-    CHECK_EQUAL(expected, printer.getStr());
-}
-
-TEST(Printer, matrixOfMixedTypes)
-{
-    const std::string expected("[     a    0      b ]\n[ 2/3*b  5/8  c + d ]");
-    Matrix m(2, 3);
-
-    m(0, 0) = Var("a");
-    m(0, 1) = Var();
-    m(0, 2) = Var("b");
-    m(1, 0) = Var(2, 3)*Var("b");
-    m(1, 1) = Var(5, 8);
-    m(1, 2) = Var("c") + Var("d");
-
-    printer.set(m);
-
-    CHECK_EQUAL(expected, printer.getStr());
-}
-
-TEST(Printer, emptyMatrix)
-{
-    const std::string expected("[ ]");
-    Matrix empty;
-    Printer printer(empty);
-
-    CHECK_EQUAL(expected, printer.getStr());
+    CHECK_EQUAL("a*(-b + c)", print(product));
 }

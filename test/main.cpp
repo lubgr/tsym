@@ -1,6 +1,5 @@
 
 #include <memory>
-#include "printer.h"
 #include "numeric.h"
 #include "logarithm.h"
 #include "trigonometric.h"
@@ -67,8 +66,6 @@ int main(int argc, char** argv)
     disableLog();
     initConstructOnFirstUse();
     enableLog();
-
-    tsym::Printer::disableFractions();
 
     return CommandLineTestRunner::RunAllTests(argc, argv);
 }

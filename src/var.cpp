@@ -10,6 +10,7 @@
 #include "product.h"
 #include "power.h"
 #include "printer.h"
+#include "plaintextprintengine.h"
 #include "fraction.h"
 #include "symbolmap.h"
 #include "logging.h"
@@ -362,9 +363,9 @@ tsym::Var tsym::operator / (Var lhs, const Var& rhs)
 
 std::ostream& tsym::operator << (std::ostream& stream, const Var& var)
 {
-    Printer printer(var);
+    PlaintextPrintEngine engine(stream);
 
-    printer.print(stream);
+    printer::print(engine, var.getBasePtr());
 
     return stream;
 }

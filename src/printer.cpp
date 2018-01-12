@@ -1,531 +1,308 @@
 
 #include <cassert>
-#include <iomanip>
 #include "printer.h"
-#include "symbol.h"
+#include "plaintextprintengine.h"
+#include "base.h"
 #include "numeric.h"
 #include "power.h"
 #include "product.h"
-#include "function.h"
-#include "constant.h"
-#include "trigonometric.h"
-#include "logarithm.h"
-#include "sum.h"
-#include "logging.h"
 
-bool tsym::Printer::convertToFrac = true;
+namespace tsym {
+    namespace {
+        enum class PowerAsFraction : bool { TRUE, FALSE };
 
-bool tsym::Printer::withUtf8 =
-#ifdef TSYM_WITHOUT_UTF8
-false;
-#else
-true;
-#endif
+        template<class Engine> class Printer {
+            public:
+                Printer(Engine& engine, PowerAsFraction opt) :
+                    engine(engine),
+                    powerAsFraction(opt)
+            {}
 
-tsym::Printer::Printer()
-{
-    setDefaults();
+                void print(const Base& base)
+                {
+                    engine.registerToplevelPrintFunction([this](Engine&, const BasePtr& ptr) {
+                            print(*ptr); });
+
+                    if (base.isSymbol())
+                        symbol(base);
+                    else if (base.isNumeric())
+                        printer::print(engine, base.numericEval());
+                    else if (base.isPower())
+                        power(base.base(), base.exp());
+                    else if (base.isSum())
+                        sum(base);
+                    else if (base.isProduct())
+                        product(base);
+                    else if (base.isFunction())
+                        function(base);
+                    else if (base.isConstant())
+                        engine.symbol(base.name());
+                    else {
+                        assert(base.isUndefined());
+                        engine.undefined();
+                    }
+                } 
+
+            private:
+                void symbol(const Base& base)
+                {
+                    if (base.isPositive())
+                        engine.positiveSymbol(base.name());
+                    else
+                        engine.symbol(base.name());
+                }
+
+                void power(const BasePtr& base, const BasePtr& exp)
+                {
+                    if (exp->isEqual(Numeric::half()))
+                        engine.openSquareRoot().invokePrint(base).closeSquareRoot();
+                    else if (isNegativeNumeric(exp) && powerAsFraction == PowerAsFraction::TRUE)
+                        powerNegNumericExp(base, exp);
+                    else
+                        standardPower(base, exp);
+                }
+
+                bool isNegativeNumeric(const BasePtr& ptr)
+                {
+                    return ptr->isNumeric() && ptr->isNegative();
+                }
+
+                void powerNegNumericExp(const BasePtr& base, const BasePtr& exp)
+                {
+                    const bool denomNeedsParentheses = isScalarPowerBase(base);
+
+                    engine.openNumerator().number(1).closeNumerator()
+                        .openDenominator(denomNeedsParentheses)
+                        .invokePrint(Power::create(base, Product::minus(exp)))
+                        .closeDenominator(denomNeedsParentheses);
+                }
+
+                bool isScalarPowerBase(const BasePtr& base)
+                {
+                    const auto isPositiveInt = [](const auto& base)
+                    { 
+                        if (!base->isNumeric())
+                            return false;
+
+                        const auto n = base->numericEval();
+
+                        return n.isInt() && n > 0;
+                    };
+
+                    return base->isSymbol() || base->isConstant() || base->isFunction() || isPositiveInt(base);
+                }
+
+                void standardPower(const BasePtr& base, const BasePtr& exp)
+                {
+                    powerBase(base);
+                    powerExponent(exp);
+                }
+
+                void powerBase(const BasePtr& base)
+                {
+                    if (isScalarPowerBase(base))
+                        engine.invokePrint(base);
+                    else
+                        engine.openParentheses().invokePrint(base).closeParentheses();
+                }
+
+                void powerExponent(const BasePtr& exp)
+                {
+                    if (exp->isOne())
+                        return;
+                    else if (isScalarPowerExp(exp))
+                        engine.openScalarExponent().invokePrint(exp).closeScalarExponent();
+                    else
+                        engine.openCompositeExponent().invokePrint(exp).closeCompositeExponent();
+                }
+
+                bool isScalarPowerExp(const BasePtr& exp)
+                {
+                    if (exp->isSymbol() || exp->isConstant() || exp->isFunction())
+                        return true;
+                    else if (exp->isNumeric())
+                        return exp->numericEval().isInt() && exp->isPositive();
+                    else
+                        return false;
+                }
+
+                void sum(const Base& sum)
+                {
+                    auto summands = sum.operands();
+
+                    engine.invokePrint(summands.pop_front());
+
+                    for (auto& summand: summands) {
+                        if (isProductWithNegativeNumeric(summand)) {
+                            engine.minusSign();
+                            summand = Product::minus(summand);
+                        } else
+                            engine.plusSign();
+
+                        engine.invokePrint(summand);
+                    }
+                }
+
+                bool isProductWithNegativeNumeric(const BasePtr& summand)
+                {
+                    if (summand->isProduct()) {
+                        const auto& first = summand->operands().front();
+
+                        return first->isNumeric() && first->isNegative();
+                    } else
+                        return false;
+                }
+
+                void product(const Base& product)
+                {
+                    BasePtrList factors(product.operands());
+
+                    if (powerAsFraction == PowerAsFraction::TRUE)
+                        productAsFraction(factors);
+                    else
+                        productWithoutFractions(factors);
+                }
+
+                void productAsFraction(BasePtrList& factors)
+                {
+                    const unsigned productPrecedence = 2;
+                    auto frac = getProductFrac(factors);
+                    auto& num = frac.first;
+                    auto& denom = frac.second;
+
+                    if (num.empty())
+                        engine.number(1);
+                    else if (num.size() == 1 && precedence(num.front()) < productPrecedence)
+                        engine.openParentheses().invokePrint(num.front()).closeParentheses();
+                    else
+                        productWithoutFractions(num);
+
+                    if (denom.empty())
+                        return;
+
+                    engine.divisionSign();
+
+                    if (denom.size() == 1 && precedence(denom.front()) > productPrecedence)
+                        engine.invokePrint(denom.front());
+                    else
+                        engine.openParentheses().invokePrint(Product::create(denom)).closeParentheses();
+                }
+
+                std::pair<tsym::BasePtrList, tsym::BasePtrList> getProductFrac(const BasePtrList& origFactors)
+                {
+                    auto frac = std::pair<BasePtrList, BasePtrList>{};
+
+                    for (const auto& origFactor : origFactors) {
+                        const auto& exp = origFactor->exp();
+
+                        if (isNegativeNumeric(exp)) {
+                            frac.second.push_back(Power::create(origFactor->base(), Product::minus(exp)));
+                        } else
+                            frac.first.push_back(origFactor);
+                    }
+
+                    if (frac.first.empty() || frac.second.size() <= 1 || !frac.first.front()->isNumeric())
+                        return frac;
+
+                    /* Adjust the previous logic and move factors like 2/3 to numerator/denominator. */
+                    const auto fracFactor = frac.first.pop_front()->numericEval();
+
+                    frac.first.push_front(Numeric::create(fracFactor.numerator()));
+                    frac.second.push_front(Numeric::create(fracFactor.denominator()));
+
+                    return frac;
+                }
+
+                unsigned precedence(const BasePtr& ptr)
+                {
+                    if (ptr->isSum())
+                        return 1;
+                    else if (ptr->isProduct())
+                        return 2;
+                    else if (ptr->isPower())
+                        return 3;
+                    else
+                        return 4;
+                }
+
+                void productWithoutFractions(BasePtrList& factors)
+                {
+                    const auto first = factors.pop_front();
+                    const unsigned productPrecedence = 2;
+
+                    if (Product::minus(first)->isOne())
+                        engine.unaryMinusSign();
+                    else if (factors.empty())
+                        engine.invokePrint(first);
+                    else if (!first->isOne())
+                        engine.invokePrint(first).timesSign();
+
+                    for (auto factor = std::begin(factors); factor != std::end(factors); ++factor) {
+                        if (precedence(*factor) < productPrecedence)
+                            engine.openParentheses().invokePrint(*factor).closeParentheses();
+                        else
+                            engine.invokePrint(*factor);
+
+                        if (factor != --std::end(factors))
+                            engine.timesSign();
+                    }
+                }
+
+                void function(const Base& fct)
+                {
+                    const auto& ops = fct.operands();
+
+                    engine.functionName(fct.name()).openParentheses().invokePrint(ops.front());
+
+                    if (ops.size() == 2)
+                        engine.comma().invokePrint(ops.back());
+
+                    engine.closeParentheses();
+                }
+
+                Engine& engine;
+                PowerAsFraction powerAsFraction;
+        };
+
+        template<class Engine> void print(Engine& engine, const Base& base, PowerAsFraction opt)
+        {
+            Printer<Engine> printer(engine, opt);
+            printer.print(base);
+        }
+    }
 }
 
-tsym::Printer::Printer(const Var& var)
+template<class Engine> void tsym::printer::print(Engine& engine, const Number& number)
 {
-    setDefaults();
-    print(var.getBasePtr());
-}
-
-tsym::Printer::Printer(const Number& number)
-{
-    setDefaults();
-    print(Numeric::create(number));
-}
-
-tsym::Printer::Printer(const BasePtr& ptr)
-{
-    setDefaults();
-    print(ptr);
-}
-
-tsym::Printer::Printer(const Vector& vector)
-{
-    setDefaults();
-    print(vector);
-}
-
-tsym::Printer::Printer(const Matrix& matrix)
-{
-    setDefaults();
-    print(matrix);
-}
-
-void tsym::Printer::setDefaults() {}
-
-void tsym::Printer::set(const Var& var)
-{
-    clearStream();
-    print(var.getBasePtr());
-}
-
-void tsym::Printer::set(const Number& number)
-{
-    clearStream();
-    print(Numeric::create(number));
-}
-
-void tsym::Printer::set(const BasePtr& ptr)
-{
-    clearStream();
-    print(ptr);
-}
-
-void tsym::Printer::set(const Vector& vector)
-{
-    clearStream();
-    print(vector);
-}
-
-void tsym::Printer::set(const Matrix& matrix)
-{
-    clearStream();
-    print(matrix);
-}
-
-void tsym::Printer::clearStream()
-{
-    stream.str("");
-}
-
-void tsym::Printer::print(const BasePtr& ptr)
-{
-    if (ptr->isSymbol())
-        printSymbol(ptr);
-    else if (ptr->isNumeric())
-        printNumeric(ptr);
-    else if (ptr->isPower())
-        printPower(ptr);
-    else if (ptr->isSum())
-        printSum(ptr);
-    else if (ptr->isProduct())
-        printProduct(ptr);
-    else if (ptr->isFunction())
-        printFunction(ptr);
-    else if (ptr->isConstant())
-        printName(ptr);
-    else if (ptr->isUndefined())
-        stream << "Undefined";
-    else
-        stream << "Unknown";
-}
-
-void tsym::Printer::printSymbol(const BasePtr& ptr)
-{
-    printName(ptr);
-
-    if (ptr->isPositive() && withUtf8)
-        stream << "\u208A";
-}
-
-void tsym::Printer::printName(const BasePtr& ptr)
-{
-    if (withUtf8)
-        stream << ptr->name().unicode();
-    else
-        stream << ptr->name().plain();
-}
-
-void tsym::Printer::printNumeric(const BasePtr& ptr)
-{
-    printNumber(ptr->numericEval());
-}
-
-void tsym::Printer::printNumber(const Number& n)
-{
-    if (n.isDouble())
-        stream << n.toDouble();
-    else if (n.isUndefined())
-        /* This shouldn't happen, because printing a number causes the creation of a BasePtr, which
-         * will be of type Undefined, if the Number is undefined. */
-        stream << "Undefined";
+    if (number.isDouble())
+        engine.number(number.toDouble());
+    else if (number.isUndefined())
+        engine.undefined();
+    else if (number.isInt())
+        engine.number(number.numerator());
     else {
-        stream << n.numerator();
+        assert(number.isFrac());
 
-        if (n.isFrac())
-            stream << "/" << n.denominator();
+        engine.openNumerator().number(number.numerator()).closeNumerator()
+            .openDenominator(true).number(number.denominator()).closeDenominator(true);
     }
 }
 
-void tsym::Printer::printPower(const BasePtr& ptr)
+template<class Engine> void tsym::printer::print(Engine& engine, const Base& base)
 {
-    const BasePtr& base(ptr->base());
-    const BasePtr& exp(ptr->exp());
-
-    printPower(base, exp);
+    print(engine, base, PowerAsFraction::TRUE);
 }
 
-void tsym::Printer::printPower(const BasePtr& base, const BasePtr& exp)
+template<class Engine> void tsym::printer::print(Engine& engine, const BasePtr& ptr)
 {
-    const BasePtr half(Numeric::create(1, 2));
-
-    if (exp->isEqual(half)) {
-        stream << "sqrt";
-        printInParentheses(base);
-        return;
-    } else if (isNegativeNumeric(exp) && convertToFrac) {
-        stream << "1/";
-        printPower(base, toggleSign(exp));
-        return;
-    }
-
-    printBase(base);
-    printExponent(exp);
+    print(engine, *ptr);
 }
 
-bool tsym::Printer::isNegativeNumeric(const BasePtr& ptr) const
+template<class Engine> void tsym::printer::printDebug(Engine& engine, const Base& base)
 {
-    return ptr->isNumeric() && ptr->isNegative();
+    print(engine, base, PowerAsFraction::FALSE);
 }
 
-tsym::BasePtr tsym::Printer::toggleSign(const BasePtr& numeric) const
-{
-    assert(numeric->isNumeric());
-
-    return Numeric::create(-numeric->numericEval());
-}
-
-void tsym::Printer::printBase(const BasePtr& base)
-{
-    if (needsBaseParentheses(base))
-        printInParentheses(base);
-    else
-        print(base);
-}
-
-bool tsym::Printer::needsBaseParentheses(const BasePtr& base) const
-{
-    if (base->isSymbol() || base->isConstant() || base->isFunction() || isPositiveInt(base))
-        return false;
-    else
-        return true;
-}
-
-bool tsym::Printer::isPositiveInt(const BasePtr& ptr) const
-{
-    Number n;
-
-    if (!ptr->isNumeric())
-        return false;
-
-    n = ptr->numericEval();
-
-    return n.isInt() && n > 0;
-}
-
-void tsym::Printer::printExponent(const BasePtr& exp)
-{
-    if (exp->isOne())
-        return;
-
-    stream << "^";
-
-    if (needsExpParentheses(exp))
-        printInParentheses(exp);
-    else
-        print(exp);
-}
-
-bool tsym::Printer::needsExpParentheses(const BasePtr& ptr) const
-{
-    Number nExp;
-
-    if (ptr->isSymbol() || ptr->isConstant() || ptr->isFunction())
-        return false;
-    else if (!ptr->isNumeric())
-        return true;
-
-    nExp = ptr->numericEval();
-
-    return !(nExp.isInt() && nExp> 0);
-}
-
-unsigned tsym::Printer::prec(const BasePtr& ptr) const
-{
-    const Base& base(*ptr);
-
-    return prec(typeid(base));
-}
-
-unsigned tsym::Printer::prec(const std::type_info& type) const
-{
-    if (type == typeid(Sum))
-        return 1;
-    else if (type == typeid(Product))
-        return 2;
-    else if (type == typeid(Power))
-        return 3;
-    else
-        return 4;
-}
-
-void tsym::Printer::printInParentheses(const BasePtr& ptr)
-{
-    stream << "(";
-
-    print(ptr);
-
-    stream << ")";
-}
-
-void tsym::Printer::printSum(const BasePtr& ptr)
-{
-    const BasePtrList summands(ptr->operands());
-    BasePtr element;
-
-    for (auto it = summands.begin(); it != summands.end(); ++it) {
-        element = *it;
-
-        if (it != summands.begin()) {
-            if (isProductWithNegativeNumeric(*it)) {
-                stream << " - ";
-                element = Product::minus(*it);
-            }
-            else
-                stream << " + ";
-        }
-
-        print(element);
-    }
-}
-
-bool tsym::Printer::isProductWithNegativeNumeric(const BasePtr& ptr)
-{
-    BasePtr first;
-
-    if (!ptr->isProduct())
-        return false;
-
-    first = ptr->operands().front();
-
-    if (first->isNumeric())
-        return first->isNegative();
-
-    return false;
-}
-
-void tsym::Printer::printProduct(const BasePtr& ptr)
-{
-    BasePtrList factors(ptr->operands());
-    const BasePtr& f1(factors.front());
-
-    if (f1->isNumeric() && f1->numericEval() == -1) {
-        stream << "-";
-        factors.pop_front();
-    }
-
-    if (convertToFrac)
-        printProductFrac(factors);
-    else
-        printProduct(factors);
-}
-
-void tsym::Printer::printProductFrac(const BasePtrList& factors)
-{
-    const std::pair<BasePtrList, BasePtrList> frac(getProductFrac(factors));
-    const BasePtrList& num(frac.first);
-    const BasePtrList& denom(frac.second);
-
-    if (num.empty())
-        stream << "1";
-    else if (num.size() == 1 && prec(num.front()) < prec(typeid(Product)))
-        printInParentheses(num.front());
-    else
-        printProduct(num);
-
-    if (denom.empty())
-        return;
-
-    stream << "/";
-
-    if (denom.size() == 1 && prec(denom.front()) > prec(typeid(Product)))
-        print(denom.front());
-    else
-        printInParentheses(Product::create(denom));
-}
-
-std::pair<tsym::BasePtrList, tsym::BasePtrList> tsym::Printer::getProductFrac(
-        const BasePtrList& origFactors)
-{
-    std::pair<BasePtrList, BasePtrList> frac;
-    Number fracFactor;
-    BasePtr base;
-    BasePtr exp;
-
-    for (const auto& origFactor : origFactors) {
-        if (origFactor->isPower())
-            exp = origFactor->exp();
-        else
-            exp = Undefined::create();
-
-        if (isNegativeNumeric(exp)) {
-            base = origFactor->base();
-            frac.second.push_back(Power::create(base, toggleSign(exp)));
-        } else
-            frac.first.push_back(origFactor);
-    }
-
-    if (frac.first.empty() || frac.second.size() <= 1 || !frac.first.front()->isNumeric())
-        return frac;
-
-    /* Adjust the previous logic and move factors like 2/3 to numerator/denominator. */
-    fracFactor = frac.first.pop_front()->numericEval();
-
-    frac.first.push_front(Numeric::create(fracFactor.numerator()));
-    frac.second.push_front(Numeric::create(fracFactor.denominator()));
-
-    return frac;
-}
-
-void tsym::Printer::printProduct(const BasePtrList& factors)
-{
-    const unsigned productPrec = prec(typeid(Product));
-    auto it = factors.begin();
-
-    if ((*it)->isOne() && factors.size() > 1)
-        ++it;
-    else if ((*it)->isEqual(Numeric::mOne()) && factors.size() > 1) {
-        stream << "-";
-        ++it;
-    }
-
-    for (; it != factors.end(); ++it) {
-        if (prec(*it) < productPrec)
-            printInParentheses(*it);
-        else
-            print(*it);
-
-        if (it != --factors.end())
-            stream << "*";
-    }
-}
-
-void tsym::Printer::printFunction(const BasePtr& ptr)
-{
-    const BasePtrList& ops(ptr->operands());
-
-    printName(ptr);
-
-    stream << "(";
-
-    for (auto it = ops.begin(); it != ops.end(); ++it) {
-        stream << *it;
-
-        if (it != --ops.end())
-            stream << ", ";
-    }
-
-    stream << ")";
-}
-
-void tsym::Printer::print(const Vector& vector)
-{
-    int maxChars = getMaxCharacters(vector);
-
-    if (vector.size() == 0) {
-        stream << "[ ]";
-        return;
-    }
-
-    for (size_t i = 0; i < vector.size(); ++i) {
-        stream << "[ ";
-        stream << std::right << std::setw(maxChars) << Printer(vector(i)).getStr();
-        stream << " ]";
-        if (i < vector.size() - 1)
-            stream << std::endl;
-    }
-}
-
-int tsym::Printer::getMaxCharacters(const Vector& vector) const
-    /* A size_t return type would make more sense here, but as the return value is used as argument
-     * to std::setw, it's casted to an integer here, which should be safe to do, since the quantity
-     * in question is the length of a string of a printed expression. */
-{
-    int maxLength = 0;
-    size_t origLength;
-    int length;
-
-    for (size_t i = 0; i < vector.size(); ++i) {
-        origLength = Printer(vector(i)).getStr().length();
-        length = static_cast<int>(origLength);
-        maxLength = length > maxLength ? length : maxLength;
-    }
-
-    return maxLength;
-}
-
-void tsym::Printer::print(const Matrix& matrix)
-{
-    std::vector<int> maxChars;
-    defMaxCharsPerColumn(matrix, maxChars);
-
-    if (matrix.rowSize() + matrix.colSize() == 0) {
-        stream << "[ ]";
-        return;
-    }
-
-    for (size_t i = 0; i < matrix.rowSize(); ++i) {
-        stream << "[ ";
-        for (size_t j = 0; j < matrix.colSize(); ++j) {
-            stream << std::right << std::setw(maxChars[j]) << Printer(matrix(i, j)).getStr();
-            if (j < matrix.colSize() - 1)
-                stream << "  ";
-        }
-        stream << " ]";
-        if (i < matrix.rowSize() - 1)
-            stream << std::endl;
-    }
-}
-
-void tsym::Printer::defMaxCharsPerColumn(const Matrix& matrix, std::vector<int>& maxChars) const
-    /* See getMaxCharacters above for an explanation of the types holding the character count. */
-{
-    int maxLength = 0;
-    size_t origLength;
-    int length;
-
-    for (size_t i = 0; i < matrix.colSize(); ++i, maxLength = 0) {
-        for (size_t j = 0; j < matrix.rowSize(); ++j) {
-            origLength = Printer(matrix(j, i)).getStr().length();
-            length = static_cast<int>(origLength);
-            maxLength = length > maxLength ? length : maxLength;
-        }
-        maxChars.push_back(maxLength);
-    }
-}
-
-void tsym::Printer::print(std::ostream& stream)
-{
-    stream << this->stream.str();
-}
-
-void tsym::Printer::enableFractions()
-{
-    convertToFrac = true;
-}
-
-void tsym::Printer::disableFractions()
-{
-    convertToFrac = false;
-}
-
-void tsym::Printer::enableUtf8()
-{
-    withUtf8 = true;
-}
-
-void tsym::Printer::disableUtf8()
-{
-    withUtf8 = false;
-}
-
-std::string tsym::Printer::getStr() const
-{
-    return stream.str();
-}
+template void tsym::printer::print<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const BasePtr&);
+template void tsym::printer::print<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const Number&);
+template void tsym::printer::printDebug<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const Base&);

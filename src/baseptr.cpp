@@ -1,14 +1,14 @@
-#include <cstddef>
+
 #include "base.h"
-#include "baseptr.h"
+#include "plaintextprintengine.h"
 #include "printer.h"
-#include "logging.h"
+#include "baseptr.h"
 
 std::ostream& tsym::operator << (std::ostream& stream, const BasePtr& ptr)
 {
-    Printer printer(ptr);
+    auto engine = PlaintextPrintEngine{stream};
 
-    printer.print(stream);
+    printer::print(engine, ptr);
 
     return stream;
 }

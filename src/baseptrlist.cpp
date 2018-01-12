@@ -8,6 +8,7 @@
 #include "product.h"
 #include "sum.h"
 #include "printer.h"
+#include "plaintextprintengine.h"
 #include "cache.h"
 #include "logging.h"
 
@@ -355,13 +356,12 @@ tsym::BasePtrList tsym::BasePtrList::subst(const BasePtr& from, const BasePtr& t
 
 std::ostream& tsym::operator << (std::ostream& stream, const BasePtrList& list)
 {
-    Printer printer;
+    PlaintextPrintEngine engine(stream);
 
     stream << "[ ";
 
     for (const auto& item : list) {
-        printer.set(item);
-        printer.print(stream);
+        printer::print(engine, item);
 
         if (&item != &*(--list.end()))
             stream << "   ";

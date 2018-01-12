@@ -2,9 +2,11 @@
 #include <cmath>
 #include <cassert>
 #include <iostream>
+#include <sstream>
 #include <limits>
 #include "number.h"
 #include "printer.h"
+#include "plaintextprintengine.h"
 #include "logging.h"
 
 const double tsym::Number::ZERO_TOL = std::numeric_limits<double>::epsilon();
@@ -84,7 +86,12 @@ void tsym::Number::simplify()
         cancel();
 
 #ifdef TSYM_DEBUG_STRINGS
-    prettyStr = Printer(*this).getStr();
+    std::ostringstream stream;
+    PlaintextPrintEngine engine(stream, PlaintextPrintEngine::CharSet::ASCII);
+
+    printer::print(engine, *this);
+
+    prettyStr = stream.str();
 #endif
 }
 
@@ -556,9 +563,9 @@ tsym::Number tsym::operator / (Number lhs, const Number& rhs)
 
 std::ostream& tsym::operator << (std::ostream& stream, const Number& rhs)
 {
-    Printer printer(rhs);
+    PlaintextPrintEngine engine(stream);
 
-    printer.print(stream);
+    printer::print(engine, rhs);
 
     return stream;
 }
