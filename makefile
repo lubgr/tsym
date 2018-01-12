@@ -2,8 +2,8 @@
 include $(wildcard makefile.in Makefile.in)
 
 BUILD ?= build
-CXXFLAGS ?= -O2 -g -pedantic -Wall -Wextra -Werror=conversion -DNDEBUG -std=c++14
-CFLAGS ?= -pedantic -Wall -Wextra -Wno-sign-compare -Wno-unused-label -Wno-unused-function \
+CXXFLAGS ?= -O2 -fPIC -pedantic -Wall -Wextra -Werror=conversion -DNDEBUG -std=c++14
+CFLAGS ?= -pedantic -fPIC -Wall -Wextra -Wno-sign-compare -Wno-unused-label -Wno-unused-function \
 	  -Wno-unneeded-internal-declaration -Wno-write-strings
 CPPFLAGS += -I src
 COVERAGE ?=
@@ -46,10 +46,10 @@ $(LIB_TARGET): $(LIB_OBJ) $(BUILDINFO)
 -include $(DEPS)
 
 $(BUILD)/src/%.o: src/%.cpp | $(BUILD)/src
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(COVERAGE) -fPIC -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(COVERAGE) -o $@ -c $<
 
 $(BUILD)/src/%.o: $(BUILD)/src/%.c $(LIB_PARSER_H)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -fPIC -o $@ -c $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
 
 $(LIB_PARSER_H): $(LIB_PARSER_H:%.h=%.c)
 
