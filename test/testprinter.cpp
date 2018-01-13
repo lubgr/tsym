@@ -281,7 +281,6 @@ TEST(Printer, sqrtPower)
 
 TEST(Printer, oneOverSqrtPowerDebugPrint)
 {
-    const std::string expectedNoFrac();
     const BasePtr exp = Numeric::create(-1, 2);
     const BasePtr product = Product::create(Power::create(a, exp), Power::create(b, exp));
     
@@ -327,7 +326,6 @@ TEST(Printer, powerWithPiBase)
 
 TEST(Printer, powerWithPiExp)
 {
-    const std::string expected();
     const BasePtr pow = Power::create(Sum::create(a, b), pi);
 
     CHECK_EQUAL("(a + b)^\u03c0", print(pow));
