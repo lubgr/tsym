@@ -11,14 +11,18 @@ tsym::Constant::Constant(Type type, Name&& name) :
     setDebugString();
 }
 
-tsym::BasePtr tsym::Constant::createPi()
+const tsym::BasePtr& tsym::Constant::createPi()
 {
-    return create(Type::PI, Name("pi"));
+    static const BasePtr instance = create(Type::PI, Name("pi"));
+
+    return instance;
 }
 
-tsym::BasePtr tsym::Constant::createE()
+const tsym::BasePtr& tsym::Constant::createE()
 {
-    return create(Type::E, Name("e"));
+    static const BasePtr instance = create(Type::E, Name("e"));
+
+    return instance;
 }
 
 tsym::BasePtr tsym::Constant::create(Type type, Name&& name)

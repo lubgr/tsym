@@ -8,8 +8,8 @@ namespace tsym {
         /* So far, only Pi and e are needed. This is, however, crucial for resolving trigonometric
          * functions exactly and returning exact results from the natural logarithm function. */
         public:
-            static BasePtr createPi();
-            static BasePtr createE();
+            static const BasePtr& createPi();
+            static const BasePtr& createE();
 
             /* Implentations of pure virtual methods of Base. */
             bool isEqualDifferentBase(const BasePtr& other) const;
