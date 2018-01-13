@@ -267,7 +267,7 @@ double tsym::Int::toDouble() const
 void tsym::Int::print(std::ostream& stream) const
 {
     char *buffer = nullptr;
-    int bufferLength = 100;
+    size_t bufferLength = 100;
     int charsWritten;
 
     while (buffer == nullptr) {
@@ -275,7 +275,9 @@ void tsym::Int::print(std::ostream& stream) const
 
         charsWritten = gmp_snprintf(buffer, bufferLength, "%Zd", handle);
 
-        if (charsWritten >= bufferLength) {
+        assert(charsWritten > 0);
+
+        if (static_cast<size_t>(charsWritten) >= bufferLength) {
             bufferLength *= 2;
 
             delete[] buffer;
