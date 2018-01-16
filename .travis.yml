@@ -20,12 +20,12 @@ before_install:
   - cd ..
   - gem install coveralls-lcov
   - sudo apt-get -qq update
+  - sudo apt-get install -y libboost-all-dev
 
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-      - boost-latest
     packages:
       - g++-5
       - g++-6
