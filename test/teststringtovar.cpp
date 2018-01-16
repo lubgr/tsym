@@ -376,7 +376,7 @@ TEST(StringToVar, asinOfProduct)
 
 TEST(StringToVar, acosResolvableArg)
 {
-    const Var expected = tsym::Pi/6;
+    const Var expected = tsym::pi()/6;
     const StringToVar stv("acos(sqrt(3)/2)");
 
     checkSuccess(expected, stv);
@@ -392,7 +392,7 @@ TEST(StringToVar, atan2OfSymbols)
 
 TEST(StringToVar, atan2Resolvable)
 {
-    const Var expected(5*Pi/4);
+    const Var expected(5*tsym::pi()/4);
     const StringToVar stv("atan2(-sqrt(10), -sqrt(10))");
 
     checkSuccess(expected, stv);
@@ -697,16 +697,16 @@ TEST(StringToVar, pi)
     const StringToVar stv3("PI");
     const StringToVar stv4("pI");
 
-    checkSuccess(Pi, stv1);
-    checkSuccess(Pi, stv2);
-    checkSuccess(Pi, stv3);
-    checkSuccess(Pi, stv4);
+    checkSuccess(pi(), stv1);
+    checkSuccess(pi(), stv2);
+    checkSuccess(pi(), stv3);
+    checkSuccess(pi(), stv4);
 }
 
 TEST(StringToVar, piInMixedTerm)
 {
     const StringToVar stv("2*sin(pi) + pi*cos(pI)*sqrt(PI)");
-    const Var expected = -Pi*tsym::sqrt(Pi);
+    const Var expected = -pi()*tsym::sqrt(pi());
 
     checkSuccess(expected, stv);
 }
@@ -719,11 +719,11 @@ TEST(StringToVar, euler)
     const StringToVar stv4("euLEr");
     const StringToVar stv5("EuleR");
 
-    checkSuccess(Euler, stv1);
-    checkSuccess(Euler, stv2);
-    checkSuccess(Euler, stv3);
-    checkSuccess(Euler, stv4);
-    checkSuccess(Euler, stv5);
+    checkSuccess(euler(), stv1);
+    checkSuccess(euler(), stv2);
+    checkSuccess(euler(), stv3);
+    checkSuccess(euler(), stv4);
+    checkSuccess(euler(), stv5);
 }
 
 TEST(StringToVar, symbolTimesFunction)
@@ -744,7 +744,7 @@ TEST(StringToVar, logOfEulerEvaluesToOne)
 TEST(StringToVar, eulerInMixedTerm)
 {
     const StringToVar stv("10*Euler + EULER^2 - a*b*log(euler)");
-    const Var expected = 10*Euler + Euler*Euler - a*b;
+    const Var expected = 10*euler() + euler()*euler() - a*b;
 
     checkSuccess(expected, stv);
 }

@@ -77,9 +77,9 @@ b = 2/3*a;
 Functions for square root, power, logarithm and (inverse) trigonometric maps including `atan2` as
 well as Euler and Pi constants are available inside of the tsym namespace:
 ```c++
-tsym::Var minusPiFourth = tsym::Pi/4 - tsym::asin(1);
-tsym::Var onePlusPiFourth = tsym::log(tsym::Euler) + tsym::acos(1/tsym::sqrt(2));
-tsym::Var eToTheFour = tsym::pow(tsym::Euler, 4);
+tsym::Var minusPiFourth = tsym::pi()/4 - tsym::asin(1);
+tsym::Var onePlusPiFourth = tsym::log(tsym::euler()) + tsym::acos(1/tsym::sqrt(2));
+tsym::Var eToTheFour = tsym::pow(tsym::euler(), 4);
 ```
 Information about expressions can be queried via methods of Var:
 ```c++

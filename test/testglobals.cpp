@@ -81,16 +81,16 @@ TEST(Globals, powerWithNumericExp)
 
 TEST(Globals, powerEulerBaseLogExp)
 {
-    const Var arg = 2*a*b*b*Pi;
+    const Var arg = 2*a*b*b*pi();
     const Var exp = log(arg);
-    const Var result = tsym::pow(Euler, exp);
+    const Var result = tsym::pow(euler(), exp);
 
     CHECK_EQUAL(arg, result);
 }
 
 TEST(Globals, logOfE)
 {
-    const Var result = log(Euler);
+    const Var result = log(euler());
 
     CHECK_EQUAL(1, result);
 }
@@ -98,7 +98,7 @@ TEST(Globals, logOfE)
 TEST(Globals, logOfPowerWithBaseE)
 {
     const Var exp = a + b + tsym::sqrt(2);
-    const Var result = log(tsym::pow(Euler, exp));
+    const Var result = log(tsym::pow(euler(), exp));
 
     CHECK_EQUAL(exp, result);
 }
@@ -134,7 +134,7 @@ TEST(Globals, sineZero)
 TEST(Globals, sinePiOverSix)
 {
     const Var expected(1, 2);
-    const Var arg(Pi/6);
+    const Var arg(pi()/6);
     Var res;
 
     res = sin(arg);
@@ -144,7 +144,7 @@ TEST(Globals, sinePiOverSix)
 
 TEST(Globals, sinePiOverThree)
 {
-    const Var arg(Pi/3);
+    const Var arg(pi()/3);
     Var res;
 
     res = sin(arg);
@@ -155,7 +155,7 @@ TEST(Globals, sinePiOverThree)
 TEST(Globals, sineSevenPiOverFour)
     /* An angle of 315°. */
 {
-    const Var arg(7*Pi/4);
+    const Var arg(7*pi()/4);
     Var res;
 
     res = sin(arg);
@@ -166,7 +166,7 @@ TEST(Globals, sineSevenPiOverFour)
 TEST(Globals, cosFivePiOverFour)
     /* An angle of 225°. */
 {
-    const Var arg(5*Pi/4);
+    const Var arg(5*pi()/4);
     Var res;
 
     res = cos(arg);
@@ -177,7 +177,7 @@ TEST(Globals, cosFivePiOverFour)
 TEST(Globals, tanTwoThirdPi)
     /* An angle of 120°. */
 {
-    const Var arg(2*Pi/3);
+    const Var arg(2*pi()/3);
     Var res;
 
     res = tan(arg);
@@ -191,7 +191,7 @@ TEST(Globals, asinHalf)
 
     res = asin(half);
 
-    CHECK_EQUAL(Pi/6, res);
+    CHECK_EQUAL(pi()/6, res);
 }
 
 TEST(Globals, acosMinusOneOverSqrtTwo)
@@ -201,7 +201,7 @@ TEST(Globals, acosMinusOneOverSqrtTwo)
 
     res = acos(arg);
 
-    CHECK_EQUAL(3*Pi/4, res);
+    CHECK_EQUAL(3*pi()/4, res);
 }
 
 TEST(Globals, atanMinusOneOverSqrtThree)
@@ -211,7 +211,7 @@ TEST(Globals, atanMinusOneOverSqrtThree)
 
     res = atan(arg);
 
-    CHECK_EQUAL(-Pi/6, res);
+    CHECK_EQUAL(-pi()/6, res);
 }
 
 TEST(Globals, successfulParsing)

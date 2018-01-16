@@ -22,12 +22,12 @@ namespace tsym {
     Var atan(const Var& arg);
     Var atan2(const Var& y, const Var& x);
 
+    const Var& pi();
+    const Var& euler();
+
     bool solve(const Matrix& A, const Vector& b, Vector& x);
 
     Var parse(const std::string& str, bool *success = nullptr);
-
-    extern const Var Pi;
-    extern const Var Euler;
 }
 
 #endif

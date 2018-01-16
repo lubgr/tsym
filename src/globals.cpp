@@ -6,10 +6,6 @@
 #include "stringtovar.h"
 #include "logging.h"
 
-const tsym::Var tsym::Pi(tsym::Constant::createPi());
-
-const tsym::Var tsym::Euler(tsym::Constant::createE());
-
 tsym::Var tsym::sqrt(const Var& base)
 {
     const Var half(1, 2);
@@ -60,6 +56,20 @@ tsym::Var tsym::atan(const Var& arg)
 tsym::Var tsym::atan2(const Var& y, const Var& x)
 {
     return Var(Trigonometric::createAtan2(y.getBasePtr(), x.getBasePtr()));
+}
+
+const tsym::Var& tsym::pi()
+{
+    static const tsym::Var instance(Constant::createPi());
+
+    return instance;
+}
+
+const tsym::Var& tsym::euler()
+{
+    static const tsym::Var instance(Constant::createE());
+
+    return instance;
 }
 
 bool tsym::solve(const Matrix& A, const Vector& b, Vector& x)

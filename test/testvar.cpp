@@ -214,11 +214,9 @@ TEST(Var, productType)
 
 TEST(Var, constantPi)
 {
-    const Var pi(Pi);
-
-    CHECK_EQUAL(Var::Type::CONSTANT, pi.type());
-    CHECK_EQUAL("pi", pi.name());
-    CHECK(pi.operands().empty());
+    CHECK_EQUAL(Var::Type::CONSTANT, pi().type());
+    CHECK_EQUAL("pi", pi().name());
+    CHECK(pi().operands().empty());
 }
 
 TEST(Var, functionType)
@@ -707,9 +705,9 @@ TEST(Var, piInSum)
 {
     Var res;
 
-    res = 2 + Pi + 3*tsym::sqrt(5)*Pi + 5 + Pi;
+    res = 2 + pi() + 3*tsym::sqrt(5)*pi() + 5 + pi();
 
-    CHECK_EQUAL(7 + 2*Pi + 3*tsym::sqrt(5)*Pi, res);
+    CHECK_EQUAL(7 + 2*pi() + 3*tsym::sqrt(5)*pi(), res);
 }
 
 TEST(Var, simpleSumWithEqualNonConstTerms)
@@ -921,8 +919,8 @@ TEST(Var, largeMixedTerm05)
 
 TEST(Var, acosOfCosOfThreePiFourth)
 {
-    const Var res = acos(cos(7*Pi/4));
-    const Var expected = Pi/4;
+    const Var res = acos(cos(7*pi()/4));
+    const Var expected = pi()/4;
 
     CHECK_EQUAL(expected, res);
 }
@@ -931,7 +929,7 @@ TEST(Var, atan2OfResolvableArgs)
 {
     const Var res(atan2(Var(-123, 28), Var(-123, 28)));
 
-    CHECK_EQUAL(225*Pi/180, res);
+    CHECK_EQUAL(225*pi()/180, res);
 }
 
 TEST(Var, atan2OfNonResolvableNumericallyEvaluableArgs)
@@ -983,7 +981,7 @@ TEST(Var, negativeVar)
     const Var bPos("b", Var::Sign::POSITIVE);
     Var res;
 
-    res = -aPos*bPos + 2 - 3*Pi;
+    res = -aPos*bPos + 2 - 3*pi();
 
     CHECK_FALSE(res.isPositive());
     CHECK(res.isNegative());
@@ -1012,7 +1010,7 @@ TEST(Var, collectSymbolsFromNumber)
 
 TEST(Var, collectSymbolsFromMixedTerm)
 {
-    const Var term(a*b + b/3 + 2*c*d*d + c*c*c - tsym::log(e + 12*tsym::Pi));
+    const Var term(a*b + b/3 + 2*c*d*d + c*c*c - tsym::log(e + 12*tsym::pi()));
     const std::vector<Var> result(term.collectSymbols());
 
     CHECK_EQUAL(5, result.size());
@@ -1025,7 +1023,7 @@ TEST(Var, collectSymbolsFromMixedTerm)
 
 TEST(Var, collectSymbolsFromPower)
 {
-    const Var term(tsym::pow(a + b, a*d*(2 + tsym::Pi*e*tsym::Euler)));
+    const Var term(tsym::pow(a + b, a*d*(2 + tsym::pi()*e*tsym::euler())));
     const std::vector<Var> result(term.collectSymbols());
 
     CHECK_EQUAL(4, result.size());
@@ -1037,7 +1035,7 @@ TEST(Var, collectSymbolsFromPower)
 
 TEST(Var, collectSymbolsFromFunction)
 {
-    const Var term(tsym::asin(a) + tsym::log(tsym::Pi*b) - tsym::tan(c));
+    const Var term(tsym::asin(a) + tsym::log(tsym::pi()*b) - tsym::tan(c));
     const std::vector<Var> result(term.collectSymbols());
 
     CHECK_EQUAL(3, result.size());
@@ -1081,7 +1079,7 @@ TEST(Var, printerOperatorTypeEnumConstantFunctionSymbol)
     const std::string expected("ConstantFunctionSymbol");
     std::stringstream stream;
 
-    stream << Pi.type() << cos(a).type() << a.type();
+    stream << pi().type() << cos(a).type() << a.type();
 
     CHECK_EQUAL(expected, stream.str());
 }
