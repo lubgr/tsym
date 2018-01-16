@@ -15,7 +15,7 @@ for some). The main features are:
 * differentiation `d/da 2*a^4 = 8*a^3`
 * solution of simple linear systems of equations
 * parsing of expressions from strings
-* big integer arithmetic by use of [libgmp](https://gmplib.org)
+* big integer arithmetic (by use of boost multiprecision)
 
 Most algorithms are implemented according to _Cohen, Computer Algebra and Symbolic Computation
 [2003]_, modifications are made for the handling of numeric power expressions and when not taking
@@ -26,10 +26,9 @@ series expansion.
 
 Installation
 ------------
-To compile tsym, you need the [gmp](https://gmplib.org) library together with its development
-headers (`gmp-devel` in Fedora/Suse or `libgmp-dev` in Debian-base distributions), flex and bison
-(or their non-GPL counterparts), C and C++ compiler recent enough to support C++14 and
-(GNU-)[make](https://www.gnu.org/software/make/). For unit tests,
+To compile tsym, you need [boost](https://boost.org),
+flex and bison (or their non-GPL counterparts), C and C++ compiler recent enough to support C++14
+and (GNU-)[make](https://www.gnu.org/software/make/). For unit tests,
 [CppUTest](https://github.com/cpputest/cpputest) is required. tsym should build on all major Linux
 distributions by e.g.
 ```bash
@@ -146,7 +145,7 @@ Compiling the example code
 
 The exemplary C++ program from above can be compiled with
 ```bash
-g++ -o example main-function-from-above.cpp -ltsym -lgmp
+g++ -o example main-function-from-above.cpp -ltsym
 ```
 for less recent compiler versions, `-std=c++14` should be manually enabled.
 
