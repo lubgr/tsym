@@ -258,11 +258,11 @@ bool tsym::Base::isEqualByTypeAndOperands(const BasePtr& other) const
 
 void tsym::Base::setDebugString()
 {
-#ifdef TSYM_DEBUG_STRINGS
+#ifdef TSYM_WITH_DEBUG_STRINGS
     std::ostringstream stream;
     PlaintextPrintEngine engine(stream, PlaintextPrintEngine::CharSet::ASCII);
 
-    printer::print(engine, *this);
+    printer::printDebug(engine, *this);
 
     prettyStr = stream.str();
 #endif

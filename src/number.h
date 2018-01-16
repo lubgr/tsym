@@ -84,7 +84,7 @@ namespace tsym {
             static const double TOL;
             static const double ZERO_TOL;
 
-#ifdef TSYM_DEBUG_STRINGS
+#ifdef TSYM_WITH_DEBUG_STRINGS
             /* A member to be accessed by a gdb pretty printing plugin. */
             std::string prettyStr;
 #endif
