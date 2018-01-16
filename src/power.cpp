@@ -242,8 +242,8 @@ int tsym::Power::degree(const BasePtr& variable) const
     int baseDegree = baseRef->degree(variable);
 
     if (integer::fitsInto<int>(nExp)
-            && static_cast<double>(nExp) < std::numeric_limits<int>::max()/(double)baseDegree
-            && static_cast<double>(nExp) > std::numeric_limits<int>::min()/(double)baseDegree)
+            && static_cast<double>(nExp) < std::numeric_limits<int>::max()/static_cast<double>(baseDegree)
+            && static_cast<double>(nExp) > std::numeric_limits<int>::min()/static_cast<double>(baseDegree))
         return static_cast<int>(nExp)*baseDegree;
 
     TSYM_ERROR("Degree of %S doens't fit into a primitive integer! Return 0 as degree.", clone());

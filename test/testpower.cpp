@@ -88,7 +88,7 @@ TEST(Power, exponentFraction)
 TEST(Power, largeBaseIntegerExp)
 {
     const long maxLong = std::numeric_limits<long>::max();
-    const long lBase = (long)std::sqrt((double)(maxLong - 2));
+    const long lBase = static_cast<long>(std::sqrt(static_cast<double>(maxLong - 2)));
     const BasePtr base = Numeric::create(Int(lBase));
     const BasePtr pow = Power::create(base, two);
 

@@ -345,13 +345,13 @@ tsym::Int tsym::Number::tryGetBase(const Int& n, const Int& denomExponent) const
      * result to an integer after only adding 0.1 (which is somewhat arbitrary, could be any value
      * less than 0.5). */
     const double exact = std::pow(static_cast<double>(n), 1.0/static_cast<double>(denomExponent));
-    const int base = (int)(exact + 0.1);
+    const int base = static_cast<int>(exact + 0.1);
     Int res(base);
 
     if (exact > std::numeric_limits<int>::max())
         /* The exact doesn't fit into an int. */
         return 0;
-    else if (std::abs(exact - (double)base) > 1.e-6)
+    else if (std::abs(exact - static_cast<double>(base)) > 1.e-6)
         /* We are not too strict here, because of the following check. */
         return 0;
 
