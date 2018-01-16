@@ -132,7 +132,7 @@ TEST(Printer, positiveSymbolWithSubAndSuperscript)
     CHECK_EQUAL("a_b_c\u208A", print(aPos));
 }
 
-TEST(Printer, positiveSymbolUtf8Disabled)
+TEST(Printer, positiveSymbolAsciiCharset)
 {
     PlaintextPrintEngine engine(stream, PlaintextPrintEngine::CharSet::ASCII);
     const BasePtr aPos = Symbol::createPositive("a");
