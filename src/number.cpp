@@ -25,13 +25,13 @@ tsym::Number::Number(double value)
     setAndSimplify(0, 1, value);
 }
 
-tsym::Number::Number(const Int& value) :
-    Number(value, 1)
+tsym::Number::Number(Int value) :
+    Number(std::move(value), 1)
 {}
 
-tsym::Number::Number(const Int& numerator, const Int& denominator)
+tsym::Number::Number(Int numerator, Int denominator)
 {
-    setAndSimplify(numerator, denominator, 0.0);
+    setAndSimplify(std::move(numerator), std::move(denominator), 0.0);
 }
 
 tsym::Number tsym::Number::createUndefined()
@@ -43,9 +43,9 @@ tsym::Number tsym::Number::createUndefined()
     return undefined;
 }
 
-void tsym::Number::setAndSimplify(const Int& num, const Int& denom, double dValue)
+void tsym::Number::setAndSimplify(Int&& num, Int&& denom, double dValue)
 {
-    set(num, denom, dValue);
+    set(std::move(num), std::move(denom), dValue);
 
     if (denom == 0) {
         TSYM_ERROR("Try to set fraction with zero denominator. Number is undefined.");
@@ -54,7 +54,7 @@ void tsym::Number::setAndSimplify(const Int& num, const Int& denom, double dValu
         simplify();
 }
 
-void tsym::Number::set(const Int& num, const Int& denom, double dValue)
+void tsym::Number::set(Int&& num, Int&& denom, double dValue)
 {
     if (denom > 0) {
         this->num = num;
@@ -114,7 +114,7 @@ void tsym::Number::tryDoubleToFraction()
 
     if (std::abs(static_cast<double>(truncated)/nFloatDigits - dValue) < ZERO_TOL)
         /* This will also catch very low double values, which turns them into a rational zero. */
-        setAndSimplify(truncated, nFloatDigits, 0.0);
+        setAndSimplify(std::move(truncated), nFloatDigits, 0.0);
 }
 
 void tsym::Number::cancel()
@@ -167,7 +167,7 @@ void tsym::Number::addRational(const Number& other)
         newDenom = multiple;
     }
 
-    setAndSimplify(newNum, newDenom, 0.0);
+    setAndSimplify(std::move(newNum), std::move(newDenom), 0.0);
 }
 
 tsym::Number& tsym::Number::operator -= (const Number& rhs)

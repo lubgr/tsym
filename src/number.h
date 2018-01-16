@@ -18,8 +18,8 @@ namespace tsym {
             Number(int value);
             Number(double value);
             Number(int numerator, int denominator);
-            explicit Number(const Int& value);
-            Number(const Int& numerator, const Int& denominator);
+            explicit Number(Int value);
+            Number(Int numerator, Int denominator);
             static Number createUndefined();
 
             Number& operator += (const Number& rhs);
@@ -55,8 +55,8 @@ namespace tsym {
             static Number Pow(const Number& base, const Number& exp);
 
         private:
-            void setAndSimplify(const Int& num, const Int& denom, double dValue);
-            void set(const Int& num, const Int& denom, double dValue);
+            void setAndSimplify(Int&& num, Int&& denom, double dValue);
+            void set(Int&& num, Int&& denom, double dValue);
             void setUndefined();
             void simplify();
             void tryDoubleToFraction();
