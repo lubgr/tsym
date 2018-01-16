@@ -88,7 +88,7 @@ bool tsym::PolyInfo::isValidPower(const tsym::BasePtr& power)
 
     if (hasValidType(power->base()) && power->exp()->isNumericallyEvaluable()) {
         exp = power->exp()->numericEval();
-        return exp.isInt() && exp.numerator().fitsIntoInt() && exp > 0;
+        return exp.isInt() && integer::fitsInto<int>(exp.numerator()) && exp > 0;
     }
 
     return false;

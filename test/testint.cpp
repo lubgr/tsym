@@ -1,5 +1,6 @@
 
 #include <limits>
+#include <exception>
 #include <sstream>
 #include "int.h"
 #include "tsymtests.h"
@@ -10,7 +11,13 @@ TEST_GROUP(Int)
 {
     const long maxLong = std::numeric_limits<long>::max();
     const int maxInt = std::numeric_limits<int>::max();
+    const Int zero;
 };
+
+TEST(Int, defaultConstruction)
+{
+    CHECK_EQUAL(0, zero);
+}
 
 TEST(Int, equality)
 {
@@ -40,17 +47,14 @@ TEST(Int, changeOfSign)
     const Int n(-213094234);
     Int result;
 
-    result = n.abs();
+    result = integer::abs(n);
 
     CHECK_EQUAL(expected, result);
 }
 
 TEST(Int, gcdBothOperandsZero)
 {
-    const Int zero(0);
-    Int result;
-
-    result = zero.gcd(0);
+    const Int result = integer::gcd(zero, zero);
 
     CHECK_EQUAL(0, result);
 }
@@ -58,9 +62,7 @@ TEST(Int, gcdBothOperandsZero)
 TEST(Int, trivialGcd)
 {
     const Int four(4);
-    Int result;
-
-    result = four.gcd(3);
+    const Int result = integer::gcd(four, 3);
 
     CHECK_EQUAL(1, result);
 }
@@ -70,19 +72,14 @@ TEST(Int, largeGcd)
     const Int n1("2268768101928008863115135358527391507");
     const Int n2("471097608789240594631830432");
     const Int expected("2309482093840923");
-    Int result;
-
-    result = n1.gcd(n2);
+    const Int result = integer::gcd(n1, n2);
 
     CHECK_EQUAL(expected, result);
 }
 
 TEST(Int, lcmBothZero)
 {
-    const Int zero(0);
-    Int result;
-
-    result = zero.lcm(0);
+    const Int result = integer::lcm(zero, zero);
 
     CHECK_EQUAL(0, result);
 }
@@ -92,9 +89,7 @@ TEST(Int, largeLcm)
     const Int expected("47116200935874995263669584298436552275884098991145738935519645420");
     const Int n1("2309820438092849280938402209384209");
     const Int n2("20398209384092840982094382094380");
-    Int result;
-
-    result = n1.lcm(n2);
+    const Int result = integer::lcm(n1, n2);
 
     CHECK_EQUAL(expected, result);
 }
@@ -106,45 +101,25 @@ TEST(Int, constructFromMaxLong)
     CHECK_EQUAL(maxLong, n);
 }
 
-TEST(Int, powerWithNegativeExp)
-{
-    const Int base(5);
-    Int result;
-
-    disableLog();
-    result = base.toThe(-3);
-    enableLog();
-
-    CHECK_EQUAL(0, result);
-}
-
 TEST(Int, powerWithZeroExp)
 {
     const Int base(12345);
-    Int result;
-
-    result = base.toThe(0);
+    const Int result = integer::pow(base, 0);
 
     CHECK_EQUAL(1, result);
 }
 
 TEST(Int, powerZeroBaseAndExp)
 {
-    const Int base(0);
-    Int result;
-
-    result = base.toThe(0);
+    const Int result = integer::pow(zero, 0);
 
     CHECK_EQUAL(1, result);
 }
 
 TEST(Int, powerWithBaseOne)
 {
-    const Int exp("20938092843098204982043023094");
     const Int base(1);
-    Int result;
-
-    result = base.toThe(exp);
+    const Int result = integer::pow(base, 843098208u);
 
     CHECK_EQUAL(1, result);
 }
@@ -152,9 +127,7 @@ TEST(Int, powerWithBaseOne)
 TEST(Int, power)
 {
     const Int base(12345);
-    Int result;
-
-    result = base.toThe(9);
+    const Int result = integer::pow(base, 9);
 
     CHECK_EQUAL(Int("6659166111488656281486807152009765625"), result);
 }
@@ -200,18 +173,18 @@ TEST(Int, sign)
 
 TEST(Int, fitsIntoInt)
 {
-    CHECK(Int(1234567).fitsIntoInt());
-    CHECK(Int(-7654321).fitsIntoInt());
-    CHECK_FALSE(Int("230894203489028394082903849092340").fitsIntoInt());
-    CHECK_FALSE(Int("-29304209843902894308290384203989").fitsIntoInt());
+    CHECK(integer::fitsInto<int>(Int(1234567)));
+    CHECK(integer::fitsInto<int>(Int(-7654321)));
+    CHECK_FALSE(integer::fitsInto<int>(Int("230894203489028394082903849092340")));
+    CHECK_FALSE(integer::fitsInto<int>(Int("-29304209843902894308290384203989")));
 }
 
 TEST(Int, fitsIntoLong)
 {
-    CHECK(Int(1234567).fitsIntoLong());
-    CHECK(Int(-7654321).fitsIntoLong());
-    CHECK_FALSE(Int("230894203489028394082903849092340").fitsIntoLong());
-    CHECK_FALSE(Int("-29304209843902894308290384203989").fitsIntoLong());
+    CHECK(integer::fitsInto<long>(Int(1234567)));
+    CHECK(integer::fitsInto<long>(Int(-7654321)));
+    CHECK_FALSE(integer::fitsInto<long>(Int("230894203489028394082903849092340")));
+    CHECK_FALSE(integer::fitsInto<long>(Int("-29304209843902894308290384203989")));
 }
 
 TEST(Int, toPrimitiveInt)
@@ -219,90 +192,15 @@ TEST(Int, toPrimitiveInt)
     const int orig = 12345;
     const Int n(orig);
 
-    CHECK(n.fitsIntoInt());
-    CHECK_EQUAL(orig, n.toInt());
-}
-
-TEST(Int, toPrimitivePosIntFails)
-{
-    Int n(maxInt);
-    int result;
-
-    n += 2;
-
-    disableLog();
-    result = n.toInt();
-    disableLog();
-
-    CHECK_EQUAL(maxInt, result);
-}
-
-TEST(Int, toPrimitiveNegIntFails)
-{
-    const int minInt = std::numeric_limits<int>::min();
-    Int n(minInt);
-    int result;
-
-    n *= 2;
-
-    disableLog();
-    result = n.toInt();
-    disableLog();
-
-    CHECK_EQUAL(minInt, result);
-}
-
-TEST(Int, toPrimitiveLong)
-{
-    Int n;
-
-    if (maxInt < maxLong) {
-        n = Int(maxInt + 123456l);
-        CHECK_FALSE(n.fitsIntoInt());
-        CHECK(n.fitsIntoLong());
-    } else {
-        n = Int(maxLong);
-        CHECK(n.fitsIntoInt());
-        CHECK(n.fitsIntoLong());
-    }
-}
-
-TEST(Int, toPrimitiveLongFails)
-{
-    Int large("9238947298374892738942389470293809234094");
-    long res;
-
-    disableLog();
-    res = large.toLong();
-    enableLog();
-
-    CHECK_EQUAL(maxLong, res);
-}
-
-TEST(Int, toPrimitiveNegLongFails)
-{
-    Int n("-2309482093489203482039842034");
-    long res;
-
-    disableLog();
-    res = n.toLong();
-    enableLog();
-
-    CHECK_EQUAL(std::numeric_limits<long>::min(), res);
-}
-
-TEST(Int, toDoubleSmallNumber)
-{
-    const Int n(12345);
-
-    DOUBLES_EQUAL(12345.0, n.toDouble(), 1e-8);
+    CHECK(integer::fitsInto<int>(n));
+    CHECK_EQUAL(orig, static_cast<int>(n));
 }
 
 TEST(Int, toDoubleLargeNumber)
 {
     const Int n("2309420938209384092834902839408209420");
 
-    DOUBLES_EQUAL(2.309420938209384e+36, n.toDouble(), 1e-8);
+    DOUBLES_EQUAL(2.309420938209384e+36, static_cast<double>(n), 1e-8);
 }
 
 TEST(Int, comparisonOperators)
@@ -398,15 +296,6 @@ TEST(Int, moduloZeroPosAndNegNumber)
     CHECK_EQUAL(0, -n % 2);
     CHECK_EQUAL(0, n % -2);
     CHECK_EQUAL(0, -n % -2);
-}
-
-TEST(Int, illegalInputStr)
-{
-    disableLog();
-    const Int n("illegal-dummy-string");
-    enableLog();
-
-    CHECK_EQUAL(0, n);
 }
 
 TEST(Int, streamOperator)

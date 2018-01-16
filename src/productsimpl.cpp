@@ -472,9 +472,11 @@ tsym::Int tsym::ProductSimpl::evalNumExpNumerator(const BasePtr& numPow)
 
 tsym::Int tsym::ProductSimpl::evalExpNumerator(const Number& base, const Int& exp)
 {
+    assert(integer::fitsInto<unsigned>(integer::abs(exp)));
     const Int& selectedBase = exp > 0 ? base.numerator() : base.denominator();
+    const unsigned integralExp = static_cast<unsigned>(integer::abs(exp));
 
-    return selectedBase.toThe(exp.abs());
+    return integer::pow(selectedBase, integralExp);
 }
 
 tsym::Int tsym::ProductSimpl::evalDenomExpNumerator(const BasePtr& numPow)

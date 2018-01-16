@@ -7,7 +7,7 @@ CFLAGS ?= -pedantic -fPIC -Wall -Wextra -Wno-sign-compare -Wno-unused-label -Wno
 	  -Wno-unneeded-internal-declaration -Wno-write-strings
 CPPFLAGS += -I src
 COVERAGE ?=
-LIBS ?= -lgmp
+LIBS ?=
 LDFLAGS += -L $(BUILD) -Wl,-rpath $(BUILD)
 LEX ?= flex
 YACC ?= bison

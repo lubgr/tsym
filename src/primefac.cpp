@@ -40,9 +40,9 @@ void tsym::PrimeFac::defPrimes(Int n, std::vector<Int>& primes)
         n /= two;
     }
 
-    upperLimit = std::sqrt(n.toDouble()) + 0.5;
+    upperLimit = std::sqrt(static_cast<double>(n)) + 0.5;
 
-    for (Int i(3); i.toDouble() < upperLimit; i = i + two)
+    for (Int i(3); static_cast<double>(i) < upperLimit; i = i + two)
         while (n % i == zero) {
             primes.push_back(i);
             n /= i;
@@ -64,8 +64,8 @@ void tsym::PrimeFac::toThe(const Int& exponent)
         denomPrimes.clear();
     }
 
-    copyElementsNTimes(exponent.abs(), numPrimes);
-    copyElementsNTimes(exponent.abs(), denomPrimes);
+    copyElementsNTimes(integer::abs(exponent), numPrimes);
+    copyElementsNTimes(integer::abs(exponent), denomPrimes);
 
     if (exponent < 0)
         numPrimes.swap(denomPrimes);

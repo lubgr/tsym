@@ -256,6 +256,6 @@ TEST(Degree, powerTooSmallIntExp)
     degree = pow->degree(a);
     enableLog();
 
-    CHECK_FALSE(largeNeg.fitsIntoInt());
+    CHECK_FALSE(integer::fitsInto<int>(largeNeg));
     CHECK_EQUAL(0, degree);
 }

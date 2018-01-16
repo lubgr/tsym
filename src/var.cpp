@@ -252,7 +252,7 @@ tsym::Var tsym::Var::denominator() const
 bool tsym::Var::fitsIntoInt() const
 {
     if (isInteger())
-        return rep->numericEval().numerator().fitsIntoInt();
+        return integer::fitsInto<int>(rep->numericEval().numerator());
     else
         return false;
 }
@@ -267,7 +267,7 @@ int tsym::Var::toInt() const
     if (!isInteger())
         TSYM_ERROR("Requesting integer from %S", type());
 
-    return rep->numericEval().numerator().toInt();
+    return static_cast<int>(rep->numericEval().numerator());
 }
 
 double tsym::Var::toDouble() const

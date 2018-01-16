@@ -4,10 +4,10 @@
 #include <ostream>
 #include <functional>
 #include "baseptr.h"
+#include "int.h"
 
 namespace tsym {
     class Name;
-    class Int;
 }
 
 namespace tsym {

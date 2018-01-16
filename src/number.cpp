@@ -112,19 +112,19 @@ void tsym::Number::tryDoubleToFraction()
 
     truncated = Int(dValue*nFloatDigits + roundIncrement);
 
-    if (std::abs(truncated.toDouble()/nFloatDigits - dValue) < ZERO_TOL)
+    if (std::abs(static_cast<double>(truncated)/nFloatDigits - dValue) < ZERO_TOL)
         /* This will also catch very low double values, which turns them into a rational zero. */
         setAndSimplify(truncated, nFloatDigits, 0.0);
 }
 
 void tsym::Number::cancel()
 {
-    const Int divisor(num.gcd(denom));
+    const Int divisor = integer::gcd(num, denom);
 
     if (num == 0)
         denom = 1;
 
-    if (divisor == 0 || divisor > num.abs() || divisor > denom)
+    if (divisor == 0 || divisor > integer::abs(num) || divisor > denom)
         return;
 
     num /= divisor;
@@ -155,7 +155,7 @@ bool tsym::Number::isThisOrOtherDouble(const Number& other) const
 
 void tsym::Number::addRational(const Number& other)
 {
-    const Int multiple(denom.lcm(other.denom));
+    const Int multiple = integer::lcm(denom, other.denom);
     Int newDenom;
     Int newNum;
 
@@ -305,8 +305,10 @@ void tsym::Number::processRationalPowers(const Number& exponent, Number& result)
 void tsym::Number::computeNumPower(const Int& numExponent, Number& result) const
     /* For e.g. (1/2)^(2/3), this does the part (1/2)^2. */
 {
-    const Int newDenom(denom.toThe(numExponent.abs()));
-    const Int newNum(num.toThe(numExponent.abs()));
+    assert(integer::fitsInto<unsigned>(integer::abs(numExponent)));
+    const unsigned exp = static_cast<unsigned>(integer::abs(numExponent));
+    const Int newDenom = integer::pow(denom, exp);
+    const Int newNum = integer::pow(num, exp);
 
     if (numExponent < 0)
         /* The method takes care of negative a numerator. */
@@ -326,7 +328,7 @@ void tsym::Number::computeDenomPower(const Int& denomExponent, Number& result) c
     if (denomExponent == 1)
         return;
     else if (numTest == 0 || denomTest == 0)
-        result = Number(std::pow(result.toDouble(), 1.0/denomExponent.toDouble()));
+        result = Number(std::pow(result.toDouble(), 1.0/static_cast<double>(denomExponent)));
     else
         result = Number(numTest, denomTest);
 }
@@ -342,7 +344,7 @@ tsym::Int tsym::Number::tryGetBase(const Int& n, const Int& denomExponent) const
      * lead to an exact integer solution of the power. Thus, it is save to cast the double power
      * result to an integer after only adding 0.1 (which is somewhat arbitrary, could be any value
      * less than 0.5). */
-    const double exact = std::pow(n.toDouble(), 1.0/denomExponent.toDouble());
+    const double exact = std::pow(static_cast<double>(n), 1.0/static_cast<double>(denomExponent));
     const int base = (int)(exact + 0.1);
     Int res(base);
 
@@ -353,7 +355,9 @@ tsym::Int tsym::Number::tryGetBase(const Int& n, const Int& denomExponent) const
         /* We are not too strict here, because of the following check. */
         return 0;
 
-    res = res.toThe(denomExponent);
+    assert(denomExponent > 0 && integer::fitsInto<unsigned>(denomExponent));
+
+    res = integer::pow(res, static_cast<unsigned>(denomExponent));
 
     return res == n ? base : 0;
 }
@@ -468,9 +472,9 @@ const tsym::Int& tsym::Number::denominator() const
 double tsym::Number::toDouble() const
 {
     if (isInt())
-        return num.toDouble();
+        return static_cast<double>(num);
     else if (isFrac())
-        return num.toDouble()/denom.toDouble();
+        return static_cast<double>(num)/static_cast<double>(denom);
 
     if (isUndefined())
         TSYM_WARNING("Requesting double evaluation of undefined number");

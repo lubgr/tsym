@@ -305,11 +305,11 @@ int tsym::minDegreeOfPower(const BasePtr& power, const tsym::BasePtr& variable)
     const BasePtr base(power->base());
     int exp;
 
-    if (!largeExp.fitsIntoInt()) {
+    if (!integer::fitsInto<int>(largeExp)) {
         TSYM_ERROR("%S: Exponent doesn't fit into primitive int! Return 0 (min. degree).", power);
         return 0;
     } else
-        exp = largeExp.toInt();
+        exp = static_cast<int>(largeExp);
 
     if (base->isEqual(variable))
         return exp;

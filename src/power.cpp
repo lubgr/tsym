@@ -198,7 +198,7 @@ tsym::BasePtr tsym::Power::expandSumBaseIntExp() const
     BasePtrList sums;
     BasePtr res;
 
-    for (Int i(0); i < nExp.abs(); ++i)
+    for (Int i(0); i < integer::abs(nExp); ++i)
         sums.push_back(baseRef);
 
     res = sums.expandAsProduct();
@@ -232,7 +232,6 @@ tsym::BasePtr tsym::Power::coeff(const BasePtr& variable, int exp) const
 
 int tsym::Power::degree(const BasePtr& variable) const
 {
-    int baseDegree;
     Int nExp;
 
     if (isEqual(variable))
@@ -240,11 +239,12 @@ int tsym::Power::degree(const BasePtr& variable) const
     else if (isInteger(expRef))
         nExp = expRef->numericEval().numerator();
 
-    baseDegree = baseRef->degree(variable);
+    int baseDegree = baseRef->degree(variable);
 
-    if (nExp.fitsIntoInt() && nExp.toDouble() < std::numeric_limits<int>::max()/(double)baseDegree
-            && nExp.toDouble() > std::numeric_limits<int>::min()/(double)baseDegree)
-        return nExp.toInt()*baseDegree;
+    if (integer::fitsInto<int>(nExp)
+            && static_cast<double>(nExp) < std::numeric_limits<int>::max()/(double)baseDegree
+            && static_cast<double>(nExp) > std::numeric_limits<int>::min()/(double)baseDegree)
+        return static_cast<int>(nExp)*baseDegree;
 
     TSYM_ERROR("Degree of %S doens't fit into a primitive integer! Return 0 as degree.", clone());
 

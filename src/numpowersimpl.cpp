@@ -193,9 +193,9 @@ bool tsym::NumPowerSimpl::areValuesSmallEnough() const
 {
     const Int& limit(primeFacLimit());
 
-    if (newBase.numerator().abs() > limit || newBase.denominator() > limit)
+    if (integer::abs(newBase.numerator()) > limit || newBase.denominator() > limit)
         return false;
-    else if (preFac.numerator().abs() > limit || preFac.denominator() > limit)
+    else if (integer::abs(preFac.numerator()) > limit || preFac.denominator() > limit)
         return false;
     else
         return true;
@@ -267,11 +267,11 @@ void tsym::NumPowerSimpl::adjustExpGreaterThanOne()
     /* Performs a^b = prefac*a^d with b > 1 and d < 1. */
 {
     Number baseExtraction(newBase);
-    Number expFloor;
 
     if (newExp > 1 || newExp < -1) {
-        expFloor = Number(newExp.numerator()/newExp.denominator());
+        const Number expFloor(Int(newExp.numerator()/newExp.denominator()));
         baseExtraction = baseExtraction.toThe(expFloor);
+
         preFac *= baseExtraction;
         newExp -= expFloor;
     }
