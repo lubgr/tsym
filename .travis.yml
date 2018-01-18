@@ -10,10 +10,8 @@ branches:
 git:
     depth: 3
 
-env:
-    - BOOSTVER=1_66_0
-
 before_install:
+  - export BOOSTVER=1_66_0
   - wget https://downloads.sourceforge.net/project/boost/boost/${BOOSTVER//_/.}/boost_${BOOSTVER}.tar.bz2
   - tar xf boost_${BOOSTVER}.tar.bz2
   - wget https://github.com/cpputest/cpputest/releases/download/v3.8/cpputest-3.8.tar.gz
