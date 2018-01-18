@@ -14,6 +14,7 @@ before_install:
   - export BOOSTVER=1_66_0
   - wget https://downloads.sourceforge.net/project/boost/boost/${BOOSTVER//_/.}/boost_${BOOSTVER}.tar.bz2
   - tar xf boost_${BOOSTVER}.tar.bz2
+  - export BOOSTDIR="${PWD}/boost/boost_${BOOSTVER}"
   - wget https://github.com/cpputest/cpputest/releases/download/v3.8/cpputest-3.8.tar.gz
   - tar xf cpputest-3.8.tar.gz
   - cd ./cpputest-3.8
@@ -53,9 +54,9 @@ matrix:
       env: COMPILER=clang++
 
 script:
-  - make CXX=$COMPILER COVERAGE="--coverage" CPPFLAGS="-I ${HOME}/boost/boost_${BOOSTVER}" lib
+  - make CXX=$COMPILER COVERAGE="--coverage" CPPFLAGS="-I ${BOOSTDIR}" lib
   - cat build/buildinfo.h
-  - make CXX=$COMPILER COVERAGE="--coverage" CPPFLAGS="-I ${HOME}/boost/boost_${BOOSTVER}" test
+  - make CXX=$COMPILER COVERAGE="--coverage" CPPFLAGS="-I ${BOOSTDIR}" test
 
 after_success:
   - lcov -c --no-external -d . -o build/coverage.info
