@@ -54,9 +54,9 @@ matrix:
       env: COMPILER=clang++
 
 script:
-  - make CXX=$COMPILER COVERAGE="--coverage" CPPFLAGS="-I ${BOOSTDIR}" lib
+  - make CXX=$COMPILER COVERAGE="--coverage" CPPFLAGS="-I ${BOOSTDIR} -I src" lib
   - cat build/buildinfo.h
-  - make CXX=$COMPILER COVERAGE="--coverage" CPPFLAGS="-I ${BOOSTDIR}" test
+  - make CXX=$COMPILER COVERAGE="--coverage" CPPFLAGS="-I ${BOOSTDIR} -I src" test
 
 after_success:
   - lcov -c --no-external -d . -o build/coverage.info
