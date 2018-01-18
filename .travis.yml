@@ -10,7 +10,12 @@ branches:
 git:
     depth: 3
 
+env:
+    - BOOSTVER=1_66_0
+
 before_install:
+  - wget https://downloads.sourceforge.net/project/boost/boost/${BOOSTVER//_/.}/boost_${BOOSTVER}.tar.bz2
+  - tar xf boost_${BOOSTVER}.tar.bz2
   - wget https://github.com/cpputest/cpputest/releases/download/v3.8/cpputest-3.8.tar.gz
   - tar xf cpputest-3.8.tar.gz
   - cd ./cpputest-3.8
@@ -20,7 +25,6 @@ before_install:
   - cd ..
   - gem install coveralls-lcov
   - sudo apt-get -qq update
-  - sudo apt-get install -y libboost-all-dev
 
 addons:
   apt:
@@ -51,9 +55,9 @@ matrix:
       env: COMPILER=clang++
 
 script:
-  - make CXX=$COMPILER COVERAGE="--coverage" lib
+  - make CXX=$COMPILER COVERAGE="--coverage" CPPFLAGS="-I ${HOME}/boost/boost_${BOOSTVER} lib
   - cat build/buildinfo.h
-  - make CXX=$COMPILER COVERAGE="--coverage" test
+  - make CXX=$COMPILER COVERAGE="--coverage" CPPFLAGS="-I ${HOME}/boost/boost_${BOOSTVER} test
 
 after_success:
   - lcov -c --no-external -d . -o build/coverage.info

@@ -2,7 +2,7 @@
 include $(wildcard makefile.in Makefile.in)
 
 BUILD ?= build
-CXXFLAGS ?= -O2 -fPIC -pedantic -Wall -Wextra -Werror=conversion -DNDEBUG -std=c++14
+CXXFLAGS ?= -O2 -fPIC -pedantic -Wall -Wextra -Wconversion -DNDEBUG -std=c++14
 CFLAGS ?= -pedantic -fPIC -Wall -Wextra -Wno-sign-compare -Wno-unused-label -Wno-unused-function \
 	  -Wno-unneeded-internal-declaration -Wno-write-strings
 CPPFLAGS += -I src
