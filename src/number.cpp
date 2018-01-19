@@ -1,4 +1,5 @@
 
+#include <exception>
 #include <cmath>
 #include <cassert>
 #include <iostream>
@@ -44,10 +45,9 @@ void tsym::Number::setAndSimplify(Int&& num, Int&& denom, double dValue)
 {
     set(std::move(num), std::move(denom), dValue);
 
-    if (denom == 0) {
-        TSYM_ERROR("Try to set fraction with zero denominator. Number is undefined.");
-        setUndefined();
-    } else
+    if (denom == 0)
+        throw std::overflow_error("Zero denominator in rational number construction");
+    else
         simplify();
 }
 

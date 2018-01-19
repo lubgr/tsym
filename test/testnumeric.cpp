@@ -25,12 +25,11 @@ TEST(Numeric, creationByIntegerClass)
     CHECK_EQUAL(two, res);
 }
 
-TEST(Numeric, creationByUndefinedNumber)
+TEST(Numeric, creationWithZeroDenominator)
 {
-    const Number n(Number::createUndefined());
-    BasePtr ptr;
-
-    ptr = Numeric::create(n);
+    disableLog();
+    const BasePtr ptr = Numeric::create(1, 0);
+    enableLog();
 
     CHECK(ptr->isUndefined());
 }
@@ -67,17 +66,6 @@ TEST(Numeric, numericEvaluation)
 
     CHECK(frac->isNumericallyEvaluable());
     CHECK_EQUAL(expected, frac->numericEval());
-}
-
-TEST(Numeric, undefined)
-{
-    BasePtr res;
-
-    disableLog();
-    res = Numeric::create(1, 0);
-    enableLog();
-
-    CHECK(res->isUndefined());
 }
 
 TEST(Numeric, typeString)

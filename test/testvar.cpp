@@ -32,10 +32,10 @@ TEST_GROUP(Var)
 
 TEST(Var, undefinedType)
 {
-    Var u;
+    Var u = 1/a;
 
     disableLog();
-    u = Var(1, 0);
+    u = u.subst(a, 0);
     enableLog();
 
     CHECK_EQUAL(Var::Type::UNDEFINED, u.type());
@@ -1088,8 +1088,9 @@ TEST(Var, printerOperatorTypeEnumUndefined)
 {
     const std::string expected("Undefined");
     std::stringstream stream;
+
     disableLog();
-    const Var u(1, 0);
+    const Var u = tsym::tan(pi()/2);
     enableLog();
 
     stream << u;

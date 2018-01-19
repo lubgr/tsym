@@ -57,13 +57,16 @@ TEST(Rational, negativeDenominator)
 
 TEST(Rational, zeroDenominator)
 {
-    Number n;
-
     disableLog();
-    n = Number(2, 0);
-    enableLog();
 
-    CHECK(n.isUndefined());
+    try {
+        Number n(2, 0);
+        CHECK(false);
+    } catch (const std::overflow_error& error) {
+        CHECK(true);
+    }
+
+    enableLog();
 }
 
 TEST(Rational, posDoubleToFraction)

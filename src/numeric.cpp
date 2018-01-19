@@ -1,6 +1,7 @@
 
 #include "numeric.h"
 #include "symbolmap.h"
+#include "logging.h"
 
 tsym::Numeric::Numeric(const Number& number) :
     number(number)
@@ -15,7 +16,7 @@ tsym::BasePtr tsym::Numeric::create(int value)
 
 tsym::BasePtr tsym::Numeric::create(int numerator, int denominator)
 {
-    return create(Number(numerator, denominator));
+    return create(Int(numerator), Int(denominator));
 }
 
 tsym::BasePtr tsym::Numeric::create(double value)
@@ -30,15 +31,16 @@ tsym::BasePtr tsym::Numeric::create(const Int& value)
 
 tsym::BasePtr tsym::Numeric::create(const Int& numerator, const Int& denominator)
 {
-    return create(Number(numerator, denominator));
+    if (denominator == 0) {
+        TSYM_ERROR("Attempt to create a Numeric with zero denominator, result is Undefined");
+        return Undefined::create();
+    } else
+        return create(Number(numerator, denominator));
 }
 
 tsym::BasePtr tsym::Numeric::create(const Number& number)
 {
-    if (number.isUndefined())
-        return Undefined::create();
-    else
-        return instantiate([&number]() { return new Numeric(number); });
+    return instantiate([&number]() { return new Numeric(number); });
 }
 
 namespace tsym {

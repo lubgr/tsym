@@ -51,10 +51,11 @@ TEST(Power, undefinedExponent)
     CHECK(res->isUndefined());
 }
 
-TEST(Power, undefinedNumberExponent)
+TEST(Power, illegalNumberExponent)
 {
-    const Number n(Number::createUndefined());
-    const BasePtr res = Power::create(a, Numeric::create(n));
+    disableLog();
+    const BasePtr res = Power::create(a, Numeric::create(10, 0));
+    enableLog();
 
     CHECK(res->isUndefined());
 }
