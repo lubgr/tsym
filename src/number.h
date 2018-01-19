@@ -9,10 +9,7 @@ namespace tsym {
          * class is needed inside of the classes derived from the Base class, more specifically,
          * it's needed independently of the base class. Simplification of fractions is always
          * performed automatically. Floating point numbers are automatically converted to fractions
-         * up to a certain (not very high) accuracy.
-         *
-         * Conveniece shortcut functions for numeric evaluation of powers can be found as static
-         * methods of this class (Pow/Sqrt). */
+         * up to a certain (not very high) accuracy. */
         public:
             Number() = default;
             Number(int value);
@@ -50,9 +47,6 @@ namespace tsym {
             Number abs() const;
             /* Returns 0 in case of a zero number, otherwise -1 or 1: */
             int sign() const;
-
-            static Number Sqrt(const Number& base);
-            static Number Pow(const Number& base, const Number& exp);
 
         private:
             void setAndSimplify(Int&& num, Int&& denom, double dValue);

@@ -495,18 +495,6 @@ int tsym::Number::sign() const
         return *this < 0 ? -1 : 1;
 }
 
-tsym::Number tsym::Number::Sqrt(const Number& base)
-{
-    const Number half(1, 2);
-
-    return Pow(base, half);
-}
-
-tsym::Number tsym::Number::Pow(const Number& base, const Number& exp)
-{
-    return base.toThe(exp);
-}
-
 bool tsym::operator == (const Number& lhs, const Number& rhs)
 {
     return lhs.equal(rhs);

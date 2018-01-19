@@ -256,24 +256,25 @@ TEST(NumberPower, baseOne)
 
 TEST(NumberPower, baseMinusOne)
 {
+    const Number base(-1);
     Number res;
 
-    res = Number::Pow(-1, 2);
+    res = base.toThe(2);
     CHECK_EQUAL(1, res);
 
-    res = Number::Pow(-1, -half);
+    res = base.toThe(-half);
     CHECK(res.isUndefined());
 
-    res = Number::Pow(-1, half);
+    res = base.toThe(half);
     CHECK(res.isUndefined());
 
-    res = Number::Pow(-1, third);
+    res = base.toThe(third);
     CHECK(res.isUndefined());
 
-    res = Number::Pow(-1, Number(4, 3));
+    res = base.toThe(Number(4, 3));
     CHECK(res.isUndefined());
 
-    res = Number::Pow(-1, Number(3, 4));
+    res = base.toThe(Number(3, 4));
     CHECK(res.isUndefined());
 }
 
@@ -288,10 +289,10 @@ TEST(NumberPower, exponentZero)
 {
     Number res;
 
-    res = Number::Pow(three, zero);
+    res = three.toThe(zero);
     CHECK_EQUAL(1, res);
 
-    res = Number::Pow(-0.12345, zero);
+    res = Number(-0.12345).toThe(zero);
     CHECK_EQUAL(1, res);
 }
 
@@ -424,7 +425,7 @@ TEST(NumberPower, irrationalBaseFracRoot)
 TEST(NumberPower, negBaseFractionExpOddDenominator)
     /* (-4)^(2/3) is undefined. */
 {
-    Number res = Number::Pow(-4, Number(2, 3));
+    Number res = Number(-4).toThe(Number(2, 3));
 
     CHECK(res.isUndefined());
 }
@@ -432,7 +433,7 @@ TEST(NumberPower, negBaseFractionExpOddDenominator)
 TEST(NumberPower, negBaseFractionExpEvenDenominator)
     /* (-4/9)^(3/4) is undefined. */
 {
-    Number res = Number::Pow(Number(-4, 9), Number(3, 4));
+    Number res = Number(-4, 9).toThe(Number(3, 4));
 
     CHECK(res.isUndefined());
 }
@@ -498,35 +499,12 @@ TEST(NumberPower, negativeBaseDoubleExp)
     CHECK(res.isUndefined());
 }
 
-TEST(NumberPower, staticSquareRoot)
+TEST(NumberPower, resolvableNumSquareRoot)
 {
-    const Number expected(std::sqrt(2.0));
-    Number res;
-
-    res = Number::Sqrt(2);
-
-    CHECK_EQUAL(expected, res);
-}
-
-TEST(NumberPower, staticResolvableNumSquareRoot)
-{
-    Number res;
-
-    res = Number::Sqrt(4);
+    const Number four(4);
+    const Number res = four.toThe(Number(1, 2));
 
     CHECK_EQUAL(2, res);
-}
-
-TEST(NumberPower, staticPower)
-{
-    Number expected(2, 3);
-    Number base(4, 9);
-    Number res;
-
-    res = Number::Pow(base, Number(3, 2));
-    expected = expected.toThe(3);
-
-    CHECK_EQUAL(expected, res);
 }
 
 TEST_GROUP(Integer)
