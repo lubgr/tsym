@@ -152,9 +152,6 @@ size_t tsym::Numeric::hash() const
 
 unsigned tsym::Numeric::complexity() const
 {
-    /* A numeric object must not be instantiated from an undefined Number in the first place: */
-    assert(!number.isUndefined());
-
     if (number.isInt())
         return 1;
     else if(number.isFrac())

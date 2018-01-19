@@ -108,12 +108,14 @@ bool tsym::Product::sameType(const BasePtr& other) const
 }
 
 tsym::Number tsym::Product::numericEval() const
-    /* If a factor returns an undefined Number on numericEval(), the result is undefined, too. */
 {
     Number res(1);
 
     for (const auto& factor : ops)
-        res *= factor->numericEval();
+        if (factor->isNumericallyEvaluable())
+            res *= factor->numericEval();
+        else
+            throw std::logic_error("Product isn't numerically evaluable");
 
     return res;
 }

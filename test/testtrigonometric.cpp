@@ -878,7 +878,7 @@ TEST(Trigonometric, numericEvaluationAtan2)
 
 TEST(Trigonometric, illegalNumericEvaluation)
 {
-    CHECK(sinA->numericEval().isUndefined());
+    CHECK_THROWS(std::logic_error, sinA->numericEval());
 }
 
 TEST(Trigonometric, sinOfLogarithm)

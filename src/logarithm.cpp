@@ -76,7 +76,7 @@ tsym::BasePtr tsym::Logarithm::createNumerically(const BasePtr& arg)
 {
     const Number nArg(arg->numericEval());
 
-    assert(nArg != 0 && nArg != 1 && !nArg.isUndefined());
+    assert(nArg != 0 && nArg != 1);
 
     if (nArg.isRational())
         return createInstance(arg);
@@ -100,9 +100,9 @@ tsym::BasePtr tsym::Logarithm::createFromPower(const BasePtr& arg)
 tsym::Number tsym::Logarithm::numericEval() const
 {
     if (!isNumericallyEvaluable())
-        return Number::createUndefined();
-    else
-        return checkedNumericEval();
+        throw std::logic_error("Logarithm argument can't be numerically evaluated");
+
+    return checkedNumericEval();
 }
 
 tsym::Number tsym::Logarithm::checkedNumericEval() const

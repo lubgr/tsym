@@ -32,15 +32,6 @@ tsym::Number::Number(Int numerator, Int denominator)
     setAndSimplify(std::move(numerator), std::move(denominator), 0.0);
 }
 
-tsym::Number tsym::Number::createUndefined()
-{
-    Number undefined;
-
-    undefined.setUndefined();
-
-    return undefined;
-}
-
 void tsym::Number::setAndSimplify(Int&& num, Int&& denom, double dValue)
 {
     set(std::move(num), std::move(denom), dValue);
@@ -62,16 +53,6 @@ void tsym::Number::set(Int&& num, Int&& denom, double dValue)
     }
 
     this->dValue = dValue;
-}
-
-void tsym::Number::setUndefined()
-{
-    setAndSimplify(0, 1, 0.0);
-    undefined = true;
-
-#ifdef TSYM_WITH_DEBUG_STRINGS
-    prettyStr = "Undefined";
-#endif
 }
 
 void tsym::Number::simplify()
@@ -130,19 +111,12 @@ void tsym::Number::cancel()
 
 tsym::Number& tsym::Number::operator += (const Number& rhs)
 {
-    if (isThisOrOtherUndefined(rhs))
-        setUndefined();
-    else if (isThisOrOtherDouble(rhs))
+    if (isThisOrOtherDouble(rhs))
         setAndSimplify(0, 1, toDouble() + rhs.toDouble());
     else
         addRational(rhs);
 
     return *this;
-}
-
-bool tsym::Number::isThisOrOtherUndefined(const Number& other) const
-{
-    return isUndefined() || other.isUndefined();
 }
 
 bool tsym::Number::isThisOrOtherDouble(const Number& other) const
@@ -174,19 +148,12 @@ tsym::Number& tsym::Number::operator -= (const Number& rhs)
 
 tsym::Number tsym::Number::flipSign() const
 {
-    if (isDouble())
-        return Number(-dValue);
-    else if (isRational())
-        return Number(-num, denom);
-    else
-        return *this;
+    return isDouble() ? Number(-dValue) : Number(-num, denom);
 }
 
 tsym::Number& tsym::Number::operator *= (const Number& rhs)
 {
-    if (isThisOrOtherUndefined(rhs))
-        setUndefined();
-    else if (isThisOrOtherDouble(rhs))
+    if (isThisOrOtherDouble(rhs))
         setAndSimplify(0, 1, toDouble()*rhs.toDouble());
     else
         timesRational(rhs);
@@ -236,12 +203,9 @@ bool tsym::Number::processTrivialPowers(const Number& exponent, Number& result) 
     /* If the power is evaluated within the block of trivial posssibilities, the second parameter is
      * defined and true is returned, otherwise false. */
 {
-    if (isThisOrOtherUndefined(exponent)) {
-        result = createUndefined();
-        return true;
-    } else if (isZero() && exponent.num < 0) {
+    if (isZero() && exponent.num < 0) {
         TSYM_ERROR("Number division by zero! Result is undefined.");
-        result = createUndefined();
+        throw std::overflow_error("Zero divisor in rational number division");
         return true;
     } else if (isZero() || isOne() || exponent.isOne()) {
         result = *this;
@@ -250,7 +214,7 @@ bool tsym::Number::processTrivialPowers(const Number& exponent, Number& result) 
         result = Number(1);
         return true;
     } else if (lessThan(0) && !exponent.isInt()) {
-        result = createUndefined();
+        throw std::overflow_error("Illegal power with base zero and non-integer exponent");
         return true;
     } else if (*this == -1) {
         result = computeMinusOneToThe(exponent);
@@ -363,10 +327,7 @@ bool tsym::Number::equal(const Number& rhs) const
 {
     if (areBothRational(rhs))
         return num == rhs.num && denom == rhs.denom;
-    else if (isThisOrOtherUndefined(rhs)) {
-        TSYM_ERROR("Equality request between two undefined Numbers! Returns false.");
-        return false;
-    } else
+    else
         return equalViaDouble(rhs);
 }
 
@@ -393,10 +354,7 @@ bool tsym::Number::equalViaDouble(const Number& rhs) const
 
 bool tsym::Number::lessThan(const Number& rhs) const
 {
-    if (isThisOrOtherUndefined(rhs)) {
-        TSYM_WARNING("Comparison between two undefined Numbers!");
-        return false;
-    } else if (areBothRational(rhs)) {
+    if (areBothRational(rhs)) {
         if (num == rhs.num && denom == rhs.denom)
             return false;
         else if (num < rhs.num && denom >= rhs.denom)
@@ -412,27 +370,25 @@ bool tsym::Number::isZero() const
         return num == 0;
     else if (isDouble())
         return std::abs(dValue) < TOL;
-    else if (isUndefined())
-        return false;
 
-    TSYM_ERROR("Unknown number type %S during zero request.", *this);
+    TSYM_ERROR("Illegal number type %S during zero request.", *this);
 
     return false;
 }
 
 bool tsym::Number::isOne() const
 {
-    return isInt() && num == 1 && !undefined;
+    return isInt() && num == 1;
 }
 
 bool tsym::Number::isInt() const
 {
-    return denom == 1 && std::abs(dValue) < ZERO_TOL && !undefined;
+    return denom == 1 && std::abs(dValue) < ZERO_TOL;
 }
 
 bool tsym::Number::isFrac() const
 {
-    return denom != 1 && !undefined;
+    return denom != 1;
 }
 
 bool tsym::Number::isRational() const
@@ -442,27 +398,16 @@ bool tsym::Number::isRational() const
 
 bool tsym::Number::isDouble() const
 {
-    return num == 0 && std::abs(dValue) > ZERO_TOL && !undefined;
-}
-
-bool tsym::Number::isUndefined() const
-{
-    return undefined;
+    return num == 0 && std::abs(dValue) > ZERO_TOL;
 }
 
 const tsym::Int& tsym::Number::numerator() const
 {
-    if (isUndefined())
-        TSYM_WARNING("Requesting numerator of undefined number");
-
     return num;
 }
 
 const tsym::Int& tsym::Number::denominator() const
 {
-    if (isUndefined())
-        TSYM_WARNING("Requesting denominator of undefined number");
-
     return denom;
 }
 
@@ -472,9 +417,6 @@ double tsym::Number::toDouble() const
         return static_cast<double>(num);
     else if (isFrac())
         return static_cast<double>(num)/static_cast<double>(denom);
-
-    if (isUndefined())
-        TSYM_WARNING("Requesting double evaluation of undefined number");
 
     return dValue;
 }

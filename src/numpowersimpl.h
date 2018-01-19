@@ -35,6 +35,7 @@ namespace tsym {
             void setPreFac(const Number& fac);
             static void setMaxPrimeResolution(const Int& max);
 
+            bool isInputValid();
             const Number& getNewBase();
             const Number& getNewExp();
             const Number& getPreFactor();
@@ -45,8 +46,6 @@ namespace tsym {
             void computeAndSetFlag();
             void compute();
             void initFromOrig();
-            bool areOneOrMoreUndefined() const;
-            void setUndefined();
             void computeNonRational();
             void computeRational();
             void computeNegOrPosExp();

@@ -95,7 +95,7 @@ bool tsym::Symbol::sameType(const BasePtr& other) const
 
 tsym::Number tsym::Symbol::numericEval() const
 {
-    return Number::createUndefined();
+    throw std::logic_error("Symbol can't be numerically evaluated");
 }
 
 tsym::Fraction tsym::Symbol::normal(SymbolMap&) const

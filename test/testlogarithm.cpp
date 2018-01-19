@@ -213,7 +213,6 @@ TEST(Logarithm, invalidNumericEval)
 {
     const BasePtr arg = Product::create(two, a);
     const BasePtr log = Logarithm::create(arg);
-    const Number result = log->numericEval();
 
-    CHECK(result.isUndefined());
+    CHECK_THROWS(std::logic_error, log->numericEval());
 }

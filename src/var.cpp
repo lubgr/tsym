@@ -264,10 +264,18 @@ bool tsym::Var::isInteger() const
 
 int tsym::Var::toInt() const
 {
+    int result = 0;
+
     if (!isInteger())
         TSYM_ERROR("Requesting integer from %S", type());
 
-    return static_cast<int>(rep->numericEval().numerator());
+    try {
+        result = static_cast<int>(rep->numericEval().numerator());
+    } catch (const std::exception& e){
+        TSYM_ERROR("Conversion from %S to int failed: %s", *this, e.what());
+    }
+
+    return result;
 }
 
 double tsym::Var::toDouble() const

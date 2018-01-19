@@ -43,8 +43,7 @@ TEST_GROUP(NumPowerSimpl)
 
     bool isUndefined()
     {
-        return nps.getNewBase().isUndefined() && nps.getNewExp().isUndefined() &&
-            nps.getPreFactor().isUndefined();
+        return nps.isInputValid();
     }
 };
 
@@ -236,49 +235,6 @@ TEST(NumPowerSimpl, negativeDoubleBaseFracExpToUndefined)
     /* (-0.12345678)^(2/5) is undefined. */
 {
     nps.setPower(-0.12345678, Number(2, 5));
-
-    CHECK(isUndefined());
-}
-
-TEST(NumPowerSimpl, undefinedBase)
-{
-    Number base(1);
-
-    disableLog();
-    base /= 0;
-    enableLog();
-
-    nps.setPower(base, half);
-
-    CHECK(isUndefined());
-}
-
-TEST(NumPowerSimpl, undefinedExp)
-    /* If one component is undefined, all the others will be, too. */
-{
-    Number exp(1);
-
-    disableLog();
-    exp /= 0;
-    enableLog();
-
-    nps.setPower(13, exp);
-    nps.setPreFac(-5);
-
-    CHECK(isUndefined());
-}
-
-TEST(NumPowerSimpl, undefinedPreFactor)
-    /* Same as above. */
-{
-    Number preFac(1);
-
-    disableLog();
-    preFac /= 0;
-    enableLog();
-
-    nps.setPower(17, half);
-    nps.setPreFac(preFac);
 
     CHECK(isUndefined());
 }

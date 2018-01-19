@@ -49,7 +49,7 @@ TEST(Undefined, numericEvaluability)
 
 TEST(Undefined, numericEvaluation)
 {
-    CHECK(undefined->numericEval().isUndefined());
+    CHECK_THROWS(std::logic_error, undefined->numericEval());
 }
 
 TEST(Undefined, equalityOtherUndefined)

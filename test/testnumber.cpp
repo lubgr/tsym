@@ -57,16 +57,7 @@ TEST(Rational, negativeDenominator)
 
 TEST(Rational, zeroDenominator)
 {
-    disableLog();
-
-    try {
-        Number n(2, 0);
-        CHECK(false);
-    } catch (const std::overflow_error& error) {
-        CHECK(true);
-    }
-
-    enableLog();
+    CHECK_THROWS(std::overflow_error, Number(2, 0));
 }
 
 TEST(Rational, posDoubleToFraction)
@@ -265,20 +256,11 @@ TEST(NumberPower, baseMinusOne)
     res = base.toThe(2);
     CHECK_EQUAL(1, res);
 
-    res = base.toThe(-half);
-    CHECK(res.isUndefined());
-
-    res = base.toThe(half);
-    CHECK(res.isUndefined());
-
-    res = base.toThe(third);
-    CHECK(res.isUndefined());
-
-    res = base.toThe(Number(4, 3));
-    CHECK(res.isUndefined());
-
-    res = base.toThe(Number(3, 4));
-    CHECK(res.isUndefined());
+    CHECK_THROWS(std::overflow_error, base.toThe(-half));
+    CHECK_THROWS(std::overflow_error, base.toThe(half));
+    CHECK_THROWS(std::overflow_error, base.toThe(third));
+    CHECK_THROWS(std::overflow_error, base.toThe(Number(4, 3)));
+    CHECK_THROWS(std::overflow_error, base.toThe(Number(3, 4)));
 }
 
 TEST(NumberPower, baseZero)
@@ -326,19 +308,13 @@ TEST(NumberPower, invertNegativeFraction)
     CHECK_EQUAL(-2, res);
 }
 
-TEST(NumberPower, undefined)
+TEST(NumberPower, illegalPower)
 {
-    const Number zero;
-    Number result;
+    const Number zero(0);
 
     disableLog();
-    result = zero.toThe(-1);
+    CHECK_THROWS(std::overflow_error, zero.toThe(-1));
     enableLog();
-
-    CHECK(result.isUndefined());
-    CHECK_FALSE(result.isInt());
-    CHECK_FALSE(result.isDouble());
-    CHECK_FALSE(result.isFrac());
 }
 
 TEST(NumberPower, intExponent)
@@ -426,29 +402,20 @@ TEST(NumberPower, irrationalBaseFracRoot)
 }
 
 TEST(NumberPower, negBaseFractionExpOddDenominator)
-    /* (-4)^(2/3) is undefined. */
 {
-    Number res = Number(-4).toThe(Number(2, 3));
-
-    CHECK(res.isUndefined());
+    CHECK_THROWS(std::overflow_error, Number(-4).toThe(Number(2, 3)));
 }
 
 TEST(NumberPower, negBaseFractionExpEvenDenominator)
-    /* (-4/9)^(3/4) is undefined. */
 {
-    Number res = Number(-4, 9).toThe(Number(3, 4));
-
-    CHECK(res.isUndefined());
+    CHECK_THROWS(std::overflow_error, Number(-4, 9).toThe(Number(3, 4)));
 }
 
 TEST(NumberPower, negativeBaseFractionExp)
-    /* (-8)^(1/3) is undefined. */
 {
     Number res(-8);
 
-    res = res.toThe(Number(1, 3));
-
-    CHECK(res.isUndefined());
+    CHECK_THROWS(std::overflow_error, res.toThe(Number(1, 3)));
 }
 
 TEST(NumberPower, negativeBaseIntExp)
@@ -472,14 +439,10 @@ TEST(NumberPower, negativeBaseToPositive)
 }
 
 TEST(NumberPower, negativeBaseToUndefined)
-    /* (-13)^(-1/8) = Undefined. */
 {
     const Number exp(-1, 8);
-    Number res(-13);
 
-    res = res.toThe(exp);
-
-    CHECK(res.isUndefined());
+    CHECK_THROWS(std::overflow_error, Number(-13).toThe(exp));
 }
 
 TEST(NumberPower, positiveBaseToDouble)
@@ -493,13 +456,8 @@ TEST(NumberPower, positiveBaseToDouble)
 }
 
 TEST(NumberPower, negativeBaseDoubleExp)
-    /* (-2)^1.234567 = Undefined. */
 {
-    Number res(-2);
-
-    res = res.toThe(1.234567);
-
-    CHECK(res.isUndefined());
+    CHECK_THROWS(std::overflow_error, Number(-2).toThe(1.234567));
 }
 
 TEST(NumberPower, resolvableNumSquareRoot)
@@ -664,132 +622,6 @@ TEST(Double, positiveSign)
     const Number pos(9.87654321);
 
     CHECK_EQUAL(1, pos.sign());
-}
-
-TEST_GROUP(UndefinedNumber)
-{
-    const Number undefined = Number::createUndefined();
-};
-
-TEST(UndefinedNumber, typeRequests)
-{
-    CHECK(undefined.isUndefined());
-    CHECK_FALSE(undefined.isZero());
-    CHECK_FALSE(undefined.isOne());
-}
-
-TEST(UndefinedNumber, creationDivisionByZero)
-{
-    const Number zero;
-    const Number n(123);
-    Number res;
-
-    disableLog();
-
-    res = n/zero;
-    CHECK(res.isUndefined());
-
-    enableLog();
-}
-
-TEST(UndefinedNumber, sumWithValidNumber)
-{
-    const Number two(2);
-    Number res;
-
-    res = two + undefined;
-
-    CHECK(res.isUndefined());
-}
-
-TEST(UndefinedNumber, differenceWithValidNumber)
-{
-    const Number valid(2, 3);
-    Number res;
-
-    res = valid - undefined;
-
-    CHECK(res.isUndefined());
-}
-
-TEST(UndefinedNumber, productWithValidNumber)
-{
-    const Number four(4);
-    Number res;
-
-    res = four*undefined;
-
-    CHECK(res.isUndefined());
-}
-
-TEST(UndefinedNumber, powerWithValidExponent)
-{
-    const Number exp(1, 2);
-    const Number res = undefined.toThe(exp);
-
-    CHECK(res.isUndefined());
-}
-
-TEST(UndefinedNumber, powerWithValidBase)
-{
-    Number base(5, 2);
-
-    base = base.toThe(undefined);
-
-    CHECK(base.isUndefined());
-}
-
-TEST(UndefinedNumber, toDouble)
-{
-    double result;
-
-    disableLog();
-    result = undefined.toDouble();
-    enableLog();
-
-    DOUBLES_EQUAL(0.0, result, TOL);
-}
-
-TEST(UndefinedNumber, numeratorRequest)
-{
-    Int result;
-
-    disableLog();
-    result = undefined.numerator();
-    enableLog();
-
-    CHECK_EQUAL(0, result);
-}
-
-TEST(UndefinedNumber, demoniatorRequest)
-{
-    Int result;
-
-    disableLog();
-    result = undefined.denominator();
-    enableLog();
-
-    CHECK_EQUAL(1, result);
-}
-
-TEST(UndefinedNumber, comparisonBetweenUndefined)
-{
-    const Number u1(Number::createUndefined());
-    const Number u2(Number::createUndefined());
-
-    disableLog();
-
-    CHECK_FALSE(u1 == u2);
-    CHECK(u1 != u2);
-
-    CHECK_FALSE(u1 < u2);
-    CHECK_FALSE(u1 > u2);
-
-    /* Not intuitive but unavoidable: */
-    CHECK(u1 <= u2);
-    CHECK(u1 >= u2);
-
-    enableLog();
 }
 
 TEST_GROUP(Operators)

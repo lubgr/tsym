@@ -62,11 +62,6 @@ TEST(Printer, doubleNumber)
     CHECK_EQUAL("0.123456", print(0.123456));
 }
 
-TEST(Printer, undefinedNumber)
-{
-    CHECK_EQUAL("Undefined", print(Number::createUndefined()));
-}
-
 TEST(Printer, fractionNumber)
 {
     CHECK_EQUAL("2/33", print(Number(2, 33)));

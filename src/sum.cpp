@@ -66,13 +66,14 @@ bool tsym::Sum::sameType(const BasePtr& other) const
 }
 
 tsym::Number tsym::Sum::numericEval() const
-    /* If one of the summands returns an undefined Number on numericEval(), the result will be
-     * undefined, too. */
 {
     Number res(0);
 
     for (const auto& summand : ops)
-        res += summand->numericEval();
+        if (summand->isNumericallyEvaluable())
+            res += summand->numericEval();
+        else
+            throw std::logic_error("Sum isn't numerically evaluable");
 
     return res;
 }

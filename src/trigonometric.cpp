@@ -394,14 +394,9 @@ std::string tsym::Trigonometric::getStr(Type type)
 tsym::Number tsym::Trigonometric::numericEval() const
 {
     if (!isNumericallyEvaluable())
-        return Number::createUndefined();
-    else
-        return checkedNumericEval();
-}
+        throw std::logic_error("Trigonometric function can't be numerically evaluated");
 
-unsigned tsym::Trigonometric::complexity() const
-{
-    return 6 + ops.complexitySum();
+    return checkedNumericEval();
 }
 
 tsym::Number tsym::Trigonometric::checkedNumericEval() const
@@ -528,4 +523,9 @@ bool tsym::Trigonometric::isNegative() const
         return arg1->isNegative();
     else
         return isNumericallyEvaluable() ? numericEval() < 0 : false;
+}
+
+unsigned tsym::Trigonometric::complexity() const
+{
+    return 6 + ops.complexitySum();
 }

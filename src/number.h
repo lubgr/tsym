@@ -17,7 +17,6 @@ namespace tsym {
             Number(int numerator, int denominator);
             explicit Number(Int value);
             Number(Int numerator, Int denominator);
-            static Number createUndefined();
 
             Number& operator += (const Number& rhs);
             Number& operator -= (const Number& rhs);
@@ -37,7 +36,6 @@ namespace tsym {
             bool isFrac() const;
             bool isRational() const;
             bool isDouble() const;
-            bool isUndefined() const;
 
             /* Returns the numerator of a fraction or the value of an integer. */
             const Int& numerator() const;
@@ -51,11 +49,9 @@ namespace tsym {
         private:
             void setAndSimplify(Int&& num, Int&& denom, double dValue);
             void set(Int&& num, Int&& denom, double dValue);
-            void setUndefined();
             void simplify();
             void tryDoubleToFraction();
             void cancel();
-            bool isThisOrOtherUndefined(const Number& other) const;
             bool isThisOrOtherDouble(const Number& other) const;
             void addRational(const Number& other);
             Number flipSign() const;
@@ -74,7 +70,6 @@ namespace tsym {
             Int num { 0 };
             Int denom { 1 };
             double dValue { 0.0 };
-            bool undefined = false;
             static constexpr double ZERO_TOL = std::numeric_limits<double>::epsilon();
             static constexpr double TOL = 100.0*ZERO_TOL;
 

@@ -687,11 +687,8 @@ TEST(Power, multiplyNumericExpToDouble)
 TEST(Power, wrongDoubleEvaluationRequest)
 {
     const BasePtr pow = Power::create(a, two);
-    Number result;
 
-    result = pow->numericEval();
-
-    CHECK(result.isUndefined());
+    CHECK_THROWS(std::logic_error, pow->numericEval());
 }
 
 TEST(Power, multiplyExponentsByCreation)

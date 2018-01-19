@@ -35,6 +35,11 @@ void tsym::NumPowerSimpl::setMaxPrimeResolution(const Int& max)
     primeFacLimit() = max;
 }
 
+bool tsym::NumPowerSimpl::isInputValid()
+{
+    return !(newBase < 0 && !newExp.isInt());
+}
+
 const tsym::Number& tsym::NumPowerSimpl::getNewBase()
 {
     return get(newBase);
@@ -69,10 +74,8 @@ void tsym::NumPowerSimpl::compute()
 {
     initFromOrig();
 
-    if (areOneOrMoreUndefined())
-        setUndefined();
-    else if (newBase < 0 && !newExp.isInt())
-        setUndefined();
+    if (!isInputValid())
+        TSYM_ERROR("Illegal numeric power with base: %S and exponent %S", newBase, newExp);
     else if (newBase.isDouble() || newExp.isDouble())
         computeNonRational();
     else
@@ -85,22 +88,6 @@ void tsym::NumPowerSimpl::initFromOrig()
     newExp = origExp;
     preFac = origPreFac;
     isPreFacNegative = false;
-}
-
-bool tsym::NumPowerSimpl::areOneOrMoreUndefined() const
-{
-    for (const auto& number : { newBase, newExp, preFac })
-        if (number.isUndefined())
-            return true;
-
-    return false;
-}
-
-void tsym::NumPowerSimpl::setUndefined()
-{
-    newBase = Number::createUndefined();
-    newExp = newBase;
-    preFac = newBase;
 }
 
 void tsym::NumPowerSimpl::computeNonRational()

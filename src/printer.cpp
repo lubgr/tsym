@@ -276,8 +276,6 @@ template<class Engine> void tsym::printer::print(Engine& engine, const Number& n
 {
     if (number.isDouble())
         engine.number(number.toDouble());
-    else if (number.isUndefined())
-        engine.undefined();
     else if (number.isInt())
         engine.number(number.numerator());
     else {
