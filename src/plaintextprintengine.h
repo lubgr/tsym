@@ -1,9 +1,7 @@
 #ifndef TSYM_PLAINTEXTPRINTENGINE_H
 #define TSYM_PLAINTEXTPRINTENGINE_H
 
-#include <ostream>
-#include <functional>
-#include "baseptr.h"
+#include "printengine.h"
 #include "int.h"
 
 namespace tsym {
@@ -11,7 +9,7 @@ namespace tsym {
 }
 
 namespace tsym {
-    class PlaintextPrintEngine {
+    class PlaintextPrintEngine : public PrintEngine<PlaintextPrintEngine> {
         public:
             enum class CharSet { ASCII, UNICODE };
 
@@ -20,9 +18,6 @@ namespace tsym {
             PlaintextPrintEngine& operator = (const PlaintextPrintEngine& rhs) = delete;
             PlaintextPrintEngine(PlaintextPrintEngine&& other) = default;
             PlaintextPrintEngine& operator = (PlaintextPrintEngine&& rhs) = default;
-
-            void registerToplevelPrintFunction(std::function<void(PlaintextPrintEngine&, const BasePtr&)> function);
-            PlaintextPrintEngine& invokePrint(const BasePtr& ptr);
 
             PlaintextPrintEngine& symbol(const Name& name);
             PlaintextPrintEngine& positiveSymbol(const Name& name);
@@ -55,9 +50,7 @@ namespace tsym {
             PlaintextPrintEngine& closeParentheses();
 
         private:
-            std::ostream& out;
             const CharSet charset;
-            std::function<void(PlaintextPrintEngine&, const BasePtr&)> printFunction;
     };
 }
 

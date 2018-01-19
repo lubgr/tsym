@@ -5,24 +5,9 @@
 #include "int.h"
 
 tsym::PlaintextPrintEngine::PlaintextPrintEngine(std::ostream& out, CharSet charset) :
-    out(out),
+    PrintEngine<PlaintextPrintEngine>(out),
     charset(charset)
 {}
-
-void tsym::PlaintextPrintEngine::registerToplevelPrintFunction(std::function<void(PlaintextPrintEngine&, const BasePtr&)> function)
-{
-    printFunction = function;
-}
-
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::invokePrint(const BasePtr& ptr)
-{
-    if (printFunction)
-        printFunction(*this, ptr);
-    else
-        TSYM_ERROR("No toplevel print function registered");
-
-    return *this;
-}
 
 tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::symbol(const Name& name)
 {
