@@ -15,30 +15,32 @@ if len(searchPath) > 0:
 else:
     gdb.write('Couldn\'t find path to include libstd++ pretty printers\n')
 
+def extractStrData(string):
+    return string
+
 class NumberPrinter:
     def __init__(self, val):
         self.val = val
 
     def to_string(self):
         prettyStr = self.val['prettyStr']
-        return prettyStr
+        return extractStrData(prettyStr)
 
 class BasePtrPrinter:
     def __init__(self, val):
         self.val = val
 
     def to_string(self):
-        rep = self.val['bp']
-        prettyStr = rep['prettyStr']
-        return prettyStr
+        prettyStr = self.val['_M_ptr']['prettyStr']
+        return extractStrData(prettyStr)
 
 class VarPrinter:
     def __init__(self, val):
         self.val = val
 
     def to_string(self):
-        prettyStr = self.val['rep']['bp']['prettyStr']
-        return prettyStr
+        prettyStr = self.val['rep']['_M_ptr']['prettyStr']
+        return extractStrData(prettyStr)
 
 def lookupVariations(base):
     base = 'tsym::' + base
