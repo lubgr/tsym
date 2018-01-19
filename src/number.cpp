@@ -9,9 +9,6 @@
 #include "plaintextprintengine.h"
 #include "logging.h"
 
-const double tsym::Number::ZERO_TOL = std::numeric_limits<double>::epsilon();
-const double tsym::Number::TOL = 100.0*ZERO_TOL;
-
 tsym::Number::Number(int value) :
     Number(value, 1)
 {}

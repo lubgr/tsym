@@ -75,8 +75,8 @@ namespace tsym {
             Int denom { 1 };
             double dValue { 0.0 };
             bool undefined = false;
-            static const double TOL;
-            static const double ZERO_TOL;
+            static constexpr double ZERO_TOL = std::numeric_limits<double>::epsilon();
+            static constexpr double TOL = 100.0*ZERO_TOL;
 
 #ifdef TSYM_WITH_DEBUG_STRINGS
             /* A member to be accessed by a gdb pretty printing plugin. */
