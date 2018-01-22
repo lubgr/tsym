@@ -22,7 +22,7 @@ tsym::BasePtr tsym::Base::instantiate(std::function<const Base*()>&& create)
         return instance;
     } catch (const std::bad_alloc& e) {
         TSYM_CRITICAL("Couldn't allocate Base subclass");
-        throw e;
+        throw;
     }
 
     return {};
