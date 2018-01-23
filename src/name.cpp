@@ -67,7 +67,7 @@ bool tsym::Name::isGreekLetter() const
     if (name.length() <= 1)
         return false;
     else
-        return greekAlphabetIndex() != (size_t) -1;
+        return greekAlphabetIndex() != static_cast<size_t>(-1);
 }
 
 size_t tsym::Name::greekAlphabetIndex() const
@@ -80,10 +80,10 @@ size_t tsym::Name::greekAlphabetIndex() const
     for (size_t i = 0; i < nLetters; ++i)
         if (name.substr(1).compare(alphabet[i].substr(1)) != 0)
             continue;
-        else if (alphabet[i][0] == name[0] || alphabet[i][0] == (char)tolower(name[0]))
+        else if (alphabet[i][0] == name[0] || alphabet[i][0] == static_cast<char>(tolower(name[0])))
             return i;
 
-    return (size_t) -1;
+    return static_cast<size_t>(-1);
 }
 
 std::string tsym::Name::unicodeForGreekLetter() const
