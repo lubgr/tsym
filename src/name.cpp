@@ -29,11 +29,6 @@ tsym::Name::Name(const std::string& name, const std::string& subscript,
         plainText.append("_").append(superscript);
 }
 
-tsym::Name::Name(unsigned n) :
-    plainText("[tmp]"),
-    numeric(n)
-{}
-
 const std::string& tsym::Name::getName() const
 {
     return name;
@@ -142,34 +137,12 @@ std::string tsym::Name::texAppendix(const std::string& term, const std::string& 
 
 bool tsym::Name::equal(const Name& rhs) const
 {
-    if (numeric != 0 && rhs.numeric != 0)
-        return numeric == rhs.numeric;
-    else if (numeric != 0 || rhs.numeric != 0)
-        return false;
-    else
-        return plainText == rhs.plainText;
+    return plainText == rhs.plainText;
 }
 
 bool tsym::Name::lessThan(const Name& rhs) const
 {
-    if (numeric != 0 && rhs.numeric != 0)
-        return numeric < rhs.numeric;
-    else if (numeric != 0)
-        return true;
-    else if (rhs.numeric != 0)
-        return false;
-    else
-        return plainText < rhs.plainText;
-}
-
-bool tsym::Name::isNumericId() const
-{
-    return numeric != 0;
-}
-
-unsigned tsym::Name::getNumericId() const
-{
-    return numeric;
+    return plainText < rhs.plainText;
 }
 
 bool tsym::operator == (const Name& lhs, const Name& rhs)
@@ -209,6 +182,5 @@ std::ostream& tsym::operator << (std::ostream& stream, const Name& name)
 
 size_t std::hash<tsym::Name>::operator () (const tsym::Name& name) const
 {
-    return std::hash<std::string>{}(name.plain()) ^
-        (std::hash<unsigned>{}(name.getNumericId()) << 1);
+    return std::hash<std::string>{}(name.plain());
 }

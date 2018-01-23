@@ -106,27 +106,17 @@ TEST(Name, comparisonOperators)
 
 TEST(Name, twoNumeric)
 {
-    const Name n1(1);
-    const Name n2(2);
+    const Name n1("1");
+    const Name n2("2");
 
     CHECK_EQUAL(n1, n1);
     CHECK(n1 < n2);
     CHECK_FALSE((n2 < n1));
 }
 
-TEST(Name, accessNumericId)
+TEST(Name, accessNumericName)
 {
-    const Name name(123);
+    const Name name("123");
 
-    CHECK_EQUAL(123, name.getNumericId());
-}
-
-TEST(Name, oneNumericOneTextual)
-{
-    const Name textual("100");
-    const Name n1(100);
-
-    CHECK_FALSE(n1 == textual);
-    CHECK(n1 < textual);
-    CHECK_FALSE(textual < n1);
+    CHECK_EQUAL("123", name.plain());
 }

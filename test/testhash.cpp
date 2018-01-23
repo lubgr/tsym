@@ -47,7 +47,7 @@ TEST(Hash, name)
 {
     const size_t textualHash = std::hash<Name>{}(Name("a", "b", "c"));
     const size_t shortTextualHash = std::hash<Name>{}(Name("a"));
-    const size_t numericHash = std::hash<Name>{}(Name(123));
+    const size_t numericHash = std::hash<Name>{}(Name("123"));
 
     CHECK(textualHash != numericHash);
     CHECK(textualHash != shortTextualHash);

@@ -3,6 +3,7 @@
 #include "symbol.h"
 #include "cache.h"
 #include "numeric.h"
+#include "logging.h"
 
 unsigned tsym::Symbol::tmpCounter = 0;
 
@@ -14,7 +15,7 @@ tsym::Symbol::Symbol(const Name& name, bool positive) :
 }
 
 tsym::Symbol::Symbol(unsigned tmpId, bool positive) :
-    symbolName(tmpId),
+    symbolName(std::string(tmpSymbolNamePrefix) + std::to_string(tmpId)),
     positive(positive)
 {
     setDebugString();
@@ -22,7 +23,7 @@ tsym::Symbol::Symbol(unsigned tmpId, bool positive) :
 
 tsym::Symbol::~Symbol()
 {
-    if (symbolName.isNumericId())
+    if (symbolName.getName().find(tmpSymbolNamePrefix) == 0)
         --tmpCounter;
 }
 
@@ -38,8 +39,14 @@ tsym::BasePtr tsym::Symbol::create(const Name& name)
 
 tsym::BasePtr tsym::Symbol::create(const Name& name, bool positive)
 {
-    if (name.getName().empty())
+    if (name.getName().empty()) {
+        TSYM_ERROR("Creating Symbol with empty name, return Undefined instead");
         return Undefined::create();
+    } else if (name.getName().find(tmpSymbolNamePrefix) == 0) {
+        TSYM_ERROR("");
+        return createTmpSymbol(positive);
+    }
+
     return createNonEmptyName(name, positive);
 }
 

@@ -32,7 +32,21 @@ TEST(Symbol, typeString)
 
 TEST(Symbol, emptyName)
 {
+    disableLog();
     const BasePtr undefined = Symbol::create("");
+    enableLog();
 
     CHECK(undefined->isUndefined());
+}
+
+TEST(Symbol, nameReservedForTemporaries)
+{
+    const Name name("tmp#99999999999");
+
+    disableLog();
+    const BasePtr tmp = Symbol::create(name);
+    enableLog();
+
+    CHECK(tmp->isSymbol());
+    CHECK_FALSE(tmp->name() == name);
 }
