@@ -321,10 +321,9 @@ int tsym::minDegreeOfSum(const BasePtr& sum, const tsym::BasePtr& variable)
 {
     auto it(sum->operands().begin());
     int result = poly::minDegree(*it, variable);
-    int minDeg;
 
     while (++it != sum->operands().end()) {
-        minDeg = poly::minDegree(*it, variable);
+        int minDeg = poly::minDegree(*it, variable);
         if (minDeg < result)
             result = minDeg;
     }

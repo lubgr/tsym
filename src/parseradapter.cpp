@@ -277,8 +277,6 @@ void tsym_parserAdapter_deletePtr(void *ptr)
     BasePtr *casted(reinterpret_cast<BasePtr*>(ptr));
 
     delete casted;
-
-    ptr = nullptr;
 }
 
 void tsym_parserAdapter_logParsingError(const char *message, char *yytext)

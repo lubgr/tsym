@@ -9,11 +9,11 @@
 namespace tsym {
     template<class Engine> class PrintEngine {
         public:
-            PrintEngine(std::ostream& stream) : out(stream) {}
+            explicit PrintEngine(std::ostream& stream) : out(stream) {}
 
             void registerToplevelPrintFunction(std::function<void(Engine&, const BasePtr&)> function)
             {
-                printFunction = function;
+                printFunction = std::move(function);
             }
 
             Engine& invokePrint(const BasePtr& ptr)

@@ -21,7 +21,7 @@ class TestSuiteLogger : public tsym::Logger {
     private:
         void open(std::FILE **fp, const char *filename);
         void log(const Logger::Message& msg,
-                const std::vector<std::FILE*> filePointer) const;
+                const std::vector<std::FILE*>& filePointer) const;
 
         static std::FILE *debugFp;
         static std::FILE *infoFp;

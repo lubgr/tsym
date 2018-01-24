@@ -29,7 +29,7 @@ void tsym::Logger::critical(const Message& msg) const
 
 void tsym::Logger::setInstance(std::shared_ptr<const Logger> logger)
 {
-    instance = logger;
+    instance = std::move(logger);
 }
 
 const std::shared_ptr<const tsym::Logger>& tsym::Logger::getInstance()

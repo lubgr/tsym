@@ -7,7 +7,7 @@ namespace sgfy {
         /* Wrapper class to be forward declared and moved to a compilation unit to eliminate the
          * need for the inclusion of the regex header (see comment below). */
         public:
-            Match(const std::string& fmt)
+            explicit Match(const std::string& fmt)
             {
                 static const std::regex fmtPattern(
                         "%"

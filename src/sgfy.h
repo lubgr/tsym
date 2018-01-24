@@ -36,6 +36,10 @@ namespace sgfy {
         public:
             ArgProcessor(std::ostream& stream, const std::string& fmt);
             ~ArgProcessor();
+            ArgProcessor(const ArgProcessor&) = delete;
+            ArgProcessor& operator = (const ArgProcessor&) = delete;
+            ArgProcessor(ArgProcessor&&) = delete;
+            ArgProcessor& operator = (ArgProcessor&&) = delete;
 
             template<class T> void nextArg(const T& arg)
             {
@@ -89,7 +93,7 @@ namespace sgfy {
             void storeVariableFieldWidth(const int& width);
             void nextMatchOrFinalize();
 
-            int asterisksWidth[2];
+            int asterisksWidth[2] = { 0, 0 };
             short unsigned nStoredAsterisks;
             Match *match;
             std::ostream& stream;

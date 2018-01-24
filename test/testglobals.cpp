@@ -115,10 +115,11 @@ TEST(Globals, logOfPower)
 
 TEST(Globals, logOfZero)
 {
+    const Var zero(0);
     Var result;
 
     disableLog();
-    result = tsym::log(0);
+    result = tsym::log(zero);
     enableLog();
 
     CHECK_EQUAL(Var::Type::UNDEFINED, result.type());

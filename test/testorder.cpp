@@ -14,7 +14,6 @@ using namespace tsym;
 
 TEST_GROUP(Order)
 {
-    const BasePtr& half = Numeric::half();
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr sqrtThree = Power::sqrt(three);
     const BasePtr pi = Constant::createPi();
@@ -95,7 +94,7 @@ TEST(Order, twoNumericsFrac)
 {
     const BasePtr twoThird = Numeric::create(2, 3);
 
-    CHECK(order::doPermute(twoThird, half));
+    CHECK(order::doPermute(twoThird, Numeric::half()));
 }
 
 TEST(Order, twoNumericsDouble)
@@ -223,8 +222,8 @@ TEST(Order, sumAndSymbol)
 TEST(Order, powerAndSum)
     /* Switch (1/2 + b) and (1/2 + a)^2. */
 {
-    const BasePtr sum1 = Sum::create(half, a);
-    const BasePtr sum2 = Sum::create(half, b);
+    const BasePtr sum1 = Sum::create(Numeric::half(), a);
+    const BasePtr sum2 = Sum::create(Numeric::half(), b);
     const BasePtr pow = Power::create(sum1, two);
 
     CHECK(order::doPermute(sum2, pow));
@@ -269,7 +268,7 @@ TEST(Order, constSumAndConstPower)
 
 TEST(Order, constantAndSmallerNumeric)
 {
-    CHECK(order::doPermute(pi, half));
+    CHECK(order::doPermute(pi, Numeric::half()));
 }
 
 TEST(Order, constantAndGreaterNumeric)

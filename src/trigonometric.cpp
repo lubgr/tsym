@@ -193,8 +193,6 @@ tsym::BasePtr tsym::Trigonometric::createFromTrigo(Type type, const BasePtr& arg
     const Trigonometric *other(tryCast(arg));
     const Type otherType = other->type;
 
-    assert(other != nullptr);
-
     if (isOtherTheInverse(type, otherType))
         return other->arg1;
     else if (isTanOfAtan2(type, otherType))

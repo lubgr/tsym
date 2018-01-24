@@ -249,13 +249,12 @@ int tsym::Sum::degree(const tsym::BasePtr& variable) const
 {
     auto it = ops.begin();
     int maxDegree;
-    int deg;
 
     if (isEqual(variable))
         return 1;
 
     for (maxDegree = (*it)->degree(variable), ++it; it != ops.end(); ++it) {
-        deg = (*it)->degree(variable);
+        int deg = (*it)->degree(variable);
         if (deg > maxDegree)
             maxDegree = deg;
     }

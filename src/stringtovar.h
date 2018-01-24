@@ -28,7 +28,7 @@ namespace tsym {
          * This might in many cases be not very accurate, but provides a simple procedure for wrong
          * input.  */
         public:
-            StringToVar(const std::string& source);
+            explicit StringToVar(const std::string& source);
             StringToVar(const StringToVar& other) = delete;
             StringToVar& operator = (const StringToVar& rhs) = delete;
 

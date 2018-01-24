@@ -48,7 +48,6 @@ tsym::Matrix::Matrix(std::initializer_list<std::initializer_list<Var>> data) :
 {
     size_t columnCount = data.begin()->size();
     size_t i = 0;
-    size_t j = 0;
 
     for (const auto& row : data) {
         if (columnCount != row.size()) {
@@ -62,7 +61,7 @@ tsym::Matrix::Matrix(std::initializer_list<std::initializer_list<Var>> data) :
     allocateMem();
 
     for (const auto& row : data) {
-        j = 0;
+        size_t j = 0;
         for (const auto& item : row)
             (this->data)[i][j++] = item;
         ++i;
@@ -343,7 +342,6 @@ unsigned tsym::Matrix::partialPivotByLeastComplexity(Vector *b)
     std::vector<std::vector<size_t>> pivotIndices(nRow);
     Vector *rhsCopy = b == nullptr ? nullptr : new Vector(*b);
     Matrix coefficientCopy(*this);
-    size_t targetLine = 0;
 
     collectAndSort(pivotIndices);
     selectPivots(pivotIndices);
@@ -351,7 +349,7 @@ unsigned tsym::Matrix::partialPivotByLeastComplexity(Vector *b)
     for (size_t i = 0; i < nRow; ++i) {
         assert(pivotIndices[i].size() == 1);
 
-        targetLine = pivotIndices[i][0];
+        size_t targetLine = pivotIndices[i][0];
 
         for (size_t j = 0; j < nCol; ++j)
             data[targetLine][j] = coefficientCopy.data[i][j];

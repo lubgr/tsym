@@ -9,8 +9,6 @@ using namespace tsym;
 
 TEST_GROUP(Int)
 {
-    const long maxLong = std::numeric_limits<long>::max();
-    const int maxInt = std::numeric_limits<int>::max();
     const Int zero;
 };
 
@@ -96,6 +94,8 @@ TEST(Int, largeLcm)
 
 TEST(Int, constructFromMaxLong)
 {
+    const long maxLong = std::numeric_limits<long>::max();
+
     Int n(maxLong);
 
     CHECK_EQUAL(maxLong, n);

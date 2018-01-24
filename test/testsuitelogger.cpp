@@ -31,7 +31,7 @@ void TestSuiteLogger::open(std::FILE **fp, const char *filename)
 }
 
 void TestSuiteLogger::log(const Logger::Message& msg,
-        const std::vector<std::FILE*> filePointer) const
+        const std::vector<std::FILE*>& filePointer) const
 {
     for (auto&& fp : filePointer)
         std::fprintf(fp, "%s +%d: %s\n", msg.file.c_str(), msg.line, msg.payload.c_str());

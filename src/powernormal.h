@@ -12,7 +12,7 @@ namespace tsym {
          * (in most cases, this includes a replacement of the Power by temporary symbols, handled in
          * the SymbolMap). */
         public:
-            PowerNormal(SymbolMap& map);
+            explicit PowerNormal(SymbolMap& map);
 
             void setBase(const BasePtr& base);
             void setExponent(const BasePtr& exp);
