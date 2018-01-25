@@ -2,7 +2,6 @@
 #include "plaintextprintengine.h"
 #include "name.h"
 #include "logging.h"
-#include "int.h"
 
 tsym::PlaintextPrintEngine::PlaintextPrintEngine(std::ostream& out, CharSet charset) :
     PrintEngine<PlaintextPrintEngine>(out),

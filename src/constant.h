@@ -2,6 +2,7 @@
 #define TSYM_CONSTANT_H
 
 #include "base.h"
+#include "name.h"
 
 namespace tsym {
     class Constant : public Base {

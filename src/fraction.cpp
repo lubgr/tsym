@@ -1,6 +1,7 @@
 
 #include "fraction.h"
 #include "numeric.h"
+#include "undefined.h"
 #include "product.h"
 #include "power.h"
 #include "poly.h"

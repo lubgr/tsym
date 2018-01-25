@@ -3,6 +3,7 @@
 #include "poly.h"
 #include "sum.h"
 #include "power.h"
+#include "numeric.h"
 #include "product.h"
 #include "trigonometric.h"
 #include "tsymtests.h"

@@ -3,6 +3,7 @@
 
 #include <string>
 #include "base.h"
+#include "name.h"
 
 namespace tsym {
     class Symbol : public Base {

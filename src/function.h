@@ -2,6 +2,7 @@
 #define TSYM_FUNCTION_H
 
 #include "base.h"
+#include "name.h"
 
 namespace tsym {
     class Function : public Base {

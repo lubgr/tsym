@@ -1,8 +1,13 @@
 #ifndef TSYM_GCDSTRATEGY_H
 #define TSYM_GCDSTRATEGY_H
 
-#include "baseptrlist.h"
-#include "number.h"
+#include "baseptr.h"
+#include "int.h"
+
+namespace tsym {
+    class BasePtrList;
+    class Number;
+}
 
 namespace tsym {
     class GcdStrategy {

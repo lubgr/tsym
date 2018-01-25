@@ -3,6 +3,7 @@
 #include "poly.h"
 #include "power.h"
 #include "product.h"
+#include "undefined.h"
 #include "numeric.h"
 #include "sum.h"
 #include "logging.h"

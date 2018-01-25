@@ -3,6 +3,7 @@
 #include "productsimpl.h"
 #include "product.h"
 #include "numeric.h"
+#include "number.h"
 #include "power.h"
 #include "sum.h"
 #include "order.h"

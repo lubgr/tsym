@@ -4,6 +4,7 @@
 #include "powernormal.h"
 #include "constant.h"
 #include "power.h"
+#include "symbolmap.h"
 #include "sum.h"
 #include "product.h"
 #include "trigonometric.h"

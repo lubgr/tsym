@@ -1,13 +1,14 @@
 
 #include <cassert>
 #include "polyinfo.h"
-#include "baseptrlist.h"
 #include "power.h"
 #include "product.h"
 #include "sum.h"
 #include "undefined.h"
 #include "order.h"
 #include "logging.h"
+#include "number.h"
+#include "name.h"
 #include "poly.h"
 
 namespace tsym {

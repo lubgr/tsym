@@ -4,6 +4,7 @@
 #include "sum.h"
 #include "product.h"
 #include "order.h"
+#include "name.h"
 #include "numeric.h"
 #include "logging.h"
 

@@ -4,10 +4,12 @@
 #include "trigonometric.h"
 #include "product.h"
 #include "power.h"
+#include "undefined.h"
 #include "sum.h"
 #include "numeric.h"
 #include "logging.h"
 #include "constant.h"
+#include "fraction.h"
 #include "numtrigosimpl.h"
 #include "symbolmap.h"
 

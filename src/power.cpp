@@ -3,6 +3,7 @@
 #include <cmath>
 #include <limits>
 #include "power.h"
+#include "undefined.h"
 #include "numeric.h"
 #include "powersimpl.h"
 #include "logging.h"

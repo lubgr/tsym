@@ -2,6 +2,9 @@
 #include <cmath>
 #include "number.h"
 #include "globals.h"
+#include "var.h"
+#include "matrix.h"
+#include "vector.h"
 #include "tsymtests.h"
 
 using namespace tsym;

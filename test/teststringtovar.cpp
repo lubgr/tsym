@@ -2,7 +2,6 @@
 #include <cassert>
 #include <limits>
 #include "stringtovar.h"
-#include "globals.h"
 #include "sum.h"
 #include "product.h"
 #include "undefined.h"

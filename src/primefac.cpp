@@ -2,6 +2,7 @@
 #include <cmath>
 #include <algorithm>
 #include "primefac.h"
+#include "number.h"
 #include "logging.h"
 
 tsym::PrimeFac::PrimeFac(const Number& n)

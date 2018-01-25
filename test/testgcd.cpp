@@ -5,6 +5,8 @@
 #include "power.h"
 #include "primitivegcd.h"
 #include "subresultantgcd.h"
+#include "undefined.h"
+#include "numeric.h"
 #include "poly.h"
 #include "logging.h"
 #include "tsymtests.h"

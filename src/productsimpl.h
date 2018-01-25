@@ -1,10 +1,14 @@
 #ifndef TSYM_PRODUCTSIMPL_H
 #define TSYM_PRODUCTSIMPL_H
 
+#include "int.h"
 #include "baseptr.h"
-#include "baseptrlist.h"
-#include "number.h"
 #include "trigonometric.h"
+
+namespace tsym {
+    class Number;
+    class BasePtrList;
+}
 
 namespace tsym {
     /* Automatic simplification of a product of a number of factors according to Cohen, Computer

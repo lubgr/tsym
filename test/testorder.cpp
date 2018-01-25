@@ -5,6 +5,7 @@
 #include "numeric.h"
 #include "constant.h"
 #include "sum.h"
+#include "undefined.h"
 #include "power.h"
 #include "product.h"
 #include "trigonometric.h"

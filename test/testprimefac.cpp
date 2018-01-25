@@ -1,6 +1,7 @@
 
 #include "primefac.h"
 #include "tsymtests.h"
+#include "number.h"
 
 using namespace tsym;
 

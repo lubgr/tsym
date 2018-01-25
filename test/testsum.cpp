@@ -5,6 +5,7 @@
 #include "sum.h"
 #include "product.h"
 #include "symbol.h"
+#include "undefined.h"
 #include "numeric.h"
 #include "power.h"
 #include "constant.h"

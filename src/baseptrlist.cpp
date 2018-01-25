@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "baseptrlist.h"
 #include "numeric.h"
+#include "undefined.h"
 #include "product.h"
 #include "sum.h"
 #include "printer.h"

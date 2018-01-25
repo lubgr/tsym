@@ -2,6 +2,7 @@
 #include "abc.h"
 #include "product.h"
 #include "sum.h"
+#include "undefined.h"
 #include "constant.h"
 #include "power.h"
 #include "trigonometric.h"

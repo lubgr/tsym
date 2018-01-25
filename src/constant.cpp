@@ -2,6 +2,7 @@
 #include <cmath>
 #include "constant.h"
 #include "symbolmap.h"
+#include "fraction.h"
 #include "numeric.h"
 
 tsym::Constant::Constant(Type type, Name&& name) :

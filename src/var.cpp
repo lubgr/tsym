@@ -7,6 +7,7 @@
 #include "symbol.h"
 #include "numeric.h"
 #include "sum.h"
+#include "undefined.h"
 #include "product.h"
 #include "power.h"
 #include "printer.h"

@@ -2,6 +2,7 @@
 #include <sstream>
 #include "number.h"
 #include "vector.h"
+#include "var.h"
 #include "tsymtests.h"
 
 using namespace tsym;

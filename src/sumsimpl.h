@@ -1,7 +1,9 @@
 #ifndef TSYM_SUMSIMPL_H
 #define TSYM_SUMSIMPL_H
 
-#include "baseptrlist.h"
+#include "baseptr.h"
+
+namespace tsym { class BasePtrList; }
 
 namespace tsym {
     class SumSimpl {

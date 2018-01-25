@@ -2,6 +2,7 @@
 #include <cmath>
 #include "abc.h"
 #include "constant.h"
+#include "number.h"
 #include "tsymtests.h"
 
 using namespace tsym;

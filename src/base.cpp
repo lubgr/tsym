@@ -2,10 +2,12 @@
 #include <sstream>
 #include "base.h"
 #include "baseptr.h"
-#include "baseptrlist.h"
 #include "numeric.h"
 #include "symbolmap.h"
 #include "product.h"
+#include "name.h"
+#include "undefined.h"
+#include "fraction.h"
 #include "cache.h"
 #include "plaintextprintengine.h"
 #include "printer.h"

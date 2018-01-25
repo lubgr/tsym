@@ -2,6 +2,8 @@
 #include "abc.h"
 #include "baseptr.h"
 #include "sum.h"
+#include "undefined.h"
+#include "numeric.h"
 #include "constant.h"
 #include "trigonometric.h"
 #include "logarithm.h"

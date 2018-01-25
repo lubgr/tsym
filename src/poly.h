@@ -2,9 +2,11 @@
 #define TSYM_POLY_H
 
 #include "baseptr.h"
-#include "baseptrlist.h"
 
-namespace tsym { class GcdStrategy; }
+namespace tsym {
+    class GcdStrategy;
+    class BasePtrList;
+}
 
 namespace tsym {
     /* Functions for multivariate polynomial terms with rational number coefficients, symbolic

@@ -4,6 +4,8 @@
 #include "product.h"
 #include "sum.h"
 #include "constant.h"
+#include "numeric.h"
+#include "symbol.h"
 #include "power.h"
 #include "trigonometric.h"
 #include "logarithm.h"

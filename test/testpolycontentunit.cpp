@@ -2,7 +2,9 @@
 #include "abc.h"
 #include "poly.h"
 #include "product.h"
+#include "undefined.h"
 #include "power.h"
+#include "numeric.h"
 #include "sum.h"
 #include "tsymtests.h"
 

@@ -1,5 +1,7 @@
 
 #include "abc.h"
+#include "symbol.h"
+#include "numeric.h"
 
 const tsym::BasePtr a(tsym::Symbol::create("a"));
 const tsym::BasePtr b(tsym::Symbol::create("b"));

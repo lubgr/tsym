@@ -1,5 +1,7 @@
 
 #include "powernormal.h"
+#include "undefined.h"
+#include "symbolmap.h"
 #include "power.h"
 #include "product.h"
 

@@ -1,9 +1,13 @@
 #ifndef TSYM_FUNCTIONS_H
 #define TSYM_FUNCTIONS_H
 
-#include "var.h"
-#include "vector.h"
-#include "matrix.h"
+#include <string>
+
+namespace tsym {
+    class Var;
+    class Vector;
+    class Matrix;
+}
 
 namespace tsym {
     /* Functions and constants central, that they are allowed to pollute the global tsym namespace,

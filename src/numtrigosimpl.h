@@ -3,8 +3,9 @@
 
 #include <vector>
 #include <unordered_map>
-#include "constant.h"
 #include "trigonometric.h"
+#include "constant.h"
+#include "number.h"
 
 namespace tsym {
     /* Simplification class for trigonometric functions with arguments, that can be evaluated to a

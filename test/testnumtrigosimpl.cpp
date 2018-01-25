@@ -2,8 +2,10 @@
 #include <cmath>
 #include "abc.h"
 #include "numtrigosimpl.h"
+#include "undefined.h"
 #include "power.h"
 #include "constant.h"
+#include "numeric.h"
 #include "sum.h"
 #include "product.h"
 #include "tsymtests.h"

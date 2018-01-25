@@ -1,6 +1,8 @@
 
 #include <sstream>
 #include "symbol.h"
+#include "undefined.h"
+#include "fraction.h"
 #include "cache.h"
 #include "numeric.h"
 #include "logging.h"

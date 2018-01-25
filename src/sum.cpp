@@ -4,6 +4,7 @@
 #include "sumsimpl.h"
 #include "numeric.h"
 #include "undefined.h"
+#include "fraction.h"
 #include "power.h"
 #include "product.h"
 #include "poly.h"

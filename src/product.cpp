@@ -1,10 +1,10 @@
 
 #include <vector>
-#include "base.h"
 #include "product.h"
 #include "undefined.h"
 #include "numeric.h"
 #include "productsimpl.h"
+#include "fraction.h"
 #include "power.h"
 #include "sum.h"
 #include "symbolmap.h"

@@ -2,6 +2,7 @@
 #include <cassert>
 #include "undefined.h"
 #include "numeric.h"
+#include "fraction.h"
 #include "logging.h"
 
 tsym::Undefined::Undefined()

@@ -2,12 +2,14 @@
 #define TSYM_BASE_H
 
 #include <memory>
-#include "number.h"
 #include "baseptrlist.h"
-#include "fraction.h"
-#include "name.h"
 
-namespace tsym { class SymbolMap; }
+namespace tsym {
+    class SymbolMap;
+    class Number;
+    class Fraction;
+    class Name;
+}
 
 namespace tsym {
     class Base : public std::enable_shared_from_this<const Base> {

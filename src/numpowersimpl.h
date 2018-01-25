@@ -1,8 +1,8 @@
 #ifndef TSYM_NUMPOWERSIMPL_H
 #define TSYM_NUMPOWERSIMPL_H
 
-#include "number.h"
 #include "primefac.h"
+#include "number.h"
 
 namespace tsym {
     class NumPowerSimpl {

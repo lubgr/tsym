@@ -1,6 +1,7 @@
 
 #include "abc.h"
 #include "undefined.h"
+#include "number.h"
 #include "tsymtests.h"
 
 using namespace tsym;

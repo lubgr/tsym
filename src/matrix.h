@@ -3,8 +3,12 @@
 
 #include <initializer_list>
 #include <set>
-#include "var.h"
-#include "vector.h"
+#include <vector>
+
+namespace tsym {
+    class Var;
+    class Vector;
+}
 
 namespace tsym {
     class Matrix {

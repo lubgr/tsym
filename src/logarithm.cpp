@@ -7,6 +7,7 @@
 #include "product.h"
 #include "power.h"
 #include "numeric.h"
+#include "fraction.h"
 #include "symbolmap.h"
 #include "logging.h"
 

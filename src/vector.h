@@ -2,7 +2,8 @@
 #define TSYM_VECTOR_H
 
 #include <initializer_list>
-#include "var.h"
+
+namespace tsym { class Var; }
 
 namespace tsym {
     class Vector {

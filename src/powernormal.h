@@ -1,9 +1,10 @@
 #ifndef TSYM_POWERNORMAL_H
 #define TSYM_POWERNORMAL_H
 
-#include "symbolmap.h"
 #include "fraction.h"
 #include "numeric.h"
+
+namespace tsym { class SymbolMap; }
 
 namespace tsym {
     class PowerNormal {

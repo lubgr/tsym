@@ -1,8 +1,12 @@
 #ifndef TSYM_POWERSIMPL_H
 #define TSYM_POWERSIMPL_H
 
-#include "baseptrlist.h"
-#include "number.h"
+#include "baseptr.h"
+
+namespace tsym {
+    class BasePtrList;
+    class Number;
+}
 
 namespace tsym {
     class PowerSimpl {

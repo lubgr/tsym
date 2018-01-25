@@ -4,6 +4,8 @@
 #include "matrix.h"
 #include "globals.h"
 #include "logging.h"
+#include "var.h"
+#include "vector.h"
 #include "tsymtests.h"
 
 using namespace tsym;

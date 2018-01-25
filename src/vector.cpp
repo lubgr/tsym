@@ -1,7 +1,9 @@
 
+#include <cstddef>
 #include "vector.h"
 #include "logging.h"
 #include "numeric.h"
+#include "var.h"
 #include "printer.h"
 
 namespace tsym {

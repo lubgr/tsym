@@ -2,8 +2,6 @@
 #define TEST_ABC_H
 
 #include "baseptr.h"
-#include "symbol.h"
-#include "numeric.h"
 
 extern const tsym::BasePtr a;
 extern const tsym::BasePtr b;

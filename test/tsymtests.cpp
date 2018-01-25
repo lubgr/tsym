@@ -2,8 +2,8 @@
 #include <sstream>
 #include "base.h"
 #include "vector.h"
+#include "var.h"
 #include "matrix.h"
-#include "logging.h"
 #include "testsuitelogger.h"
 #include "tsymtests.h"
 

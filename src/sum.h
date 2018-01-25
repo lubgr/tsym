@@ -3,7 +3,6 @@
 
 #include <vector>
 #include "base.h"
-#include "baseptrlist.h"
 
 namespace tsym {
     class Sum : public Base {

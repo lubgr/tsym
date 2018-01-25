@@ -2,7 +2,7 @@
 #define TSYM_NUMERIC_H
 
 #include "base.h"
-#include "undefined.h"
+#include "number.h"
 
 namespace tsym {
     class Numeric : public Base {

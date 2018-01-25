@@ -2,7 +2,9 @@
 #define TSYM_PRIMEFAC_H
 
 #include <vector>
-#include "number.h"
+#include "int.h"
+
+namespace tsym { class Number; }
 
 namespace tsym {
     class PrimeFac {

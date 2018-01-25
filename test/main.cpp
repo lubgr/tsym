@@ -7,6 +7,8 @@
 #include "baseptrlist.h"
 #include "constant.h"
 #include "matrix.h"
+#include "vector.h"
+#include "var.h"
 #include "poly.h"
 #include "name.h"
 #include "abc.h"

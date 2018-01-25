@@ -1,8 +1,11 @@
 
 #include <algorithm>
 #include <cassert>
+#include <vector>
 #include <chrono>
 #include "matrix.h"
+#include "var.h"
+#include "vector.h"
 #include "numeric.h"
 #include "logging.h"
 #include "printer.h"

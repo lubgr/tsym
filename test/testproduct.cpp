@@ -4,6 +4,7 @@
 #include "abc.h"
 #include "product.h"
 #include "symbol.h"
+#include "undefined.h"
 #include "numeric.h"
 #include "constant.h"
 #include "trigonometric.h"

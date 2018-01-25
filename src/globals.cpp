@@ -2,6 +2,8 @@
 #include "globals.h"
 #include "trigonometric.h"
 #include "logarithm.h"
+#include "matrix.h"
+#include "vector.h"
 #include "constant.h"
 #include "stringtovar.h"
 #include "logging.h"

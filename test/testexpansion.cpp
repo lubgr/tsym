@@ -1,9 +1,11 @@
 
 #include "abc.h"
 #include "symbol.h"
+#include "undefined.h"
 #include "sum.h"
 #include "product.h"
 #include "power.h"
+#include "numeric.h"
 #include "constant.h"
 #include "trigonometric.h"
 #include "tsymtests.h"

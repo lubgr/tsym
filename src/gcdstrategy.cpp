@@ -2,6 +2,7 @@
 #include <cassert>
 #include <cmath>
 #include "gcdstrategy.h"
+#include "undefined.h"
 #include "numeric.h"
 #include "logging.h"
 #include "power.h"

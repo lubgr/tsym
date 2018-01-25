@@ -1,5 +1,7 @@
 
 #include "numeric.h"
+#include "undefined.h"
+#include "fraction.h"
 #include "symbolmap.h"
 #include "logging.h"
 
