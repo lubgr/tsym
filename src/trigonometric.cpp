@@ -10,6 +10,7 @@
 #include "logging.h"
 #include "constant.h"
 #include "fraction.h"
+#include "ctr.h"
 #include "numtrigosimpl.h"
 #include "symbolmap.h"
 
@@ -35,7 +36,7 @@ namespace tsym {
     }
 }
 
-tsym::Trigonometric::Trigonometric(const BasePtrList& args, Type type) :
+tsym::Trigonometric::Trigonometric(const BasePtrCtr& args, Type type) :
     Function(args, getStr(type)),
     arg1(ops.front()),
     /* Points to ops.front() except for atan2: */
@@ -100,7 +101,7 @@ tsym::BasePtr tsym::Trigonometric::create(Type type, const BasePtr& arg)
         return createInstance(type, { arg });
 }
 
-tsym::BasePtr tsym::Trigonometric::createInstance(Type type, const BasePtrList& args)
+tsym::BasePtr tsym::Trigonometric::createInstance(Type type, const BasePtrCtr& args)
 {
     return instantiate([type, &args]() { return new Trigonometric(args, type); });
 }
@@ -115,7 +116,7 @@ bool tsym::Trigonometric::doesSymmetryApply(const BasePtr& arg)
         return false;
 }
 
-bool tsym::Trigonometric::haveAllNegativePrefactors(const BasePtrList& operands)
+bool tsym::Trigonometric::haveAllNegativePrefactors(const BasePtrCtr& operands)
 {
     for (const auto& arg : operands)
         if (arg->constTerm()->isPositive())
@@ -527,5 +528,5 @@ bool tsym::Trigonometric::isNegative() const
 
 unsigned tsym::Trigonometric::complexity() const
 {
-    return 6 + ops.complexitySum();
+    return 6 + ctr::complexitySum(ops);
 }

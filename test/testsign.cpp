@@ -329,7 +329,7 @@ TEST(Sign, posPowerWithUnclearBase)
 TEST(Sign, mixedPositive)
     /* 2*a + b*c + b^(2*c + pi) + 0.12345*c^2 is positive. */
 {
-    BasePtrList summands;
+    BasePtrCtr summands;
     BasePtr res;
 
     summands.push_back(Product::create(two, aPos));
@@ -345,7 +345,7 @@ TEST(Sign, mixedPositive)
 TEST(Sign, mixedUnclear)
     /* Same as above but with b being not specified as positive. */
 {
-    BasePtrList summands;
+    BasePtrCtr summands;
     BasePtr res;
 
     summands.push_back(Product::create(two, aPos));

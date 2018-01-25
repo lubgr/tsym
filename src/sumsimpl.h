@@ -2,31 +2,30 @@
 #define TSYM_SUMSIMPL_H
 
 #include "baseptr.h"
-
-namespace tsym { class BasePtrList; }
+#include "baseptrctr.h"
 
 namespace tsym {
     class SumSimpl {
         public:
-            BasePtrList simplify(const BasePtrList& summands);
+            BasePtrCtr simplify(const BasePtrCtr& summands);
 
         private:
-            BasePtrList simplTwoSummands(const BasePtrList& u);
-            BasePtrList simplTwoSummands(const BasePtr& s1, const BasePtr& s2);
-            BasePtrList simplTwoSummandsWithSum(const BasePtr& s1, const BasePtr& s2);
-            BasePtrList merge(const BasePtrList& l1, const BasePtrList& l2);
-            BasePtrList mergeNonEmpty(const BasePtrList& p, const BasePtrList& q);
-            BasePtrList simplTwoSummandsWithoutSum(const BasePtr& s1, const BasePtr& s2);
-            BasePtrList simplTwoNumerics(const BasePtr& s1, const BasePtr& s2);
+            BasePtrCtr simplTwoSummands(const BasePtrCtr& u);
+            BasePtrCtr simplTwoSummands(const BasePtr& s1, const BasePtr& s2);
+            BasePtrCtr simplTwoSummandsWithSum(const BasePtr& s1, const BasePtr& s2);
+            BasePtrCtr merge(const BasePtrCtr& l1, const BasePtrCtr& l2);
+            BasePtrCtr mergeNonEmpty(const BasePtrCtr& p, const BasePtrCtr& q);
+            BasePtrCtr simplTwoSummandsWithoutSum(const BasePtr& s1, const BasePtr& s2);
+            BasePtrCtr simplTwoNumerics(const BasePtr& s1, const BasePtr& s2);
             bool haveEqualNonConstTerms(const BasePtr& s1, const BasePtr& s2);
-            BasePtrList simplEqualNonConstTerms(const BasePtr& s1, const BasePtr& s2);
+            BasePtrCtr simplEqualNonConstTerms(const BasePtr& s1, const BasePtr& s2);
             bool haveEqualNonNumericTerms(const BasePtr& s1, const BasePtr& s2);
-            BasePtrList simplEqualNonNumericTerms(const BasePtr& s1, const BasePtr& s2);
+            BasePtrCtr simplEqualNonNumericTerms(const BasePtr& s1, const BasePtr& s2);
             bool haveContractableSinCos(const BasePtr& s1, const BasePtr& s2);
             bool areSinAndCosSquare(const BasePtr& s1, const BasePtr& s2);
             bool areSinAndCos(const BasePtr& s1, const BasePtr& s2);
             bool haveEqualFirstOperands(const BasePtr& pow1, const BasePtr& pow2);
-            BasePtrList simplNSummands(const BasePtrList& u);
+            BasePtrCtr simplNSummands(const BasePtrCtr& u);
     };
 }
 

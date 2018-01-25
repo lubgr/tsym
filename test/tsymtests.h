@@ -29,10 +29,13 @@ namespace tsym {
 template<> SimpleString StringFrom(const tsym::Matrix& m);
 template<> SimpleString StringFrom(const tsym::Vector& v);
 
-/* For using the CHECK_EQUAL macro on BasePtr objects: */
+/* For using the CHECK_EQUAL macro on BasePtr objects and the appropiate containers: */
 #include "baseptr.h"
+#include "baseptrctr.h"
 bool operator == (const tsym::BasePtr& lhs, const tsym::BasePtr& rhs);
 bool operator != (const tsym::BasePtr& lhs, const tsym::BasePtr& rhs);
+bool operator == (const tsym::BasePtrCtr& lhs, const tsym::BasePtrCtr& rhs);
+bool operator != (const tsym::BasePtrCtr& lhs, const tsym::BasePtrCtr& rhs);
 
 /* Functions to disable and enable logging messages except the fatal level. */
 void disableLog();

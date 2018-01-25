@@ -6,10 +6,11 @@
 #include "undefined.h"
 #include "fraction.h"
 #include "power.h"
+#include "ctr.h"
 #include "product.h"
 #include "poly.h"
 
-tsym::Sum::Sum(const BasePtrList& summands) :
+tsym::Sum::Sum(const BasePtrCtr& summands) :
     Base(summands)
 {
     setDebugString();
@@ -17,7 +18,7 @@ tsym::Sum::Sum(const BasePtrList& summands) :
 
 tsym::BasePtr tsym::Sum::create(const BasePtr& s1, const BasePtr& s2)
 {
-    return create(BasePtrList(s1, s2));
+    return create({ s1, s2 });
 }
 
 tsym::BasePtr tsym::Sum::create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3)
@@ -31,9 +32,9 @@ tsym::BasePtr tsym::Sum::create(const BasePtr& s1, const BasePtr& s2, const Base
     return create({ s1, s2, s3, s4 });
 }
 
-tsym::BasePtr tsym::Sum::create(const BasePtrList& summands)
+tsym::BasePtr tsym::Sum::create(const BasePtrCtr& summands)
 {
-    if (summands.hasUndefinedElements())
+    if (ctr::hasUndefinedElements(summands))
         return Undefined::create();
     else if (summands.size() == 1)
         return summands.front();
@@ -41,10 +42,10 @@ tsym::BasePtr tsym::Sum::create(const BasePtrList& summands)
         return createSimplifiedSum(summands);
 }
 
-tsym::BasePtr tsym::Sum::createSimplifiedSum(const BasePtrList& summands)
+tsym::BasePtr tsym::Sum::createSimplifiedSum(const BasePtrCtr& summands)
 {
     SumSimpl simpl;
-    BasePtrList res;
+    BasePtrCtr res;
 
     res = simpl.simplify(summands);
 
@@ -124,7 +125,7 @@ tsym::Fraction tsym::Sum::toCommonDenom(const std::vector<Fraction>& operands) c
 
 tsym::BasePtr tsym::Sum::diffWrtSymbol(const BasePtr& symbol) const
 {
-    BasePtrList derivedSummands;
+    BasePtrCtr derivedSummands;
 
     for (const auto& summand : ops)
         derivedSummands.push_back(summand->diff(symbol));
@@ -149,12 +150,12 @@ bool tsym::Sum::isNegative() const
 
 size_t tsym::Sum::hash() const
 {
-    return std::hash<BasePtrList>{}(ops);
+    return std::hash<BasePtrCtr>{}(ops);
 }
 
 unsigned tsym::Sum::complexity() const
 {
-    return 5 + ops.complexitySum();
+    return 5 + ctr::complexitySum(ops);
 }
 
 int tsym::Sum::sign() const
@@ -210,7 +211,7 @@ bool tsym::Sum::isSum() const
 
 tsym::BasePtr tsym::Sum::expand() const
 {
-    BasePtrList expandedSummands;
+    BasePtrCtr expandedSummands;
 
     for (const auto& summand : ops)
         expandedSummands.push_back(summand->expand());
@@ -223,7 +224,7 @@ tsym::BasePtr tsym::Sum::subst(const tsym::BasePtr& from, const tsym::BasePtr& t
     if (isEqual(from))
         return to;
     else
-        return create(ops.subst(from, to));
+        return create(ctr::subst(ops, from, to));
 }
 
 tsym::BasePtr tsym::Sum::coeff(const BasePtr& variable, int exp) const

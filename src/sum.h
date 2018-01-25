@@ -11,7 +11,7 @@ namespace tsym {
             static BasePtr create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3);
             static BasePtr create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3,
                     const BasePtr& s4);
-            static BasePtr create(const BasePtrList& summands);
+            static BasePtr create(const BasePtrCtr& summands);
 
             /* Implentations of pure virtual methods of Base. */
             bool isEqualDifferentBase(const BasePtr& other) const;
@@ -33,12 +33,12 @@ namespace tsym {
             int degree(const BasePtr& variable) const;
 
         private:
-            explicit Sum(const BasePtrList& summands);
+            explicit Sum(const BasePtrCtr& summands);
             Sum(const Sum& other) = delete;
             Sum& operator = (const Sum& other) = delete;
             ~Sum() = default;
 
-            static BasePtr createSimplifiedSum(const BasePtrList& summands);
+            static BasePtr createSimplifiedSum(const BasePtrCtr& summands);
             Fraction toCommonDenom(const std::vector<Fraction>& operands) const;
             int sign() const;
             int signOfNumericParts() const;

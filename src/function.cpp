@@ -1,8 +1,9 @@
 
 #include "numeric.h"
 #include "function.h"
+#include "ctr.h"
 
-tsym::Function::Function(const BasePtrList& args, const std::string& name) :
+tsym::Function::Function(const BasePtrCtr& args, const std::string& name) :
     Base(args),
     functionName(name)
 {}
@@ -10,7 +11,7 @@ tsym::Function::Function(const BasePtrList& args, const std::string& name) :
 bool tsym::Function::isEqualDifferentBase(const BasePtr& other) const
 {
     if (sameType(other))
-        return name() == other->name() && ops.isEqual(other->operands());
+        return name() == other->name() && ctr::areEqual(ops, other->operands());
     else
         return false;
 }
@@ -27,7 +28,7 @@ std::string tsym::Function::typeStr() const
 
 size_t tsym::Function::hash() const
 {
-    return std::hash<Name>{}(functionName) ^ (std::hash<BasePtrList>{}(ops) << 1);
+    return std::hash<Name>{}(functionName) ^ (std::hash<BasePtrCtr>{}(ops) << 1);
 }
 
 bool tsym::Function::isFunction() const

@@ -2,12 +2,10 @@
 #define TSYM_GCDSTRATEGY_H
 
 #include "baseptr.h"
+#include "baseptrctr.h"
 #include "int.h"
 
-namespace tsym {
-    class BasePtrList;
-    class Number;
-}
+namespace tsym { class Number; }
 
 namespace tsym {
     class GcdStrategy {
@@ -34,20 +32,20 @@ namespace tsym {
             virtual ~GcdStrategy();
 
             BasePtr compute(const BasePtr& u, const BasePtr& v) const;
-            BasePtr compute(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
+            BasePtr compute(const BasePtr& u, const BasePtr& v, const BasePtrCtr& L) const;
 
         private:
             BasePtr computeNumerics(const BasePtr& u, const BasePtr& v) const;
             Int integerGcd(const Int& a, const Int& b) const;
-            bool haveCommonSymbol(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
-            BasePtr gcdViaAlgo(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
+            bool haveCommonSymbol(const BasePtr& u, const BasePtr& v, const BasePtrCtr& L) const;
+            BasePtr gcdViaAlgo(const BasePtr& u, const BasePtr& v, const BasePtrCtr& L) const;
             BasePtr integerContent(const BasePtr& u, const BasePtr& v) const;
             Number integerContent(const BasePtr& poly) const;
-            Number integerContentOfSum(const BasePtrList& summands) const;
-            BasePtr normalize(const BasePtr& result, const BasePtrList& L) const;
-            Number normalizationFactor(const BasePtr& arg, BasePtrList& L) const;
+            Number integerContentOfSum(const BasePtrCtr& summands) const;
+            BasePtr normalize(const BasePtr& result, const BasePtrCtr& L) const;
+            Number normalizationFactor(const BasePtr& arg, BasePtrCtr& L) const;
             virtual BasePtr gcdAlgo(const BasePtr& u, const BasePtr& v,
-                    const BasePtrList& L) const = 0;
+                    const BasePtrCtr& L) const = 0;
     };
 }
 

@@ -43,7 +43,7 @@ TEST(Sum, undefined)
 
 TEST(Sum, createWithOneSummandGivenAsList)
 {
-    BasePtrList summands;
+    BasePtrCtr summands;
     BasePtr res;
 
     summands.push_back(a);
@@ -108,7 +108,7 @@ TEST(Sum, rearrangeFiveSymbols)
     /*  More complex ordering: e + c + a + b + d = a + b + c + d + e. */
 {
     const BasePtr res = Sum::create({ e, c, a, b, d });
-    BasePtrList summands;
+    BasePtrCtr summands;
 
     CHECK(res->isSum());
 
@@ -140,7 +140,7 @@ TEST(Sum, collectSymbols)
     /* a + a = 2*a. */
 {
     const BasePtr res = Sum::create(a, a);
-    const BasePtrList& summands(res->operands());
+    const BasePtrCtr& summands(res->operands());
 
     CHECK(res->isProduct());
 
@@ -157,7 +157,7 @@ TEST(Sum, collectProducts)
     const BasePtr twoAB = Product::create(two, ab);
     const BasePtr threeAB = Product::create(three, ab);
     const BasePtr res = Sum::create(twoAB, threeAB);
-    const BasePtrList& summands(res->operands());
+    const BasePtrCtr& summands(res->operands());
 
     CHECK(res->isProduct());
 
@@ -185,7 +185,7 @@ TEST(Sum, collectPower)
     const BasePtr pow = Power::create(a, three);
     const BasePtr s1 = Product::create(three, pow);
     const BasePtr res = Sum::create(s1, pow);
-    const BasePtrList& factors(res->operands());
+    const BasePtrCtr& factors(res->operands());
 
     CHECK(res->isProduct());
 
@@ -214,7 +214,7 @@ TEST(Sum, twoSums)
     const BasePtr sum1 = Sum::create(a, b);
     const BasePtr sum2 = Sum::create(a, c);
     const BasePtr res = Sum::create(sum1, sum2);
-    const BasePtrList& summands(res->operands());
+    const BasePtrCtr& summands(res->operands());
 
     CHECK(res->isSum());
 
@@ -228,7 +228,7 @@ TEST(Sum, sumOfSumAndSymbols)
     /* (a + d) + e + c = a + c + d + e. */
 {
     const BasePtr sum1 = Sum::create(a, d);
-    BasePtrList summands;
+    BasePtrCtr summands;
     BasePtr res;
 
     res = Sum::create({ sum1, e, c });
@@ -462,7 +462,7 @@ TEST(Sum, numericEvaluation)
     /* 1 + Pi + sqrt(2) + sqrt(3)*4^(1/17) can be numerically evaluated. */
 {
     const double expected = 1.0 + M_PI + std::sqrt(2.0) + std::sqrt(3.0)*std::pow(4.0, 1.0/17.0);
-    BasePtrList summands;
+    BasePtrCtr summands;
     BasePtr res;
 
     summands.push_back(one);

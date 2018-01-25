@@ -8,6 +8,7 @@
 #include "undefined.h"
 #include "product.h"
 #include "constant.h"
+#include "ctr.h"
 #include "trigonometric.h"
 #include "numpowersimpl.h"
 #include "logarithm.h"
@@ -539,21 +540,14 @@ TEST(Power, extractPositiveFactorsOfProductBase)
     /* (a*b*c*d*e*pi)^(2/3) = a^(2/3)*b^(2/3)*pi^(2/3)*(c*d*e)^(2/3) for a, b, > 0. */
 {
     const BasePtr exp = Numeric::create(2, 3);
-    const BasePtr expected[] = { Power::create(pi, exp), Power::create(aPos, exp),
+    const BasePtrCtr expected{ Power::create(pi, exp), Power::create(aPos, exp),
         Power::create(bPos, exp), Power::create(Product::create(c, d, e), exp) };
     const BasePtr base = Product::create({ aPos, bPos, c, d, e, pi });
     BasePtr res = Power::create(base, exp);
-    BasePtrList factors;
 
     CHECK(res->isProduct());
 
-    factors = res->operands();
-
-    for (int i = 0; i < 4; ++i) {
-        res = factors.pop_front();
-
-        CHECK_EQUAL(expected[i], res);
-    }
+    CHECK(ctr::areEqual(expected, res->operands()));
 }
 
 TEST(Power, negProductBaseFractionExp)

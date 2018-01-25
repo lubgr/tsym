@@ -2,11 +2,9 @@
 #define TSYM_POLY_H
 
 #include "baseptr.h"
+#include "baseptrctr.h"
 
-namespace tsym {
-    class GcdStrategy;
-    class BasePtrList;
-}
+namespace tsym { class GcdStrategy; }
 
 namespace tsym {
     /* Functions for multivariate polynomial terms with rational number coefficients, symbolic
@@ -16,10 +14,10 @@ namespace tsym {
         /* Division u/v, where the divisor v is non-zero. The first of the returned list is the
          * quotient, the second the remainder. If the input is invalid, the quotient is Undefined,
          * the remainder u. */
-        BasePtrList divide(const BasePtr& u, const BasePtr& v);
-        BasePtrList divide(const BasePtr& u, const BasePtr& v, const BasePtrList& L);
+        BasePtrCtr divide(const BasePtr& u, const BasePtr& v);
+        BasePtrCtr divide(const BasePtr& u, const BasePtr& v, const BasePtrCtr& L);
         /* Returns pseudo-quotient and -remainder similar to the function above: */
-        BasePtrList pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x);
+        BasePtrCtr pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x);
         /* As before, but avoids the computation of the pseudo-quotient: */
         BasePtr pseudoRemainder(const BasePtr& u, const BasePtr& v, const BasePtr& x);
         int unit(const BasePtr& polynomial, const BasePtr& x);

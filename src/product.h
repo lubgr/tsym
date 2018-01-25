@@ -15,7 +15,7 @@ namespace tsym {
             static BasePtr minus(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3);
             static BasePtr minus(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3,
                     const BasePtr& f4);
-            static BasePtr create(const BasePtrList& factors);
+            static BasePtr create(const BasePtrCtr& factors);
 
             /* Implentations of pure virtual methods of Base. */
             bool isEqualDifferentBase(const BasePtr& other) const;
@@ -41,13 +41,13 @@ namespace tsym {
             int degree(const BasePtr& variable) const;
 
         private:
-            explicit Product(const BasePtrList& factors);
+            explicit Product(const BasePtrCtr& factors);
             Product(const Product& other) = delete;
             Product& operator = (Product const& other) = delete;
             ~Product() = default;
 
-            static BasePtr createSimplifiedProduct(const BasePtrList& factors);
-            static bool needsExpansion(const BasePtrList& factors);
+            static BasePtr createSimplifiedProduct(const BasePtrCtr& factors);
+            static bool needsExpansion(const BasePtrCtr& factors);
             int sign() const;
             Fraction normalAndSplitIntoFraction(SymbolMap& map) const;
             BasePtr coeffFactorMatch(const BasePtr& variable, int exp) const;

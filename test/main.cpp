@@ -4,7 +4,7 @@
 #include "logarithm.h"
 #include "trigonometric.h"
 #include "numtrigosimpl.h"
-#include "baseptrlist.h"
+#include "baseptrctr.h"
 #include "constant.h"
 #include "matrix.h"
 #include "vector.h"
@@ -21,7 +21,7 @@ void initConstructOnFirstUse()
     /* This initialization ensures that CppUTest doesn't spot a memory leak for the first test cases
      * that call the following functions employing local static variables. */
 {
-    const tsym::BasePtrList emptyList;
+    const tsym::BasePtrCtr emptyList;
     const tsym::Matrix emptyMatrix;
     const tsym::Vector emptyVec;
     tsym::NumTrigoSimpl nts;

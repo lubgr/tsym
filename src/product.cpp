@@ -1,5 +1,6 @@
 
 #include <vector>
+#include <algorithm>
 #include "product.h"
 #include "undefined.h"
 #include "numeric.h"
@@ -7,9 +8,10 @@
 #include "fraction.h"
 #include "power.h"
 #include "sum.h"
+#include "ctr.h"
 #include "symbolmap.h"
 
-tsym::Product::Product(const BasePtrList& factors) :
+tsym::Product::Product(const BasePtrCtr& factors) :
     Base(factors)
 {
     setDebugString();
@@ -17,7 +19,7 @@ tsym::Product::Product(const BasePtrList& factors) :
 
 tsym::BasePtr tsym::Product::create(const BasePtr& f1, const BasePtr& f2)
 {
-    return create(BasePtrList(f1, f2));
+    return create({ f1, f2 });
 }
 
 tsym::BasePtr tsym::Product::create(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3)
@@ -33,7 +35,7 @@ tsym::BasePtr tsym::Product::create(const BasePtr& f1, const BasePtr& f2, const 
 
 tsym::BasePtr tsym::Product::minus(const BasePtr& f1)
 {
-    return create(BasePtrList(Numeric::mOne(), f1));
+    return create({ Numeric::mOne(), f1 });
 }
 
 tsym::BasePtr tsym::Product::minus(const BasePtr& f1, const BasePtr& f2)
@@ -52,11 +54,11 @@ tsym::BasePtr tsym::Product::minus(const BasePtr& f1, const BasePtr& f2, const B
     return create({ Numeric::mOne(), f1, f2, f3, f4 });
 }
 
-tsym::BasePtr tsym::Product::create(const BasePtrList& factors)
+tsym::BasePtr tsym::Product::create(const BasePtrCtr& factors)
 {
-    if (factors.hasUndefinedElements())
+    if (ctr::hasUndefinedElements(factors))
         return Undefined::create();
-    else if (factors.hasZeroElements())
+    else if (ctr::hasZeroElements(factors))
         return Numeric::zero();
     else if (factors.size() == 1)
         return factors.front();
@@ -64,37 +66,35 @@ tsym::BasePtr tsym::Product::create(const BasePtrList& factors)
         return createSimplifiedProduct(factors);
 }
 
-tsym::BasePtr tsym::Product::createSimplifiedProduct(const BasePtrList& factors)
+tsym::BasePtr tsym::Product::createSimplifiedProduct(const BasePtrCtr& factors)
 {
     ProductSimpl simpl;
-    BasePtrList res;
-
-    res = simpl.simplify(factors);
+    const BasePtrCtr res = simpl.simplify(factors);
 
     if (res.size() == 0)
         return Numeric::one();
     else if (res.size() == 1)
         return res.front();
     else if (needsExpansion(res))
-        return res.expandAsProduct();
+        return ctr::expandAsProduct(res);
     else
         return instantiate([&res]() { return new Product(res); });
 }
 
-bool tsym::Product::needsExpansion(const BasePtrList& factors)
+bool tsym::Product::needsExpansion(const BasePtrCtr& factors)
 {
-    const BasePtrList constFac(factors.getConstElements());
-    const BasePtrList nonConstFac(factors.getNonConstElements());
+    const BasePtrCtr constFac(ctr::getConstElements(factors));
+    const BasePtrCtr nonConstFac(ctr::getNonConstElements(factors));
 
     if (constFac.empty())
         return false;
-    else if (nonConstFac.hasSumElements())
+    else if (ctr::hasSumElements(nonConstFac))
         /* Only expand one single non-const sum, e.g. 2*sqrt(2)*(a + b). */
         return nonConstFac.size() == 1;
 
     /* This catches (2 + sqrt(2))*a, but also trivial expressions like 2*a. Expanding them does no
      * harm, though. */
-    return constFac.hasSumElements();
+    return ctr::hasSumElements(constFac);
 }
 
 bool tsym::Product::isEqualDifferentBase(const BasePtr& other) const
@@ -134,8 +134,8 @@ tsym::Fraction tsym::Product::normal(SymbolMap& map) const
 
 tsym::Fraction tsym::Product::normalAndSplitIntoFraction(SymbolMap& map) const
 {
-    BasePtrList denominators;
-    BasePtrList numerators;
+    BasePtrCtr denominators;
+    BasePtrCtr numerators;
     Fraction normalOperand;
 
     for (const auto& factor : ops) {
@@ -149,8 +149,8 @@ tsym::Fraction tsym::Product::normalAndSplitIntoFraction(SymbolMap& map) const
 
 tsym::BasePtr tsym::Product::diffWrtSymbol(const BasePtr& symbol) const
 {
-    BasePtrList derivedSummands;
-    BasePtrList factors;
+    BasePtrCtr derivedSummands;
+    BasePtrCtr factors;
 
     for (auto it1 = ops.begin(); it1 != ops.end(); ++it1) {
         factors.push_back((*it1)->diffWrtSymbol(symbol));
@@ -183,12 +183,12 @@ bool tsym::Product::isNegative() const
 
 size_t tsym::Product::hash() const
 {
-    return std::hash<BasePtrList>{}(ops);
+    return std::hash<BasePtrCtr>{}(ops);
 }
 
 unsigned tsym::Product::complexity() const
 {
-    return 5 + ops.complexitySum();
+    return 5 + ctr::complexitySum(ops);
 }
 
 int tsym::Product::sign() const
@@ -223,28 +223,28 @@ tsym::BasePtr tsym::Product::nonNumericTerm() const
     if (ops.front()->isNumeric())
         /* We should to go through automatic simplification again, because the factor list could be
          * e.g. of size 1. */
-        return create(ops.rest());
+        return create(ctr::rest(ops));
     else
         return clone();
 }
 
 tsym::BasePtr tsym::Product::constTerm() const
 {
-    const BasePtrList constItems(ops.getConstElements());
+    const BasePtrCtr constItems(ctr::getConstElements(ops));
 
     return constItems.empty() ? Numeric::one() : create(constItems);
 }
 
 tsym::BasePtr tsym::Product::nonConstTerm() const
 {
-    const BasePtrList nonConstItems(ops.getNonConstElements());
+    const BasePtrCtr nonConstItems(ctr::getNonConstElements(ops));
 
     return nonConstItems.empty() ? Numeric::one() : create(nonConstItems);
 }
 
 tsym::BasePtr tsym::Product::expand() const
 {
-    return ops.expandAsProduct();
+    return ctr::expandAsProduct(ops);
 }
 
 tsym::BasePtr tsym::Product::subst(const BasePtr& from, const BasePtr& to) const
@@ -252,7 +252,7 @@ tsym::BasePtr tsym::Product::subst(const BasePtr& from, const BasePtr& to) const
     if (isEqual(from))
         return to;
     else
-        return create(ops.subst(from, to));
+        return create(ctr::subst(ops, from, to));
 }
 
 tsym::BasePtr tsym::Product::coeff(const BasePtr& variable, int exp) const
@@ -265,22 +265,22 @@ tsym::BasePtr tsym::Product::coeff(const BasePtr& variable, int exp) const
         return coeffFactorMatch(variable, exp);
 }
 
-tsym::BasePtr tsym::Product::coeffFactorMatch(const BasePtr& variable , int exp) const
+tsym::BasePtr tsym::Product::coeffFactorMatch(const BasePtr& variable, int exp) const
 {
     const BasePtr pow(Power::create(variable, Numeric::create(exp)));
-    BasePtrList resultFactors(ops);
-    auto it = resultFactors.begin();
+    auto matchingPower = std::find_if(cbegin(ops), cend(ops), [&pow](const auto& item){ return item->isEqual(pow); });
 
-    for (; it != resultFactors.end(); ++it)
-        if ((*it)->isEqual(pow))
-            break;
-
-    if (it == resultFactors.end())
+    if (matchingPower == cend(ops))
         return Numeric::zero();
 
-    resultFactors.erase(it);
+    BasePtrCtr factors;
 
-    return create(resultFactors);
+    factors.insert(cend(factors), cbegin(ops), matchingPower);
+
+    if (matchingPower != cend(ops))
+        factors.insert(cend(factors), ++matchingPower, cend(ops));
+
+    return create(factors);
 }
 
 int tsym::Product::degree(const BasePtr& variable) const

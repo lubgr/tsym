@@ -2,15 +2,13 @@
 #define TSYM_POWERSIMPL_H
 
 #include "baseptr.h"
+#include "baseptrctr.h"
 
-namespace tsym {
-    class BasePtrList;
-    class Number;
-}
+namespace tsym { class Number; }
 
 namespace tsym {
     class PowerSimpl {
-        /* Processes the simplification of power expressions. A BasePtrList with 2 items is
+        /* Processes the simplification of power expressions. A BasePtrCtr with 2 items is
          * returned, base first, exponent second. If the latter may be one, which makes it possible
          * to return products (e.g. sqrt(8) = 2*sqrt(2)) or numerics (e.g. sqrt(4) = 2). For details
          * of the simplification of purely numeric powers, see the NumPowerSimpl class.
@@ -25,14 +23,14 @@ namespace tsym {
         public:
             PowerSimpl();
 
-            BasePtrList simplify(const BasePtr& base, const BasePtr& exp);
+            BasePtrCtr simplify(const BasePtr& base, const BasePtr& exp);
 
         private:
             bool doesInvolveComplexNumbers(const BasePtr& base, const BasePtr& exp);
-            BasePtrList simplifyNumericBase(const BasePtr& base, const BasePtr& exp);
-            BasePtrList simplifyNumericPower(const BasePtr& base, const BasePtr& exp);
-            BasePtrList simplifyNumericPower(const Number& base, const Number& exp);
-            BasePtrList simplifyPowerBase(const BasePtr& powBase, const BasePtr& e2);
+            BasePtrCtr simplifyNumericBase(const BasePtr& base, const BasePtr& exp);
+            BasePtrCtr simplifyNumericPower(const BasePtr& base, const BasePtr& exp);
+            BasePtrCtr simplifyNumericPower(const Number& base, const Number& exp);
+            BasePtrCtr simplifyPowerBase(const BasePtr& powBase, const BasePtr& e2);
             bool doContractExpFirst(const BasePtr& base, const BasePtr& e1, const BasePtr& e2);
             bool areTwoIntegerExp(const BasePtr& exp1, const BasePtr& exp2);
             bool isInteger(const BasePtr& arg);
@@ -42,8 +40,8 @@ namespace tsym {
             bool isOddInteger(const BasePtr& arg);
             bool isEvenInteger(const BasePtr& arg);
             bool isFraction(const BasePtr& arg);
-            BasePtrList simplifyProductBase(const BasePtr& base, const BasePtr& exp);
-            BasePtrList simplifyConstantBase(const BasePtr& base, const BasePtr& exp);
+            BasePtrCtr simplifyProductBase(const BasePtr& base, const BasePtr& exp);
+            BasePtrCtr simplifyConstantBase(const BasePtr& base, const BasePtr& exp);
             bool isBaseEulerConstantAndExpLogarithm(const BasePtr& base, const BasePtr& exp);
 
             const BasePtr one;

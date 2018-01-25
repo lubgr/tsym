@@ -6,7 +6,7 @@
 namespace tsym {
     class PrimitiveGcd : public GcdStrategy {
         private:
-            BasePtr gcdAlgo(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
+            BasePtr gcdAlgo(const BasePtr& u, const BasePtr& v, const BasePtrCtr& L) const;
     };
 }
 

@@ -8,6 +8,7 @@
 #include "sum.h"
 #include "order.h"
 #include "symbol.h"
+#include "ctr.h"
 #include "numpowersimpl.h"
 #include "logging.h"
 
@@ -25,9 +26,9 @@ namespace tsym {
     }
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplify(const BasePtrList& origFactors)
+tsym::BasePtrCtr tsym::ProductSimpl::simplify(const BasePtrCtr& origFactors)
 {
-    BasePtrList factors(origFactors);
+    BasePtrCtr factors(origFactors);
 
     prepare(factors);
 
@@ -37,7 +38,7 @@ tsym::BasePtrList tsym::ProductSimpl::simplify(const BasePtrList& origFactors)
         return simplNFactors(factors);
 }
 
-void tsym::ProductSimpl::prepare(BasePtrList& fac)
+void tsym::ProductSimpl::prepare(BasePtrCtr& fac)
     /* We need to extract the factors of included powers at this point, due to the handling of
      * numeric powers. This differs from Cohen's algorithm. */
 {
@@ -45,38 +46,41 @@ void tsym::ProductSimpl::prepare(BasePtrList& fac)
     contractTrigonometrics(fac);
 }
 
-void tsym::ProductSimpl::extractProducts(BasePtrList& u)
+void tsym::ProductSimpl::extractProducts(BasePtrCtr& u)
+    /* Recursively looks for items of type Product in the given container and inserts all factors
+     * into the list itself. */
 {
-    auto it(u.begin());
+    const auto product = std::find_if(begin(u), end(u), [](const auto& item){ return item->isProduct(); });
 
-    while (it != u.end()) {
-        if ((*it)->isProduct()) {
-            u.insert(it, (*it)->operands().begin(), (*it)->operands().end());
-            it = u.erase(it);
-        } else
-            ++it;
-    }
+    if (product == end(u))
+        return;
+
+    u.insert(product, cbegin((*product)->operands()), cend((*product)->operands()));
+
+    u.erase(product);
+
+    extractProducts(u);
 }
 
-void tsym::ProductSimpl::contractTrigonometrics(BasePtrList& u)
+void tsym::ProductSimpl::contractTrigonometrics(BasePtrCtr& u)
 {
     contract(u, &ProductSimpl::areContractableTrigFctPowers, &ProductSimpl::contractTrigFctPowers);
 }
 
-void tsym::ProductSimpl::contract(BasePtrList& u,
+void tsym::ProductSimpl::contract(BasePtrCtr& u,
         bool (ProductSimpl::*check) (const BasePtr& f1, const BasePtr& f2),
-        BasePtrList (ProductSimpl::*simpl)(const BasePtr& f1, const BasePtr& f2))
+        BasePtrCtr (ProductSimpl::*simpl)(const BasePtr& f1, const BasePtr& f2))
     /* This method is somewhat compliated, as it operates on the given list, possibly modifying it,
      * while checking for possible contraction of two list items. If that is the case, they are
-     * simplified with the result being a BasePtrList with one or two items, that have to be
+     * simplified with the result being a BasePtrCtr with one or two items, that have to be
      * inserted (only if it differs from the input). The two original items must be erased from the
-     * list. This method calls itself recursively, whenever a change to the given BasePtrList u was
+     * list. This method calls itself recursively, whenever a change to the given BasePtrCtr u was
      * made, to ensure correct simplification of every possible combination of factors. */
 {
     bool hasChanged = false;
     auto it1(u.begin());
     decltype(it1) it2;
-    BasePtrList res;
+    BasePtrCtr res;
     bool found;
 
     while (it1 != u.end()) {
@@ -115,7 +119,7 @@ bool tsym::ProductSimpl::isContractableTrigFctPower(const BasePtr& pow)
     return false;
 }
 
-tsym::BasePtrList tsym::ProductSimpl::contractTrigFctPowers(const BasePtr& f1, const BasePtr& f2)
+tsym::BasePtrCtr tsym::ProductSimpl::contractTrigFctPowers(const BasePtr& f1, const BasePtr& f2)
     /* At this point, f1 and f2 are (possibly powers of) trigonometric function with identical
      * arguments. */
 {
@@ -124,7 +128,7 @@ tsym::BasePtrList tsym::ProductSimpl::contractTrigFctPowers(const BasePtr& f1, c
     const BasePtr cos(trigSymbReplacement(Trigonometric::Type::COS, newArg));
     BasePtr r1(trigFunctionPowerReplacement(f1, sin, cos));
     BasePtr r2(trigFunctionPowerReplacement(f2, sin, cos));
-    BasePtrList res;
+    BasePtrCtr res;
     BasePtr newExp;
     BasePtr exp1;
     BasePtr exp2;
@@ -141,14 +145,14 @@ tsym::BasePtrList tsym::ProductSimpl::contractTrigFctPowers(const BasePtr& f1, c
         else
             newExp = exp1;
 
-        return BasePtrList(Power::create(Trigonometric::createTan(newArg), newExp));
+        return { Power::create(Trigonometric::createTan(newArg), newExp) };
     }
 
-    res = res.subst(sin, Trigonometric::createSin(newArg)).subst(cos,
-            Trigonometric::createCos(newArg));
+    ctr::subst(res, sin, Trigonometric::createSin(newArg));
+    ctr::subst(res, cos, Trigonometric::createCos(newArg));
 
     if (order::doPermute(res.front(), res.back()))
-        return BasePtrList(res.back(), res.front());
+        return { res.back(), res.front() };
     else
         return res;
 }
@@ -177,7 +181,7 @@ tsym::BasePtr tsym::ProductSimpl::trigFunctionPowerReplacement(const BasePtr& po
     return Power::create(Product::create(sin, Power::oneOver(cos)), pow->exp());
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplTwoFactors(const BasePtrList& u)
+tsym::BasePtrCtr tsym::ProductSimpl::simplTwoFactors(const BasePtrCtr& u)
 {
     BasePtr f1(*u.begin());
     BasePtr f2(*(++u.begin()));
@@ -185,7 +189,7 @@ tsym::BasePtrList tsym::ProductSimpl::simplTwoFactors(const BasePtrList& u)
     return simplTwoFactors(f1, f2);
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplTwoFactors(const BasePtr& f1, const BasePtr& f2)
+tsym::BasePtrCtr tsym::ProductSimpl::simplTwoFactors(const BasePtr& f1, const BasePtr& f2)
 {
     if (f1->isProduct() || f2->isProduct())
         return simplTwoFactorsWithProduct(f1, f2);
@@ -193,16 +197,16 @@ tsym::BasePtrList tsym::ProductSimpl::simplTwoFactors(const BasePtr& f1, const B
         return simplTwoFactorsWithoutProduct(f1, f2);
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplTwoFactorsWithProduct(const BasePtr& f1,
+tsym::BasePtrCtr tsym::ProductSimpl::simplTwoFactorsWithProduct(const BasePtr& f1,
         const BasePtr& f2)
 {
-    BasePtrList l1 = f1->isProduct() ? f1->operands() : BasePtrList(f1);
-    BasePtrList l2 = f2->isProduct() ? f2->operands() : BasePtrList(f2);
+    BasePtrCtr l1 = f1->isProduct() ? f1->operands() : BasePtrCtr{ f1 };
+    BasePtrCtr l2 = f2->isProduct() ? f2->operands() : BasePtrCtr{ f2 };
 
     return merge(l1, l2);
 }
 
-tsym::BasePtrList tsym::ProductSimpl::merge(const BasePtrList& l1, const BasePtrList& l2)
+tsym::BasePtrCtr tsym::ProductSimpl::merge(const BasePtrCtr& l1, const BasePtrCtr& l2)
 {
     if (l1.empty())
         return l2;
@@ -212,41 +216,41 @@ tsym::BasePtrList tsym::ProductSimpl::merge(const BasePtrList& l1, const BasePtr
         return mergeNonEmpty(l1, l2);
 }
 
-tsym::BasePtrList tsym::ProductSimpl::mergeNonEmpty(const BasePtrList& p, const BasePtrList& q)
+tsym::BasePtrCtr tsym::ProductSimpl::mergeNonEmpty(const BasePtrCtr& p, const BasePtrCtr& q)
 {
-    const BasePtr p1(p.front());
-    const BasePtr q1(q.front());
-    const BasePtrList p1q1(p1, q1);
-    const BasePtrList q1p1(q1, p1);
-    BasePtrList pRest(p.rest());
-    BasePtrList qRest(q.rest());
-    BasePtrList res;
+    BasePtr p1(p.front());
+    BasePtr q1(q.front());
+    const BasePtrCtr p1q1{ p1, q1 };
+    const BasePtrCtr q1p1{ q1, p1 };
+    BasePtrCtr pRest(ctr::rest(p));
+    BasePtrCtr qRest(ctr::rest(q));
+    BasePtrCtr res;
 
     res = simplTwoFactors(p1, q1);
 
     if (res.empty())
         return merge(pRest, qRest);
     else if (res.size() == 1 && res.front()->isOne())
-        return BasePtrList(merge(pRest, qRest));
+        return merge(pRest, qRest);
     else if (res.size() == 1)
-        return BasePtrList(res, merge(pRest, qRest));
-    else if (res.isEqual(p1q1))
-        return BasePtrList(p1, merge(pRest, q));
-    else if (res.isEqual(q1p1))
-        return BasePtrList(q1, merge(p, qRest));
+        return ctr::join(std::move(res), merge(pRest, qRest));
+    else if (ctr::areEqual(res, p1q1))
+        return ctr::join(std::move(p1), merge(pRest, q));
+    else if (ctr::areEqual(res, q1p1))
+        return ctr::join(std::move(q1), merge(p, qRest));
 
     TSYM_ERROR("ProductSimpl: Error merging %S and %S to %S", p1, q1, res);
 
-    return BasePtrList();
+    return {};
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplTwoFactorsWithoutProduct(const BasePtr& f1,
+tsym::BasePtrCtr tsym::ProductSimpl::simplTwoFactorsWithoutProduct(const BasePtr& f1,
         const BasePtr& f2)
 {
     if (f1->isOne())
-        return BasePtrList(f2);
+        return { f2 };
     else if (f2->isOne())
-        return BasePtrList(f1);
+        return { f1 };
     else if (f1->isConst() && f2->isConst())
         /* Here, we differ from Cohen's algorithm, as numerics and constant powers (sqrt(2) etc.)are
          * handled together and somewhat similarly. */
@@ -254,12 +258,12 @@ tsym::BasePtrList tsym::ProductSimpl::simplTwoFactorsWithoutProduct(const BasePt
     else if (haveEqualBases(f1, f2))
         return simplTwoEqualBases(f1, f2);
     else if (order::doPermute(f1, f2))
-        return BasePtrList(f2, f1);
+        return { f2, f1 };
     else
-        return BasePtrList(f1, f2);
+        return { f1, f2 };
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplTwoConst(const BasePtr& f1, const BasePtr& f2)
+tsym::BasePtrCtr tsym::ProductSimpl::simplTwoConst(const BasePtr& f1, const BasePtr& f2)
 {
     if (f1->isNumeric() && f2->isNumeric())
         return simplTwoNumerics(f1, f2);
@@ -284,24 +288,24 @@ tsym::BasePtrList tsym::ProductSimpl::simplTwoConst(const BasePtr& f1, const Bas
     else if (order::doPermute(f1, f2))
         /* This has to be checked additionaly for e.g. (1 + sqrt(2))*sqrt(3), which doesn't need
          * simplification at this point, but should be perturbed in its order. */
-        return BasePtrList(f2, f1);
+        return { f2, f1 };
 
-    return BasePtrList(f1, f2);
+    return { f1, f2 };
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplTwoNumerics(const BasePtr& f1, const BasePtr& f2)
+tsym::BasePtrCtr tsym::ProductSimpl::simplTwoNumerics(const BasePtr& f1, const BasePtr& f2)
 {
     const Number n1(f1->numericEval());
     const Number n2(f2->numericEval());
     const Number res(n1*n2);
 
     if (res.isOne())
-        return BasePtrList();
+        return {};
     else
-        return BasePtrList(Numeric::create(res));
+        return { Numeric::create(res) };
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplNumAndConst(const BasePtr& numeric,
+tsym::BasePtrCtr tsym::ProductSimpl::simplNumAndConst(const BasePtr& numeric,
         const BasePtr& constant)
 {
     /* At this point, the second parameter should either be a sum, a numeric power or a constant
@@ -309,19 +313,19 @@ tsym::BasePtrList tsym::ProductSimpl::simplNumAndConst(const BasePtr& numeric,
     assert(!constant->isConstant());
 
     if (constant->isSum())
-        return BasePtrList(numeric, constant);
+        return { numeric, constant };
     else if (constant->isNumericPower())
         return simplNumAndNumPow(numeric, constant);
     else if (constant->isPower())
-        return BasePtrList(numeric, constant);
+        return { numeric, constant };
 
     TSYM_ERROR("Wrong type during ProductSimpl of two const. expressions!"
             "Got %S as Numeric and %S as const.!", numeric, constant);
 
-    return BasePtrList(numeric, constant);
+    return { numeric, constant };
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplNumAndNumPow(const BasePtr& numeric,
+tsym::BasePtrCtr tsym::ProductSimpl::simplNumAndNumPow(const BasePtr& numeric,
         const BasePtr& numPow)
 {
     const Number base(numPow->base()->numericEval());
@@ -331,7 +335,7 @@ tsym::BasePtrList tsym::ProductSimpl::simplNumAndNumPow(const BasePtr& numeric,
     return simplNumAndNumPow(preFactor, base, exp);
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplNumAndNumPow(const Number& preFactor, const Number& base,
+tsym::BasePtrCtr tsym::ProductSimpl::simplNumAndNumPow(const Number& preFactor, const Number& base,
         const Number& exp)
 {
     NumPowerSimpl numericPow;
@@ -347,9 +351,9 @@ tsym::BasePtrList tsym::ProductSimpl::simplNumAndNumPow(const Number& preFactor,
     preFac = Numeric::create(numericPow.getPreFactor());
 
     if (preFac->isOne())
-        return BasePtrList(Power::create(newBase, newExp));
+        return { Power::create(newBase, newExp) };
     else
-        return BasePtrList(preFac, Power::create(newBase, newExp));
+        return { preFac, Power::create(newBase, newExp) };
 }
 
 bool tsym::ProductSimpl::haveEqualBases(const BasePtr& f1, const BasePtr& f2)
@@ -357,7 +361,7 @@ bool tsym::ProductSimpl::haveEqualBases(const BasePtr& f1, const BasePtr& f2)
     return f1->base()->isEqual(f2->base());
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplTwoEqualBases(const BasePtr& f1, const BasePtr& f2)
+tsym::BasePtrCtr tsym::ProductSimpl::simplTwoEqualBases(const BasePtr& f1, const BasePtr& f2)
 {
     const BasePtr newBase(f1->base());
     const BasePtr e1(f1->exp());
@@ -370,9 +374,9 @@ tsym::BasePtrList tsym::ProductSimpl::simplTwoEqualBases(const BasePtr& f1, cons
         ;
     else if (isFraction(e1) && isFraction(e2) && isInteger(newExp))
         /* Exponent addition would hide the fact that the power factors could be undefined. */
-        return BasePtrList(f1, f2);
+        return { f1, f2 };
 
-    return BasePtrList(Power::create(newBase, newExp));
+    return { Power::create(newBase, newExp) };
 }
 
 bool tsym::ProductSimpl::areContractableTrigFctPowers(const BasePtr& f1, const BasePtr& f2)
@@ -401,7 +405,7 @@ bool tsym::ProductSimpl::areNumPowersWithEqualExp(const BasePtr& f1, const BaseP
     return exp1->isEqual(exp2);
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplTwoEqualExp(const BasePtr& f1, const BasePtr& f2)
+tsym::BasePtrCtr tsym::ProductSimpl::simplTwoEqualExp(const BasePtr& f1, const BasePtr& f2)
 {
     const Number base1(f1->base()->numericEval());
     const Number base2(f2->base()->numericEval());
@@ -417,7 +421,7 @@ bool tsym::ProductSimpl::areNumPowersWithZeroSumExp(const BasePtr& f1, const Bas
     return sum->isZero();
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplTwoZeroSumExp(const BasePtr& f1, const BasePtr& f2)
+tsym::BasePtrCtr tsym::ProductSimpl::simplTwoZeroSumExp(const BasePtr& f1, const BasePtr& f2)
 {
     /* f1 and f2 are both numeric powers. */
     const Number base1(f1->base()->numericEval());
@@ -428,7 +432,7 @@ tsym::BasePtrList tsym::ProductSimpl::simplTwoZeroSumExp(const BasePtr& f1, cons
 
     /* No care must be taken for the sign of f1 and f2, the subsequent treatment will choose the
      * positive exponent. */
-    return BasePtrList(Power::create(Numeric::create(base1*base2), exp1));
+    return { Power::create(Numeric::create(base1*base2), exp1) };
 }
 
 bool tsym::ProductSimpl::areNumPowersWithEqualExpDenom(const BasePtr& f1, const BasePtr& f2)
@@ -439,7 +443,7 @@ bool tsym::ProductSimpl::areNumPowersWithEqualExpDenom(const BasePtr& f1, const 
         return false;
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplTwoEqualExpDenom(const BasePtr& f1, const BasePtr& f2)
+tsym::BasePtrCtr tsym::ProductSimpl::simplTwoEqualExpDenom(const BasePtr& f1, const BasePtr& f2)
     /* This method has to manually perform an evaluation of integer exponentiation and
      * multiplication. */
 {
@@ -458,9 +462,9 @@ tsym::BasePtrList tsym::ProductSimpl::simplTwoEqualExpDenom(const BasePtr& f1, c
     newBase = Number(newNum, newDenom);
 
     if (newBase.numerator() > limit || newBase.denominator() > limit)
-        return BasePtrList(f1, f2);
+        return { f1, f2 };
     else
-        return BasePtrList(Power::create(Numeric::create(newBase), newExp));
+        return { Power::create(Numeric::create(newBase), newExp) };
 }
 
 tsym::Int tsym::ProductSimpl::evalNumExpNumerator(const BasePtr& numPow)
@@ -488,14 +492,14 @@ tsym::Int tsym::ProductSimpl::evalDenomExpNumerator(const BasePtr& numPow)
     return evalExpNumerator(base, exp);
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplNFactors(BasePtrList u)
+tsym::BasePtrCtr tsym::ProductSimpl::simplNFactors(BasePtrCtr u)
 {
     prepareConst(u);
 
     return simplPreparedFactors(u);
 }
 
-void tsym::ProductSimpl::prepareConst(BasePtrList& u)
+void tsym::ProductSimpl::prepareConst(BasePtrCtr& u)
     /* Some elements of the factor list have to be preprocessed due to the handling of numeric
      * powers: as the contraction of two numeric powers may result in a product of an integer and a
      * different numeric power (e.g. sqrt(3)*sqrt(6) = 3*sqrt(2)), the usual ordering of
@@ -511,7 +515,7 @@ void tsym::ProductSimpl::prepareConst(BasePtrList& u)
     contract(u, &ProductSimpl::areNumPowersWithEqualExpDenom, &ProductSimpl::simplTwoEqualExpDenom);
 }
 
-void tsym::ProductSimpl::contractNumerics(BasePtrList& u)
+void tsym::ProductSimpl::contractNumerics(BasePtrCtr& u)
 {
     auto it(u.begin());
     Number n(1);
@@ -527,7 +531,7 @@ void tsym::ProductSimpl::contractNumerics(BasePtrList& u)
         u.push_front(Numeric::create(n));
 }
 
-void tsym::ProductSimpl::contractConst(BasePtrList& u)
+void tsym::ProductSimpl::contractConst(BasePtrCtr& u)
 {
     for (auto it1 = u.begin(); it1 != u.end(); ++it1)
             for (auto it2 = it1; it2 != u.end(); ++it2)
@@ -549,10 +553,10 @@ bool tsym::ProductSimpl::areTwoContractableConst(const BasePtr& f1, const BasePt
         return false;
 }
 
-void tsym::ProductSimpl::contractTwoConst(BasePtrList::iterator& it1,
-    BasePtrList::iterator& it2, BasePtrList& u)
+void tsym::ProductSimpl::contractTwoConst(BasePtrCtr::iterator& it1,
+    BasePtrCtr::iterator& it2, BasePtrCtr& u)
 {
-    const BasePtrList res(simplTwoConst(*it1, *it2));
+    const BasePtrCtr res(simplTwoConst(*it1, *it2));
 
     if (res.size() == 1) {
         *it1 = res.front();
@@ -564,7 +568,7 @@ void tsym::ProductSimpl::contractTwoConst(BasePtrList::iterator& it1,
         TSYM_ERROR("Error contracting %S and %S to %S", *it1, *it2, res);
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplPreparedFactors(const BasePtrList& u)
+tsym::BasePtrCtr tsym::ProductSimpl::simplPreparedFactors(const BasePtrCtr& u)
 {
     if (u.size() == 1)
         return u;
@@ -574,15 +578,15 @@ tsym::BasePtrList tsym::ProductSimpl::simplPreparedFactors(const BasePtrList& u)
         return simplNPreparedFactors(u);
 }
 
-tsym::BasePtrList tsym::ProductSimpl::simplNPreparedFactors(const BasePtrList& u)
+tsym::BasePtrCtr tsym::ProductSimpl::simplNPreparedFactors(const BasePtrCtr& u)
 {
-    const BasePtrList uRest(u.rest());
+    const BasePtrCtr uRest(ctr::rest(u));
     const BasePtr u1(u.front());
-    BasePtrList simplRest;
+    BasePtrCtr simplRest;
 
     simplRest = simplify(uRest);
 
     /* Again, slightly different from Cohen's algorithm: u1 can't be a product, because products
-     * components have been merged into the input BasePtrList at the very beginning. */
-    return merge(BasePtrList(u1), simplRest);
+     * components have been merged into the input BasePtrCtr at the very beginning. */
+    return merge({ u1 }, simplRest);
 }

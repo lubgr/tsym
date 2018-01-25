@@ -5,6 +5,7 @@
 #include "var.h"
 #include "matrix.h"
 #include "testsuitelogger.h"
+#include "ctr.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -17,6 +18,16 @@ bool operator == (const BasePtr& lhs, const BasePtr& rhs)
 bool operator != (const BasePtr& lhs, const BasePtr& rhs)
 {
     return lhs->isDifferent(rhs);
+}
+
+bool operator == (const BasePtrCtr& lhs, const BasePtrCtr& rhs)
+{
+    return ctr::areEqual(lhs, rhs);
+}
+
+bool operator != (const BasePtrCtr& lhs, const BasePtrCtr& rhs)
+{
+    return ctr::areDifferent(lhs, rhs);
 }
 
 template<> SimpleString StringFrom(const Matrix& m)

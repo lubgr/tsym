@@ -34,15 +34,15 @@ namespace tsym {
             unsigned complexity() const;
 
         private:
-            Trigonometric(const BasePtrList& args, Type type);
+            Trigonometric(const BasePtrCtr& args, Type type);
             Trigonometric(const Trigonometric& other);
             Trigonometric& operator = (const Trigonometric& other);
             ~Trigonometric() = default;
 
             static BasePtr create(Type type, const BasePtr& arg);
-            static BasePtr createInstance(Type type, const BasePtrList& args);
+            static BasePtr createInstance(Type type, const BasePtrCtr& args);
             static bool doesSymmetryApply(const BasePtr& arg);
-            static bool haveAllNegativePrefactors(const BasePtrList& operands);
+            static bool haveAllNegativePrefactors(const BasePtrCtr& operands);
             static BasePtr createBySymmetry(Type type, const BasePtr& negativeArg);
             static BasePtr createNumerically(Type type, const BasePtr& arg);
             static BasePtr createNumericallyBySymmetry(Type type, const BasePtr& arg);

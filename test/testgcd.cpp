@@ -310,7 +310,7 @@ TEST(Gcd, largeMultivarPolyCohenExample)
     const BasePtr aSquare = Power::create(a, two);
     const BasePtr bSquare = Power::create(b, two);
     const BasePtr expected = Sum::create(two, a);
-    BasePtrList summands;
+    BasePtrCtr summands;
     BasePtr u;
     BasePtr v;
 

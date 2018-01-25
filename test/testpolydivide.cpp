@@ -14,38 +14,37 @@ TEST_GROUP(PolyDivide) {};
 
 TEST(PolyDivide, zeroDividend)
 {
-    const BasePtrList result = poly::divide(zero, two, BasePtrList(a, b));
+    const BasePtrCtr result = poly::divide(zero, two, { a, b });
 
     CHECK_EQUAL(zero, result.front());
     CHECK_EQUAL(zero, result.back());
 }
 
-TEST(PolyDivide, emptyList)
+TEST(PolyDivide, emptyContainer)
 {
     const BasePtr u = Sum::create(a, b);
     const BasePtr v = Product::create(c, Sum::create(d, e));
-    const BasePtrList result = poly::divide(u, v, BasePtrList());
+    const BasePtrCtr result = poly::divide(u, v, {});
 
     CHECK_EQUAL(zero, result.front());
     CHECK_EQUAL(u, result.back());
 }
 
-TEST(PolyDivide, wrongSymbolsInList)
+TEST(PolyDivide, wrongSymbolsInContainer)
 {
     const BasePtr u = Power::create(Sum::create(a, b), two);
     const BasePtr v = Sum::create(Product::create(two, c), Power::create(d, three));
-    const BasePtrList result = poly::divide(u, v, BasePtrList(e, f));
+    const BasePtrCtr result = poly::divide(u, v, { e, f });
 
     CHECK_EQUAL(zero, result.front());
     CHECK_EQUAL(u, result.back());
 }
 
-TEST(PolyDivide, twoFractionsEmptyList)
+TEST(PolyDivide, twoFractionsEmptyContainer)
     /* (1/3)/(4/5) = 5/12. */
 {
     const BasePtr expected = Numeric::create(5, 12);
-    const BasePtrList result = poly::divide(Numeric::third(), Numeric::create(4, 5),
-            BasePtrList());
+    const BasePtrCtr result = poly::divide(Numeric::third(), Numeric::create(4, 5), {});
 
     CHECK_EQUAL(expected, result.front());
     CHECK(result.back()->isZero());
@@ -56,9 +55,9 @@ TEST(PolyDivide, fractionCoeff)
     const BasePtr expected = Product::create(Numeric::create(-14, 9), Power::create(a, two));
     const BasePtr u = Product::create(Numeric::create(2, 3), Power::create(a, three), b);
     const BasePtr v = Product::create(Numeric::create(-3, 7), a, b);
-    BasePtrList result;
+    BasePtrCtr result;
 
-    result = poly::divide(u, v, BasePtrList(a, b));
+    result = poly::divide(u, v, { a, b });
 
     CHECK_EQUAL(expected, result.front());
     CHECK_EQUAL(zero, result.back());
@@ -66,7 +65,7 @@ TEST(PolyDivide, fractionCoeff)
 
 TEST(PolyDivide, invalidInputBothZero)
 {
-    BasePtrList result;
+    BasePtrCtr result;
 
     disableLog();
     result = poly::divide(zero, zero);
@@ -80,10 +79,10 @@ TEST(PolyDivide, invalidInputWithFunction)
 {
     const BasePtr u = Trigonometric::createAcos(a);
     const BasePtr v = Sum::create(two, a);
-    BasePtrList result;
+    BasePtrCtr result;
 
     disableLog();
-    result = poly::divide(u, v, BasePtrList(a));
+    result = poly::divide(u, v, { a });
     enableLog();
 
     CHECK(result.front()->isUndefined());
@@ -97,7 +96,7 @@ TEST(PolyDivide, intRemainder)
     const BasePtr expectedRemainder = Numeric::create(-7);
     BasePtr expectedQuotient;
     BasePtr dividend;
-    BasePtrList res;
+    BasePtrCtr res;
 
     dividend = Sum::create({ Product::create(three, Power::create(a, three)),
         Product::create(Numeric::create(-5), Power::create(a, two)), Product::create(ten, a),
@@ -117,9 +116,9 @@ TEST(PolyDivide, noQuotient)
     const BasePtr divisor = Sum::create(Product::create(a, b), Numeric::create(-1));
     const BasePtr dividend = Sum::create(Power::create(a, two), Sum::create(Product::create(a,
                     Numeric::create(-2)), Product::create(Numeric::create(-1), b)));
-    BasePtrList res;
+    BasePtrCtr res;
 
-    res = poly::divide(dividend, divisor, BasePtrList(a, b));
+    res = poly::divide(dividend, divisor, { a, b });
 
     CHECK(res.front()->isZero());
     CHECK_EQUAL(dividend, res.back());
@@ -132,9 +131,9 @@ TEST(PolyDivide, quotientWithRationalCoeff)
     const BasePtr u = Sum::create(Product::minus(a, a, b), Power::create(b, three));
     const BasePtr v = Product::minus(two, b);
     const BasePtr expected = Sum::create(Product::create(half, a, a), Product::minus(half, b, b));
-    BasePtrList res;
+    BasePtrCtr res;
 
-    res = poly::divide(u, v, BasePtrList(a, b));
+    res = poly::divide(u, v, { a, b });
 
     CHECK_EQUAL(expected, res.front());
     CHECK(res.back()->isZero());
@@ -146,8 +145,8 @@ TEST(PolyDivide, multipleVarsNoRemainder)
             Product::create(a, c));
     const BasePtr p2 = Sum::create(Power::create(d, three), Product::create(two, e));
     const BasePtr dividend = Product::create(p1, p2)->expand();
-    const BasePtrList vars { a, b, c, d, e };
-    const BasePtrList res = poly::divide(dividend, p2, vars);
+    const BasePtrCtr vars { a, b, c, d, e };
+    const BasePtrCtr res = poly::divide(dividend, p2, vars);
 
     CHECK_EQUAL(p1, res.front());
     CHECK(res.back()->isZero());
@@ -164,8 +163,8 @@ TEST(PolyDivide, hugeExpandedPolynomials)
     const BasePtr p12 = Product::create(p1, p2)->expand();
     const BasePtr p34 = Product::create(p3, p4)->expand();
     const BasePtr p1234 = Product::create(p12, p34)->expand();
-    const BasePtrList vars { a, b, c, d, e };
-    BasePtrList res;
+    const BasePtrCtr vars { a, b, c, d, e };
+    BasePtrCtr res;
 
     res = poly::divide(p1234, p12, vars);
 
@@ -184,7 +183,7 @@ TEST(PolyPseudoDivide, cohenExample01)
 {
     const BasePtr u = a;
     const BasePtr v = Sum::create(Product::create(a, b), b);
-    const BasePtrList result = poly::pseudoDivide(u, v, a);
+    const BasePtrCtr result = poly::pseudoDivide(u, v, a);
 
     CHECK_EQUAL(one, result.front());
     CHECK_EQUAL(Product::minus(b), result.back());
@@ -203,7 +202,7 @@ TEST(PolyPseudoDivide, cohenExample02)
             Product::create(three, a, b), two);
     const BasePtr v = Sum::create(Product::create(two, Power::create(a, three), b),
             Product::create(two, a), three);
-    const BasePtrList result = poly::pseudoDivide(u, v, a);
+    const BasePtrCtr result = poly::pseudoDivide(u, v, a);
 
     CHECK_EQUAL(expectedQuotient, result.front());
     CHECK_EQUAL(expectedRemainder, result.back());
@@ -213,7 +212,7 @@ TEST(PolyPseudoDivide, illegalInput)
 {
     const BasePtr u = Power::create(a, Numeric::create(1.23456789));
     const BasePtr v = Trigonometric::createSin(a);
-    BasePtrList result;
+    BasePtrCtr result;
 
     disableLog();
     result = poly::pseudoDivide(u, v, a);

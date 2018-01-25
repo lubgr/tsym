@@ -457,7 +457,7 @@ TEST(Printer, negProductOfEqualExpPowers)
 
 TEST(Printer, productOfFunctions)
 {
-    BasePtrList fac;
+    BasePtrCtr fac;
 
     fac.push_back(a);
     fac.push_back(Trigonometric::createAtan(Power::create(Numeric::create(17),
@@ -473,7 +473,7 @@ TEST(Printer, productOfFunctions)
 
 TEST(Printer, productOfFunctionsDebugPrint)
 {
-    BasePtrList fac;
+    BasePtrCtr fac;
 
     fac.push_back(a);
     fac.push_back(Trigonometric::createAtan(Power::create(Numeric::create(17),

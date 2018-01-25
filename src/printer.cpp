@@ -2,6 +2,7 @@
 #include <cassert>
 #include "printer.h"
 #include "plaintextprintengine.h"
+#include "ctr.h"
 #include "base.h"
 #include "numeric.h"
 #include "power.h"
@@ -130,7 +131,8 @@ namespace tsym {
                 {
                     auto summands = sum.operands();
 
-                    engine.invokePrint(summands.pop_front());
+                    engine.invokePrint(summands.front());
+                    summands.pop_front();
 
                     for (auto& summand: summands) {
                         if (isProductWithNegativeNumeric(summand)) {
@@ -155,7 +157,7 @@ namespace tsym {
 
                 void product(const Base& product)
                 {
-                    BasePtrList factors(product.operands());
+                    BasePtrCtr factors(product.operands());
 
                     if (powerAsFraction == PowerAsFraction::TRUE)
                         productAsFraction(factors);
@@ -163,7 +165,7 @@ namespace tsym {
                         productWithoutFractions(factors);
                 }
 
-                void productAsFraction(BasePtrList& factors)
+                void productAsFraction(BasePtrCtr& factors)
                 {
                     const unsigned productPrecedence = 2;
                     auto frac = getProductFrac(factors);
@@ -188,9 +190,9 @@ namespace tsym {
                         engine.openParentheses().invokePrint(Product::create(denom)).closeParentheses();
                 }
 
-                std::pair<tsym::BasePtrList, tsym::BasePtrList> getProductFrac(const BasePtrList& origFactors)
+                std::pair<tsym::BasePtrCtr, tsym::BasePtrCtr> getProductFrac(const BasePtrCtr& origFactors)
                 {
-                    auto frac = std::pair<BasePtrList, BasePtrList>{};
+                    auto frac = std::pair<BasePtrCtr, BasePtrCtr>{};
 
                     for (const auto& origFactor : origFactors) {
                         const auto& exp = origFactor->exp();
@@ -205,7 +207,8 @@ namespace tsym {
                         return frac;
 
                     /* Adjust the previous logic and move factors like 2/3 to numerator/denominator. */
-                    const auto fracFactor = frac.first.pop_front()->numericEval();
+                    const auto fracFactor = frac.first.front()->numericEval();
+                    frac.first.pop_front();
 
                     frac.first.push_front(Numeric::create(fracFactor.numerator()));
                     frac.second.push_front(Numeric::create(fracFactor.denominator()));
@@ -225,10 +228,12 @@ namespace tsym {
                         return 4;
                 }
 
-                void productWithoutFractions(BasePtrList& factors)
+                void productWithoutFractions(BasePtrCtr& factors)
                 {
-                    const auto first = factors.pop_front();
+                    const auto first = factors.front();
                     const unsigned productPrecedence = 2;
+
+                    factors.pop_front();
 
                     if (Product::minus(first)->isOne())
                         engine.unaryMinusSign();

@@ -8,6 +8,7 @@
 #include "power.h"
 #include "sum.h"
 #include "polyinfo.h"
+#include "ctr.h"
 #include "product.h"
 
 tsym::GcdStrategy::~GcdStrategy() {}
@@ -25,7 +26,7 @@ tsym::BasePtr tsym::GcdStrategy::compute(const BasePtr& u, const BasePtr& v) con
 }
 
 tsym::BasePtr tsym::GcdStrategy::compute(const BasePtr& u, const BasePtr& v,
-        const BasePtrList& L) const
+        const BasePtrCtr& L) const
 {
     const BasePtr uExp(u->expand());
     const BasePtr vExp(v->expand());
@@ -76,7 +77,7 @@ tsym::Int tsym::GcdStrategy::integerGcd(const Int& u, const Int& v) const
 }
 
 bool tsym::GcdStrategy::haveCommonSymbol(const BasePtr& u, const BasePtr& v,
-        const BasePtrList& L) const
+        const BasePtrCtr& L) const
 {
     for (const auto& item : L)
         if (u->has(item) && v->has(item))
@@ -86,7 +87,7 @@ bool tsym::GcdStrategy::haveCommonSymbol(const BasePtr& u, const BasePtr& v,
 }
 
 tsym::BasePtr tsym::GcdStrategy::gcdViaAlgo(const BasePtr& u, const BasePtr& v,
-        const BasePtrList& L) const
+        const BasePtrCtr& L) const
 {
     const BasePtr intContent(integerContent(u, v));
     const BasePtr factor(Power::oneOver(intContent));
@@ -125,7 +126,7 @@ tsym::Number tsym::GcdStrategy::integerContent(const BasePtr& poly) const
     return result.isInt() ? result : 1;
 }
 
-tsym::Number tsym::GcdStrategy::integerContentOfSum(const BasePtrList& summands) const
+tsym::Number tsym::GcdStrategy::integerContentOfSum(const BasePtrCtr& summands) const
 {
     Number intContent;
     Int result(0);
@@ -141,9 +142,9 @@ tsym::Number tsym::GcdStrategy::integerContentOfSum(const BasePtrList& summands)
     return Number(result);
 }
 
-tsym::BasePtr tsym::GcdStrategy::normalize(const BasePtr& result, const BasePtrList& L) const
+tsym::BasePtr tsym::GcdStrategy::normalize(const BasePtr& result, const BasePtrCtr& L) const
 {
-    BasePtrList symbolListCopy(L);
+    BasePtrCtr symbolListCopy(L);
     Number factor;
 
     factor = normalizationFactor(result, symbolListCopy);
@@ -151,15 +152,17 @@ tsym::BasePtr tsym::GcdStrategy::normalize(const BasePtr& result, const BasePtrL
     return Product::create(Numeric::create(factor), result);
 }
 
-tsym::Number tsym::GcdStrategy::normalizationFactor(const BasePtr& arg, BasePtrList& L) const
+tsym::Number tsym::GcdStrategy::normalizationFactor(const BasePtr& arg, BasePtrCtr& L) const
 {
     BasePtr lCoeff;
     Number fac;
 
     if (L.empty())
         lCoeff = arg;
-    else
-        lCoeff = arg->leadingCoeff(L.pop_front());
+    else {
+        lCoeff = arg->leadingCoeff(L.back());
+        L.pop_back();
+    }
 
     if (!lCoeff->isNumeric())
         return normalizationFactor(lCoeff, L);

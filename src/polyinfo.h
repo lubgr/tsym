@@ -2,7 +2,7 @@
 #define TSYM_POLYINFO_H
 
 #include "baseptr.h"
-#include "baseptrlist.h"
+#include "baseptrctr.h"
 
 namespace tsym {
     class PolyInfo {
@@ -17,7 +17,7 @@ namespace tsym {
              * types, i.e., Sum, Product or Power: */
             bool isInputValid() const;
             /* The first element is the main symbol: */
-            const BasePtrList& listOfSymbols();
+            const BasePtrCtr& listOfSymbols();
             /* The main symbol is the variable with least degree contained in u and v. If there is
              * no common symbol, Undefined is returned: */
             BasePtr mainSymbol();
@@ -30,12 +30,12 @@ namespace tsym {
             void addSymbols(const BasePtr& ptr);
             void addIfNotAlreadyStored(const BasePtr& symbol);
             void addSymbolsNonScalar(const BasePtr& ptr);
-            void addSymbols(const BasePtrList& list);
+            void addSymbols(const BasePtrCtr& list);
             bool hasCommonSymbol() const;
 
             BasePtr u {};
             BasePtr v {};
-            BasePtrList symbolList {};
+            BasePtrCtr symbolList {};
             bool needsUpdate = true;
     };
 }

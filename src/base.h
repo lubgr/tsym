@@ -2,7 +2,7 @@
 #define TSYM_BASE_H
 
 #include <memory>
-#include "baseptrlist.h"
+#include "baseptrctr.h"
 
 namespace tsym {
     class SymbolMap;
@@ -80,16 +80,16 @@ namespace tsym {
             BasePtr clone() const;
             BasePtr normal() const;
             BasePtr diff(const BasePtr& symbol) const;
-            const BasePtrList& operands() const;
+            const BasePtrCtr& operands() const;
 
             bool isEqualByTypeAndOperands(const BasePtr& other) const;
             void setDebugString();
 
-            const BasePtrList ops;
+            const BasePtrCtr ops;
 
         protected:
             Base() = default;
-            explicit Base(const BasePtrList& operands);
+            explicit Base(const BasePtrCtr& operands);
             /* Creates Base subclasses for use within a smart pointer: */
             static BasePtr instantiate(std::function<const Base*()>&& create);
 

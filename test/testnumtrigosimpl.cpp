@@ -398,7 +398,7 @@ TEST(NumTrigoSimpl, noSimplificationInverse)
 
 TEST(NumTrigoSimpl, noSimplificationLargeInput)
 {
-    BasePtrList fac;
+    BasePtrCtr fac;
     BasePtr arg;
 
     fac.push_back(Numeric::create(1, 20));

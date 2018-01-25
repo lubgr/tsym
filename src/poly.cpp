@@ -9,19 +9,20 @@
 #include "logging.h"
 #include "polyinfo.h"
 #include "primitivegcd.h"
+#include "ctr.h"
 #include "subresultantgcd.h"
 #include "cache.h"
 
 namespace tsym {
-    static BasePtrList divideEmptyList(const BasePtr& u, const BasePtr& v);
-    static BasePtrList divideNonEmpty(const BasePtr& u, const BasePtr& v, const BasePtrList& L);
-    static BasePtrList pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x,
+    static BasePtrCtr divideEmptyList(const BasePtr& u, const BasePtr& v);
+    static BasePtrCtr divideNonEmpty(const BasePtr& u, const BasePtr& v, const BasePtrCtr& L);
+    static BasePtrCtr pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x,
             bool computeQuotient);
-    static BasePtrList pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x,
+    static BasePtrCtr pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x,
             bool computeQuotient);
     static int unitFromNonNumeric(const BasePtr& polynomial);
     static BasePtr getFirstSymbol(const BasePtr& polynomial);
-    static BasePtr getFirstSymbol(const BasePtrList& polynomials);
+    static BasePtr getFirstSymbol(const BasePtrCtr& polynomials);
     static const GcdStrategy *defaultGcd();
     static BasePtr nonTrivialContent(const BasePtr& expandedPolynomial, const BasePtr& x,
             const GcdStrategy *algo);
@@ -30,11 +31,11 @@ namespace tsym {
     static int minDegreeOfProduct(const BasePtr& product, const tsym::BasePtr& variable);
 }
 
-tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v)
+tsym::BasePtrCtr tsym::poly::divide(const BasePtr& u, const BasePtr& v)
 {
-    static Cache<BasePtrList, BasePtrList> cache;
-    const BasePtrList *cached(cache.retrieve({ u, v }));
-    BasePtrList result;
+    static Cache<BasePtrCtr, BasePtrCtr> cache;
+    const BasePtrCtr *cached(cache.retrieve({ u, v }));
+    BasePtrCtr result;
 
     if (cached != nullptr)
         result = *cached;
@@ -44,7 +45,7 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v)
     return cache.insertAndReturn({ u, v }, result);
 }
 
-tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v, const BasePtrList& L)
+tsym::BasePtrCtr tsym::poly::divide(const BasePtr& u, const BasePtr& v, const BasePtrCtr& L)
     /* This function implements the algorithm given in Cohen, Computer Algebra and Symbolic
      * Computation [2003], page 211. */
 {
@@ -54,28 +55,28 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v, const B
     if (!polyInfo.isInputValid()) {
         TSYM_ERROR("Invalid polynomial division: %S, %S. Return Undefined quotient and remainder.",
                 u, v);
-        return BasePtrList(Undefined::create(), Undefined::create());
+        return { Undefined::create(), Undefined::create() };
     } else if (L.empty())
         return divideEmptyList(u, v);
     else if (v->isEqual(u))
-        return BasePtrList(Numeric::one(), zero);
+        return { Numeric::one(), zero };
     else if (u->isZero())
-        return BasePtrList(zero, zero);
+        return { zero, zero };
     else
         return divideNonEmpty(u, v, L);
 }
 
-tsym::BasePtrList tsym::divideEmptyList(const tsym::BasePtr& u, const tsym::BasePtr& v)
+tsym::BasePtrCtr tsym::divideEmptyList(const tsym::BasePtr& u, const tsym::BasePtr& v)
 {
     const BasePtr quotient(Product::create(u, Power::oneOver(v)));
 
     if (quotient->isNumeric() && quotient->numericEval().isRational())
-        return BasePtrList(quotient, Numeric::zero());
+        return { quotient, Numeric::zero() };
     else
-        return BasePtrList(Numeric::zero(), u);
+        return { Numeric::zero(), u };
 }
 
-tsym::BasePtrList tsym::divideNonEmpty(const BasePtr& u, const BasePtr& v, const BasePtrList& L)
+tsym::BasePtrCtr tsym::divideNonEmpty(const BasePtr& u, const BasePtr& v, const BasePtrCtr& L)
     /* The central part of the algorithm described in Cohen [2003]. */
 {
     const BasePtr& x(L.front());
@@ -83,7 +84,7 @@ tsym::BasePtrList tsym::divideNonEmpty(const BasePtr& u, const BasePtr& v, const
     BasePtr remainder(u);
     int m = u->degree(x);
     int n = v->degree(x);
-    BasePtrList d;
+    BasePtrCtr d;
     BasePtr tmp;
     BasePtr c;
 
@@ -92,10 +93,10 @@ tsym::BasePtrList tsym::divideNonEmpty(const BasePtr& u, const BasePtr& v, const
     while (m >= n) {
         assert(m >= 0 && n >= 0);
 
-        d = poly::divide(remainder->leadingCoeff(x), v->leadingCoeff(x), L.rest());
+        d = poly::divide(remainder->leadingCoeff(x), v->leadingCoeff(x), ctr::rest(L));
 
         if (!d.back()->isZero())
-            return BasePtrList(quotient->expand(), remainder);
+            return { quotient->expand(), remainder };
 
         c = d.front();
         tmp = Power::create(x, Numeric::create(m - n));
@@ -109,16 +110,16 @@ tsym::BasePtrList tsym::divideNonEmpty(const BasePtr& u, const BasePtr& v, const
         m = remainder->degree(x);
     }
 
-    return BasePtrList(quotient->expand(), remainder);
+    return { quotient->expand(), remainder };
 }
 
-tsym::BasePtrList tsym::poly::pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x)
+tsym::BasePtrCtr tsym::poly::pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x)
     /* See Cohen, Computer Algebra and Symbolic Computation [2003], page 240. */
 {
     return pseudoDivide(u, v, x, true);
 }
 
-tsym::BasePtrList tsym::pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x,
+tsym::BasePtrCtr tsym::pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x,
         bool computeQuotient)
 {
     PolyInfo polyInfo(u, v);
@@ -129,10 +130,10 @@ tsym::BasePtrList tsym::pseudoDivide(const BasePtr& u, const BasePtr& v, const B
     TSYM_ERROR("Invalid polyn. pseudo-division: %S, %S. Return Undefined quotient/remainder.",  u,
             v);
 
-    return BasePtrList(Undefined::create(), Undefined::create());
+    return { Undefined::create(), Undefined::create() };
 }
 
-tsym::BasePtrList tsym::pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x,
+tsym::BasePtrCtr tsym::pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x,
         bool computeQuotient)
 {
     const BasePtr lCoeffV(v->leadingCoeff(x));
@@ -169,7 +170,7 @@ tsym::BasePtrList tsym::pseudoDivideChecked(const BasePtr& u, const BasePtr& v, 
     remainder = Product::create(tmp, remainder)->expand();
     quotient = computeQuotient ? Product::create(tmp, quotient)->expand() : Numeric::zero();
 
-    return BasePtrList(quotient, remainder);
+    return { quotient, remainder };
 }
 
 tsym::BasePtr tsym::poly::pseudoRemainder(const BasePtr& u, const BasePtr& v, const BasePtr& x)
@@ -214,7 +215,7 @@ tsym::BasePtr tsym::getFirstSymbol(const BasePtr& polynomial)
     return Undefined::create();
 }
 
-tsym::BasePtr tsym::getFirstSymbol(const BasePtrList& polynomials)
+tsym::BasePtr tsym::getFirstSymbol(const BasePtrCtr& polynomials)
 {
     BasePtr firstSymbol;
 
@@ -230,7 +231,7 @@ tsym::BasePtr tsym::getFirstSymbol(const BasePtrList& polynomials)
 
 tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v)
 {
-    static Cache<BasePtrList, BasePtr> cache;
+    static Cache<BasePtrCtr, BasePtr> cache;
     const BasePtr *cached(cache.retrieve({ u, v }));
 
     if (cached != nullptr)

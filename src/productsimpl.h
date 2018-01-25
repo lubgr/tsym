@@ -3,12 +3,10 @@
 
 #include "int.h"
 #include "baseptr.h"
+#include "baseptrctr.h"
 #include "trigonometric.h"
 
-namespace tsym {
-    class Number;
-    class BasePtrList;
-}
+namespace tsym { class Number; }
 
 namespace tsym {
     /* Automatic simplification of a product of a number of factors according to Cohen, Computer
@@ -28,55 +26,55 @@ namespace tsym {
      * advance to Cohen's algorithm to ensure its proper functionality. */
     class ProductSimpl {
         public:
-            BasePtrList simplify(const BasePtrList& factors);
+            BasePtrCtr simplify(const BasePtrCtr& factors);
 
         private:
-            void prepare(BasePtrList& fac);
-            void extractProducts(BasePtrList& u);
-            void contractTrigonometrics(BasePtrList& u);
-            void contract(BasePtrList& u,
+            void prepare(BasePtrCtr& fac);
+            void extractProducts(BasePtrCtr& u);
+            void contractTrigonometrics(BasePtrCtr& u);
+            void contract(BasePtrCtr& u,
                     bool (ProductSimpl::*check)(const BasePtr& f1, const BasePtr& f2),
-                    BasePtrList (ProductSimpl::*simpl)(const BasePtr& f1, const BasePtr& f2));
+                    BasePtrCtr (ProductSimpl::*simpl)(const BasePtr& f1, const BasePtr& f2));
             bool areContractableTrigFctPowers(const BasePtr& f1, const BasePtr& f2);
             bool isContractableTrigFctPower(const BasePtr& pow);
-            BasePtrList contractTrigFctPowers(const BasePtr& f1, const BasePtr& f2);
+            BasePtrCtr contractTrigFctPowers(const BasePtr& f1, const BasePtr& f2);
             BasePtr trigSymbReplacement(Trigonometric::Type type, const BasePtr& arg);
             BasePtr trigFunctionPowerReplacement(const BasePtr& pow, const BasePtr& sin,
                     const BasePtr& cos);
 
-            BasePtrList simplTwoFactors(const BasePtrList& u);
-            BasePtrList simplTwoFactors(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplTwoFactorsWithProduct(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList merge(const BasePtrList& l1, const BasePtrList& l2);
-            BasePtrList mergeNonEmpty(const BasePtrList& p, const BasePtrList& q);
-            BasePtrList simplTwoFactorsWithoutProduct(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplTwoConst(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplTwoNumerics(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplNumAndConst(const BasePtr& numeric, const BasePtr& constant);
-            BasePtrList simplNumAndNumPow(const BasePtr& numeric, const BasePtr& numPow);
-            BasePtrList simplNumAndNumPow(const Number& preFactor, const Number& base,
+            BasePtrCtr simplTwoFactors(const BasePtrCtr& u);
+            BasePtrCtr simplTwoFactors(const BasePtr& f1, const BasePtr& f2);
+            BasePtrCtr simplTwoFactorsWithProduct(const BasePtr& f1, const BasePtr& f2);
+            BasePtrCtr merge(const BasePtrCtr& l1, const BasePtrCtr& l2);
+            BasePtrCtr mergeNonEmpty(const BasePtrCtr& p, const BasePtrCtr& q);
+            BasePtrCtr simplTwoFactorsWithoutProduct(const BasePtr& f1, const BasePtr& f2);
+            BasePtrCtr simplTwoConst(const BasePtr& f1, const BasePtr& f2);
+            BasePtrCtr simplTwoNumerics(const BasePtr& f1, const BasePtr& f2);
+            BasePtrCtr simplNumAndConst(const BasePtr& numeric, const BasePtr& constant);
+            BasePtrCtr simplNumAndNumPow(const BasePtr& numeric, const BasePtr& numPow);
+            BasePtrCtr simplNumAndNumPow(const Number& preFactor, const Number& base,
                     const Number& exp);
             bool haveEqualBases(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplTwoEqualBases(const BasePtr& f1, const BasePtr& f2);
+            BasePtrCtr simplTwoEqualBases(const BasePtr& f1, const BasePtr& f2);
             bool areNumPowersWithEqualExp(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplTwoEqualExp(const BasePtr& f1, const BasePtr& f2);
+            BasePtrCtr simplTwoEqualExp(const BasePtr& f1, const BasePtr& f2);
             bool areNumPowersWithZeroSumExp(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplTwoZeroSumExp(const BasePtr& f1, const BasePtr& f2);
+            BasePtrCtr simplTwoZeroSumExp(const BasePtr& f1, const BasePtr& f2);
             bool areNumPowersWithEqualExpDenom(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplTwoEqualExpDenom(const BasePtr& f1, const BasePtr& f2);
+            BasePtrCtr simplTwoEqualExpDenom(const BasePtr& f1, const BasePtr& f2);
             Int evalNumExpNumerator(const BasePtr& numPow);
             Int evalExpNumerator(const Number& base, const Int& exp);
             Int evalDenomExpNumerator(const BasePtr& numPow);
 
-            BasePtrList simplNFactors(BasePtrList u);
-            void prepareConst(BasePtrList& u);
-            void contractNumerics(BasePtrList& u);
-            void contractConst(BasePtrList& u);
+            BasePtrCtr simplNFactors(BasePtrCtr u);
+            void prepareConst(BasePtrCtr& u);
+            void contractNumerics(BasePtrCtr& u);
+            void contractConst(BasePtrCtr& u);
             bool areTwoContractableConst(const BasePtr& f1, const BasePtr& f2);
-            void contractTwoConst(BasePtrList::iterator& it1, BasePtrList::iterator& it2,
-                    BasePtrList& u);
-            BasePtrList simplPreparedFactors(const BasePtrList& u);
-            BasePtrList simplNPreparedFactors(const BasePtrList& u);
+            void contractTwoConst(BasePtrCtr::iterator& it1, BasePtrCtr::iterator& it2,
+                    BasePtrCtr& u);
+            BasePtrCtr simplPreparedFactors(const BasePtrCtr& u);
+            BasePtrCtr simplNPreparedFactors(const BasePtrCtr& u);
     };
 }
 

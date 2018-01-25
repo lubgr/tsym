@@ -303,7 +303,7 @@ TEST(Product, numericPowersDifferentExpSign)
 {
     const BasePtr exp = Numeric::create(12, 23);
     const BasePtr expected = Power::create(Numeric::create(11, 300), exp);
-    BasePtrList fac;
+    BasePtrCtr fac;
     BasePtr res;
 
     fac.push_back(Power::create(Numeric::create(3, 5), exp));
@@ -330,7 +330,7 @@ TEST(Product, contractionOfConstPowers)
 {
     const BasePtr expected = Product::create(Power::create(three, Numeric::create(2, 3)),
             Power::create(six, Numeric::create(-1, 2)));
-    BasePtrList fac;
+    BasePtrCtr fac;
     BasePtr res;
 
     fac.push_back(Numeric::create(3, 2));
@@ -348,7 +348,7 @@ TEST(Product, preSortingOfConstPowers)
 {
     const BasePtr expected = Product::create(Power::create(three, Numeric::create(2, 3)),
             Power::create(six, Numeric::create(-1, 2)));
-    BasePtrList fac;
+    BasePtrCtr fac;
     BasePtr res;
 
     fac.push_back(Numeric::create(3, 2));
@@ -402,7 +402,7 @@ TEST(Product, expansionOfConstProductAndSum)
 {
     const BasePtr aux = Sum::create(two, Product::create(two, sqrtThree));
     const BasePtr expected = Sum::create(Product::create(aux, a), Product::create(aux, b));
-    BasePtrList fac;
+    BasePtrCtr fac;
     BasePtr res;
 
     fac.push_back(two);
@@ -418,7 +418,7 @@ TEST(Product, contractNumSqrt)
     /* sqrt(2)*sqrt(3)*sqrt(5)*sqrt(6)*sqrt(7)*sqrt(10) = 30*sqrt(14). */
 {
     const BasePtr expected = Product::create(Numeric::create(30), Power::sqrt(Numeric::create(14)));
-    BasePtrList fac;
+    BasePtrCtr fac;
     BasePtr res;
 
     fac.push_back(sqrtTwo);
@@ -438,7 +438,7 @@ TEST(Product, contractNumPowWithEqualExp)
 {
     const BasePtr sevenToTheFourth = Power::create(seven, Numeric::fourth());
     BasePtr expected;
-    BasePtrList fac;
+    BasePtrCtr fac;
     BasePtr res;
 
     fac.push_back(Power::create(two, oneThird));
@@ -563,7 +563,7 @@ TEST(Product, productOfThreeSymbols)
 TEST(Product, twoProducts)
     /* (2*a*c*e)*(3*b*d*e) = 6*a*b*c*d*e^2. */
 {
-    BasePtrList::const_iterator it;
+    BasePtrCtr::const_iterator it;
     BasePtr expected[6];
     BasePtr res;
     int i;
@@ -589,7 +589,7 @@ TEST(Product, equalProductBasesToPower)
     const BasePtr bSquare = Power::create(b, two);
     const BasePtr product = Product::create(a, bSquare);
     BasePtr res = Product::create(product, product);
-    BasePtrList factors;
+    BasePtrCtr factors;
 
     CHECK(res->isProduct());
 
@@ -618,7 +618,7 @@ TEST(Product, productOfSymbolAndProduct)
 {
     const BasePtr product1 = Product::create(a, c);
     const BasePtr res = Product::create(product1, b);
-    const BasePtrList& fac(res->operands());
+    const BasePtrCtr& fac(res->operands());
     auto it = fac.begin();
 
     CHECK(res->isProduct());
@@ -635,7 +635,7 @@ TEST(Product, productOfProductAndSymbol)
 {
     const BasePtr p2 = Product::create(e, b);
     const BasePtr res = Product::create(a, p2);
-    const BasePtrList& fac(res->operands());
+    const BasePtrCtr& fac(res->operands());
     auto it = fac.begin();
 
     CHECK(res->isProduct());
@@ -670,13 +670,9 @@ TEST(Product, rearrangeSymbolAndPi)
 {
     const BasePtr pi = Constant::createPi();
     const BasePtr res = Product::create(b, pi, a);
-    BasePtrList fac;
+    const BasePtrCtr expected{pi, a, b};
 
-    fac = res->operands();
-
-    CHECK_EQUAL(pi, fac.pop_front());
-    CHECK_EQUAL(a, fac.pop_front());
-    CHECK_EQUAL(b, fac.pop_front());
+    CHECK_EQUAL(expected, res->operands());
 }
 
 TEST(Product, contractNumericsAndPi)
@@ -704,13 +700,14 @@ TEST(Product, orderingOfFunctionsNumbersAndSymbols)
     const BasePtr factors[] = { two, sqrtTwo, a, Trigonometric::createAtan(a), b, c,
         Trigonometric::createCos(one), Trigonometric::createCos(d),
         Trigonometric::createCos(Product::create(d, e)), Trigonometric::createSin(a) };
-    const size_t nFac = sizeof(factors)/sizeof(factors[0]);
+    BasePtrCtr expected;
     const BasePtr product = Product::create({ factors[1], factors[0], factors[5], factors[8],
             factors[9], factors[3], factors[6], factors[2], factors[7], factors[4] });
-    BasePtrList res = product->operands();
 
-    for (size_t i = 0; i < nFac; ++i)
-        CHECK_EQUAL(factors[i], res.pop_front());
+    for (size_t i = 0; i < sizeof(factors)/sizeof(factors[0]); ++i)
+        expected.push_back(factors[i]);
+
+    CHECK_EQUAL(expected, product->operands());
 }
 
 TEST(Product, productOfEqualFunctionsEqualArguments)
@@ -719,11 +716,9 @@ TEST(Product, productOfEqualFunctionsEqualArguments)
     const BasePtr sin = Trigonometric::createSin(a);
     const BasePtr pow = Power::create(sin, two);
     const BasePtr res = Product::create(sin, two, sin, a);
-    BasePtrList fac(res->operands());
+    const BasePtrCtr expected{ two, a, pow };
 
-    CHECK_EQUAL(two, fac.pop_front());
-    CHECK_EQUAL(a, fac.pop_front());
-    CHECK_EQUAL(pow, fac.pop_front());
+    CHECK_EQUAL(expected, res->operands());
 }
 
 TEST(Product, numericEvaluation)
@@ -814,7 +809,7 @@ TEST(Product, numPowEqualDenomExpToProductInLargeList)
 {
     const BasePtr expected = Product::create(Numeric::create(72), Power::sqrt(Numeric::create(85)),
                 Power::create(two, oneThird));
-    BasePtrList fac;
+    BasePtrCtr fac;
     BasePtr res;
 
     fac.push_back(two);
@@ -1000,7 +995,7 @@ TEST(Product, mixedTrigonometricFunctions01)
     const BasePtr tanA = Trigonometric::createTan(half);
     const BasePtr sinB = Trigonometric::createSin(two);
     const BasePtr cosA = Trigonometric::createCos(half);
-    BasePtrList factors;
+    BasePtrCtr factors;
     BasePtr expected;
     BasePtr res;
 
@@ -1029,7 +1024,7 @@ TEST(Product, mixedTrigonometricFunctions02)
     const BasePtr aB = Product::create(a, Power::oneOver(b));
     const BasePtr tanAb = Trigonometric::createTan(aB);
     const BasePtr bA = Power::oneOver(aB);
-    BasePtrList factors;
+    BasePtrCtr factors;
     BasePtr expected;
     BasePtr res;
 

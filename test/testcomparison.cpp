@@ -6,6 +6,7 @@
 #include "power.h"
 #include "product.h"
 #include "sum.h"
+#include "ctr.h"
 #include "trigonometric.h"
 #include "undefined.h"
 #include "tsymtests.h"
@@ -162,23 +163,23 @@ TEST(Comparison, functionsDifferentTrigonometric)
     CHECK(sin->isDifferent(cos));
 }
 
-TEST(Comparison, equalLists)
+TEST(Comparison, equalContainer)
 {
-    const BasePtrList list { ten, a, Product::create(two, b), Sum::create(three, c) };
+    const BasePtrCtr container { ten, a, Product::create(two, b), Sum::create(three, c) };
 
-    CHECK(list.isEqual(list));
+    CHECK(ctr::areEqual(container, container));
 }
 
-TEST(Comparison, differentLists)
+TEST(Comparison, differentContainer)
 {
-    BasePtrList l1 { three, four, a };
-    BasePtrList l2;
+    BasePtrCtr c1 { three, four, a };
+    BasePtrCtr c2;
 
-    l2 = l1;
+    c2 = c1;
 
-    l1.push_back(Trigonometric::createSin(a));
-    l2.push_back(Product::create(b, c));
+    c1.push_back(Trigonometric::createSin(a));
+    c2.push_back(Product::create(b, c));
 
-    CHECK(l1.isDifferent(l2));
-    CHECK(l1.isDifferent(l2));
+    CHECK_FALSE(ctr::areEqual(c1, c2));
+    CHECK_FALSE(ctr::areEqual(c2, c1));
 }

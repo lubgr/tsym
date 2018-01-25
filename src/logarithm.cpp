@@ -23,7 +23,7 @@ namespace tsym {
 }
 
 tsym::Logarithm::Logarithm(const BasePtr& arg) :
-    Function(BasePtrList(arg), "log"),
+    Function({ arg }, "log"),
     arg(ops.front())
 {
     setDebugString();
