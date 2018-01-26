@@ -29,8 +29,10 @@ namespace tsym {
          * input.  */
         public:
             explicit StringToVar(const std::string& source);
-            StringToVar(const StringToVar& other) = delete;
-            StringToVar& operator = (const StringToVar& rhs) = delete;
+            StringToVar(const StringToVar&) = delete;
+            StringToVar& operator = (const StringToVar&) = delete;
+            StringToVar(StringToVar&&) = delete;
+            StringToVar& operator = (StringToVar&&) = delete;
 
             bool success() const;
             const std::vector<std::string>& errorMessages() const;
