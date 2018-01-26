@@ -14,7 +14,7 @@ autocmd BufRead,BufReadPost README.md set spell spelllang=en_us
 
 map <F10> :argadd `git ls-files '*.h' '*.cpp'`
 
-call add(g:UltiSnipsSnippetDirectories, getcwd() . '/misc/vim')
+call add(g:UltiSnipsSnippetDirectories, getcwd() . '/misc')
 
 set path=bin/**,misc/**,src/**,test/**
 
