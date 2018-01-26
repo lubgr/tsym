@@ -1,7 +1,5 @@
-bin/runtests
+bin
 build
-misc/test-logfiles/*
-!misc/test-logfiles/.gitkeep
 .gdb*
 *.swp
 .tags

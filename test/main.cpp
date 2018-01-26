@@ -60,8 +60,7 @@ void initConstructOnFirstUse()
 
 int main(int argc, char** argv)
 {
-    auto logger = std::make_shared<const TestSuiteLogger>("misc/test-logfiles/debug.log",
-            "misc/test-logfiles/info.log");
+    auto logger = std::make_shared<const TestSuiteLogger>();
 
     tsym::Logger::setInstance(logger);
 
