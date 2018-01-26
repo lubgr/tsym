@@ -120,3 +120,13 @@ TEST(Name, accessNumericName)
 
     CHECK_EQUAL("123", name.plain());
 }
+
+TEST(Name, streamOperator)
+{
+    const Name name("abc", "d");
+    std::ostringstream stream;
+
+    stream << name;
+
+    CHECK_EQUAL("abc_d", stream.str());
+}
