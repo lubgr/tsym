@@ -60,9 +60,9 @@ void initConstructOnFirstUse()
 
 int main(int argc, char** argv)
 {
-    auto logger = std::make_shared<const TestSuiteLogger>();
+    auto logger = std::make_unique<const TestSuiteLogger>();
 
-    tsym::Logger::setInstance(logger);
+    tsym::Logger::setInstance(std::move(logger));
 
     disableLog();
     initConstructOnFirstUse();

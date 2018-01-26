@@ -26,15 +26,15 @@ namespace tsym {
             virtual void error(const Message& msg) const;
             virtual void critical(const Message& msg) const;
 
-            static void setInstance(std::shared_ptr<const Logger> logger);
-            static const std::shared_ptr<const Logger>& getInstance();
+            static void setInstance(std::unique_ptr<const Logger> logger);
+            static const std::unique_ptr<const Logger>& getInstance();
 
         protected:
             Logger(const Logger&) = default;
             Logger& operator = (const Logger&) = default;
 
         private:
-            static std::shared_ptr<const Logger> instance;
+            static std::unique_ptr<const Logger> instance;
     };
 }
 
