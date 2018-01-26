@@ -6,7 +6,6 @@
  * assertions, suppress warning logs (if intended) and the like. */
 
 #include <sstream>
-#include "logging.h"
 #include "CppUTest/TestHarness.h"
 #include "CppUTest/SimpleString.h"
 
@@ -40,32 +39,5 @@ bool operator != (const tsym::BasePtrCtr& lhs, const tsym::BasePtrCtr& rhs);
 /* Functions to disable and enable logging messages except the fatal level. */
 void disableLog();
 void enableLog();
-
-/* Macro to define a valid constructor for a CppUTest test group, which is after macro expansion
- * represented as a class. This macro is useful for initializing objects declared inside the
- * TEST_GROUP, which do not have a constructor without arguments: */
-#define GROUP_CTOR(name) TEST_GROUP_CppUTestGroup ## name()
-
-/* Add logging output before each test case. */
-
-#define CPPUTEST_CONCAT(str) #str
-#define CPPUTEST_QUOTE(str) CPPUTEST_CONCAT(str)
-
-#undef TEST
-
-#define TEST(testGroup, testName) \
-class TEST_##testGroup##_##testName##_TestShell; \
-extern \
-TEST_##testGroup##_##testName##_TestShell TEST_##testGroup##_##testName##_TestShell_instance; \
-class TEST_##testGroup##_##testName##_Test : public TEST_GROUP_##CppUTestGroup##testGroup \
-{ public: TEST_##testGroup##_##testName##_Test () : TEST_GROUP_##CppUTestGroup##testGroup () \
-{ TSYM_INFO("CppUTest - %s/%s", CPPUTEST_QUOTE(testGroup), CPPUTEST_QUOTE(testName) ); }\
-void testBody(); }; \
-class TEST_##testGroup##_##testName##_TestShell : public UtestShell \
-{ virtual Utest* createTest() _override { return new TEST_##testGroup##_##testName##_Test; } } \
-TEST_##testGroup##_##testName##_TestShell_instance; \
-static TestInstaller TEST_##testGroup##_##testName##_Installer( \
-    TEST_##testGroup##_##testName##_TestShell_instance, #testGroup, #testName, __FILE__,__LINE__); \
-    void TEST_##testGroup##_##testName##_Test::testBody()
 
 #endif
