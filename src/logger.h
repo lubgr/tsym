@@ -27,7 +27,7 @@ namespace tsym {
             virtual void critical(const Message& msg) const;
 
             static void setInstance(std::unique_ptr<const Logger> logger);
-            static const std::unique_ptr<const Logger>& getInstance();
+            static const Logger& getInstance();
 
         protected:
             Logger(const Logger&) = default;

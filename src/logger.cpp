@@ -32,7 +32,7 @@ void tsym::Logger::setInstance(std::unique_ptr<const Logger> logger)
     instance = std::move(logger);
 }
 
-const std::unique_ptr<const tsym::Logger>& tsym::Logger::getInstance()
+const tsym::Logger& tsym::Logger::getInstance()
 {
-    return instance;
+    return *instance;
 }
