@@ -7,7 +7,6 @@ CFLAGS ?= -O2 -fPIC -DNDEBUG
 CPPFLAGS += -I src
 COVERAGE ?=
 LIBS ?=
-LDFLAGS += -L $(BUILD) -Wl,-rpath $(BUILD)
 LEX ?= flex
 YACC ?= bison
 TAGS ?= $(BUILD)/tags
@@ -21,6 +20,7 @@ BRANCH = $(shell git branch | grep '^\*' | cut -b3- || echo unknown)
 NAME = tsym
 TEST_EXEC = $(BUILD)/runtests
 LIB_TARGET = $(BUILD)/lib$(NAME).$(SO)
+LIB_STATIC = $(BUILD)/lib$(NAME).a
 LIB_HEADER = $(BUILD)/$(NAME).h
 PUBLIC_HEADER = globals logger matrix var vector version
 
@@ -32,15 +32,19 @@ TEST_OBJ = $(TEST_SRC:%.cpp=$(BUILD)/%.o)
 DEPS = $(LIB_OBJ:%.o=%.d) $(TEST_OBJ:%.o=%.d)
 
 default: tests
-tests: $(LIB_TARGET) $(TEST_EXEC)
+tests: $(TEST_EXEC)
 lib: $(LIB_TARGET)
+staticlib: $(LIB_STATIC)
 tags: $(TAGS)
 
-$(TEST_EXEC): $(LIB_TARGET) $(TEST_OBJ)
-	$(CXX) -o $(TEST_EXEC) $(COVERAGE) $(TEST_OBJ) $(LDFLAGS) $(LIBS) -lCppUTest -l$(NAME)
+$(TEST_EXEC): $(LIB_OBJ) $(TEST_OBJ)
+	$(CXX) -o $(TEST_EXEC) $(COVERAGE) $(LIB_OBJ) $(TEST_OBJ) $(LDFLAGS) $(LIBS) -lCppUTest
 
 $(LIB_TARGET): $(LIB_OBJ) $(BUILDINFO)
 	$(CXX) -shared -o $(LIB_TARGET) $(COVERAGE) $(LIB_OBJ) $(LIBS)
+
+$(LIB_STATIC): $(LIB_OBJ) $(BUILDINFO)
+	$(AR) rcs $@ $(LIB_OBJ)
 
 -include $(DEPS)
 
@@ -71,7 +75,6 @@ $(BUILDINFO):
 	@echo generate $(BUILDINFO)
 	@echo "#define TSYM_COMMIT \"$(COMMIT)\"" >> $(BUILDINFO)
 	@echo "#define TSYM_BRANCH \"$(BRANCH)\"" >> $(BUILDINFO)
-	@if ! echo $(CXXFLAGS) | grep -qs 'DNDEBUG'; then echo "#define TSYM_DEBUG_STRINGS" >> $(BUILDINFO); fi
 	@echo "#define TSYM_CPP_FLAGS \"$(CPPFLAGS)\"" >> $(BUILDINFO)
 	@echo "#define TSYM_CXX_COMPILER \"`$(CXX) --version | head -n 1`\"" >> $(BUILDINFO)
 	@echo "#define TSYM_CXX_FLAGS \"$(CXXFLAGS)\"" >> $(BUILDINFO)
@@ -104,7 +107,7 @@ test: tests
 	@$(TEST_EXEC)
 
 clean:
-	$(RM) $(LIB_OBJ) $(LIB_TARGET) $(LIB_PARSER_H) $(BUILDINFO)
+	$(RM) $(LIB_OBJ) $(LIB_TARGET) $(LIB_STATIC) $(LIB_PARSER_H) $(BUILDINFO)
 	$(RM) $(TEST_OBJ) $(TEST_EXEC)
 	$(RM) $(DEPS)
 	$(RM) $(BUILD)/src/*.c
