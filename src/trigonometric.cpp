@@ -424,6 +424,7 @@ tsym::Number tsym::Trigonometric::checkedNumericEval() const
             fct = &std::atan;
             break;
         case Type::ATAN2:
+            TSYM_ERROR("A numerically evaluable atan2 should be simplified to an atan function");
             return std::atan2(arg1->numericEval().toDouble(), arg2->numericEval().toDouble());
     }
 
