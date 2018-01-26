@@ -3,7 +3,10 @@
 #include <iostream>
 #include "testsuitelogger.h"
 
-bool TestSuiteLogger::logToStdout = true;
+
+TestSuiteLogger::TestSuiteLogger(bool& suppressLogs) :
+    suppressLogs(suppressLogs)
+{}
 
 void TestSuiteLogger::log(const Logger::Message& msg) const
 {
@@ -12,7 +15,7 @@ void TestSuiteLogger::log(const Logger::Message& msg) const
 
 void TestSuiteLogger::warning(const Logger::Message& msg) const
 {
-    if (logToStdout)
+    if (!suppressLogs)
         log(msg);
 }
 
@@ -24,14 +27,4 @@ void TestSuiteLogger::error(const Logger::Message& msg) const
 void TestSuiteLogger::critical(const Logger::Message& msg) const
 {
     warning(msg);
-}
-
-void TestSuiteLogger::disableStdout()
-{
-    logToStdout = false;
-}
-
-void TestSuiteLogger::enableStdout()
-{
-    logToStdout = true;
 }

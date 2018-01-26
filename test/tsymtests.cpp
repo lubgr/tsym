@@ -53,10 +53,17 @@ template<> SimpleString StringFrom(const Vector& v)
 
 void disableLog()
 {
-    TestSuiteLogger::disableStdout();
+    globalSuppressLogFlag() = true;
 }
 
 void enableLog()
 {
-    TestSuiteLogger::enableStdout();
+    globalSuppressLogFlag() = false;
+}
+
+bool& globalSuppressLogFlag()
+{
+    static bool suppressLogs = false;
+
+    return suppressLogs;
 }

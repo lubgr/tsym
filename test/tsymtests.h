@@ -39,5 +39,6 @@ bool operator != (const tsym::BasePtrCtr& lhs, const tsym::BasePtrCtr& rhs);
 /* Functions to disable and enable logging messages except the fatal level. */
 void disableLog();
 void enableLog();
+bool& globalSuppressLogFlag();
 
 #endif

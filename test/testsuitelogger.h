@@ -6,19 +6,16 @@
 
 class TestSuiteLogger : public tsym::Logger {
     public:
-        TestSuiteLogger() = default;
+        explicit TestSuiteLogger(bool& suppressLogs);
 
         void warning(const Logger::Message& msg) const override;
         void error(const Logger::Message& msg) const override;
         void critical(const Logger::Message& msg) const override;
 
-        static void disableStdout();
-        static void enableStdout();
-
     private:
         void log(const Logger::Message& msg) const;
 
-        static bool logToStdout;
+        bool& suppressLogs;
 };
 
 #endif

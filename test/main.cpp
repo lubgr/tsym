@@ -60,7 +60,7 @@ void initConstructOnFirstUse()
 
 int main(int argc, char** argv)
 {
-    auto logger = std::make_unique<const TestSuiteLogger>();
+    auto logger = std::make_unique<const TestSuiteLogger>(globalSuppressLogFlag());
 
     tsym::Logger::setInstance(std::move(logger));
 
