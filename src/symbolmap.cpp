@@ -2,24 +2,21 @@
 #include "symbolmap.h"
 #include "symbol.h"
 
-tsym::BasePtr tsym::SymbolMap::getTmpSymbolAndStore(const BasePtr& ptr)
+const tsym::BasePtr& tsym::SymbolMap::getTmpSymbolAndStore(const BasePtr& ptr)
 {
-    const BasePtr *existingReplacement(cache.retrieve(ptr));
-    BasePtr replacement;
+    const auto lookup = rep.find(ptr);
 
-    if (existingReplacement)
-        return *existingReplacement;
+    if (lookup != cend(rep))
+        return lookup->second;
 
-    replacement = Symbol::createTmpSymbol(ptr->isPositive());
-
-    return cache.insertAndReturn(ptr, replacement);
+    return rep.insert({ ptr, Symbol::createTmpSymbol(ptr->isPositive()) }).first->second;
 }
 
-tsym::BasePtr tsym::SymbolMap::replaceTmpSymbolsBackFrom(const BasePtr& orig)
+tsym::BasePtr tsym::SymbolMap::replaceTmpSymbolsBackFrom(const BasePtr& orig) const
 {
     BasePtr result(orig);
 
-    for (const auto& entry : cache)
+    for (const auto& entry : rep)
         result = result->subst(entry.second, entry.first);
 
     if (result->isUndefined())

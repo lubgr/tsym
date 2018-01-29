@@ -1,10 +1,8 @@
 #ifndef TSYM_SYMBOLMAP_H
 #define TSYM_SYMBOLMAP_H
 
-#include <cassert>
-#include <map>
+#include <unordered_map>
 #include "baseptr.h"
-#include "cache.h"
 
 namespace tsym {
     class SymbolMap {
@@ -13,14 +11,19 @@ namespace tsym {
          * internally in a map for a back-replacement after further steps of normalization. */
         public:
             SymbolMap() = default;
+            /* One instance at a time shall be used during normalization, there is no point in
+             * copying/moving/assigning them. */
             SymbolMap(const SymbolMap& other) = delete;
-            const SymbolMap& operator = (const SymbolMap& rhs) = delete;
+            SymbolMap& operator = (const SymbolMap& rhs) = delete;
+            SymbolMap(SymbolMap&& other) = delete;
+            SymbolMap& operator = (SymbolMap&& rhs) = delete;
+            ~SymbolMap() = default;
 
-            BasePtr getTmpSymbolAndStore(const BasePtr& ptr);
-            BasePtr replaceTmpSymbolsBackFrom(const BasePtr& ptr);
+            const BasePtr& getTmpSymbolAndStore(const BasePtr& ptr);
+            BasePtr replaceTmpSymbolsBackFrom(const BasePtr& ptr) const;
 
         private:
-            Cache<BasePtr, BasePtr, true> cache;
+            std::unordered_map<BasePtr, BasePtr> rep;
     };
 }
 
