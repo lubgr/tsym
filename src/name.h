@@ -48,6 +48,7 @@ namespace tsym {
     bool operator > (const Name& lhs, const Name& rhs);
     bool operator >= (const Name& lhs, const Name& rhs);
     std::ostream& operator << (std::ostream& stream, const Name& name);
+    size_t hash_value(const Name& name);
 }
 
 namespace std
@@ -57,5 +58,6 @@ namespace std
         size_t operator () (const tsym::Name& name) const;
     };
 }
+
 
 #endif

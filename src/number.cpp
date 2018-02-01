@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <limits>
+#include <boost/functional/hash.hpp>
 #include "number.h"
 #include "printer.h"
 #include "plaintextprintengine.h"
@@ -503,9 +504,11 @@ std::ostream& tsym::operator << (std::ostream& stream, const Number& rhs)
 
 size_t std::hash<tsym::Number>::operator () (const tsym::Number& n) const
 {
-    const size_t doubleHash = std::hash<double>{}(n.toDouble());
-    const size_t denomHash = std::hash<tsym::Int>{}(n.denominator());
-    const size_t numHash = std::hash<tsym::Int>{}(n.numerator());
+    size_t seed = 0;
 
-    return (doubleHash ^ (numHash << 1)) ^ (denomHash << 1);
+    boost::hash_combine(seed, n.toDouble());
+    boost::hash_combine(seed, n.denominator());
+    boost::hash_combine(seed, n.numerator());
+
+    return seed;
 }

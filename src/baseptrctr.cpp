@@ -1,5 +1,6 @@
 
 #include <numeric>
+#include <boost/functional/hash.hpp>
 #include "plaintextprintengine.h"
 #include "printer.h"
 #include "baseptrctr.h"
@@ -25,10 +26,7 @@ std::ostream& tsym::operator << (std::ostream& stream, const BasePtrCtr& items)
 
 size_t std::hash<tsym::BasePtrCtr>::operator () (const tsym::BasePtrCtr& ctr) const
 {
-    const auto combineHash = [](size_t hashResult, const tsym::BasePtr& item) {
-        return hashResult = hashResult ^ (std::hash<tsym::BasePtr>{}(item) << 1); };
-
-    return std::accumulate(ctr.begin(), ctr.end(), (size_t)0, combineHash);
+    return boost::hash<tsym::BasePtrCtr>{}(ctr);
 }
 
 bool std::equal_to<tsym::BasePtrCtr>::operator () (const tsym::BasePtrCtr& lhs,

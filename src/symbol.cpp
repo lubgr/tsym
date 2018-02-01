@@ -1,4 +1,5 @@
 
+#include <boost/functional/hash.hpp>
 #include "symbol.h"
 #include "undefined.h"
 #include "fraction.h"
@@ -133,10 +134,12 @@ bool tsym::Symbol::isNegative() const
 
 size_t tsym::Symbol::hash() const
 {
-    const size_t nameHash = std::hash<Name>{}(symbolName);
-    const size_t signHash = std::hash<bool>{}(positive);
+    size_t seed = 0;
 
-    return nameHash ^ (signHash << 1);
+    boost::hash_combine(seed, symbolName);
+    boost::hash_combine(seed, positive);
+
+    return seed;
 }
 
 unsigned tsym::Symbol::complexity() const

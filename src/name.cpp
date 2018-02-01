@@ -180,7 +180,12 @@ std::ostream& tsym::operator << (std::ostream& stream, const Name& name)
     return stream << name.plain();
 }
 
-size_t std::hash<tsym::Name>::operator () (const tsym::Name& name) const
+size_t tsym::hash_value(const Name& name)
 {
     return std::hash<std::string>{}(name.plain());
+}
+
+size_t std::hash<tsym::Name>::operator () (const tsym::Name& name) const
+{
+    return hash_value(name);
 }

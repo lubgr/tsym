@@ -1,4 +1,5 @@
 
+#include <boost/functional/hash.hpp>
 #include "numeric.h"
 #include "function.h"
 #include "ctr.h"
@@ -28,7 +29,12 @@ std::string tsym::Function::typeStr() const
 
 size_t tsym::Function::hash() const
 {
-    return std::hash<Name>{}(functionName) ^ (std::hash<BasePtrCtr>{}(ops) << 1);
+    size_t seed = 0;
+
+    boost::hash_combine(seed, functionName);
+    boost::hash_combine(seed, ops);
+
+    return seed;
 }
 
 bool tsym::Function::isFunction() const
