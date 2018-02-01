@@ -2,11 +2,22 @@
 #define TSYM_LOGGING_H
 
 #include <cstring>
+#include <boost/format.hpp>
 #include "logger.h"
-#include "sgfy.h"
 
-#define TSYM_LOGGING_ARGS(...) { "tsym", (std::strrchr(__FILE__, '/') + 1), __LINE__,\
-    sgfy::str(__VA_ARGS__) }
+namespace logging {
+    template<class ...T> std::string fmt(const std::string& fmt, const T&...args)
+    {
+        boost::format format(fmt);
+        using expander = int[];
+
+        (void) expander{ 0, (void(format % args), 0)... };
+
+        return boost::str(format);
+    }
+}
+
+#define TSYM_LOGGING_ARGS(...) { "tsym", (std::strrchr(__FILE__, '/') + 1), __LINE__, logging::fmt(__VA_ARGS__) }
 
 #define TSYM_DEBUG(...) tsym::Logger::getInstance().debug(TSYM_LOGGING_ARGS(__VA_ARGS__))
 #define TSYM_INFO(...) tsym::Logger::getInstance().info(TSYM_LOGGING_ARGS(__VA_ARGS__))
