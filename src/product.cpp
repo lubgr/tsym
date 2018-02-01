@@ -1,6 +1,6 @@
 
 #include <vector>
-#include <algorithm>
+#include <numeric>
 #include "product.h"
 #include "undefined.h"
 #include "numeric.h"
@@ -285,13 +285,9 @@ tsym::BasePtr tsym::Product::coeffFactorMatch(const BasePtr& variable, int exp) 
 
 int tsym::Product::degree(const BasePtr& variable) const
 {
-    int degreeSum = 0;
-
     if (isEqual(variable))
         return 1;
-
-    for (const auto& factor : ops)
-        degreeSum += factor->degree(variable);
-
-    return degreeSum;
+    else
+        return std::accumulate(cbegin(ops), cend(ops), 0,
+                [&variable](int deg, const auto& factor){ return deg + factor->degree(variable); });
 }

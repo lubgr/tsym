@@ -1,5 +1,7 @@
 
 #include <cassert>
+#include <numeric>
+#include <limits>
 #include "sum.h"
 #include "sumsimpl.h"
 #include "numeric.h"
@@ -249,17 +251,11 @@ tsym::BasePtr tsym::Sum::coeffOverSummands(const BasePtr& variable, int exp) con
 
 int tsym::Sum::degree(const tsym::BasePtr& variable) const
 {
-    auto it = ops.begin();
-    int maxDegree;
+    static auto minInt = std::numeric_limits<int>::min();
 
     if (isEqual(variable))
         return 1;
-
-    for (maxDegree = (*it)->degree(variable), ++it; it != ops.end(); ++it) {
-        int deg = (*it)->degree(variable);
-        if (deg > maxDegree)
-            maxDegree = deg;
-    }
-
-    return maxDegree;
+    else
+        return std::accumulate(cbegin(ops), cend(ops), minInt,
+                [&variable](int deg, const auto& summand){ return std::max(deg, summand->degree(variable)); });
 }
