@@ -235,10 +235,10 @@ namespace tsym {
 
                     factors.pop_front();
 
-                    if (Product::minus(first)->isOne())
-                        engine.unaryMinusSign();
-                    else if (factors.empty())
+                    if (factors.empty())
                         engine.invokePrint(first);
+                    else if (Product::minus(first)->isOne())
+                        engine.unaryMinusSign();
                     else if (!first->isOne())
                         engine.invokePrint(first).timesSign();
 

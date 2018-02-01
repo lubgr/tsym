@@ -541,3 +541,20 @@ TEST(Printer, posSumInProduct)
 
     CHECK_EQUAL("a*(-b + c)", print(product));
 }
+
+TEST(Printer, negativePowerWithConstantBase)
+{
+    const BasePtr exp = Numeric::create(-123);
+    const BasePtr product = Product::minus(Power::create(Constant::createE(), exp));
+    const std::string result = print(product);
+
+    CHECK_EQUAL("-1/e^123", result);
+}
+
+TEST(Printer, negativePowerWithConstantBaseDebug)
+{
+    const BasePtr exp = Numeric::create(-123);
+    const BasePtr product = Product::minus(Power::create(Constant::createE(), exp));
+
+    CHECK_EQUAL("-e^(-123)", printDebug(product));
+}
