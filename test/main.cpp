@@ -11,6 +11,7 @@
 #include "var.h"
 #include "poly.h"
 #include "name.h"
+#include "cache.h"
 #include "abc.h"
 #include "logging.h"
 #include "testsuitelogger.h"
@@ -64,5 +65,9 @@ int main(int argc, char** argv)
     initConstructOnFirstUse();
     enableLog();
 
-    return CommandLineTestRunner::RunAllTests(argc, argv);
+    auto result = CommandLineTestRunner::RunAllTests(argc, argv);
+
+    tsym::cache::clearRegisteredCaches();
+
+    return result;
 }
