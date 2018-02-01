@@ -10,6 +10,7 @@ namespace tsym {
             BasePtrCtr simplify(const BasePtrCtr& summands);
 
         private:
+            BasePtrCtr simplWithoutCache(const BasePtrCtr& summands);
             BasePtrCtr simplTwoSummands(const BasePtrCtr& u);
             BasePtrCtr simplTwoSummands(const BasePtr& s1, const BasePtr& s2);
             BasePtrCtr simplTwoSummandsWithSum(const BasePtr& s1, const BasePtr& s2);

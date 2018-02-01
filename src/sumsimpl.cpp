@@ -7,9 +7,24 @@
 #include "name.h"
 #include "numeric.h"
 #include "ctr.h"
+#include "cache.h"
 #include "logging.h"
 
 tsym::BasePtrCtr tsym::SumSimpl::simplify(const BasePtrCtr& summands)
+{
+    static cache::RegisteredCache<BasePtrCtr, BasePtrCtr> cache;
+    static auto& map(cache.map);
+    const auto lookup = map.find(summands);
+
+    if (lookup != cend(map))
+        return lookup->second;
+
+    const auto result = simplWithoutCache(summands);
+
+    return map.insert({ summands, result })->second;
+}
+
+tsym::BasePtrCtr tsym::SumSimpl::simplWithoutCache(const BasePtrCtr& summands)
 {
     if (summands.size() == 2)
         return simplTwoSummands(summands);

@@ -1,5 +1,6 @@
 
 #include <cassert>
+#include <boost/functional/hash.hpp>
 #include "productsimpl.h"
 #include "product.h"
 #include "numeric.h"
@@ -9,6 +10,7 @@
 #include "order.h"
 #include "symbol.h"
 #include "ctr.h"
+#include "cache.h"
 #include "numpowersimpl.h"
 #include "logging.h"
 
@@ -23,10 +25,33 @@ namespace tsym {
         {
             return arg->isNumeric() && arg->numericEval().isInt();
         }
+
+        typedef std::pair<BasePtrCtr, Int> CacheKey;
+
+        struct CacheEqualTo {
+            bool operator() (const CacheKey& lhs, const CacheKey& rhs) const
+            {
+                return ctr::areEqual(lhs.first, rhs.first) && lhs.second == lhs.second;
+            }
+        };
     }
 }
 
 tsym::BasePtrCtr tsym::ProductSimpl::simplify(const BasePtrCtr& origFactors)
+{
+    static cache::RegisteredCache<CacheKey, BasePtrCtr, boost::hash<CacheKey>, CacheEqualTo> cache;
+    static const auto& relevantOption = NumPowerSimpl::getMaxPrimeResolution();
+    static auto& map(cache.map);
+    const auto key = std::make_pair(origFactors, relevantOption);
+    const auto lookup = map.find(key);
+
+    if (lookup != cend(map))
+        return lookup->second;
+
+    return map.insert({ key, simplifyWithoutCache(origFactors) })->second;
+}
+
+tsym::BasePtrCtr tsym::ProductSimpl::simplifyWithoutCache(const BasePtrCtr& origFactors)
 {
     BasePtrCtr factors(origFactors);
 

@@ -1,4 +1,5 @@
 
+#include <unordered_map>
 #include <boost/functional/hash.hpp>
 #include "symbol.h"
 #include "undefined.h"
@@ -54,14 +55,15 @@ tsym::BasePtr tsym::Symbol::create(const Name& name, bool positive)
 
 tsym::BasePtr tsym::Symbol::createNonEmptyName(const Name& name, bool positive)
 {
-    const BasePtr symbol(instantiate([&name, positive]() { return new Symbol(name, positive); }));
-    static Cache<BasePtr, BasePtr> pool;
-    const BasePtr *cached = pool.retrieve(symbol);
+    typedef std::pair<Name, bool> Key;
+    static std::unordered_map<Key, BasePtr, boost::hash<Key>> pool;
+    const auto key = std::make_pair(name, positive);
+    const auto lookup = pool.find(key);
 
-    if (cached != nullptr)
-        return *cached;
-    else
-        return pool.insertAndReturn(symbol, symbol);
+    if (lookup != cend(pool))
+        return lookup->second;
+
+    return pool.insert({ key, instantiate([&name, positive]() { return new Symbol(name, positive); }) }).first->second;
 }
 
 tsym::BasePtr tsym::Symbol::createPositive(const std::string& name)

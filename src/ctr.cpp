@@ -188,14 +188,15 @@ namespace tsym {
 
 tsym::BasePtr tsym::ctr::expandAsProduct(const BasePtrCtr& ctr)
 {
-    static Cache<BasePtrCtr, BasePtr> cache;
-    const BasePtr *cached(cache.retrieve(ctr));
+    static cache::RegisteredCache<BasePtrCtr, BasePtr> cache;
+    static auto& map(cache.map);
+    const auto lookup = map.find(ctr);
     BasePtr expanded;
     BasePtrCtr sums;
     BasePtr scalar;
 
-    if (cached != nullptr)
-        return *cached;
+    if (lookup != cend(map))
+        return lookup->second;
 
     defScalarAndSums(ctr, scalar, sums);
 
@@ -204,7 +205,7 @@ tsym::BasePtr tsym::ctr::expandAsProduct(const BasePtrCtr& ctr)
     else
         expanded = expandProductOf(scalar, expandProductOf(sums));
 
-    return cache.insertAndReturn(ctr, expanded);
+    return map.insert({ ctr, std::move(expanded) })->second;
 }
 
 void tsym::ctr::subst(BasePtrCtr& ctr, const BasePtr& from, const BasePtr& to)

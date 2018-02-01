@@ -1,68 +1,37 @@
 #ifndef TSYM_CACHE_H
 #define TSYM_CACHE_H
 
+#include <cstdint>
 #include <memory>
 #include <unordered_map>
-#include <string>
+#include <functional>
 
 namespace tsym {
-    template<class Key, class Value, bool forceCaching = false> class Cache {
-        /* Cache for key-value-pairs with std::hash and std::equal_to specializations. It serves as
-         * a lookup-pool for expensive transformations and/or symbols. The latter enables usage of
-         * the same Base object, when identical Symbol instances are created, which speeds up an
-         * equality comparison. */
-        public:
-            Cache() {};
-            Cache(const Cache& other) = delete;
-            const Cache& operator = (const Cache& rhs) = delete;
+    namespace cache {
+        void clearRegisteredCaches();
 
-            const Value& insertAndReturn(const Key& key, const Value& value)
-            {
-                rep.insert(std::make_pair(key, value));
+        namespace detail {
+            void registerCacheClearer(uintptr_t address, std::function<void()>&& fct);
+            void deregisterCacheClearer(uintptr_t address);
+        }
 
-                return value;
-            }
+        template<class Key, class Value, class Hash = std::hash<Key>, class EqualTo = std::equal_to<Key>>
+            struct RegisteredCache {
+                /* This wrapper stores exposes the cache container publicly and automatically
+                 * registers and unregisteres a member function reference to clear the cache. */
+                RegisteredCache()
+                {
+                    detail::registerCacheClearer(reinterpret_cast<uintptr_t>(&map), [this](){ decltype(map){}.swap(map); });
+                }
 
-            const Value *retrieve(const Key& key) const
-            {
-                const auto lookup = rep.find(key);
+                ~RegisteredCache()
+                {
+                    detail::deregisterCacheClearer(reinterpret_cast<uintptr_t>(&map));
+                }
 
-                return lookup != rep.end() ? &lookup->second : nullptr;
-            }
-
-            typename std::unordered_map<Key, Value>::const_iterator begin() const
-            {
-                return rep.begin();
-            }
-
-            typename std::unordered_map<Key, Value>::const_iterator end() const
-            {
-                return rep.end();
-            }
-
-        private:
-            std::unordered_multimap<Key, Value> rep;
-    };
-
-#ifdef TSYM_NO_OPTIONAL_CACHE
-    template<class Key, class Value> class Cache<Key, Value, false> {
-        public:
-            Cache() = default;
-            ~Cache() = default;
-            Cache(const Cache& other) = delete;
-            const Cache& operator = (const Cache& rhs) = delete;
-
-            const Value& insertAndReturn(const Key&, const Value& value)
-            {
-                return value;
-            }
-
-            const Value *retrieve(const Key&) const
-            {
-                return nullptr;
-            }
-    };
-#endif
+                std::unordered_multimap<Key, Value, Hash, EqualTo> map;
+            };
+    }
 }
 
 #endif

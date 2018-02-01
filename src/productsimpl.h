@@ -29,6 +29,7 @@ namespace tsym {
             BasePtrCtr simplify(const BasePtrCtr& factors);
 
         private:
+            BasePtrCtr simplifyWithoutCache(const BasePtrCtr& factors);
             void prepare(BasePtrCtr& fac);
             void extractProducts(BasePtrCtr& u);
             void contractTrigonometrics(BasePtrCtr& u);

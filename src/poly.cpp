@@ -33,16 +33,16 @@ namespace tsym {
 
 tsym::BasePtrCtr tsym::poly::divide(const BasePtr& u, const BasePtr& v)
 {
-    static Cache<BasePtrCtr, BasePtrCtr> cache;
-    const BasePtrCtr *cached(cache.retrieve({ u, v }));
-    BasePtrCtr result;
+    static cache::RegisteredCache<BasePtrCtr, BasePtrCtr> cache;
+    static auto& map(cache.map);
+    const auto lookup = map.find({ u, v });
 
-    if (cached != nullptr)
-        result = *cached;
-    else
-        result = divide(u, v, PolyInfo(u, v).listOfSymbols());
+    if (lookup != cend(map))
+        return lookup->second;
 
-    return cache.insertAndReturn({ u, v }, result);
+    auto result = divide(u, v, PolyInfo(u, v).listOfSymbols());
+
+    return map.insert({{ u, v }, result })->second;
 }
 
 tsym::BasePtrCtr tsym::poly::divide(const BasePtr& u, const BasePtr& v, const BasePtrCtr& L)
@@ -231,13 +231,14 @@ tsym::BasePtr tsym::getFirstSymbol(const BasePtrCtr& polynomials)
 
 tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v)
 {
-    static Cache<BasePtrCtr, BasePtr> cache;
-    const BasePtr *cached(cache.retrieve({ u, v }));
+    static cache::RegisteredCache<BasePtrCtr, BasePtr> cache;
+    static auto& map(cache.map);
+    const auto lookup = map.find({ u, v });
 
-    if (cached != nullptr)
-        return *cached;
+    if (lookup != cend(map))
+        return lookup->second;
     else
-        return cache.insertAndReturn({ u, v }, gcd(u, v, defaultGcd()));
+        return map.insert({ { u, v }, gcd(u, v, defaultGcd()) })->second;
 }
 
 const tsym::GcdStrategy *tsym::defaultGcd()

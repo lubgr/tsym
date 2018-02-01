@@ -210,18 +210,15 @@ tsym::BasePtr tsym::Base::normal() const
 
 tsym::BasePtr tsym::Base::normalViaCache() const
 {
-    static Cache<BasePtr, BasePtr> cache;
-    const BasePtr *cached(cache.retrieve(clone()));
-    BasePtr result;
+    static cache::RegisteredCache<BasePtr, BasePtr> cache;
+    static auto& map(cache.map);
+    const BasePtr key = clone();
+    const auto lookup = map.find(key);
 
-    if (cached != nullptr)
-        return *cached;
+    if (lookup != cend(map))
+        return lookup->second;
 
-    result = normalWithoutCache();
-
-    cache.insertAndReturn(clone(), result);
-
-    return cache.insertAndReturn(result, result);
+    return map.insert({ std::move(key), normalWithoutCache() })->second;
 }
 
 tsym::BasePtr tsym::Base::normalWithoutCache() const
