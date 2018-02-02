@@ -34,6 +34,7 @@ addons:
       - g++-6
       - g++-7
       - lcov
+      - valgrind
 
 matrix:
   include:
@@ -50,13 +51,22 @@ matrix:
       env: COMPILER=g++-7
 
     - os: linux
+      compiler: gcc
+      env:
+          - COMPILER=g++-7
+          - CXXFLAGS="-O0 -g3 -std=c++14 -pedantic -Wall -Wextra -Wconversion"
+          - CFLAGS="-O0 -g3"
+          - TOOL="valgrind --error-exitcode=1 --leak-check=full"
+
+    - os: linux
       compiler: clang
       env: COMPILER=clang++
 
 script:
   - make CXX=$COMPILER COVERAGE="--coverage" CPPFLAGS="-isystem ${BOOSTDIR} -I src" lib
   - cat build/buildinfo.h
-  - make CXX=$COMPILER COVERAGE="--coverage" CPPFLAGS="-isystem ${BOOSTDIR} -I src" test
+  - make CXX=$COMPILER COVERAGE="--coverage" CPPFLAGS="-isystem ${BOOSTDIR} -I src" tests
+  - $TOOL ./build/runtests
 
 after_success:
   - lcov -c -d . -o build/coverage.info
