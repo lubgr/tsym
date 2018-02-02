@@ -9,6 +9,13 @@ namespace tsym {
             /* There is only one instance, because no state is needed: */
             static const BasePtr& create();
 
+            explicit Undefined(Base::CtorKey&&);
+            Undefined(const Undefined&) = delete;
+            Undefined& operator = (const Undefined&) = delete;
+            Undefined(Undefined&&) = delete;
+            Undefined& operator = (Undefined&&) = delete;
+            ~Undefined() = default;
+
             /* Returns always false: */
             bool isEqual(const BasePtr& other) const;
             bool isEqualDifferentBase(const BasePtr& other) const;
@@ -29,12 +36,6 @@ namespace tsym {
             int degree(const BasePtr& variable) const;
 
             bool isUndefined() const;
-
-        private:
-            Undefined();
-            Undefined(const Undefined& other) = delete;
-            Undefined& operator = (Undefined const& other) = delete;
-            ~Undefined() = default;
     };
 }
 

@@ -17,6 +17,13 @@ namespace tsym {
                     const BasePtr& f4);
             static BasePtr create(const BasePtrCtr& factors);
 
+            explicit Product(const BasePtrCtr& factors, Base::CtorKey&&);
+            Product(const Product&) = delete;
+            Product& operator = (const Product&) = delete;
+            Product(Product&&) = delete;
+            Product& operator = (Product&&) = delete;
+            ~Product() = default;
+
             bool isEqualDifferentBase(const BasePtr& other) const;
             bool sameType(const BasePtr& other) const;
             Number numericEval() const;
@@ -39,11 +46,6 @@ namespace tsym {
             int degree(const BasePtr& variable) const;
 
         private:
-            explicit Product(const BasePtrCtr& factors);
-            Product(const Product& other) = delete;
-            Product& operator = (Product const& other) = delete;
-            ~Product() = default;
-
             static BasePtr createSimplifiedProduct(const BasePtrCtr& factors);
             static bool needsExpansion(const BasePtrCtr& factors);
             int sign() const;

@@ -12,6 +12,17 @@ namespace tsym {
             static const BasePtr& createPi();
             static const BasePtr& createE();
 
+        private:
+            enum class Type { PI, E };
+
+        public:
+            Constant(Type type, Name&& name, Base::CtorKey&&);
+            Constant(const Constant&) = delete;
+            Constant& operator = (const Constant&) = delete;
+            Constant(Constant&&) = delete;
+            Constant& operator = (Constant&&) = delete;
+            ~Constant() = default;
+
             bool isEqualDifferentBase(const BasePtr& other) const;
             bool sameType(const BasePtr& other) const;
             Number numericEval() const;
@@ -28,11 +39,6 @@ namespace tsym {
             const Name& name() const;
 
         private:
-            enum class Type { PI, E };
-            Constant(Type type, Name&& name);
-            Constant(const Constant& other) = delete;
-            Constant& operator = (const Constant& other) = delete;
-            ~Constant() = default;
             static BasePtr create(Type type, Name&& name);
 
             const Type type;

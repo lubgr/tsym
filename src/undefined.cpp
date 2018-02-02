@@ -5,14 +5,14 @@
 #include "fraction.h"
 #include "logging.h"
 
-tsym::Undefined::Undefined()
+tsym::Undefined::Undefined(Base::CtorKey&&)
 {
     setDebugString();
 }
 
 const tsym::BasePtr& tsym::Undefined::create()
 {
-    static const auto instance = instantiate([]() { return new Undefined(); });
+    static const BasePtr instance(std::make_shared<const Undefined>(Base::CtorKey{}));
 
     return instance;
 }

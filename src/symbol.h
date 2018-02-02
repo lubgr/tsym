@@ -15,6 +15,14 @@ namespace tsym {
             static BasePtr createPositive(const Name& name);
             static BasePtr createTmpSymbol(bool positive = false);
 
+            Symbol(const Name& name, bool positive, Base::CtorKey&&);
+            Symbol(unsigned tmpId, bool positive, Base::CtorKey&&);
+            Symbol(const Symbol&) = delete;
+            Symbol& operator = (const Symbol&) = delete;
+            Symbol(Symbol&&) = delete;
+            Symbol& operator = (Symbol&&) = delete;
+            ~Symbol();
+
             bool isEqualDifferentBase(const BasePtr& other) const;
             bool sameType(const BasePtr& other) const;
             Number numericEval() const;
@@ -30,12 +38,6 @@ namespace tsym {
             const Name& name() const;
 
         private:
-            Symbol(const Name& name, bool positive);
-            Symbol(unsigned tmpId, bool positive);
-            Symbol(const Symbol& other) = delete;
-            Symbol& operator = (const Symbol& other) = delete;
-            ~Symbol();
-
             static BasePtr create(const Name& name, bool positive);
             static BasePtr createNonEmptyName(const Name& name, bool positive);
             bool isEqualOtherSymbol(const BasePtr& other) const;

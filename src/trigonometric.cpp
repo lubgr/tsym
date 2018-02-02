@@ -36,7 +36,7 @@ namespace tsym {
     }
 }
 
-tsym::Trigonometric::Trigonometric(const BasePtrCtr& args, Type type) :
+tsym::Trigonometric::Trigonometric(const BasePtrCtr& args, Type type, Base::CtorKey&&) :
     Function(args, getStr(type)),
     arg1(ops.front()),
     /* Points to ops.front() except for atan2: */
@@ -103,7 +103,7 @@ tsym::BasePtr tsym::Trigonometric::create(Type type, const BasePtr& arg)
 
 tsym::BasePtr tsym::Trigonometric::createInstance(Type type, const BasePtrCtr& args)
 {
-    return instantiate([type, &args]() { return new Trigonometric(args, type); });
+    return std::make_shared<const Trigonometric>(args, type, Base::CtorKey{});
 }
 
 bool tsym::Trigonometric::doesSymmetryApply(const BasePtr& arg)

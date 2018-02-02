@@ -12,7 +12,7 @@
 #include "product.h"
 #include "poly.h"
 
-tsym::Sum::Sum(const BasePtrCtr& summands) :
+tsym::Sum::Sum(const BasePtrCtr& summands, Base::CtorKey&&) :
     Base(summands)
 {
     setDebugString();
@@ -56,7 +56,7 @@ tsym::BasePtr tsym::Sum::createSimplifiedSum(const BasePtrCtr& summands)
     else if (res.size() == 1)
         return res.front();
     else
-        return instantiate([&res]() { return new Sum(res); });
+        return std::make_shared<const Sum>(res, Base::CtorKey{});
 }
 
 bool tsym::Sum::isEqualDifferentBase(const BasePtr& other) const

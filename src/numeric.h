@@ -14,6 +14,13 @@ namespace tsym {
             static BasePtr create(const Int& numerator, const Int& denominator);
             static BasePtr create(const Number& number);
 
+            explicit Numeric(const Number& number, Base::CtorKey&&);
+            Numeric(const Numeric&) = delete;
+            Numeric& operator = (const Numeric&) = delete;
+            Numeric(Numeric&&) = delete;
+            Numeric& operator = (Numeric&&) = delete;
+            ~Numeric() = default;
+
             /* Shortcuts for frequently used constant numbers. */
             static const BasePtr& zero();
             static const BasePtr& one();
@@ -49,11 +56,6 @@ namespace tsym {
             int degree(const BasePtr& variable) const;
 
         private:
-            explicit Numeric(const Number& number);
-            Numeric(const Numeric& other) = delete;
-            Numeric& operator = (Numeric const& other) = delete;
-            ~Numeric() = default;
-
             const Number number;
     };
 }

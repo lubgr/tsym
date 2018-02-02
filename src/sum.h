@@ -13,6 +13,13 @@ namespace tsym {
                     const BasePtr& s4);
             static BasePtr create(const BasePtrCtr& summands);
 
+            explicit Sum(const BasePtrCtr& summands, Base::CtorKey&&);
+            Sum(const Sum&) = delete;
+            Sum& operator = (const Sum&) = delete;
+            Sum(Sum&&) = delete;
+            Sum& operator = (Sum&&) = delete;
+            ~Sum() = default;
+
             bool isEqualDifferentBase(const BasePtr& other) const;
             bool sameType(const BasePtr& other) const;
             Number numericEval() const;
@@ -31,11 +38,6 @@ namespace tsym {
             int degree(const BasePtr& variable) const;
 
         private:
-            explicit Sum(const BasePtrCtr& summands);
-            Sum(const Sum& other) = delete;
-            Sum& operator = (const Sum& other) = delete;
-            ~Sum() = default;
-
             static BasePtr createSimplifiedSum(const BasePtrCtr& summands);
             Fraction toCommonDenom(const std::vector<Fraction>& operands) const;
             int sign() const;

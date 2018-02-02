@@ -5,7 +5,7 @@
 #include "symbolmap.h"
 #include "logging.h"
 
-tsym::Numeric::Numeric(const Number& number) :
+tsym::Numeric::Numeric(const Number& number, Base::CtorKey&&) :
     number(number)
 {
     setDebugString();
@@ -42,7 +42,7 @@ tsym::BasePtr tsym::Numeric::create(const Int& numerator, const Int& denominator
 
 tsym::BasePtr tsym::Numeric::create(const Number& number)
 {
-    return instantiate([&number]() { return new Numeric(number); });
+    return std::make_shared<const Numeric>(number, Base::CtorKey{});
 }
 
 namespace tsym {

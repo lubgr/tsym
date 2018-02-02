@@ -5,7 +5,7 @@
 #include "fraction.h"
 #include "numeric.h"
 
-tsym::Constant::Constant(Type type, Name&& name) :
+tsym::Constant::Constant(Type type, Name&& name, Base::CtorKey&&) :
     type(type),
     constantName(std::move(name))
 {
@@ -28,7 +28,7 @@ const tsym::BasePtr& tsym::Constant::createE()
 
 tsym::BasePtr tsym::Constant::create(Type type, Name&& name)
 {
-    return instantiate([type, &name]() { return new Constant(type, std::move(name)); });
+    return std::make_shared<const Constant>(type, std::move(name), Base::CtorKey{});
 }
 
 bool tsym::Constant::isEqualDifferentBase(const BasePtr& other) const

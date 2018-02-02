@@ -9,6 +9,13 @@ namespace tsym {
         public:
             static BasePtr create(const BasePtr& arg);
 
+            Logarithm(const BasePtr& arg, Base::CtorKey&&);
+            Logarithm(const Logarithm&) = delete;
+            Logarithm& operator = (const Logarithm&) = delete;
+            Logarithm(Logarithm&&) = delete;
+            Logarithm& operator = (Logarithm&&) = delete;
+            ~Logarithm() = default;
+
             Number numericEval() const;
             Fraction normal(SymbolMap& map) const;
             BasePtr diffWrtSymbol(const BasePtr& symbol) const;
@@ -18,11 +25,6 @@ namespace tsym {
             unsigned complexity() const;
 
         private:
-            Logarithm(const BasePtr& arg);
-            Logarithm(const Logarithm& other) = delete;
-            Logarithm& operator = (const Logarithm& other) = delete;
-            ~Logarithm() = default;
-
             static bool isInvalidArg(const BasePtr& arg);
             static BasePtr createInstance(const BasePtr& arg);
             static BasePtr createNumerically(const BasePtr& arg);

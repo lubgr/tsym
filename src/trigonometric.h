@@ -24,6 +24,13 @@ namespace tsym {
             /* Accessed from NumTrigoSimpl, ProductSimpl and possibly more (thus public): */
             enum class Type { SIN, COS, TAN, ASIN, ACOS, ATAN, ATAN2 };
 
+            Trigonometric(const BasePtrCtr& args, Type type, Base::CtorKey&&);
+            Trigonometric(const Trigonometric&) = delete;
+            Trigonometric& operator = (const Trigonometric&) = delete;
+            Trigonometric(Trigonometric&&) = delete;
+            Trigonometric& operator = (Trigonometric&&) = delete;
+            ~Trigonometric() = default;
+
             Number numericEval() const;
             Fraction normal(SymbolMap& map) const;
             BasePtr diffWrtSymbol(const BasePtr& symbol) const;
@@ -33,11 +40,6 @@ namespace tsym {
             unsigned complexity() const;
 
         private:
-            Trigonometric(const BasePtrCtr& args, Type type);
-            Trigonometric(const Trigonometric& other);
-            Trigonometric& operator = (const Trigonometric& other);
-            ~Trigonometric() = default;
-
             static BasePtr create(Type type, const BasePtr& arg);
             static BasePtr createInstance(Type type, const BasePtrCtr& args);
             static bool doesSymmetryApply(const BasePtr& arg);

@@ -11,7 +11,7 @@
 #include "ctr.h"
 #include "symbolmap.h"
 
-tsym::Product::Product(const BasePtrCtr& factors) :
+tsym::Product::Product(const BasePtrCtr& factors, Base::CtorKey&&) :
     Base(factors)
 {
     setDebugString();
@@ -78,7 +78,7 @@ tsym::BasePtr tsym::Product::createSimplifiedProduct(const BasePtrCtr& factors)
     else if (needsExpansion(res))
         return ctr::expandAsProduct(res);
     else
-        return instantiate([&res]() { return new Product(res); });
+        return std::make_shared<const Product>(res, Base::CtorKey{});
 }
 
 bool tsym::Product::needsExpansion(const BasePtrCtr& factors)

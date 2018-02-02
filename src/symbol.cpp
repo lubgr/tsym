@@ -10,14 +10,14 @@
 
 unsigned tsym::Symbol::tmpCounter = 0;
 
-tsym::Symbol::Symbol(const Name& name, bool positive) :
+tsym::Symbol::Symbol(const Name& name, bool positive, Base::CtorKey&&) :
     symbolName(name),
     positive(positive)
 {
     setDebugString();
 }
 
-tsym::Symbol::Symbol(unsigned tmpId, bool positive) :
+tsym::Symbol::Symbol(unsigned tmpId, bool positive, Base::CtorKey&&) :
     symbolName(std::string(tmpSymbolNamePrefix) + std::to_string(tmpId)),
     positive(positive)
 {
@@ -63,7 +63,7 @@ tsym::BasePtr tsym::Symbol::createNonEmptyName(const Name& name, bool positive)
     if (lookup != cend(pool))
         return lookup->second;
 
-    return pool.insert({ key, instantiate([&name, positive]() { return new Symbol(name, positive); }) }).first->second;
+    return pool.insert({ key, std::make_shared<const Symbol>(name, positive, Base::CtorKey{}) }).first->second;
 }
 
 tsym::BasePtr tsym::Symbol::createPositive(const std::string& name)
@@ -80,7 +80,7 @@ tsym::BasePtr tsym::Symbol::createTmpSymbol(bool positive)
 {
     ++tmpCounter;
 
-    return instantiate([positive]() { return new Symbol(tmpCounter, positive); });
+    return std::make_shared<const Symbol>(tmpCounter, positive, Base::CtorKey{});
 }
 
 bool tsym::Symbol::isEqualDifferentBase(const BasePtr& other) const

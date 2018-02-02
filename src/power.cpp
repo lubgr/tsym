@@ -13,7 +13,7 @@
 #include "ctr.h"
 #include "powernormal.h"
 
-tsym::Power::Power(const BasePtr& base, const BasePtr& exponent) :
+tsym::Power::Power(const BasePtr& base, const BasePtr& exponent, Base::CtorKey&&) :
     Base({ base, exponent }),
     baseRef(ops.front()),
     expRef(ops.back())
@@ -74,7 +74,7 @@ tsym::BasePtr tsym::Power::createNonTrivial(const BasePtr& base, const BasePtr& 
         /* Will probably never be the case, just a security check. */
         return Numeric::one();
 
-    return instantiate([&res]() { return new Power(res.front(), res.back()); });
+    return std::make_shared<const Power>(res.front(), res.back(), Base::CtorKey{});
 }
 
 bool tsym::Power::isEqualDifferentBase(const BasePtr& other) const

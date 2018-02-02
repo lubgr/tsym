@@ -15,6 +15,13 @@ namespace tsym {
             static BasePtr oneOver(const BasePtr& base);
             static BasePtr sqrt(const BasePtr& base);
 
+            Power(const BasePtr& base, const BasePtr& exponent, Base::CtorKey&&);
+            Power(const Power&) = delete;
+            Power& operator = (const Power&) = delete;
+            Power(Power&&) = delete;
+            Power& operator = (Power&&) = delete;
+            ~Power() = default;
+
             bool isEqualDifferentBase(const BasePtr& other) const;
             bool sameType(const BasePtr& other) const;
             Number numericEval() const;
@@ -36,11 +43,6 @@ namespace tsym {
             BasePtr exp() const;
 
         private:
-            Power(const BasePtr& base, const BasePtr& exponent);
-            Power(const Power& other) = delete;
-            Power& operator = (Power const& other) = delete;
-            ~Power() = default;
-
             static BasePtr createNotUndefined(const BasePtr& base, const BasePtr& exponent);
             static BasePtr createNonTrivial(const BasePtr& base, const BasePtr& exponent);
             bool isInteger(const BasePtr& ptr) const;

@@ -11,18 +11,7 @@
 #include "symbolmap.h"
 #include "logging.h"
 
-namespace tsym {
-    namespace {
-        const BasePtr& euler()
-        {
-            static const BasePtr e(Constant::createE());
-
-            return e;
-        }
-    }
-}
-
-tsym::Logarithm::Logarithm(const BasePtr& arg) :
+tsym::Logarithm::Logarithm(const BasePtr& arg, Base::CtorKey&&) :
     Function({ arg }, "log"),
     arg(ops.front())
 {
@@ -47,7 +36,7 @@ tsym::BasePtr tsym::Logarithm::create(const BasePtr& arg)
 
 tsym::BasePtr tsym::Logarithm::createInstance(const BasePtr& arg)
 {
-    return instantiate([&arg]() { return new Logarithm(arg); });
+    return std::make_shared<const Logarithm>(arg, Base::CtorKey{});
 }
 
 bool tsym::Logarithm::isInvalidArg(const BasePtr& arg)
@@ -58,7 +47,7 @@ bool tsym::Logarithm::isInvalidArg(const BasePtr& arg)
         invalid = true;
     else if(arg->isZero())
         invalid = true;
-    else if (arg->isPower() && arg->base()->isEqual(euler()))
+    else if (arg->isPower() && arg->base()->isEqual(Constant::createE()))
         /* Catches log(e^(-n)) with n being a large Numeric, which would numerically be evaluated to
          * zero and thus resulting in an Undefined return value. */
         ;
@@ -87,7 +76,7 @@ tsym::BasePtr tsym::Logarithm::createNumerically(const BasePtr& arg)
 
 tsym::BasePtr tsym::Logarithm::createFromConstant(const BasePtr& arg)
 {
-    if (arg->isEqual(euler()))
+    if (arg->isEqual(Constant::createE()))
         return Numeric::one();
     else
         return createInstance(arg);

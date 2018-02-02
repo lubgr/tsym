@@ -18,19 +18,6 @@ tsym::Base::Base(const BasePtrCtr& operands) :
     ops(operands)
 {}
 
-tsym::BasePtr tsym::Base::instantiate(std::function<const Base*()>&& create)
-{
-    try {
-        auto instance = BasePtr(create(), [](auto *base) { delete base; });
-        return instance;
-    } catch (const std::bad_alloc& e) {
-        TSYM_CRITICAL("Couldn't allocate Base subclass");
-        throw;
-    }
-
-    return {};
-}
-
 bool tsym::Base::isZero() const
 {
     return false;
