@@ -1,7 +1,7 @@
 
 #include <cassert>
 #include <cmath>
-#include "gcdstrategy.h"
+#include "gcd.h"
 #include "undefined.h"
 #include "numeric.h"
 #include "logging.h"
@@ -11,9 +11,7 @@
 #include "ctr.h"
 #include "product.h"
 
-tsym::GcdStrategy::~GcdStrategy() {}
-
-tsym::BasePtr tsym::GcdStrategy::compute(const BasePtr& u, const BasePtr& v) const
+tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v) const
 {
     PolyInfo polyInfo(u, v);
 
@@ -25,7 +23,7 @@ tsym::BasePtr tsym::GcdStrategy::compute(const BasePtr& u, const BasePtr& v) con
     return Undefined::create();
 }
 
-tsym::BasePtr tsym::GcdStrategy::compute(const BasePtr& u, const BasePtr& v,
+tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v,
         const BasePtrCtr& L) const
 {
     const BasePtr uExp(u->expand());
@@ -54,7 +52,7 @@ tsym::BasePtr tsym::GcdStrategy::compute(const BasePtr& u, const BasePtr& v,
     return normalize(result, L);
 }
 
-tsym::BasePtr tsym::GcdStrategy::computeNumerics(const BasePtr& u, const BasePtr& v) const
+tsym::BasePtr tsym::Gcd::computeNumerics(const BasePtr& u, const BasePtr& v) const
 {
     const Number numU(u->numericEval());
     const Number numV(v->numericEval());
@@ -68,7 +66,7 @@ tsym::BasePtr tsym::GcdStrategy::computeNumerics(const BasePtr& u, const BasePtr
     return Numeric::create(intGcd);
 }
 
-tsym::Int tsym::GcdStrategy::integerGcd(const Int& u, const Int& v) const
+tsym::Int tsym::Gcd::integerGcd(const Int& u, const Int& v) const
 {
     if (v == 0)
         return u;
@@ -76,7 +74,7 @@ tsym::Int tsym::GcdStrategy::integerGcd(const Int& u, const Int& v) const
     return integerGcd(v, u % v);
 }
 
-bool tsym::GcdStrategy::haveCommonSymbol(const BasePtr& u, const BasePtr& v,
+bool tsym::Gcd::haveCommonSymbol(const BasePtr& u, const BasePtr& v,
         const BasePtrCtr& L) const
 {
     for (const auto& item : L)
@@ -86,7 +84,7 @@ bool tsym::GcdStrategy::haveCommonSymbol(const BasePtr& u, const BasePtr& v,
     return false;
 }
 
-tsym::BasePtr tsym::GcdStrategy::gcdViaAlgo(const BasePtr& u, const BasePtr& v,
+tsym::BasePtr tsym::Gcd::gcdViaAlgo(const BasePtr& u, const BasePtr& v,
         const BasePtrCtr& L) const
 {
     const BasePtr intContent(integerContent(u, v));
@@ -100,7 +98,7 @@ tsym::BasePtr tsym::GcdStrategy::gcdViaAlgo(const BasePtr& u, const BasePtr& v,
     return Product::create(intContent, gcd);
 }
 
-tsym::BasePtr tsym::GcdStrategy::integerContent(const BasePtr& u, const BasePtr& v) const
+tsym::BasePtr tsym::Gcd::integerContent(const BasePtr& u, const BasePtr& v) const
 {
     const Number uIntContent(integerContent(u));
     const Number vIntContent(integerContent(v));
@@ -114,7 +112,7 @@ tsym::BasePtr tsym::GcdStrategy::integerContent(const BasePtr& u, const BasePtr&
     return Numeric::create(intGcd);
 }
 
-tsym::Number tsym::GcdStrategy::integerContent(const BasePtr& poly) const
+tsym::Number tsym::Gcd::integerContent(const BasePtr& poly) const
 {
     Number result;
 
@@ -126,7 +124,7 @@ tsym::Number tsym::GcdStrategy::integerContent(const BasePtr& poly) const
     return result.isInt() ? result : 1;
 }
 
-tsym::Number tsym::GcdStrategy::integerContentOfSum(const BasePtrCtr& summands) const
+tsym::Number tsym::Gcd::integerContentOfSum(const BasePtrCtr& summands) const
 {
     Number intContent;
     Int result(0);
@@ -142,7 +140,7 @@ tsym::Number tsym::GcdStrategy::integerContentOfSum(const BasePtrCtr& summands) 
     return Number(result);
 }
 
-tsym::BasePtr tsym::GcdStrategy::normalize(const BasePtr& result, const BasePtrCtr& L) const
+tsym::BasePtr tsym::Gcd::normalize(const BasePtr& result, const BasePtrCtr& L) const
 {
     BasePtrCtr symbolListCopy(L);
     Number factor;
@@ -152,7 +150,7 @@ tsym::BasePtr tsym::GcdStrategy::normalize(const BasePtr& result, const BasePtrC
     return Product::create(Numeric::create(factor), result);
 }
 
-tsym::Number tsym::GcdStrategy::normalizationFactor(const BasePtr& arg, BasePtrCtr& L) const
+tsym::Number tsym::Gcd::normalizationFactor(const BasePtr& arg, BasePtrCtr& L) const
 {
     BasePtr lCoeff;
     Number fac;

@@ -1,5 +1,5 @@
-#ifndef TSYM_GCDSTRATEGY_H
-#define TSYM_GCDSTRATEGY_H
+#ifndef TSYM_GCD_H
+#define TSYM_GCD_H
 
 #include "baseptr.h"
 #include "baseptrctr.h"
@@ -8,7 +8,7 @@
 namespace tsym { class Number; }
 
 namespace tsym {
-    class GcdStrategy {
+    class Gcd {
         /* Abstract class for implementations of a gcd algorithm for multivariate polynomials u and
          * v. It performs validation of the given expressions and then calls methods to be
          * implemented by concrete subclasses. These simple cases are handled by methods of this
@@ -29,7 +29,7 @@ namespace tsym {
          * Note that this class doesn't have state, making it less error prone while dealing with
          * the recursive nature of gcd algorithms. */
         public:
-            virtual ~GcdStrategy();
+            virtual ~Gcd() = default;
 
             BasePtr compute(const BasePtr& u, const BasePtr& v) const;
             BasePtr compute(const BasePtr& u, const BasePtr& v, const BasePtrCtr& L) const;

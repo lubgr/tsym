@@ -23,9 +23,9 @@ namespace tsym {
     static int unitFromNonNumeric(const BasePtr& polynomial);
     static BasePtr getFirstSymbol(const BasePtr& polynomial);
     static BasePtr getFirstSymbol(const BasePtrCtr& polynomials);
-    static const GcdStrategy *defaultGcd();
+    static const Gcd *defaultGcd();
     static BasePtr nonTrivialContent(const BasePtr& expandedPolynomial, const BasePtr& x,
-            const GcdStrategy *algo);
+            const Gcd *algo);
     static int minDegreeOfPower(const BasePtr& power, const tsym::BasePtr& variable);
     static int minDegreeOfSum(const BasePtr& sum, const tsym::BasePtr& variable);
     static int minDegreeOfProduct(const BasePtr& product, const tsym::BasePtr& variable);
@@ -241,14 +241,14 @@ tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v)
         return map.insert({ { u, v }, gcd(u, v, defaultGcd()) })->second;
 }
 
-const tsym::GcdStrategy *tsym::defaultGcd()
+const tsym::Gcd *tsym::defaultGcd()
 {
     static SubresultantGcd algo;
 
     return &algo;
 }
 
-tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v, const GcdStrategy *algo)
+tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v, const Gcd *algo)
 {
     return algo->compute(u, v);
 }
@@ -259,7 +259,7 @@ tsym::BasePtr tsym::poly::content(const BasePtr& polynomial, const tsym::BasePtr
 }
 
 tsym::BasePtr tsym::poly::content(const BasePtr& polynomial, const tsym::BasePtr& x,
-        const GcdStrategy *algo)
+        const Gcd *algo)
 {
     const BasePtr expanded(polynomial->expand());
 
@@ -271,7 +271,7 @@ tsym::BasePtr tsym::poly::content(const BasePtr& polynomial, const tsym::BasePtr
 }
 
 tsym::BasePtr tsym::nonTrivialContent(const BasePtr& expandedPolynomial, const BasePtr& x,
-        const GcdStrategy *algo)
+        const Gcd *algo)
 {
     const int minDegree = poly::minDegree(expandedPolynomial, x);
     const int degree = expandedPolynomial->degree(x);
