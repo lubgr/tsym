@@ -44,7 +44,7 @@ namespace tsym {
             BasePtrList simplifyConstantBase(const BasePtr& base, const BasePtr& exp);
             bool isBaseEulerConstantAndExpLogarithm(const BasePtr& base, const BasePtr& exp);
 
-            const BasePtr one;
+            const BasePtr& one;
     };
 }
 
