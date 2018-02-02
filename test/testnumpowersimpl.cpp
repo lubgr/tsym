@@ -2,6 +2,7 @@
 #include <limits>
 #include <cmath>
 #include "numpowersimpl.h"
+#include "options.h"
 #include "logging.h"
 #include "tsymtests.h"
 
@@ -9,7 +10,6 @@ using namespace tsym;
 
 TEST_GROUP(NumPowerSimpl)
 {
-    Int defaultMaxPrimeLimit = NumPowerSimpl::getMaxPrimeResolution();
     const Number half = Number(1, 2);
     const Number third = Number(1, 3);
     const double TOL = 1.e-10;
@@ -19,8 +19,6 @@ TEST_GROUP(NumPowerSimpl)
     {
         nps = NumPowerSimpl{};
         enableLog();
-
-        NumPowerSimpl::setMaxPrimeResolution(defaultMaxPrimeLimit);
     }
 
     void check(const Number& preFac, const Number& base, const Number& exp)

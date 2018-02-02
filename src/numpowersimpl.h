@@ -2,6 +2,7 @@
 #define TSYM_NUMPOWERSIMPL_H
 
 #include "primefac.h"
+#include "options.h"
 #include "number.h"
 
 namespace tsym {
@@ -33,13 +34,13 @@ namespace tsym {
             void setPower(const Number& base, const Number& exp);
             /* The prefactor is one when not specified: */
             void setPreFac(const Number& fac);
-            static void setMaxPrimeResolution(const Int& max);
+            /* Modify the default limit up to which prime factorization is performed for simplification: */
+            void setMaxPrimeResolution(Int limit);
 
             bool isInputValid();
             const Number& getNewBase();
             const Number& getNewExp();
             const Number& getPreFactor();
-            static const Int& getMaxPrimeResolution();
 
         private:
             const Number& get(const Number& component);
@@ -76,6 +77,7 @@ namespace tsym {
             bool isPreFacNegative = false;
             PrimeFac nbPrimes;
             PrimeFac pfPrimes;
+            Int maxPrimeLimit = options::getMaxPrimeResolution();
     };
 }
 

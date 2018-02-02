@@ -11,6 +11,7 @@
 #include "symbol.h"
 #include "ctr.h"
 #include "cache.h"
+#include "options.h"
 #include "numpowersimpl.h"
 #include "logging.h"
 
@@ -40,7 +41,7 @@ namespace tsym {
 tsym::BasePtrCtr tsym::ProductSimpl::simplify(const BasePtrCtr& origFactors)
 {
     static cache::RegisteredCache<CacheKey, BasePtrCtr, boost::hash<CacheKey>, CacheEqualTo> cache;
-    static const auto& relevantOption = NumPowerSimpl::getMaxPrimeResolution();
+    static const auto& relevantOption = options::getMaxPrimeResolution();
     static auto& map(cache.map);
     const auto key = std::make_pair(origFactors, relevantOption);
     const auto lookup = map.find(key);
@@ -474,7 +475,7 @@ tsym::BasePtrCtr tsym::ProductSimpl::simplTwoEqualExpDenom(const BasePtr& f1, co
 {
     assert(f1->isNumericPower() && f2->isNumericPower());
     const BasePtr newExp(Numeric::create(1, f1->exp()->numericEval().denominator()));
-    const Int& limit(NumPowerSimpl::getMaxPrimeResolution());
+    const Int& limit(options::getMaxPrimeResolution());
     const Int denom[] = { evalDenomExpNumerator(f1), evalDenomExpNumerator(f2) };
     const Int num[] = { evalNumExpNumerator(f1), evalNumExpNumerator(f2) };
     Number newBase;

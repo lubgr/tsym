@@ -10,7 +10,7 @@
 #include "constant.h"
 #include "ctr.h"
 #include "trigonometric.h"
-#include "numpowersimpl.h"
+#include "options.h"
 #include "logarithm.h"
 #include "sum.h"
 #include "tsymtests.h"
@@ -21,7 +21,7 @@ const double TOL = 1.e-10;
 
 TEST_GROUP(Power)
 {
-    const Int defaultPrimeFacLimit = NumPowerSimpl::getMaxPrimeResolution();
+    const Int defaultPrimeFacLimit = options::getMaxPrimeResolution();
     const BasePtr aPos = Symbol::createPositive("a");
     const BasePtr bPos = Symbol::createPositive("b");
     const BasePtr& half = Numeric::half();
@@ -33,7 +33,7 @@ TEST_GROUP(Power)
 
     void teardown()
     {
-        NumPowerSimpl::setMaxPrimeResolution(defaultPrimeFacLimit);
+        options::setMaxPrimeResolution(defaultPrimeFacLimit);
     }
 };
 
@@ -290,14 +290,14 @@ TEST(Power, splittableExpFracBaseFrac)
     const BasePtr base = Numeric::create(54, 4375);
     BasePtr res;
 
-    NumPowerSimpl::setMaxPrimeResolution(1000);
+    options::setMaxPrimeResolution(1000);
     res = Power::create(base, oneThird);
 
     CHECK(res->isPower());
     CHECK_EQUAL(oneThird, res->exp());
     CHECK_EQUAL(base, res->base());
 
-    NumPowerSimpl::setMaxPrimeResolution(10000);
+    options::setMaxPrimeResolution(10000);
 
     res = Power::create(base, oneThird);
 
@@ -317,7 +317,7 @@ TEST(Power, splittableBaseNumeratorExpFrac)
     const BasePtr expectedPow = Power::create(Numeric::create(10, 17), exp);
     BasePtr res;
 
-    NumPowerSimpl::setMaxPrimeResolution(100000);
+    options::setMaxPrimeResolution(100000);
 
     res = Power::create(origBase, exp);
 
@@ -325,7 +325,7 @@ TEST(Power, splittableBaseNumeratorExpFrac)
     CHECK_EQUAL(origBase, res->base());
     CHECK_EQUAL(exp, res->exp());
 
-    NumPowerSimpl::setMaxPrimeResolution(200000);
+    options::setMaxPrimeResolution(200000);
 
     res = Power::create(origBase, exp);
 
@@ -347,7 +347,7 @@ TEST(Power, splittalbeBaseDenomExpFrac)
     const BasePtr expectedNumeric = Numeric::create(21, 5153632);
     BasePtr res;
 
-    NumPowerSimpl::setMaxPrimeResolution(baseDenom - 1);
+    options::setMaxPrimeResolution(baseDenom - 1);
 
     res = Power::create(origBase, origExp);
 
@@ -355,7 +355,7 @@ TEST(Power, splittalbeBaseDenomExpFrac)
     CHECK_EQUAL(origExp, res->exp());
     CHECK_EQUAL(origBase, res->base());
 
-    NumPowerSimpl::setMaxPrimeResolution(baseDenom);
+    options::setMaxPrimeResolution(baseDenom);
 
     res = Power::create(origBase, origExp);
 

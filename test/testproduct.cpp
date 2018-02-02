@@ -7,6 +7,7 @@
 #include "undefined.h"
 #include "numeric.h"
 #include "constant.h"
+#include "options.h"
 #include "trigonometric.h"
 #include "numpowersimpl.h"
 #include "power.h"
@@ -17,7 +18,7 @@ using namespace tsym;
 
 TEST_GROUP(Product)
 {
-    const Int numPowerSimplLimit = NumPowerSimpl::getMaxPrimeResolution();
+    const Int primeResolutionLimit = options::getMaxPrimeResolution();
     const BasePtr& half = Numeric::half();
     const BasePtr minusOneHalf = Numeric::create(-1, 2);
     const BasePtr sqrtTwo = Power::sqrt(two);
@@ -28,7 +29,7 @@ TEST_GROUP(Product)
 
     void teardown()
     {
-        NumPowerSimpl::setMaxPrimeResolution(numPowerSimplLimit);
+        options::setMaxPrimeResolution(primeResolutionLimit);
     }
 };
 
@@ -777,7 +778,7 @@ TEST(Product, numPowEqualDenomInMixedSignExp)
     const BasePtr expected = Power::create(Numeric::create(7, 3125), posExp);
     BasePtr result;
 
-    NumPowerSimpl::setMaxPrimeResolution(100);
+    options::setMaxPrimeResolution(100);
 
     result = Product::create(f1, f2);
 
@@ -785,7 +786,7 @@ TEST(Product, numPowEqualDenomInMixedSignExp)
     CHECK_EQUAL(f1, result->operands().front());
     CHECK_EQUAL(f2, result->operands().back());
 
-    NumPowerSimpl::setMaxPrimeResolution(3125);
+    options::setMaxPrimeResolution(3125);
 
     result = Product::create(f1, f2);
 

@@ -39,7 +39,7 @@ TEST_GROUP(Gcd)
         check(&srGcd, expected, u, v);
     }
 
-    void check(GcdStrategy *gcd, const BasePtr& expected, const BasePtr& u, const BasePtr& v)
+    void check(Gcd *gcd, const BasePtr& expected, const BasePtr& u, const BasePtr& v)
     {
         const BasePtr result = poly::gcd(u, v, gcd);
 

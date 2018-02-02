@@ -5,17 +5,6 @@
 #include "numpowersimpl.h"
 #include "logging.h"
 
-namespace tsym {
-    namespace {
-        Int& primeFacLimit()
-        {
-            static Int limit(1000);
-
-            return limit;
-        }
-    }
-}
-
 void tsym::NumPowerSimpl::setPower(const Number& base, const Number& exp)
 {
     origBase = base;
@@ -30,9 +19,9 @@ void tsym::NumPowerSimpl::setPreFac(const Number& fac)
     needsComputation = true;
 }
 
-void tsym::NumPowerSimpl::setMaxPrimeResolution(const Int& max)
+void tsym::NumPowerSimpl::setMaxPrimeResolution(Int limit)
 {
-    primeFacLimit() = max;
+    maxPrimeLimit = std::move(limit);
 }
 
 bool tsym::NumPowerSimpl::isInputValid()
@@ -178,11 +167,9 @@ void tsym::NumPowerSimpl::computeAllPos()
 
 bool tsym::NumPowerSimpl::areValuesSmallEnough() const
 {
-    const Int& limit(primeFacLimit());
-
-    if (integer::abs(newBase.numerator()) > limit || newBase.denominator() > limit)
+    if (integer::abs(newBase.numerator()) > maxPrimeLimit || newBase.denominator() > maxPrimeLimit)
         return false;
-    else if (integer::abs(preFac.numerator()) > limit || preFac.denominator() > limit)
+    else if (integer::abs(preFac.numerator()) > maxPrimeLimit || preFac.denominator() > maxPrimeLimit)
         return false;
     else
         return true;
@@ -283,9 +270,4 @@ void tsym::NumPowerSimpl::shiftPreFacSignBack()
         newBase *= -1;
     else
         preFac *= -1;
-}
-
-const tsym::Int& tsym::NumPowerSimpl::getMaxPrimeResolution()
-{
-    return primeFacLimit();
 }
