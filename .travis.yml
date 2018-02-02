@@ -18,7 +18,7 @@ before_install:
   - wget https://github.com/cpputest/cpputest/releases/download/v3.8/cpputest-3.8.tar.gz
   - tar xf cpputest-3.8.tar.gz
   - cd ./cpputest-3.8
-  - CC=gcc-6 CXX=g++-6 ./configure --enable-std-cpp11 --prefix=/usr --disable-memory-leak-detection
+  - CC=gcc-6 CXX=g++-6 CXXFLAGS="-O2" CFLAGS="-O2" ./configure --enable-std-cpp11 --prefix=/usr --disable-memory-leak-detection
   - make
   - sudo make install
   - cd ..
@@ -43,33 +43,33 @@ matrix:
     - os: linux
       compiler: gcc
       env:
-          - CXX=g++-5
-          - CC=gcc-5
+          - _CXX=g++-5
+          - _CC=gcc-5
 
     - os: linux
       compiler: gcc
       env:
-          - CXX=g++-6
-          - CC=gcc-6
+          - _CXX=g++-6
+          - _CC=gcc-6
 
     - os: linux
       compiler: gcc
       env:
-          - CXX=g++-7
-          - CC=gcc-7
+          - _CXX=g++-7
+          - _CC=gcc-7
 
     - os: linux
       compiler: gcc
       env:
-          - CXX=g++-7
-          - CC=gcc-7
+          - _CXX=g++-7
+          - _CC=gcc-7
           - COVERAGE=--coverage
 
     - os: linux
       compiler: gcc
       env:
-          - CXX=g++-7
-          - CC=gcc-7
+          - _CXX=g++-7
+          - _CC=gcc-7
           - CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer $CXXDEBUGFLAGS"
           - CFLAGS="-fsanitize=address -fno-omit-frame-pointer $CDEBUGFLAGS"
           - LIBS=-lasan
@@ -77,8 +77,8 @@ matrix:
     - os: linux
       compiler: gcc
       env:
-          - CXX=g++-7
-          - CC=gcc-7
+          - _CXX=g++-7
+          - _CC=gcc-7
           - CXXFLAGS=$CXXDEBUGFLAGS
           - CFLAGS=$CDEBUGFLAGS
           - TOOL="valgrind --error-exitcode=1 --leak-check=full"
@@ -86,18 +86,18 @@ matrix:
     - os: linux
       compiler: gcc
       env:
-          - CXX=g++-7
-          - CCC=gcc-7
+          - _CXX=g++-7
+          - _CCC=gcc-7
           - COVERAGE="-pg"
 
     - os: linux
       compiler: clang
       env:
-          - CXX=clang++
-          - CC=clang
+          - _CXX=clang++
+          - _CC=clang
 
 script:
-  - make CPPFLAGS="-isystem ${BOOSTDIR} -I src" lib staticlib tests
+  - make CXX=${_CXX} CC=${_CC} CPPFLAGS="-isystem ${BOOSTDIR} -I src" lib staticlib tests
   - cat build/buildinfo.h
   - $TOOL ./build/runtests
 
