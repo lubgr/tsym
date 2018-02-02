@@ -15,7 +15,6 @@ namespace tsym {
             static BasePtr createPositive(const Name& name);
             static BasePtr createTmpSymbol(bool positive = false);
 
-            /* Implentations of pure virtual methods of Base. */
             bool isEqualDifferentBase(const BasePtr& other) const;
             bool sameType(const BasePtr& other) const;
             Number numericEval() const;
@@ -27,7 +26,6 @@ namespace tsym {
             unsigned complexity() const;
             size_t hash() const;
 
-            /* Overridden methods from Base. */
             bool isSymbol() const;
             const Name& name() const;
 

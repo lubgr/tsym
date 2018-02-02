@@ -10,7 +10,6 @@ namespace tsym {
          * classes. For those, a constructor is provided, otherwise, there are getter to access the
          * name and the argument of the function. */
         public:
-            /* These pure virtual methods of Base must be implemented by concrete functions. */
             virtual Number numericEval() const = 0;
             virtual Fraction normal(SymbolMap& map) const = 0;
             virtual BasePtr diffWrtSymbol(const BasePtr& symbol) const = 0;
@@ -19,13 +18,11 @@ namespace tsym {
             virtual bool isNegative() const = 0;
             virtual unsigned complexity() const = 0;
 
-            /* Implentations of pure virtual methods of Base. */
             bool isEqualDifferentBase(const BasePtr& other) const;
             bool sameType(const BasePtr& other) const;
             std::string typeStr() const;
             size_t hash() const;
 
-            /* Overridden methods from Base. */
             bool isConst() const;
             bool isFunction() const;
             BasePtr constTerm() const;

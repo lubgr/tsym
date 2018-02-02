@@ -12,7 +12,6 @@ namespace tsym {
             static const BasePtr& createPi();
             static const BasePtr& createE();
 
-            /* Implentations of pure virtual methods of Base. */
             bool isEqualDifferentBase(const BasePtr& other) const;
             bool sameType(const BasePtr& other) const;
             Number numericEval() const;
@@ -24,7 +23,6 @@ namespace tsym {
             unsigned complexity() const;
             size_t hash() const;
 
-            /* Overridden methods from Base. */
             bool isNumericallyEvaluable() const;
             bool isConstant() const;
             const Name& name() const;

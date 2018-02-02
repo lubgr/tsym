@@ -24,7 +24,6 @@ namespace tsym {
             /* Accessed from NumTrigoSimpl, ProductSimpl and possibly more (thus public): */
             enum class Type { SIN, COS, TAN, ASIN, ACOS, ATAN, ATAN2 };
 
-            /* Implentations of pure virtual methods of Base. */
             Number numericEval() const;
             Fraction normal(SymbolMap& map) const;
             BasePtr diffWrtSymbol(const BasePtr& symbol) const;

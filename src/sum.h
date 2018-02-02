@@ -13,7 +13,6 @@ namespace tsym {
                     const BasePtr& s4);
             static BasePtr create(const BasePtrCtr& summands);
 
-            /* Implentations of pure virtual methods of Base. */
             bool isEqualDifferentBase(const BasePtr& other) const;
             bool sameType(const BasePtr& other) const;
             Number numericEval() const;
@@ -25,7 +24,6 @@ namespace tsym {
             unsigned complexity() const;
             size_t hash() const;
 
-            /* Overridden methods from Base. */
             bool isSum() const;
             BasePtr expand() const;
             BasePtr subst(const BasePtr& from, const BasePtr& to) const;

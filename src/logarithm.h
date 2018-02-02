@@ -9,7 +9,6 @@ namespace tsym {
         public:
             static BasePtr create(const BasePtr& arg);
 
-            /* Implentations of pure virtual methods of Base. */
             Number numericEval() const;
             Fraction normal(SymbolMap& map) const;
             BasePtr diffWrtSymbol(const BasePtr& symbol) const;
