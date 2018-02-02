@@ -24,8 +24,6 @@ before_install:
   - cd ..
   - gem install coveralls-lcov
   - sudo apt-get -qq update
-  - export CXXDEBUGFLAGS="-O0 -g3 -std=c++14 -pedantic -Wall -Wextra -Wconversion -fPIC" export
-  - export CDEBUGFLAGS="-O0 -g3 -fPIC"
 
 addons:
   apt:
@@ -43,24 +41,28 @@ matrix:
     - os: linux
       compiler: gcc
       env:
+          - ID='gcc 5 release build'
           - _CXX=g++-5
           - _CC=gcc-5
 
     - os: linux
       compiler: gcc
       env:
+          - ID='gcc 6 release build'
           - _CXX=g++-6
           - _CC=gcc-6
 
     - os: linux
       compiler: gcc
       env:
+          - ID='gcc 7 release build'
           - _CXX=g++-7
           - _CC=gcc-7
 
     - os: linux
       compiler: gcc
       env:
+          - ID='gcc 7 test coverage build'
           - _CXX=g++-7
           - _CC=gcc-7
           - COVERAGE=--coverage
@@ -68,31 +70,35 @@ matrix:
     - os: linux
       compiler: gcc
       env:
+          - ID='gcc 7 address sanitizer with debug build'
           - _CXX=g++-7
           - _CC=gcc-7
-          - CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer $CXXDEBUGFLAGS"
-          - CFLAGS="-fsanitize=address -fno-omit-frame-pointer $CDEBUGFLAGS"
+          - CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer -O0 -g -std=c++14 -fPIC"
+          - CFLAGS="-fsanitize=address -fno-omit-frame-pointer -O0 -g -fPIC"
           - LIBS=-lasan
 
     - os: linux
       compiler: gcc
       env:
+          - ID='gcc 7 valgrind run with debug build'
           - _CXX=g++-7
           - _CC=gcc-7
-          - CXXFLAGS=$CXXDEBUGFLAGS
-          - CFLAGS=$CDEBUGFLAGS
+          - CXXFLAGS="-O0 -g -std=c++14 -fPIC"
+          - CFLAGS="-O0 -g -fPIC"
           - TOOL="valgrind --error-exitcode=1 --leak-check=full"
 
     - os: linux
       compiler: gcc
       env:
+          - ID='gcc 7 gprof profiling (release build)'
           - _CXX=g++-7
-          - _CCC=gcc-7
+          - _CC=gcc-7
           - COVERAGE="-pg"
 
     - os: linux
       compiler: clang
       env:
+          - ID='clang release build'
           - _CXX=clang++
           - _CC=clang
 
