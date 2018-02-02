@@ -286,7 +286,7 @@ TEST(Subst, mixedTerm)
     const BasePtr numPow = Power::create(Numeric::create(17), Numeric::third());
     const BasePtr expected = Sum::create(Product::create(four, numPow, a),
             Product::create(two, numPow, b));
-    BasePtrCtr fac;
+    BasePtrList fac;
     BasePtr orig;
     BasePtr res;
 

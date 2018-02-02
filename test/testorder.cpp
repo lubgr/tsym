@@ -153,7 +153,7 @@ TEST(Order, sumsWithTwoSummands)
 
 TEST(Order, sumsWithThreeSummands)
 {
-    BasePtrCtr summands;
+    BasePtrList summands;
     const BasePtr sum1 = Sum::create(a, c, d);
     const BasePtr sum2 = Sum::create(b, c, d);
 

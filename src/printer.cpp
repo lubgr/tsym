@@ -2,7 +2,7 @@
 #include <cassert>
 #include "printer.h"
 #include "plaintextprintengine.h"
-#include "ctr.h"
+#include "bplist.h"
 #include "base.h"
 #include "numeric.h"
 #include "power.h"
@@ -157,7 +157,7 @@ namespace tsym {
 
                 void product(const Base& product)
                 {
-                    BasePtrCtr factors(product.operands());
+                    BasePtrList factors(product.operands());
 
                     if (powerAsFraction == PowerAsFraction::TRUE)
                         productAsFraction(factors);
@@ -165,7 +165,7 @@ namespace tsym {
                         productWithoutFractions(factors);
                 }
 
-                void productAsFraction(BasePtrCtr& factors)
+                void productAsFraction(BasePtrList& factors)
                 {
                     const unsigned productPrecedence = 2;
                     auto frac = getProductFrac(factors);
@@ -190,9 +190,9 @@ namespace tsym {
                         engine.openParentheses().invokePrint(Product::create(denom)).closeParentheses();
                 }
 
-                std::pair<tsym::BasePtrCtr, tsym::BasePtrCtr> getProductFrac(const BasePtrCtr& origFactors)
+                std::pair<tsym::BasePtrList, tsym::BasePtrList> getProductFrac(const BasePtrList& origFactors)
                 {
-                    auto frac = std::pair<BasePtrCtr, BasePtrCtr>{};
+                    auto frac = std::pair<BasePtrList, BasePtrList>{};
 
                     for (const auto& origFactor : origFactors) {
                         const auto& exp = origFactor->exp();
@@ -228,7 +228,7 @@ namespace tsym {
                         return 4;
                 }
 
-                void productWithoutFractions(BasePtrCtr& factors)
+                void productWithoutFractions(BasePtrList& factors)
                 {
                     const auto first = factors.front();
                     const unsigned productPrecedence = 2;

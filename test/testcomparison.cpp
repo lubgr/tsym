@@ -6,7 +6,7 @@
 #include "power.h"
 #include "product.h"
 #include "sum.h"
-#include "ctr.h"
+#include "bplist.h"
 #include "trigonometric.h"
 #include "undefined.h"
 #include "tsymtests.h"
@@ -165,21 +165,21 @@ TEST(Comparison, functionsDifferentTrigonometric)
 
 TEST(Comparison, equalContainer)
 {
-    const BasePtrCtr container { ten, a, Product::create(two, b), Sum::create(three, c) };
+    const BasePtrList container { ten, a, Product::create(two, b), Sum::create(three, c) };
 
-    CHECK(ctr::areEqual(container, container));
+    CHECK(bplist::areEqual(container, container));
 }
 
 TEST(Comparison, differentContainer)
 {
-    BasePtrCtr c1 { three, four, a };
-    BasePtrCtr c2;
+    BasePtrList c1 { three, four, a };
+    BasePtrList c2;
 
     c2 = c1;
 
     c1.push_back(Trigonometric::createSin(a));
     c2.push_back(Product::create(b, c));
 
-    CHECK_FALSE(ctr::areEqual(c1, c2));
-    CHECK_FALSE(ctr::areEqual(c2, c1));
+    CHECK_FALSE(bplist::areEqual(c1, c2));
+    CHECK_FALSE(bplist::areEqual(c2, c1));
 }

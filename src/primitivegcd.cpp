@@ -3,14 +3,14 @@
 #include "poly.h"
 #include "product.h"
 #include "numeric.h"
-#include "ctr.h"
+#include "bplist.h"
 #include "logging.h"
 
 tsym::BasePtr tsym::PrimitiveGcd::gcdAlgo(const BasePtr& u, const BasePtr& v,
-        const BasePtrCtr& L) const
+        const BasePtrList& L) const
 {
     const BasePtr x(L.front());
-    const BasePtrCtr R(ctr::rest(L));
+    const BasePtrList R(bplist::rest(L));
     const BasePtr uContent(poly::content(u, x, this));
     const BasePtr vContent(poly::content(v, x, this));
     const BasePtr d(compute(uContent, vContent, R));

@@ -2,7 +2,7 @@
 #define TSYM_BASE_H
 
 #include <memory>
-#include "baseptrctr.h"
+#include "baseptrlist.h"
 
 namespace tsym {
     class SymbolMap;
@@ -80,16 +80,16 @@ namespace tsym {
             BasePtr clone() const;
             BasePtr normal() const;
             BasePtr diff(const BasePtr& symbol) const;
-            const BasePtrCtr& operands() const;
+            const BasePtrList& operands() const;
 
             bool isEqualByTypeAndOperands(const BasePtr& other) const;
             void setDebugString();
 
-            const BasePtrCtr ops;
+            const BasePtrList ops;
 
         protected:
             Base() = default;
-            explicit Base(const BasePtrCtr& operands);
+            explicit Base(const BasePtrList& operands);
 
             /* Empty struct for using make_shared for subclasses that shall not be created directly,
              * but only via their static creation methods. */

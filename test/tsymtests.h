@@ -30,11 +30,11 @@ template<> SimpleString StringFrom(const tsym::Vector& v);
 
 /* For using the CHECK_EQUAL macro on BasePtr objects and the appropiate containers: */
 #include "baseptr.h"
-#include "baseptrctr.h"
+#include "baseptrlist.h"
 bool operator == (const tsym::BasePtr& lhs, const tsym::BasePtr& rhs);
 bool operator != (const tsym::BasePtr& lhs, const tsym::BasePtr& rhs);
-bool operator == (const tsym::BasePtrCtr& lhs, const tsym::BasePtrCtr& rhs);
-bool operator != (const tsym::BasePtrCtr& lhs, const tsym::BasePtrCtr& rhs);
+bool operator == (const tsym::BasePtrList& lhs, const tsym::BasePtrList& rhs);
+bool operator != (const tsym::BasePtrList& lhs, const tsym::BasePtrList& rhs);
 
 /* Functions to disable and enable logging messages except the fatal level. */
 void disableLog();

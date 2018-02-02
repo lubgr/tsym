@@ -30,7 +30,7 @@ namespace tsym {
             const Name& name() const;
 
         protected:
-            Function(const BasePtrCtr& args, const std::string& name);
+            Function(const BasePtrList& args, const std::string& name);
             Function(const Function&) = delete;
             Function& operator = (const Function&) = delete;
             Function(Function&&) = delete;

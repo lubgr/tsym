@@ -16,7 +16,7 @@ tsym::PowerSimpl::PowerSimpl() :
     one(Numeric::one())
 {}
 
-tsym::BasePtrCtr tsym::PowerSimpl::simplify(const BasePtr& base, const BasePtr& exp)
+tsym::BasePtrList tsym::PowerSimpl::simplify(const BasePtr& base, const BasePtr& exp)
 {
     if (doesInvolveComplexNumbers(base, exp))
         return { Undefined::create(), one };
@@ -43,7 +43,7 @@ bool tsym::PowerSimpl::doesInvolveComplexNumbers(const BasePtr& base, const Base
         return false;
 }
 
-tsym::BasePtrCtr tsym::PowerSimpl::simplifyNumericBase(const BasePtr& base, const BasePtr& exp)
+tsym::BasePtrList tsym::PowerSimpl::simplifyNumericBase(const BasePtr& base, const BasePtr& exp)
 {
     if (exp->isNumeric())
         return simplifyNumericPower(base, exp);
@@ -51,7 +51,7 @@ tsym::BasePtrCtr tsym::PowerSimpl::simplifyNumericBase(const BasePtr& base, cons
         return { base, exp };
 }
 
-tsym::BasePtrCtr tsym::PowerSimpl::simplifyNumericPower(const BasePtr& base,
+tsym::BasePtrList tsym::PowerSimpl::simplifyNumericPower(const BasePtr& base,
         const BasePtr& exp)
 {
     const Number nBase(base->numericEval());
@@ -60,7 +60,7 @@ tsym::BasePtrCtr tsym::PowerSimpl::simplifyNumericPower(const BasePtr& base,
     return simplifyNumericPower(nBase, nExp);
 }
 
-tsym::BasePtrCtr tsym::PowerSimpl::simplifyNumericPower(const Number& base, const Number& exp)
+tsym::BasePtrList tsym::PowerSimpl::simplifyNumericPower(const Number& base, const Number& exp)
 {
     NumPowerSimpl numericPow;
     BasePtr newBase;
@@ -79,7 +79,7 @@ tsym::BasePtrCtr tsym::PowerSimpl::simplifyNumericPower(const Number& base, cons
         return { Product::create(preFac, Power::create(newBase, newExp)), one };
 }
 
-tsym::BasePtrCtr tsym::PowerSimpl::simplifyPowerBase(const BasePtr& powBase, const BasePtr& e2)
+tsym::BasePtrList tsym::PowerSimpl::simplifyPowerBase(const BasePtr& powBase, const BasePtr& e2)
     /* Performs ((base)^e1)^e2 = (base)^(e1*e2) if it's possible. */
 {
     const BasePtr e1(powBase->exp());
@@ -193,12 +193,12 @@ bool tsym::PowerSimpl::isFraction(const BasePtr& arg)
     return arg->isNumeric() && arg->numericEval().isFrac();
 }
 
-tsym::BasePtrCtr tsym::PowerSimpl::simplifyProductBase(const BasePtr& base, const BasePtr& exp)
+tsym::BasePtrList tsym::PowerSimpl::simplifyProductBase(const BasePtr& base, const BasePtr& exp)
     /* Performs (a*b)^c = a^c*b^c if possible. */
 {
     const bool doExpandAll = isInteger(exp);
-    BasePtrCtr simplified;
-    BasePtrCtr keep;
+    BasePtrList simplified;
+    BasePtrList keep;
 
     for (const auto& factor : base->operands())
         if (doExpandAll || factor->isPositive())
@@ -214,7 +214,7 @@ tsym::BasePtrCtr tsym::PowerSimpl::simplifyProductBase(const BasePtr& base, cons
     return { Product::create(simplified), one };
 }
 
-tsym::BasePtrCtr tsym::PowerSimpl::simplifyConstantBase(const BasePtr& base, const BasePtr& exp)
+tsym::BasePtrList tsym::PowerSimpl::simplifyConstantBase(const BasePtr& base, const BasePtr& exp)
 {
     if (isBaseEulerConstantAndExpLogarithm(base, exp))
         return { exp->operands().front(), one };

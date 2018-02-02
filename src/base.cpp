@@ -10,11 +10,11 @@
 #include "fraction.h"
 #include "cache.h"
 #include "plaintextprintengine.h"
-#include "ctr.h"
+#include "bplist.h"
 #include "printer.h"
 #include "logging.h"
 
-tsym::Base::Base(const BasePtrCtr& operands) :
+tsym::Base::Base(const BasePtrList& operands) :
     ops(operands)
 {}
 
@@ -33,7 +33,7 @@ bool tsym::Base::isNumericallyEvaluable() const
     if (ops.empty())
         return false;
     else
-        return ctr::areElementsNumericallyEvaluable(ops);
+        return bplist::areElementsNumericallyEvaluable(ops);
 }
 
 bool tsym::Base::isUndefined() const
@@ -96,7 +96,7 @@ bool tsym::Base::has(const BasePtr& other) const
     if (isEqual(other))
         return true;
     else if (!ops.empty())
-        return ctr::has(ops, other);
+        return bplist::has(ops, other);
     else
         return false;
 }
@@ -106,7 +106,7 @@ bool tsym::Base::isConst() const
     if (ops.empty())
         return false;
     else
-        return ctr::areAllElementsConst(ops);
+        return bplist::areAllElementsConst(ops);
 }
 
 tsym::BasePtr tsym::Base::numericTerm() const
@@ -230,7 +230,7 @@ tsym::BasePtr tsym::Base::diff(const BasePtr& symbol) const
     return Undefined::create();
 }
 
-const tsym::BasePtrCtr& tsym::Base::operands() const
+const tsym::BasePtrList& tsym::Base::operands() const
 {
     return ops;
 }
@@ -238,7 +238,7 @@ const tsym::BasePtrCtr& tsym::Base::operands() const
 bool tsym::Base::isEqualByTypeAndOperands(const BasePtr& other) const
 {
     if (sameType(other))
-        return ctr::areEqual(ops, other->ops);
+        return bplist::areEqual(ops, other->ops);
     else
         return false;
 }

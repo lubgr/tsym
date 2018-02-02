@@ -17,7 +17,7 @@ namespace tsym {
     static bool doPermuteBothNumber(const Number& left, const Number& right);
     static bool doPermuteBothPower(const BasePtr& left, const BasePtr& right);
     static bool doPermuteBothProduct(const BasePtr& left, const BasePtr& right);
-    static bool doPermuteListReverse(const BasePtrCtr& left, const BasePtrCtr& right);
+    static bool doPermuteListReverse(const BasePtrList& left, const BasePtrList& right);
     static bool doPermuteBothSum(const BasePtr& left, const BasePtr& right);
     static bool doPermuteBothConstant(const BasePtr& left, const BasePtr& right);
     static bool doPermuteBothFunction(const BasePtr& left, const BasePtr& right);
@@ -26,7 +26,7 @@ namespace tsym {
     static bool doPermuteLeftProduct(const BasePtr& left, const BasePtr& right);
     static bool isSumSymbolOrFunction(const BasePtr& ptr);
     static bool doPermuteLeftPower(const BasePtr& left, const BasePtr& right);
-    static bool doPermuteLastElement(const BasePtrCtr& lList, const BasePtr& right);
+    static bool doPermuteLastElement(const BasePtrList& lList, const BasePtr& right);
     static bool isSymbolOrFunction(const BasePtr& ptr);
     static bool doPermuteLeftSum(const BasePtr& left, const BasePtr& right);
     static bool doPermuteLeftFunctionRightSymbol(const BasePtr& left, const BasePtr& right);
@@ -103,13 +103,13 @@ bool tsym::doPermuteBothPower(const BasePtr& left, const BasePtr& right)
 
 bool tsym::doPermuteBothProduct(const BasePtr& left, const BasePtr& right)
 {
-    const BasePtrCtr& lFactors(left->operands());
-    const BasePtrCtr& rFactors(right->operands());
+    const BasePtrList& lFactors(left->operands());
+    const BasePtrList& rFactors(right->operands());
 
     return doPermuteListReverse(lFactors, rFactors);
 }
 
-bool tsym::doPermuteListReverse(const BasePtrCtr& left, const BasePtrCtr& right)
+bool tsym::doPermuteListReverse(const BasePtrList& left, const BasePtrList& right)
 {
     auto lIt(left.rbegin());
     auto rIt(right.rbegin());
@@ -128,8 +128,8 @@ bool tsym::doPermuteListReverse(const BasePtrCtr& left, const BasePtrCtr& right)
 
 bool tsym::doPermuteBothSum(const BasePtr& left, const BasePtr& right)
 {
-    const BasePtrCtr& lSummands(left->operands());
-    const BasePtrCtr& rSummands(right->operands());
+    const BasePtrList& lSummands(left->operands());
+    const BasePtrList& rSummands(right->operands());
 
     return doPermuteListReverse(lSummands, rSummands);
 }
@@ -191,12 +191,12 @@ bool tsym::isPowerSumSymbolOrFunction(const BasePtr& ptr)
 
 bool tsym::doPermuteLeftProduct(const BasePtr& left, const BasePtr& right)
 {
-    const BasePtrCtr& lList(left->operands());
+    const BasePtrList& lList(left->operands());
 
     return doPermuteLastElement(lList, right);
 }
 
-bool tsym::doPermuteLastElement(const BasePtrCtr& lList, const BasePtr& right)
+bool tsym::doPermuteLastElement(const BasePtrList& lList, const BasePtr& right)
 {
     const BasePtr lLastFactor(lList.back());
 
@@ -229,7 +229,7 @@ bool tsym::isSymbolOrFunction(const BasePtr& ptr)
 
 bool tsym::doPermuteLeftSum(const BasePtr& left, const BasePtr& right)
 {
-    const BasePtrCtr& lList(left->operands());
+    const BasePtrList& lList(left->operands());
 
     return doPermuteLastElement(lList, right);
 }

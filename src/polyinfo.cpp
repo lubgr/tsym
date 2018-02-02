@@ -104,7 +104,7 @@ bool tsym::PolyInfo::hasValidOperands(const BasePtr& ptr)
     return true;
 }
 
-const tsym::BasePtrCtr& tsym::PolyInfo::listOfSymbols()
+const tsym::BasePtrList& tsym::PolyInfo::listOfSymbols()
 {
     defineSymbolListIfRequired();
 
@@ -155,7 +155,7 @@ void tsym::PolyInfo::addSymbolsNonScalar(const BasePtr& ptr)
         addSymbols(ptr->base());
 }
 
-void tsym::PolyInfo::addSymbols(const BasePtrCtr& list)
+void tsym::PolyInfo::addSymbols(const BasePtrList& list)
 {
     for (const auto& item : list)
         addSymbols(item);

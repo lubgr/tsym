@@ -11,9 +11,9 @@ namespace tsym {
             static BasePtr create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3);
             static BasePtr create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3,
                     const BasePtr& s4);
-            static BasePtr create(const BasePtrCtr& summands);
+            static BasePtr create(const BasePtrList& summands);
 
-            explicit Sum(const BasePtrCtr& summands, Base::CtorKey&&);
+            explicit Sum(const BasePtrList& summands, Base::CtorKey&&);
             Sum(const Sum&) = delete;
             Sum& operator = (const Sum&) = delete;
             Sum(Sum&&) = delete;
@@ -38,7 +38,7 @@ namespace tsym {
             int degree(const BasePtr& variable) const;
 
         private:
-            static BasePtr createSimplifiedSum(const BasePtrCtr& summands);
+            static BasePtr createSimplifiedSum(const BasePtrList& summands);
             Fraction toCommonDenom(const std::vector<Fraction>& operands) const;
             int sign() const;
             int signOfNumericParts() const;

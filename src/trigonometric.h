@@ -24,7 +24,7 @@ namespace tsym {
             /* Accessed from NumTrigoSimpl, ProductSimpl and possibly more (thus public): */
             enum class Type { SIN, COS, TAN, ASIN, ACOS, ATAN, ATAN2 };
 
-            Trigonometric(const BasePtrCtr& args, Type type, Base::CtorKey&&);
+            Trigonometric(const BasePtrList& args, Type type, Base::CtorKey&&);
             Trigonometric(const Trigonometric&) = delete;
             Trigonometric& operator = (const Trigonometric&) = delete;
             Trigonometric(Trigonometric&&) = delete;
@@ -41,9 +41,9 @@ namespace tsym {
 
         private:
             static BasePtr create(Type type, const BasePtr& arg);
-            static BasePtr createInstance(Type type, const BasePtrCtr& args);
+            static BasePtr createInstance(Type type, const BasePtrList& args);
             static bool doesSymmetryApply(const BasePtr& arg);
-            static bool haveAllNegativePrefactors(const BasePtrCtr& operands);
+            static bool haveAllNegativePrefactors(const BasePtrList& operands);
             static BasePtr createBySymmetry(Type type, const BasePtr& negativeArg);
             static BasePtr createNumerically(Type type, const BasePtr& arg);
             static BasePtr createNumericallyBySymmetry(Type type, const BasePtr& arg);

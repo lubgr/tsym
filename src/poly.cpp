@@ -9,20 +9,20 @@
 #include "logging.h"
 #include "polyinfo.h"
 #include "primitivegcd.h"
-#include "ctr.h"
+#include "bplist.h"
 #include "subresultantgcd.h"
 #include "cache.h"
 
 namespace tsym {
-    static BasePtrCtr divideEmptyList(const BasePtr& u, const BasePtr& v);
-    static BasePtrCtr divideNonEmpty(const BasePtr& u, const BasePtr& v, const BasePtrCtr& L);
-    static BasePtrCtr pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x,
+    static BasePtrList divideEmptyList(const BasePtr& u, const BasePtr& v);
+    static BasePtrList divideNonEmpty(const BasePtr& u, const BasePtr& v, const BasePtrList& L);
+    static BasePtrList pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x,
             bool computeQuotient);
-    static BasePtrCtr pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x,
+    static BasePtrList pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x,
             bool computeQuotient);
     static int unitFromNonNumeric(const BasePtr& polynomial);
     static BasePtr getFirstSymbol(const BasePtr& polynomial);
-    static BasePtr getFirstSymbol(const BasePtrCtr& polynomials);
+    static BasePtr getFirstSymbol(const BasePtrList& polynomials);
     static const Gcd *defaultGcd();
     static BasePtr nonTrivialContent(const BasePtr& expandedPolynomial, const BasePtr& x,
             const Gcd *algo);
@@ -31,9 +31,9 @@ namespace tsym {
     static int minDegreeOfProduct(const BasePtr& product, const tsym::BasePtr& variable);
 }
 
-tsym::BasePtrCtr tsym::poly::divide(const BasePtr& u, const BasePtr& v)
+tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v)
 {
-    static cache::RegisteredCache<BasePtrCtr, BasePtrCtr> cache;
+    static cache::RegisteredCache<BasePtrList, BasePtrList> cache;
     static auto& map(cache.map);
     const auto lookup = map.find({ u, v });
 
@@ -45,7 +45,7 @@ tsym::BasePtrCtr tsym::poly::divide(const BasePtr& u, const BasePtr& v)
     return map.insert({{ u, v }, result })->second;
 }
 
-tsym::BasePtrCtr tsym::poly::divide(const BasePtr& u, const BasePtr& v, const BasePtrCtr& L)
+tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v, const BasePtrList& L)
     /* This function implements the algorithm given in Cohen, Computer Algebra and Symbolic
      * Computation [2003], page 211. */
 {
@@ -66,7 +66,7 @@ tsym::BasePtrCtr tsym::poly::divide(const BasePtr& u, const BasePtr& v, const Ba
         return divideNonEmpty(u, v, L);
 }
 
-tsym::BasePtrCtr tsym::divideEmptyList(const tsym::BasePtr& u, const tsym::BasePtr& v)
+tsym::BasePtrList tsym::divideEmptyList(const tsym::BasePtr& u, const tsym::BasePtr& v)
 {
     const BasePtr quotient(Product::create(u, Power::oneOver(v)));
 
@@ -76,7 +76,7 @@ tsym::BasePtrCtr tsym::divideEmptyList(const tsym::BasePtr& u, const tsym::BaseP
         return { Numeric::zero(), u };
 }
 
-tsym::BasePtrCtr tsym::divideNonEmpty(const BasePtr& u, const BasePtr& v, const BasePtrCtr& L)
+tsym::BasePtrList tsym::divideNonEmpty(const BasePtr& u, const BasePtr& v, const BasePtrList& L)
     /* The central part of the algorithm described in Cohen [2003]. */
 {
     const BasePtr& x(L.front());
@@ -84,7 +84,7 @@ tsym::BasePtrCtr tsym::divideNonEmpty(const BasePtr& u, const BasePtr& v, const 
     BasePtr remainder(u);
     int m = u->degree(x);
     int n = v->degree(x);
-    BasePtrCtr d;
+    BasePtrList d;
     BasePtr tmp;
     BasePtr c;
 
@@ -93,7 +93,7 @@ tsym::BasePtrCtr tsym::divideNonEmpty(const BasePtr& u, const BasePtr& v, const 
     while (m >= n) {
         assert(m >= 0 && n >= 0);
 
-        d = poly::divide(remainder->leadingCoeff(x), v->leadingCoeff(x), ctr::rest(L));
+        d = poly::divide(remainder->leadingCoeff(x), v->leadingCoeff(x), bplist::rest(L));
 
         if (!d.back()->isZero())
             return { quotient->expand(), remainder };
@@ -113,13 +113,13 @@ tsym::BasePtrCtr tsym::divideNonEmpty(const BasePtr& u, const BasePtr& v, const 
     return { quotient->expand(), remainder };
 }
 
-tsym::BasePtrCtr tsym::poly::pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x)
+tsym::BasePtrList tsym::poly::pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x)
     /* See Cohen, Computer Algebra and Symbolic Computation [2003], page 240. */
 {
     return pseudoDivide(u, v, x, true);
 }
 
-tsym::BasePtrCtr tsym::pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x,
+tsym::BasePtrList tsym::pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x,
         bool computeQuotient)
 {
     PolyInfo polyInfo(u, v);
@@ -133,7 +133,7 @@ tsym::BasePtrCtr tsym::pseudoDivide(const BasePtr& u, const BasePtr& v, const Ba
     return { Undefined::create(), Undefined::create() };
 }
 
-tsym::BasePtrCtr tsym::pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x,
+tsym::BasePtrList tsym::pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x,
         bool computeQuotient)
 {
     const BasePtr lCoeffV(v->leadingCoeff(x));
@@ -215,7 +215,7 @@ tsym::BasePtr tsym::getFirstSymbol(const BasePtr& polynomial)
     return Undefined::create();
 }
 
-tsym::BasePtr tsym::getFirstSymbol(const BasePtrCtr& polynomials)
+tsym::BasePtr tsym::getFirstSymbol(const BasePtrList& polynomials)
 {
     BasePtr firstSymbol;
 
@@ -231,7 +231,7 @@ tsym::BasePtr tsym::getFirstSymbol(const BasePtrCtr& polynomials)
 
 tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v)
 {
-    static cache::RegisteredCache<BasePtrCtr, BasePtr> cache;
+    static cache::RegisteredCache<BasePtrList, BasePtr> cache;
     static auto& map(cache.map);
     const auto lookup = map.find({ u, v });
 

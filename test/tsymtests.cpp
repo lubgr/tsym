@@ -5,7 +5,7 @@
 #include "var.h"
 #include "matrix.h"
 #include "testsuitelogger.h"
-#include "ctr.h"
+#include "bplist.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -20,14 +20,14 @@ bool operator != (const BasePtr& lhs, const BasePtr& rhs)
     return lhs->isDifferent(rhs);
 }
 
-bool operator == (const BasePtrCtr& lhs, const BasePtrCtr& rhs)
+bool operator == (const BasePtrList& lhs, const BasePtrList& rhs)
 {
-    return ctr::areEqual(lhs, rhs);
+    return bplist::areEqual(lhs, rhs);
 }
 
-bool operator != (const BasePtrCtr& lhs, const BasePtrCtr& rhs)
+bool operator != (const BasePtrList& lhs, const BasePtrList& rhs)
 {
-    return ctr::areDifferent(lhs, rhs);
+    return bplist::areDifferent(lhs, rhs);
 }
 
 template<> SimpleString StringFrom(const Matrix& m)

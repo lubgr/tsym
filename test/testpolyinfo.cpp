@@ -18,7 +18,7 @@ TEST_GROUP(PolyInfo)
     const BasePtr abSum = Sum::create(a, b);
     PolyInfo info {};
 
-    bool contains(const BasePtrCtr& symbolList, const BasePtr& symbol)
+    bool contains(const BasePtrList& symbolList, const BasePtr& symbol)
     {
         for (const auto& symbolFromList : symbolList)
             if (symbolFromList->isEqual(symbol))
@@ -116,7 +116,7 @@ TEST(PolyInfo, symbolListForOneSymbol)
 
 TEST(PolyInfo, symbolListTwoSymbols)
 {
-    BasePtrCtr list;
+    BasePtrList list;
 
     info.set(a, b);
     list = info.listOfSymbols();
@@ -135,7 +135,7 @@ TEST(PolyInfo, symbolListMultipleSymbols)
     const BasePtr pow2 = Power::create(sum1, five);
     const BasePtr sum2 = Sum::create(pow2, b, Power::create(c, two));
     const BasePtr product = Product::create({ five, a, b, Sum::create(c, d), e, sum1 });
-    BasePtrCtr list;
+    BasePtrList list;
 
     info.set(product, sum2);
 

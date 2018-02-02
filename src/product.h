@@ -15,9 +15,9 @@ namespace tsym {
             static BasePtr minus(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3);
             static BasePtr minus(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3,
                     const BasePtr& f4);
-            static BasePtr create(const BasePtrCtr& factors);
+            static BasePtr create(const BasePtrList& factors);
 
-            explicit Product(const BasePtrCtr& factors, Base::CtorKey&&);
+            explicit Product(const BasePtrList& factors, Base::CtorKey&&);
             Product(const Product&) = delete;
             Product& operator = (const Product&) = delete;
             Product(Product&&) = delete;
@@ -46,8 +46,8 @@ namespace tsym {
             int degree(const BasePtr& variable) const;
 
         private:
-            static BasePtr createSimplifiedProduct(const BasePtrCtr& factors);
-            static bool needsExpansion(const BasePtrCtr& factors);
+            static BasePtr createSimplifiedProduct(const BasePtrList& factors);
+            static bool needsExpansion(const BasePtrList& factors);
             int sign() const;
             Fraction normalAndSplitIntoFraction(SymbolMap& map) const;
             BasePtr coeffFactorMatch(const BasePtr& variable, int exp) const;

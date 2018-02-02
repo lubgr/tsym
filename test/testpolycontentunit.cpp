@@ -63,7 +63,7 @@ TEST(PolyUnit, posMonomial)
 
 TEST(PolyUnit, longNegativeMonomial)
 {
-    BasePtrCtr factors;
+    BasePtrList factors;
     BasePtr monomial;
 
     factors.push_back(Numeric::mOne()); factors.push_back(Power::create(a, ten));

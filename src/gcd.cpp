@@ -8,7 +8,7 @@
 #include "power.h"
 #include "sum.h"
 #include "polyinfo.h"
-#include "ctr.h"
+#include "bplist.h"
 #include "product.h"
 
 tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v) const
@@ -24,7 +24,7 @@ tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v) const
 }
 
 tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v,
-        const BasePtrCtr& L) const
+        const BasePtrList& L) const
 {
     const BasePtr uExp(u->expand());
     const BasePtr vExp(v->expand());
@@ -75,7 +75,7 @@ tsym::Int tsym::Gcd::integerGcd(const Int& u, const Int& v) const
 }
 
 bool tsym::Gcd::haveCommonSymbol(const BasePtr& u, const BasePtr& v,
-        const BasePtrCtr& L) const
+        const BasePtrList& L) const
 {
     for (const auto& item : L)
         if (u->has(item) && v->has(item))
@@ -85,7 +85,7 @@ bool tsym::Gcd::haveCommonSymbol(const BasePtr& u, const BasePtr& v,
 }
 
 tsym::BasePtr tsym::Gcd::gcdViaAlgo(const BasePtr& u, const BasePtr& v,
-        const BasePtrCtr& L) const
+        const BasePtrList& L) const
 {
     const BasePtr intContent(integerContent(u, v));
     const BasePtr factor(Power::oneOver(intContent));
@@ -124,7 +124,7 @@ tsym::Number tsym::Gcd::integerContent(const BasePtr& poly) const
     return result.isInt() ? result : 1;
 }
 
-tsym::Number tsym::Gcd::integerContentOfSum(const BasePtrCtr& summands) const
+tsym::Number tsym::Gcd::integerContentOfSum(const BasePtrList& summands) const
 {
     Number intContent;
     Int result(0);
@@ -140,9 +140,9 @@ tsym::Number tsym::Gcd::integerContentOfSum(const BasePtrCtr& summands) const
     return Number(result);
 }
 
-tsym::BasePtr tsym::Gcd::normalize(const BasePtr& result, const BasePtrCtr& L) const
+tsym::BasePtr tsym::Gcd::normalize(const BasePtr& result, const BasePtrList& L) const
 {
-    BasePtrCtr symbolListCopy(L);
+    BasePtrList symbolListCopy(L);
     Number factor;
 
     factor = normalizationFactor(result, symbolListCopy);
@@ -150,7 +150,7 @@ tsym::BasePtr tsym::Gcd::normalize(const BasePtr& result, const BasePtrCtr& L) c
     return Product::create(Numeric::create(factor), result);
 }
 
-tsym::Number tsym::Gcd::normalizationFactor(const BasePtr& arg, BasePtrCtr& L) const
+tsym::Number tsym::Gcd::normalizationFactor(const BasePtr& arg, BasePtrList& L) const
 {
     BasePtr lCoeff;
     Number fac;

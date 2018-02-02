@@ -1,30 +1,30 @@
 
-#include "baseptrctr.h"
-#include "ctr.h"
+#include "baseptrlist.h"
+#include "bplist.h"
 #include "abc.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-TEST_GROUP(Ctr) {};
+TEST_GROUP(BpList) {};
 
-TEST(Ctr, restOfEmptyList)
+TEST(BpList, restOfEmptyList)
 {
-    const BasePtrCtr empty{};
+    const BasePtrList empty{};
 
     disableLog();
-    auto result = ctr::rest(empty);
+    auto result = bplist::rest(empty);
     enableLog();
 
     CHECK(result.empty());
 }
 
-TEST(Ctr, restOfNonCVList)
+TEST(BpList, restOfNonCVList)
 {
-    BasePtrCtr list{ a, b, c, d, ten };
-    BasePtrCtr expected{ b, c, d, ten };
+    BasePtrList list{ a, b, c, d, ten };
+    BasePtrList expected{ b, c, d, ten };
 
-    ctr::rest(list);
+    bplist::rest(list);
 
     CHECK_EQUAL(expected, list);
 }

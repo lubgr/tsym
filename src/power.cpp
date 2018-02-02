@@ -10,7 +10,7 @@
 #include "logarithm.h"
 #include "product.h"
 #include "sum.h"
-#include "ctr.h"
+#include "bplist.h"
 #include "powernormal.h"
 
 tsym::Power::Power(const BasePtr& base, const BasePtr& exponent, Base::CtorKey&&) :
@@ -60,7 +60,7 @@ tsym::BasePtr tsym::Power::createNotUndefined(const BasePtr& base, const BasePtr
 tsym::BasePtr tsym::Power::createNonTrivial(const BasePtr& base, const BasePtr& exponent)
 {
     PowerSimpl simpl;
-    const BasePtrCtr res = simpl.simplify(base, exponent);
+    const BasePtrList res = simpl.simplify(base, exponent);
 
     if (res.size() != 2) {
         TSYM_ERROR("Obtained wrong list from PowerSimpl: %S. Return Undefined", res);
@@ -113,7 +113,7 @@ tsym::Fraction tsym::Power::normal(SymbolMap& map) const
 
 tsym::BasePtr tsym::Power::diffWrtSymbol(const BasePtr& symbol) const
 {
-    const BasePtrCtr summands {
+    const BasePtrList summands {
         Product::create(Logarithm::create(baseRef), expRef->diffWrtSymbol(symbol)),
             Product::create(expRef, oneOver(baseRef), baseRef->diffWrtSymbol(symbol))
     };
@@ -145,7 +145,7 @@ bool tsym::Power::isNegative() const
 
 size_t tsym::Power::hash() const
 {
-    return std::hash<BasePtrCtr>{}(ops);
+    return std::hash<BasePtrList>{}(ops);
 }
 
 unsigned tsym::Power::complexity() const
@@ -195,13 +195,13 @@ tsym::BasePtr tsym::Power::expandIntegerExponent() const
 tsym::BasePtr tsym::Power::expandSumBaseIntExp() const
 {
     const Int nExp(expRef->numericEval().numerator());
-    BasePtrCtr sums;
+    BasePtrList sums;
     BasePtr res;
 
     for (Int i(0); i < integer::abs(nExp); ++i)
         sums.push_back(baseRef);
 
-    res = ctr::expandAsProduct(sums);
+    res = bplist::expandAsProduct(sums);
 
     if (nExp < 0)
         res = Power::oneOver(res);

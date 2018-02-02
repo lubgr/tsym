@@ -2,9 +2,9 @@
 #include <boost/functional/hash.hpp>
 #include "numeric.h"
 #include "function.h"
-#include "ctr.h"
+#include "bplist.h"
 
-tsym::Function::Function(const BasePtrCtr& args, const std::string& name) :
+tsym::Function::Function(const BasePtrList& args, const std::string& name) :
     Base(args),
     functionName(name)
 {}
@@ -12,7 +12,7 @@ tsym::Function::Function(const BasePtrCtr& args, const std::string& name) :
 bool tsym::Function::isEqualDifferentBase(const BasePtr& other) const
 {
     if (sameType(other))
-        return name() == other->name() && ctr::areEqual(ops, other->operands());
+        return name() == other->name() && bplist::areEqual(ops, other->operands());
     else
         return false;
 }

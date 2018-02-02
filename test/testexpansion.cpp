@@ -22,7 +22,7 @@ TEST_GROUP(Expansion)
     BasePtr getProduct(const BasePtr& f1, const BasePtr& f2,
             const BasePtr& f3 = Undefined::create(), const BasePtr& f4 = Undefined::create())
     {
-        BasePtrCtr fac { f1, f2 };
+        BasePtrList fac { f1, f2 };
 
         if (!f3->isUndefined())
             fac.push_back(f3);
@@ -91,7 +91,7 @@ TEST(Expansion, powerOfSumNegIntExp)
     /* (a + b)^(-2) = (a^2 + 2*a*b + b^2)^(-1). */
 {
     const BasePtr orig = Power::create(abSum, Numeric::create(-2));
-    const BasePtrCtr summands{ Power::create(a, two), Power::create(b, two),
+    const BasePtrList summands{ Power::create(a, two), Power::create(b, two),
         Product::create(two, abProduct) };
     const BasePtr expected = Power::oneOver(Sum::create(summands));
 
@@ -179,7 +179,7 @@ TEST(Expansion, symbolSumProduct)
 {
     const BasePtr orig = Product::create({ abSum, Sum::create(c, d), Sum::create(e, f, g),
             Sum::create(h, i) });
-    BasePtrCtr summands;
+    BasePtrList summands;
     BasePtr expected;
 
     summands.push_back(Product::create(b, d, g, i));
@@ -264,7 +264,7 @@ TEST(Expansion, sumPowerOfThree)
      * 3*c*a^2. */
 {
     const BasePtr orig = Power::create(Sum::create(a, b, c), three);
-    BasePtrCtr summands;
+    BasePtrList summands;
     BasePtr expected;
 
     summands.push_back(Power::create(a, three));
