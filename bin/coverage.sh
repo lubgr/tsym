@@ -17,6 +17,6 @@ test -d $TARGETDIR || mkdir -p ${TARGETDIR}
 
 rm -f ${TARGETDIR}/*
 
-gcovr -r . --exclude='.*sgfy\.(h|cpp)' --sort-percentage --html --html-details -o ${INDEX}
+gcovr -r . --sort-percentage --html --html-details -o ${INDEX}
 
 echo "Test coverage statistics written to file://${PWD}/${INDEX}"
