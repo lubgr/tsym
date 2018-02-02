@@ -85,11 +85,11 @@ namespace tsym {
             bool isEqualByTypeAndOperands(const BasePtr& other) const;
             void setDebugString();
 
-            const BasePtrList ops;
-
         protected:
             Base() = default;
             explicit Base(const BasePtrList& operands);
+
+            const BasePtrList ops;
 
             /* Empty struct for using make_shared for subclasses that shall not be created directly,
              * but only via their static creation methods. */
