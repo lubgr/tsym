@@ -158,5 +158,5 @@ Additional notes
 * Control over logging output can be implemented by providing a subclass of `tsym::Logger` that
   overrides the debug/info/warning/error/critical methods. An instance of that subclass must then be
   registered to replace the default behavior (print warning, error and critical messages to standard
-  output) by `tsym::Logger::setInstance(...);` where the argument is a `shared_ptr` of the Logger
-  subclass.
+  output) by `tsym::Logger::setInstance(...);` where the argument is a `std::unique_ptr` of the
+  Logger subclass.
