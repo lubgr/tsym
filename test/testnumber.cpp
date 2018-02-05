@@ -55,11 +55,6 @@ TEST(Rational, negativeDenominator)
     CHECK_EQUAL(2, n.denominator());
 }
 
-TEST(Rational, zeroDenominator)
-{
-    CHECK_THROWS(std::overflow_error, Number(2, 0));
-}
-
 TEST(Rational, posDoubleToFraction)
 {
     const Number frac = Number(0.125);

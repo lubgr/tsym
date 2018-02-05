@@ -5,11 +5,9 @@
 
 namespace tsym {
     class Number {
-        /* Independent wrapper class around integers, fractions and floating point numbers. This
-         * class is needed inside of the classes derived from the Base class, more specifically,
-         * it's needed independently of the base class. Simplification of fractions is always
-         * performed automatically. Floating point numbers are automatically converted to fractions
-         * up to a certain (not very high) accuracy. */
+        /* Independent wrapper class around (Boost) rational numbers and floating point numbers.
+         * This class is needed independently of the base class. Floating point numbers are
+         * automatically converted to fractions up to a certain (not very high) accuracy. */
         public:
             Number() = default;
             Number(int value);
@@ -38,24 +36,19 @@ namespace tsym {
             bool isDouble() const;
 
             /* Returns the numerator of a fraction or the value of an integer. */
-            const Int& numerator() const;
+            Int numerator() const;
             /* Returns the denominator in case of a fraction, one otherwise. */
-            const Int& denominator() const;
+            Int denominator() const;
             double toDouble() const;
             Number abs() const;
             /* Returns 0 in case of a zero number, otherwise -1 or 1: */
             int sign() const;
 
         private:
-            void setAndSimplify(Int&& num, Int&& denom, double dValue);
-            void set(Int&& num, Int&& denom, double dValue);
-            void simplify();
+            void setDebugString();
             void tryDoubleToFraction();
-            void cancel();
             bool isThisOrOtherDouble(const Number& other) const;
-            void addRational(const Number& other);
             Number flipSign() const;
-            void timesRational(const Number& other);
             bool processTrivialPowers(const Number& exponent, Number& result) const;
             Number computeMinusOneToThe(const Number& exponent) const;
             bool processNegBase(const Number& exponent, Number& result) const;
@@ -67,9 +60,9 @@ namespace tsym {
             bool areBothRational(const Number& other) const;
             bool equalViaDouble(const Number& rhs) const;
 
-            Int num { 0 };
-            Int denom { 1 };
-            double dValue { 0.0 };
+            typedef boost::multiprecision::cpp_rational Rational;
+            Rational rational{ 0 };
+            double dValue{ 0.0 };
             static constexpr double ZERO_TOL = std::numeric_limits<double>::epsilon();
             static constexpr double TOL = 100.0*ZERO_TOL;
 

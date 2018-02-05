@@ -88,8 +88,6 @@ bool tsym::Power::sameType(const BasePtr& other) const
 }
 
 tsym::Number tsym::Power::numericEval() const
-    /* If base or exponent can't be numerically evaluated, they will return an undefined Number and
-     * the result will be undefined, too. */
 {
     Number nExp;
     Number res;
