@@ -5,7 +5,7 @@ BUILD ?= build
 CXXFLAGS ?= -O2 -fPIC -pedantic -Wall -Wextra -Wconversion -DNDEBUG -std=c++14
 CFLAGS ?= -O2 -fPIC -DNDEBUG
 CPPFLAGS += -I src
-COVERAGE ?=
+PROFILE ?=
 LIBS ?=
 LEX ?= flex
 YACC ?= bison
@@ -38,10 +38,10 @@ staticlib: $(LIB_STATIC)
 tags: $(TAGS)
 
 $(TEST_EXEC): $(LIB_OBJ) $(TEST_OBJ)
-	$(CXX) -o $(TEST_EXEC) $(COVERAGE) $(LIB_OBJ) $(TEST_OBJ) $(LDFLAGS) $(LIBS) -lCppUTest
+	$(CXX) -o $(TEST_EXEC) $(PROFILE) $(LIB_OBJ) $(TEST_OBJ) $(LDFLAGS) $(LIBS) -lCppUTest
 
 $(LIB_TARGET): $(LIB_OBJ) $(BUILDINFO)
-	$(CXX) -shared -o $(LIB_TARGET) $(COVERAGE) $(LIB_OBJ) $(LIBS)
+	$(CXX) -shared -o $(LIB_TARGET) $(PROFILE) $(LIB_OBJ) $(LIBS)
 
 $(LIB_STATIC): $(LIB_OBJ) $(BUILDINFO)
 	$(AR) rcs $@ $(LIB_OBJ)
@@ -49,7 +49,7 @@ $(LIB_STATIC): $(LIB_OBJ) $(BUILDINFO)
 -include $(DEPS)
 
 $(BUILD)/src/%.o: src/%.cpp | $(BUILD)/src
-	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(COVERAGE) -o $@ -c $<
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(PROFILE) -o $@ -c $<
 
 $(BUILD)/src/%.o: $(BUILD)/src/%.c $(LIB_PARSER_H)
 	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
@@ -111,6 +111,5 @@ clean:
 	$(RM) $(TEST_OBJ) $(TEST_EXEC)
 	$(RM) $(DEPS)
 	$(RM) $(BUILD)/src/*.c
-	$(RM) $(BUILD)/coverage/*
 
 .PHONY: clean default lib tests test install uninstall

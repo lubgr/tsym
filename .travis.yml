@@ -58,7 +58,7 @@ matrix:
           - ID='gcc 7 test coverage, release build'
           - _CXX=g++-7
           - _CC=gcc-7
-          - COVERAGE=--coverage
+          - PROFILE=--coverage
 
     - env:
           - ID='gcc 7 address sanitizer, debug build'
@@ -80,7 +80,7 @@ matrix:
           - ID='gcc 7 gprof profiling, release build'
           - _CXX=g++-7
           - _CC=gcc-7
-          - COVERAGE="-pg"
+          - PROFILE="-pg"
 
     - env:
           - ID='clang, release build'
