@@ -66,7 +66,7 @@ void tsym::Number::tryDoubleToFraction()
 
     if (std::abs(static_cast<double>(truncated)/nFloatDigits - dValue) < ZERO_TOL) {
         /* This will also catch very low double values, which turns them into a rational zero. */
-        rational = Rational(std::move(truncated), Int(nFloatDigits));
+        rational.assign(std::move(truncated), Int(nFloatDigits));
         dValue = 0.0;
     }
 }
@@ -317,7 +317,7 @@ bool tsym::Number::lessThan(const Number& rhs) const
 
 bool tsym::Number::isZero() const
 {
-    return isRational() ? rational == 0 : std::abs(dValue) < TOL;
+    return rational == 0 && std::abs(dValue) < TOL;
 }
 
 bool tsym::Number::isOne() const
@@ -327,7 +327,7 @@ bool tsym::Number::isOne() const
 
 bool tsym::Number::isInt() const
 {
-    return denominator() == 1 && std::abs(dValue) < ZERO_TOL;
+    return (numerator() != 0 && denominator() == 1) || isZero();
 }
 
 bool tsym::Number::isFrac() const
@@ -347,17 +347,17 @@ bool tsym::Number::isDouble() const
 
 tsym::Int tsym::Number::numerator() const
 {
-    return boost::multiprecision::numerator(rational);
+    return rational.numerator();
 }
 
 tsym::Int tsym::Number::denominator() const
 {
-    return boost::multiprecision::denominator(rational);
+    return rational.denominator();
 }
 
 double tsym::Number::toDouble() const
 {
-    return isRational() ? static_cast<double>(rational) : dValue;
+    return isRational() ? boost::rational_cast<double>(rational) : dValue;
 }
 
 tsym::Number tsym::Number::abs() const

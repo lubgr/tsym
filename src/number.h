@@ -2,6 +2,7 @@
 #define TSYM_NUMBER_H
 
 #include "int.h"
+#include <boost/rational.hpp>
 
 namespace tsym {
     class Number {
@@ -60,7 +61,7 @@ namespace tsym {
             bool areBothRational(const Number& other) const;
             bool equalViaDouble(const Number& rhs) const;
 
-            typedef boost::multiprecision::cpp_rational Rational;
+            typedef boost::rational<Int> Rational;
             Rational rational{ 0 };
             double dValue{ 0.0 };
             static constexpr double ZERO_TOL = std::numeric_limits<double>::epsilon();
