@@ -68,8 +68,7 @@ tsym::BasePtr tsym::Product::create(const BasePtrList& factors)
 
 tsym::BasePtr tsym::Product::createSimplifiedProduct(const BasePtrList& factors)
 {
-    ProductSimpl simpl;
-    const BasePtrList res = simpl.simplify(factors);
+    const BasePtrList res = productsimpl::simplify(factors);
 
     if (res.size() == 0)
         return Numeric::one();

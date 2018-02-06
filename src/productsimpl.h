@@ -24,59 +24,9 @@ namespace tsym {
      * An additional feature is the automatic simplification of appropiate products of trigonometric
      * functions: sin(a)/cos(a) = tan(a) and cos(a)/sin(a) = 1/tan(a). This has to be done in
      * advance to Cohen's algorithm to ensure its proper functionality. */
-    class ProductSimpl {
-        public:
-            BasePtrList simplify(const BasePtrList& factors);
-
-        private:
-            BasePtrList simplifyWithoutCache(const BasePtrList& factors);
-            void prepare(BasePtrList& fac);
-            void extractProducts(BasePtrList& u);
-            void contractTrigonometrics(BasePtrList& u);
-            void contract(BasePtrList& u,
-                    bool (ProductSimpl::*check)(const BasePtr& f1, const BasePtr& f2),
-                    BasePtrList (ProductSimpl::*simpl)(const BasePtr& f1, const BasePtr& f2));
-            bool areContractableTrigFctPowers(const BasePtr& f1, const BasePtr& f2);
-            bool isContractableTrigFctPower(const BasePtr& pow);
-            BasePtrList contractTrigFctPowers(const BasePtr& f1, const BasePtr& f2);
-            BasePtr trigSymbReplacement(Trigonometric::Type type, const BasePtr& arg);
-            BasePtr trigFunctionPowerReplacement(const BasePtr& pow, const BasePtr& sin,
-                    const BasePtr& cos);
-
-            BasePtrList simplTwoFactors(const BasePtrList& u);
-            BasePtrList simplTwoFactors(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplTwoFactorsWithProduct(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList merge(const BasePtrList& l1, const BasePtrList& l2);
-            BasePtrList mergeNonEmpty(const BasePtrList& p, const BasePtrList& q);
-            BasePtrList simplTwoFactorsWithoutProduct(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplTwoConst(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplTwoNumerics(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplNumAndConst(const BasePtr& numeric, const BasePtr& constant);
-            BasePtrList simplNumAndNumPow(const BasePtr& numeric, const BasePtr& numPow);
-            BasePtrList simplNumAndNumPow(const Number& preFactor, const Number& base,
-                    const Number& exp);
-            bool haveEqualBases(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplTwoEqualBases(const BasePtr& f1, const BasePtr& f2);
-            bool areNumPowersWithEqualExp(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplTwoEqualExp(const BasePtr& f1, const BasePtr& f2);
-            bool areNumPowersWithZeroSumExp(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplTwoZeroSumExp(const BasePtr& f1, const BasePtr& f2);
-            bool areNumPowersWithEqualExpDenom(const BasePtr& f1, const BasePtr& f2);
-            BasePtrList simplTwoEqualExpDenom(const BasePtr& f1, const BasePtr& f2);
-            Int evalNumExpNumerator(const BasePtr& numPow);
-            Int evalExpNumerator(const Number& base, const Int& exp);
-            Int evalDenomExpNumerator(const BasePtr& numPow);
-
-            BasePtrList simplNFactors(BasePtrList u);
-            void prepareConst(BasePtrList& u);
-            void contractNumerics(BasePtrList& u);
-            void contractConst(BasePtrList& u);
-            bool areTwoContractableConst(const BasePtr& f1, const BasePtr& f2);
-            void contractTwoConst(BasePtrList::iterator& it1, BasePtrList::iterator& it2,
-                    BasePtrList& u);
-            BasePtrList simplPreparedFactors(const BasePtrList& u);
-            BasePtrList simplNPreparedFactors(const BasePtrList& u);
-    };
+    namespace productsimpl {
+        BasePtrList simplify(const BasePtrList& factors);
+    }
 }
 
 #endif

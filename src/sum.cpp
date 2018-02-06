@@ -46,10 +46,7 @@ tsym::BasePtr tsym::Sum::create(const BasePtrList& summands)
 
 tsym::BasePtr tsym::Sum::createSimplifiedSum(const BasePtrList& summands)
 {
-    SumSimpl simpl;
-    BasePtrList res;
-
-    res = simpl.simplify(summands);
+    const auto res = sumsimpl::simplify(summands);
 
     if (res.size() == 0)
         return Numeric::zero();

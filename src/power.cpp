@@ -59,11 +59,10 @@ tsym::BasePtr tsym::Power::createNotUndefined(const BasePtr& base, const BasePtr
 
 tsym::BasePtr tsym::Power::createNonTrivial(const BasePtr& base, const BasePtr& exponent)
 {
-    PowerSimpl simpl;
-    const BasePtrList res = simpl.simplify(base, exponent);
+    const auto res = powersimpl::simplify(base, exponent);
 
     if (res.size() != 2) {
-        TSYM_ERROR("Obtained wrong list from PowerSimpl: %S. Return Undefined", res);
+        TSYM_ERROR("Obtained wrong list from powersimpl: %S. Return Undefined", res);
         return Undefined::create();
     }
 
