@@ -11,8 +11,8 @@ tsym::BasePtr tsym::PrimitiveGcd::gcdAlgo(const BasePtr& u, const BasePtr& v,
 {
     const BasePtr x(L.front());
     const BasePtrList R(bplist::rest(L));
-    const BasePtr uContent(poly::content(u, x, this));
-    const BasePtr vContent(poly::content(v, x, this));
+    const BasePtr uContent(poly::content(u, x, *this));
+    const BasePtr vContent(poly::content(v, x, *this));
     const BasePtr d(compute(uContent, vContent, R));
     BasePtr uPrimPart(poly::divide(u, uContent, L).front());
     BasePtr vPrimPart(poly::divide(v, vContent, L).front());

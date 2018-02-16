@@ -14,21 +14,206 @@
 #include "cache.h"
 
 namespace tsym {
-    static BasePtrList divideEmptyList(const BasePtr& u, const BasePtr& v);
-    static BasePtrList divideNonEmpty(const BasePtr& u, const BasePtr& v, const BasePtrList& L);
-    static BasePtrList pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x,
-            bool computeQuotient);
-    static BasePtrList pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x,
-            bool computeQuotient);
-    static int unitFromNonNumeric(const BasePtr& polynomial);
-    static BasePtr getFirstSymbol(const BasePtr& polynomial);
-    static BasePtr getFirstSymbol(const BasePtrList& polynomials);
-    static const Gcd *defaultGcd();
-    static BasePtr nonTrivialContent(const BasePtr& expandedPolynomial, const BasePtr& x,
-            const Gcd *algo);
-    static int minDegreeOfPower(const BasePtr& power, const tsym::BasePtr& variable);
-    static int minDegreeOfSum(const BasePtr& sum, const tsym::BasePtr& variable);
-    static int minDegreeOfProduct(const BasePtr& product, const tsym::BasePtr& variable);
+    namespace {
+        BasePtrList pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x, bool computeQuotient);
+        BasePtr getFirstSymbol(const BasePtr& polynomial);
+        BasePtr getFirstSymbol(const BasePtrList& polynomials);
+
+        BasePtrList divideEmptyList(const BasePtr& u, const BasePtr& v)
+        {
+            const BasePtr quotient(Product::create(u, Power::oneOver(v)));
+
+            if (quotient->isNumeric() && quotient->numericEval().isRational())
+                return { quotient, Numeric::zero() };
+            else
+                return { Numeric::zero(), u };
+        }
+
+        BasePtrList divideNonEmpty(const BasePtr& u, const BasePtr& v, const BasePtrList& L)
+        /* The central part of the algorithm described in Cohen [2003]. */
+        {
+            const BasePtr& x(L.front());
+            BasePtr quotient(Numeric::zero());
+            BasePtr remainder(u);
+            int m = u->degree(x);
+            int n = v->degree(x);
+            BasePtrList d;
+            BasePtr tmp;
+            BasePtr c;
+
+            assert(x->isSymbol());
+
+            while (m >= n) {
+                assert(m >= 0 && n >= 0);
+
+                d = poly::divide(remainder->leadingCoeff(x), v->leadingCoeff(x), bplist::rest(L));
+
+                if (!d.back()->isZero())
+                    return { quotient->expand(), remainder };
+
+                c = d.front();
+                tmp = Power::create(x, Numeric::create(m - n));
+                quotient = Sum::create(quotient, Product::create(c, tmp));
+
+                remainder = Sum::create(remainder, Product::minus(c, v, tmp))->expand();
+
+                if (remainder->isZero())
+                    break;
+
+                m = remainder->degree(x);
+            }
+
+            return { quotient->expand(), remainder };
+        }
+
+        BasePtrList pseudoDivideImpl(const BasePtr& u, const BasePtr& v, const BasePtr& x, bool computeQuotient)
+        {
+            PolyInfo polyInfo(u, v);
+
+            if (polyInfo.isInputValid())
+                return pseudoDivideChecked(u, v, x, computeQuotient);
+
+            TSYM_ERROR("Invalid polyn. pseudo-division: %S, %S. Return Undefined quotient/remainder.",  u, v);
+
+            return { Undefined::create(), Undefined::create() };
+        }
+
+        BasePtrList pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x, bool computeQuotient)
+        {
+            const BasePtr lCoeffV(v->leadingCoeff(x));
+            const int n = v->degree(x);
+            BasePtr quotient(Numeric::zero());
+            BasePtr remainder(u->expand());
+            BasePtr lCoeffR;
+            BasePtr tmp;
+            int m = u->degree(x);
+            int sigma = 0;
+
+            assert(!v->expand()->isZero());
+
+            while (m >= n) {
+                lCoeffR = remainder->coeff(x, m);
+
+                tmp = Product::create(lCoeffR, Power::create(x, Numeric::create(m - n)));
+
+                if (computeQuotient)
+                    quotient = Sum::create(Product::create(lCoeffV, quotient), tmp);
+
+                remainder = Sum::create(Product::create(lCoeffV, remainder),
+                        Product::minus(v, tmp))->expand();
+
+                if (remainder->isZero())
+                    break;
+
+                ++sigma;
+                m = remainder->degree(x);
+            }
+
+            tmp = Power::create(lCoeffV, Numeric::create(std::max(u->degree(x) - n + 1, 0) - sigma));
+
+            remainder = Product::create(tmp, remainder)->expand();
+            quotient = computeQuotient ? Product::create(tmp, quotient)->expand() : Numeric::zero();
+
+            return { quotient, remainder };
+        }
+
+        int unitFromNonNumeric(const BasePtr& polynomial)
+        {
+            const BasePtr firstSymbol(getFirstSymbol(polynomial));
+
+            if (firstSymbol->isUndefined()) {
+                TSYM_ERROR("Polynomial unit request with illegal argument: %S", polynomial);
+                return 1;
+            }
+
+            return poly::unit(polynomial, firstSymbol);
+        }
+
+        BasePtr getFirstSymbol(const BasePtr& polynomial)
+        {
+            if (polynomial->isSymbol())
+                return polynomial;
+            else if (polynomial->isPower())
+                return getFirstSymbol(polynomial->base());
+            else if (polynomial->isSum() || polynomial->isProduct())
+                return getFirstSymbol(polynomial->operands());
+
+            return Undefined::create();
+        }
+
+        BasePtr getFirstSymbol(const BasePtrList& polynomials)
+        {
+            for (const auto& item : polynomials) {
+                BasePtr firstSymbol = getFirstSymbol(item);
+
+                if (!firstSymbol->isUndefined())
+                    return firstSymbol;
+            }
+
+            return Undefined::create();
+        }
+
+        const Gcd& defaultGcd()
+        {
+            static SubresultantGcd algo;
+
+            return algo;
+        }
+
+        BasePtr nonTrivialContent(const BasePtr& expandedPolynomial, const BasePtr& x, const Gcd& algo)
+        {
+            const int minDegree = poly::minDegree(expandedPolynomial, x);
+            const int degree = expandedPolynomial->degree(x);
+            BasePtr content(Numeric::zero());
+
+            for (int i = minDegree; i <= degree; ++i)
+                content = poly::gcd(expandedPolynomial->coeff(x, i), content, algo);
+
+            return content;
+        }
+
+        int minDegreeOfPower(const BasePtr& power, const tsym::BasePtr& variable)
+        {
+            const Int largeExp = power->exp()->numericEval().numerator();
+            const BasePtr base(power->base());
+            int exp;
+
+            if (!integer::fitsInto<int>(largeExp)) {
+                TSYM_ERROR("%S: Exponent doesn't fit into primitive int! Return 0 (min. degree).", power);
+                return 0;
+            } else
+                exp = static_cast<int>(largeExp);
+
+            if (base->isEqual(variable))
+                return exp;
+            else
+                return exp*poly::minDegree(base, variable);
+        }
+
+        int minDegreeOfSum(const BasePtr& sum, const tsym::BasePtr& variable)
+        {
+            auto it(sum->operands().begin());
+            int result = poly::minDegree(*it, variable);
+
+            while (++it != sum->operands().end()) {
+                int minDeg = poly::minDegree(*it, variable);
+                if (minDeg < result)
+                    result = minDeg;
+            }
+
+            return result;
+        }
+
+        int minDegreeOfProduct(const BasePtr& product, const tsym::BasePtr& variable)
+        {
+            int result = 0;
+
+            for (const auto& factor : product->operands())
+                result += poly::minDegree(factor, variable);
+
+            return result;
+        }
+    }
 }
 
 tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v)
@@ -66,116 +251,15 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v, const B
         return divideNonEmpty(u, v, L);
 }
 
-tsym::BasePtrList tsym::divideEmptyList(const tsym::BasePtr& u, const tsym::BasePtr& v)
-{
-    const BasePtr quotient(Product::create(u, Power::oneOver(v)));
-
-    if (quotient->isNumeric() && quotient->numericEval().isRational())
-        return { quotient, Numeric::zero() };
-    else
-        return { Numeric::zero(), u };
-}
-
-tsym::BasePtrList tsym::divideNonEmpty(const BasePtr& u, const BasePtr& v, const BasePtrList& L)
-    /* The central part of the algorithm described in Cohen [2003]. */
-{
-    const BasePtr& x(L.front());
-    BasePtr quotient(Numeric::zero());
-    BasePtr remainder(u);
-    int m = u->degree(x);
-    int n = v->degree(x);
-    BasePtrList d;
-    BasePtr tmp;
-    BasePtr c;
-
-    assert(x->isSymbol());
-
-    while (m >= n) {
-        assert(m >= 0 && n >= 0);
-
-        d = poly::divide(remainder->leadingCoeff(x), v->leadingCoeff(x), bplist::rest(L));
-
-        if (!d.back()->isZero())
-            return { quotient->expand(), remainder };
-
-        c = d.front();
-        tmp = Power::create(x, Numeric::create(m - n));
-        quotient = Sum::create(quotient, Product::create(c, tmp));
-
-        remainder = Sum::create(remainder, Product::minus(c, v, tmp))->expand();
-
-        if (remainder->isZero())
-            break;
-
-        m = remainder->degree(x);
-    }
-
-    return { quotient->expand(), remainder };
-}
-
 tsym::BasePtrList tsym::poly::pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x)
     /* See Cohen, Computer Algebra and Symbolic Computation [2003], page 240. */
 {
-    return pseudoDivide(u, v, x, true);
-}
-
-tsym::BasePtrList tsym::pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x,
-        bool computeQuotient)
-{
-    PolyInfo polyInfo(u, v);
-
-    if (polyInfo.isInputValid())
-        return pseudoDivideChecked(u, v, x, computeQuotient);
-
-    TSYM_ERROR("Invalid polyn. pseudo-division: %S, %S. Return Undefined quotient/remainder.",  u,
-            v);
-
-    return { Undefined::create(), Undefined::create() };
-}
-
-tsym::BasePtrList tsym::pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x,
-        bool computeQuotient)
-{
-    const BasePtr lCoeffV(v->leadingCoeff(x));
-    const int n = v->degree(x);
-    BasePtr quotient(Numeric::zero());
-    BasePtr remainder(u->expand());
-    BasePtr lCoeffR;
-    BasePtr tmp;
-    int m = u->degree(x);
-    int sigma = 0;
-
-    assert(!v->expand()->isZero());
-
-    while (m >= n) {
-        lCoeffR = remainder->coeff(x, m);
-
-        tmp = Product::create(lCoeffR, Power::create(x, Numeric::create(m - n)));
-
-        if (computeQuotient)
-            quotient = Sum::create(Product::create(lCoeffV, quotient), tmp);
-
-        remainder = Sum::create(Product::create(lCoeffV, remainder),
-                Product::minus(v, tmp))->expand();
-
-        if (remainder->isZero())
-            break;
-
-        ++sigma;
-        m = remainder->degree(x);
-    }
-
-    tmp = Power::create(lCoeffV, Numeric::create(std::max(u->degree(x) - n + 1, 0) - sigma));
-
-    remainder = Product::create(tmp, remainder)->expand();
-    quotient = computeQuotient ? Product::create(tmp, quotient)->expand() : Numeric::zero();
-
-    return { quotient, remainder };
+    return pseudoDivideImpl(u, v, x, true);
 }
 
 tsym::BasePtr tsym::poly::pseudoRemainder(const BasePtr& u, const BasePtr& v, const BasePtr& x)
 {
-    return pseudoDivide(u, v, x, false).back();
+    return pseudoDivideImpl(u, v, x, false).back();
 }
 
 int tsym::poly::unit(const BasePtr& polynomial, const BasePtr& x)
@@ -191,43 +275,6 @@ int tsym::poly::unit(const BasePtr& polynomial, const BasePtr& x)
         return unitFromNonNumeric(lCoeff);
 }
 
-int tsym::unitFromNonNumeric(const BasePtr& polynomial)
-{
-    const BasePtr firstSymbol(getFirstSymbol(polynomial));
-
-    if (firstSymbol->isUndefined()) {
-        TSYM_ERROR("Polynomial unit request with illegal argument: %S", polynomial);
-        return 1;
-    }
-
-    return poly::unit(polynomial, firstSymbol);
-}
-
-tsym::BasePtr tsym::getFirstSymbol(const BasePtr& polynomial)
-{
-    if (polynomial->isSymbol())
-        return polynomial;
-    else if (polynomial->isPower())
-        return getFirstSymbol(polynomial->base());
-    else if (polynomial->isSum() || polynomial->isProduct())
-        return getFirstSymbol(polynomial->operands());
-
-    return Undefined::create();
-}
-
-tsym::BasePtr tsym::getFirstSymbol(const BasePtrList& polynomials)
-{
-    BasePtr firstSymbol;
-
-    for (const auto& item : polynomials) {
-        firstSymbol = getFirstSymbol(item);
-
-        if (!firstSymbol->isUndefined())
-            return firstSymbol;
-    }
-
-    return Undefined::create();
-}
 
 tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v)
 {
@@ -241,16 +288,9 @@ tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v)
         return map.insert({ { u, v }, gcd(u, v, defaultGcd()) })->second;
 }
 
-const tsym::Gcd *tsym::defaultGcd()
+tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v, const Gcd& algo)
 {
-    static SubresultantGcd algo;
-
-    return &algo;
-}
-
-tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v, const Gcd *algo)
-{
-    return algo->compute(u, v);
+    return algo.compute(u, v);
 }
 
 tsym::BasePtr tsym::poly::content(const BasePtr& polynomial, const tsym::BasePtr& x)
@@ -258,8 +298,7 @@ tsym::BasePtr tsym::poly::content(const BasePtr& polynomial, const tsym::BasePtr
     return content(polynomial, x, defaultGcd());
 }
 
-tsym::BasePtr tsym::poly::content(const BasePtr& polynomial, const tsym::BasePtr& x,
-        const Gcd *algo)
+tsym::BasePtr tsym::poly::content(const BasePtr& polynomial, const tsym::BasePtr& x, const Gcd& algo)
 {
     const BasePtr expanded(polynomial->expand());
 
@@ -268,19 +307,6 @@ tsym::BasePtr tsym::poly::content(const BasePtr& polynomial, const tsym::BasePtr
         return Numeric::create(expanded->numericEval().abs());
     else
         return nonTrivialContent(expanded, x, algo);
-}
-
-tsym::BasePtr tsym::nonTrivialContent(const BasePtr& expandedPolynomial, const BasePtr& x,
-        const Gcd *algo)
-{
-    const int minDegree = poly::minDegree(expandedPolynomial, x);
-    const int degree = expandedPolynomial->degree(x);
-    BasePtr content(Numeric::zero());
-
-    for (int i = minDegree; i <= degree; ++i)
-        content = poly::gcd(expandedPolynomial->coeff(x, i), content, algo);
-
-    return content;
 }
 
 int tsym::poly::minDegree(const BasePtr& of, const BasePtr& variable)
@@ -300,46 +326,4 @@ int tsym::poly::minDegree(const BasePtr& of, const BasePtr& variable)
         return minDegreeOfProduct(of, variable);
 
     return 0;
-}
-
-int tsym::minDegreeOfPower(const BasePtr& power, const tsym::BasePtr& variable)
-{
-    const Int largeExp = power->exp()->numericEval().numerator();
-    const BasePtr base(power->base());
-    int exp;
-
-    if (!integer::fitsInto<int>(largeExp)) {
-        TSYM_ERROR("%S: Exponent doesn't fit into primitive int! Return 0 (min. degree).", power);
-        return 0;
-    } else
-        exp = static_cast<int>(largeExp);
-
-    if (base->isEqual(variable))
-        return exp;
-    else
-        return exp*poly::minDegree(base, variable);
-}
-
-int tsym::minDegreeOfSum(const BasePtr& sum, const tsym::BasePtr& variable)
-{
-    auto it(sum->operands().begin());
-    int result = poly::minDegree(*it, variable);
-
-    while (++it != sum->operands().end()) {
-        int minDeg = poly::minDegree(*it, variable);
-        if (minDeg < result)
-            result = minDeg;
-    }
-
-    return result;
-}
-
-int tsym::minDegreeOfProduct(const BasePtr& product, const tsym::BasePtr& variable)
-{
-    int result = 0;
-
-    for (const auto& factor : product->operands())
-        result += poly::minDegree(factor, variable);
-
-    return result;
 }

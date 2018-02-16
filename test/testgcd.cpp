@@ -29,17 +29,17 @@ TEST_GROUP(Gcd)
     {
         PrimitiveGcd pGcd;
 
-        check(&pGcd, expected, u, v);
+        check(pGcd, expected, u, v);
     }
 
     void checkSubresultant(const BasePtr& expected, const BasePtr& u, const BasePtr& v)
     {
         SubresultantGcd srGcd;
 
-        check(&srGcd, expected, u, v);
+        check(srGcd, expected, u, v);
     }
 
-    void check(Gcd *gcd, const BasePtr& expected, const BasePtr& u, const BasePtr& v)
+    void check(Gcd& gcd, const BasePtr& expected, const BasePtr& u, const BasePtr& v)
     {
         const BasePtr result = poly::gcd(u, v, gcd);
 

@@ -24,8 +24,8 @@ tsym::BasePtr tsym::SubresultantGcd::gcd(const BasePtr& u, const BasePtr& v,
 {
     const BasePtr& x(L.front());
     const BasePtrList R(bplist::rest(L));
-    const BasePtr uContent(poly::content(u, x, this));
-    const BasePtr vContent(poly::content(v, x, this));
+    const BasePtr uContent(poly::content(u, x, *this));
+    const BasePtr vContent(poly::content(v, x, *this));
     const BasePtr d(compute(uContent, vContent, R));
     BasePtr U(poly::divide(u, uContent, L).front());
     BasePtr V(poly::divide(v, vContent, L).front());
@@ -67,7 +67,7 @@ tsym::BasePtr tsym::SubresultantGcd::gcd(const BasePtr& u, const BasePtr& v,
 
     tmp = poly::divide(U->leadingCoeff(x), g, R).front();
     tmp = poly::divide(U, tmp, L).front();
-    tmp = poly::divide(tmp, poly::content(tmp, x, this), L).front();
+    tmp = poly::divide(tmp, poly::content(tmp, x, *this), L).front();
 
     return Product::create(d, tmp)->expand();
 }
