@@ -558,3 +558,37 @@ TEST(Printer, negativePowerWithConstantBaseDebug)
 
     CHECK_EQUAL("-e^(-123)", printDebug(product));
 }
+
+TEST(Printer, parenthesesInPosProductWithNegSumFactor)
+{
+    const BasePtr product = Product::create(c, Sum::create(Product::minus(a), Numeric::create(-3)));
+    const std::string result = print(product);
+    
+    CHECK_EQUAL("(-3 - a)*c", result);
+}
+
+TEST(Printer, parenthesesInNegProductWithSumFactor)
+{
+    const BasePtr product = Product::minus(c, Sum::create(Product::minus(a), Numeric::create(-3)));
+    const std::string result = print(product);
+    
+    CHECK_EQUAL("-(-3 - a)*c", result);
+}
+
+TEST(Printer, parenthesesInNegProductWithSumFactorInsideSum)
+{
+    const BasePtr sum = Sum::create(a, Product::minus(c, Sum::create(Product::minus(a), Numeric::create(-3))));
+    const std::string result = print(sum);
+
+    CHECK_EQUAL("a - (-3 - a)*c", result);
+}
+
+TEST(Printer, parenthesesInNegProductWithSumFactorInsideLargerSum)
+{
+    const BasePtr mThree = Numeric::create(-3);
+    const BasePtr sum = Sum::create(b, Product::create(mThree, c), Product::minus(a, c), 
+        Product::create(Numeric::mOne(), Sum::create(mThree, Product::minus(a)), c));
+    const std::string result = print(sum);
+
+    CHECK_EQUAL("b - 3*c - a*c - (-3 - a)*c", result);
+}

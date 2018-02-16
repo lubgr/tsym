@@ -230,7 +230,7 @@ namespace tsym {
 
                 void productWithoutFractions(BasePtrList& factors)
                 {
-                    const auto first = factors.front();
+                    const BasePtr first = factors.front();
                     const unsigned productPrecedence = 2;
 
                     factors.pop_front();
@@ -239,7 +239,11 @@ namespace tsym {
                         engine.invokePrint(first);
                     else if (Product::minus(first)->isOne())
                         engine.unaryMinusSign();
-                    else if (!first->isOne())
+                    else if (first->isOne())
+                        ;
+                    else if (precedence(first) < productPrecedence)
+                        engine.openParentheses().invokePrint(first).closeParentheses().timesSign();
+                    else
                         engine.invokePrint(first).timesSign();
 
                     for (auto factor = std::begin(factors); factor != std::end(factors); ++factor) {
