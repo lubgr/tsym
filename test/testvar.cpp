@@ -959,6 +959,15 @@ TEST(Var, normalToZero)
     CHECK(sum.normal().isZero());
 }
 
+TEST(Var, simplifyExpandLessComplex)
+{
+    const Var orig = b - 3*c - a*c - (-3 - a)*c;
+    const Var simplified = orig.simplify();
+
+    CHECK_EQUAL(b, simplified);
+    CHECK(simplified.complexity() < orig.normal().complexity());
+}
+
 TEST(Var, getNumAndDenomFromFraction)
 {
     const Var frac(2, 3);

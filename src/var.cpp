@@ -161,6 +161,24 @@ tsym::Var tsym::Var::normal() const
     return Var(normalized);
 }
 
+tsym::Var tsym::Var::simplify() const
+/* Currently, only normalization and expansion is tested for the simplest representation. */
+{
+    const BasePtr expanded(rep->expand());
+    BasePtr normalizedLast(rep);
+    BasePtr normalizedNext(rep->normal());
+
+    while (normalizedNext->isDifferent(normalizedLast)) {
+        /* Though it's probably not supposed to happen, there has been an expression that changed
+         * upon a second normalization. Most of the time, the first normalization will directly
+         * yield the simplest representation. */
+        normalizedLast = normalizedNext;
+        normalizedNext = normalizedNext->normal();
+    }
+
+    return normalizedNext->complexity() < expanded->complexity() ? Var(normalizedNext) : Var(expanded);
+}
+
 tsym::Var tsym::Var::diff(const Var& symbol) const
 {
     return Var(rep->diff(symbol.rep));

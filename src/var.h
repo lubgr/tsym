@@ -46,6 +46,9 @@ namespace tsym {
             Var subst(const Var& from, const Var& to) const;
             Var expand() const;
             Var normal() const;
+            /* Determines the simplest representation by comparing the expanded with the normalized
+             * one: */
+            Var simplify() const;
             /* The argument must be a Symbol: */
             Var diff(const Var& symbol) const;
             bool equal(const Var& other) const;
