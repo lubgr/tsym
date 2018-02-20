@@ -108,23 +108,6 @@ c = c*b;
 
 std::cout << c.expand() << std::endl; /* 1/5 + a */
 ```
-Matrix and a Vector class (simple wrappers around memory management) are provided with standard
-operators for addition, subtraction multiplication and the like. They can be constructed by
-initializer lists. Linear systems of equations can be solved by the global function `solve`.
-```c++
-tsym::Matrix M {{ 1, 0 }, { 0, -tsym::cos(2) }};
-tsym::Vector rhs(2); /* All entries are default by default. */
-tsym::Vector solution;
-
-rhs(0) = tsym::Var(3, 5);
-rhs(1) = tsym::Var("a");
-
-std::cout << M.det() << std::endl; /* -cos(2) */
-
-tsym::solve(M, rhs, solution);
-
-std::cout << solution << std::endl; /* [ 3/5, -a/cos(2) ] */
-```
 The construction of expressions can be done by parsing of strings, too, by invocation of a free
 function
 ```c++
