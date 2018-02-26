@@ -168,6 +168,9 @@ tsym::Var tsym::Var::simplify() const
     BasePtr normalizedLast(rep);
     BasePtr normalizedNext(rep->normal());
 
+    if (normalizedNext->isUndefined())
+        return Var(normalizedNext);
+
     while (normalizedNext->isDifferent(normalizedLast)) {
         /* Though it's probably not supposed to happen, there has been an expression that changed
          * upon a second normalization. Most of the time, the first normalization will directly

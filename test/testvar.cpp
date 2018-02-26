@@ -968,6 +968,18 @@ TEST(Var, simplifyExpandLessComplex)
     CHECK(simplified.complexity() < orig.normal().complexity());
 }
 
+TEST(Var, simplifyWithUndefinedIntermediateResult)
+{
+    const Var denom = a - a*b/(b + c) - a*c/(b + c);
+    const Var orig = d/denom;
+
+    disableLog();
+    const Var result = orig.simplify();
+    enableLog();
+
+    CHECK_EQUAL(Var::Type::UNDEFINED, result.type());
+}
+
 TEST(Var, getNumAndDenomFromFraction)
 {
     const Var frac(2, 3);
