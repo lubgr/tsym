@@ -2,8 +2,6 @@
 #include "globals.h"
 #include "trigonometric.h"
 #include "logarithm.h"
-#include "matrix.h"
-#include "vector.h"
 #include "constant.h"
 #include "stringtovar.h"
 #include "logging.h"
@@ -72,15 +70,6 @@ const tsym::Var& tsym::euler()
     static const tsym::Var instance(Constant::createE());
 
     return instance;
-}
-
-bool tsym::solve(const Matrix& A, const Vector& b, Vector& x)
-{
-    /* Sanity checks for square matrix and matching, non-zero dimensions are performed in Matrix, no
-     * need to duplicate them here. */
-    x = A.solve(b);
-
-    return x.size() > 0;
 }
 
 tsym::Var tsym::parse(const std::string& str, bool *success)

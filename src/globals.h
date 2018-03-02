@@ -1,18 +1,14 @@
-#ifndef TSYM_FUNCTIONS_H
-#define TSYM_FUNCTIONS_H
+#ifndef TSYM_GLOBALS_H
+#define TSYM_GLOBALS_H
 
 #include <string>
+#include "plu.h"
+#include "var.h"
 
 namespace tsym {
-    class Var;
-    class Vector;
-    class Matrix;
-}
-
-namespace tsym {
-    /* Functions and constants central, that they are allowed to pollute the global tsym namespace,
+    /* Central functions and constants, that they are allowed to pollute the global tsym namespace,
      * i.e., common mathematical functions and constants, the interface for parsing expressions and
-     * a shortcut function for the solution of linear systems of equations. */
+     * functions for the solution of linear systems of equations and the like. */
     Var sqrt(const Var& base);
     Var pow(const Var& base, const Var& exp);
 
@@ -29,7 +25,24 @@ namespace tsym {
     const Var& pi();
     const Var& euler();
 
-    bool solve(const Matrix& A, const Vector& b, Vector& x);
+    template<class Matrix, class Vector, typename SizeType, class MatrixAccess = plu::detail::DefaultAccess<Matrix>,
+        class VectorAccess = plu::detail::DefaultAccess<Vector>> void solve(
+                Matrix& A, Vector& b, Vector& x, SizeType dim, MatrixAccess&& mAccess = MatrixAccess{}, VectorAccess&& vAccess = VectorAccess{})
+    {
+        plu::detail::solve(A, std::forward<MatrixAccess>(mAccess), b, x, std::forward<VectorAccess>(vAccess), dim);
+    }
+
+    template<class Matrix, typename SizeType, class MatrixAccess = plu::detail::DefaultAccess<Matrix>> Var determinant(
+            Matrix& A, SizeType dim, MatrixAccess&& access = MatrixAccess{})
+    {
+        return plu::detail::determinant(A, std::forward<MatrixAccess>(access), dim);
+    }
+
+    template<class Matrix, typename SizeType, class MatrixAccess = plu::detail::DefaultAccess<Matrix>> void invert(
+            Matrix& A, SizeType dim, MatrixAccess&& access = MatrixAccess{})
+    {
+        plu::detail::invert(A, std::forward<MatrixAccess>(access), dim);
+    }
 
     Var parse(const std::string& str, bool *success = nullptr);
 }
