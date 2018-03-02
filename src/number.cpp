@@ -378,57 +378,9 @@ bool tsym::operator == (const Number& lhs, const Number& rhs)
     return lhs.equal(rhs);
 }
 
-bool tsym::operator != (const Number& lhs, const Number& rhs)
-{
-    return !lhs.equal(rhs);
-}
-
 bool tsym::operator < (const Number& lhs, const Number& rhs)
 {
     return lhs.lessThan(rhs);
-}
-
-bool tsym::operator <= (const Number& lhs, const Number& rhs)
-{
-    return !(lhs > rhs);
-}
-
-bool tsym::operator > (const Number& lhs, const Number& rhs)
-{
-    return rhs < lhs;
-}
-
-bool tsym::operator >= (const Number& lhs, const Number& rhs)
-{
-    return !(lhs < rhs);
-}
-
-tsym::Number tsym::operator + (Number lhs, const Number& rhs)
-{
-    lhs += rhs;
-
-    return lhs;
-}
-
-tsym::Number tsym::operator - (Number lhs, const Number& rhs)
-{
-    lhs -= rhs;
-
-    return lhs;
-}
-
-tsym::Number tsym::operator * (Number lhs, const Number& rhs)
-{
-    lhs *= rhs;
-
-    return lhs;
-}
-
-tsym::Number tsym::operator / (Number lhs, const Number& rhs)
-{
-    lhs /= rhs;
-
-    return lhs;
 }
 
 std::ostream& tsym::operator << (std::ostream& stream, const Number& rhs)

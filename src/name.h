@@ -3,9 +3,10 @@
 
 #include <limits>
 #include <string>
+#include <boost/operators.hpp>
 
 namespace tsym {
-    class Name {
+    class Name : private boost::totally_ordered<Name> {
         public:
             /* A Name object with super- and subscript. The given string may be empty (this is what
              * the default constructor does), because it can be queried for
@@ -42,11 +43,7 @@ namespace tsym {
     };
 
     bool operator == (const Name& lhs, const Name& rhs);
-    bool operator != (const Name& lhs, const Name& rhs);
     bool operator < (const Name& lhs, const Name& rhs);
-    bool operator <= (const Name& lhs, const Name& rhs);
-    bool operator > (const Name& lhs, const Name& rhs);
-    bool operator >= (const Name& lhs, const Name& rhs);
     std::ostream& operator << (std::ostream& stream, const Name& name);
     size_t hash_value(const Name& name);
 }

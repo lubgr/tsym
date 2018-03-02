@@ -150,29 +150,9 @@ bool tsym::operator == (const Name& lhs, const Name& rhs)
     return lhs.equal(rhs);
 }
 
-bool tsym::operator != (const Name& lhs, const Name& rhs)
-{
-    return !lhs.equal(rhs);
-}
-
 bool tsym::operator < (const Name& lhs, const Name& rhs)
 {
     return lhs.lessThan(rhs);
-}
-
-bool tsym::operator <= (const Name& lhs, const Name& rhs)
-{
-    return !(lhs > rhs);
-}
-
-bool tsym::operator > (const Name& lhs, const Name& rhs)
-{
-    return rhs < lhs;
-}
-
-bool tsym::operator >= (const Name& lhs, const Name& rhs)
-{
-    return !(lhs < rhs);
 }
 
 std::ostream& tsym::operator << (std::ostream& stream, const Name& name)

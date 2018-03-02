@@ -3,9 +3,10 @@
 
 #include "int.h"
 #include <boost/rational.hpp>
+#include <boost/operators.hpp>
 
 namespace tsym {
-    class Number {
+    class Number : private boost::totally_ordered<Number,boost::arithmetic<Number>> {
         /* Independent wrapper class around (Boost) rational numbers and floating point numbers.
          * This class is needed independently of the base class. Floating point numbers are
          * automatically converted to fractions up to a certain (not very high) accuracy. */
@@ -75,15 +76,6 @@ namespace tsym {
 
     bool operator == (const Number& lhs, const Number& rhs);
     bool operator < (const Number& lhs, const Number& rhs);
-    bool operator != (const Number& lhs, const Number& rhs);
-    bool operator <= (const Number& lhs, const Number& rhs);
-    bool operator > (const Number& lhs, const Number& rhs);
-    bool operator >= (const Number& lhs, const Number& rhs);
-
-    Number operator + (Number lhs, const Number& rhs);
-    Number operator - (Number lhs, const Number& rhs);
-    Number operator * (Number lhs, const Number& rhs);
-    Number operator / (Number lhs, const Number& rhs);
 
     std::ostream& operator << (std::ostream& stream, const Number& rhs);
 }
