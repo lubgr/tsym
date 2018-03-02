@@ -748,7 +748,7 @@ TEST(Power, applyExponentToProduct)
     const BasePtr bSquare = Power::create(b, two);
     const BasePtr product = Product::create(a, bSquare);
     const BasePtr res = Power::create(product, three);
-    auto it = res->operands().begin();
+    auto it = cbegin(res->operands());
     BasePtr fac;
 
     CHECK(res->isProduct());

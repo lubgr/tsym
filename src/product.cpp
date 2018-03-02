@@ -151,10 +151,10 @@ tsym::BasePtr tsym::Product::diffWrtSymbol(const BasePtr& symbol) const
     BasePtrList derivedSummands;
     BasePtrList factors;
 
-    for (auto it1 = ops.begin(); it1 != ops.end(); ++it1) {
+    for (auto it1 = cbegin(ops); it1 != cend(ops); ++it1) {
         factors.push_back((*it1)->diffWrtSymbol(symbol));
 
-        for (auto it2 = ops.begin(); it2 != ops.end(); ++it2)
+        for (auto it2 = cbegin(ops); it2 != cend(ops); ++it2)
             if (it1 != it2)
                 factors.push_back(*it2);
 

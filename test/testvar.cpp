@@ -1048,10 +1048,10 @@ TEST(Var, collectSymbolsFromPower)
     const std::vector<Var> result(term.collectSymbols());
 
     CHECK_EQUAL(4, result.size());
-    CHECK(std::find(result.begin(), result.end(), a) != result.end());
-    CHECK(std::find(result.begin(), result.end(), b) != result.end());
-    CHECK(std::find(result.begin(), result.end(), d) != result.end());
-    CHECK(std::find(result.begin(), result.end(), e) != result.end());
+    CHECK(std::find(cbegin(result), cend(result), a) != cend(result));
+    CHECK(std::find(cbegin(result), cend(result), b) != cend(result));
+    CHECK(std::find(cbegin(result), cend(result), d) != cend(result));
+    CHECK(std::find(cbegin(result), cend(result), e) != cend(result));
 }
 
 TEST(Var, collectSymbolsFromFunction)
@@ -1060,9 +1060,9 @@ TEST(Var, collectSymbolsFromFunction)
     const std::vector<Var> result(term.collectSymbols());
 
     CHECK_EQUAL(3, result.size());
-    CHECK(std::find(result.begin(), result.end(), a) != result.end());
-    CHECK(std::find(result.begin(), result.end(), b) != result.end());
-    CHECK(std::find(result.begin(), result.end(), c) != result.end());
+    CHECK(std::find(cbegin(result), cend(result), a) != cend(result));
+    CHECK(std::find(cbegin(result), cend(result), b) != cend(result));
+    CHECK(std::find(cbegin(result), cend(result), c) != cend(result));
 }
 
 TEST(Var, printerOperator)

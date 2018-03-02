@@ -219,7 +219,7 @@ tsym::Var::Type tsym::Var::type() const
 
     const auto lookup = typeStringMap().find(rep->typeStr());
 
-    assert(lookup != typeStringMap().end());
+    assert(lookup != cend(typeStringMap()));
 
     return lookup->second;
 }
@@ -344,7 +344,7 @@ void tsym::Var::insertSymbolIfNotPresent(const BasePtr& symbol, std::vector<Var>
 {
     const Var term(symbol);
 
-    if (std::find(symbols.begin(), symbols.end(), term) == symbols.end())
+    if (std::find(cbegin(symbols), cend(symbols), term) == cend(symbols))
         symbols.push_back(term);
 }
 

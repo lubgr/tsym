@@ -94,7 +94,7 @@ tsym::Fraction tsym::Sum::normal(SymbolMap& map) const
 
 tsym::Fraction tsym::Sum::toCommonDenom(const std::vector<Fraction>& operands) const
 {
-    std::vector<Fraction>::const_iterator it(operands.begin());
+    auto it(cbegin(operands));
     BasePtr denom(it->denom());
     BasePtr num(it->num());
     BasePtr oneOverGcd;
@@ -102,7 +102,7 @@ tsym::Fraction tsym::Sum::toCommonDenom(const std::vector<Fraction>& operands) c
     BasePtr nextNum;
     BasePtr lcm;
 
-    for (++it; it != operands.end(); ++it) {
+    for (++it; it != cend(operands); ++it) {
         nextNum = it->num();
         nextDenom = it->denom();
 

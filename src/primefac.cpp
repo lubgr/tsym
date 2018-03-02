@@ -74,10 +74,10 @@ void tsym::PrimeFac::toThe(const Int& exponent)
 
 void tsym::PrimeFac::copyElementsNTimes(const Int& n, std::vector<Int>& primes)
 {
-    std::vector<Int>::iterator it(primes.begin());
+    auto it = begin(primes);
     Int i;
 
-    while (it != primes.end()) {
+    while (it != end(primes)) {
         for (i = 0; i < n - 1; ++i)
             it = primes.insert(it, *it);
 
@@ -109,10 +109,10 @@ void tsym::PrimeFac::multiply(const PrimeFac& other)
 
 void tsym::PrimeFac::cancelPrimes(std::vector<Int>& p1, std::vector<Int>& p2)
 {
-    std::vector<Int>::iterator it1(p1.begin());
-    std::vector<Int>::iterator it2(p2.begin());
+    auto it1 = begin(p1);
+    auto it2 = begin(p2);
 
-    while (it1 != p1.end() && it2 != p2.end())
+    while (it1 != end(p1) && it2 != end(p2))
         if (*it1 < *it2)
             ++it1;
         else if (*it1 > *it2)
@@ -125,9 +125,9 @@ void tsym::PrimeFac::cancelPrimes(std::vector<Int>& p1, std::vector<Int>& p2)
 
 void tsym::PrimeFac::merge(std::vector<Int>& target, const std::vector<Int>& source)
 {
-    target.insert(target.end(), source.begin(), source.end());
+    target.insert(end(target), cbegin(source), cend(source));
 
-    std::sort(target.begin(), target.end());
+    std::sort(begin(target), end(target));
 }
 
 tsym::PrimeFac tsym::PrimeFac::extract(const Number& exponent)
@@ -148,7 +148,7 @@ void tsym::PrimeFac::extract(std::vector<Int>& source, std::vector<Int>& target,
     Int prime(0);
     Int nPrime(0);
 
-    for (auto it = source.begin(); it != source.end(); ++it)
+    for (auto it = begin(source); it != end(source); ++it)
         if (prime != *it) {
             prime = *it;
             nPrime = 1;
@@ -224,7 +224,7 @@ void tsym::PrimeFac::deleteElements(int nToDelete, std::vector<Int>& primes)
     /* Removes duplicate elements from the given vector of primes. It is supposed, that primes have
      * been checked before, such that this operation is safe. */
 {
-    for (auto it = primes.begin(); it != primes.end(); ++it)
+    for (auto it = begin(primes); it != end(primes); ++it)
         for (int i = 0; i < nToDelete; ++i)
             it = primes.erase(it);
 }
@@ -241,15 +241,15 @@ const std::vector<tsym::Int>& tsym::PrimeFac::getDenomPrimes() const
 
 tsym::Number tsym::PrimeFac::eval() const
 {
-    std::vector<Int>::const_iterator nIt(numPrimes.begin());
-    std::vector<Int>::const_iterator dIt(denomPrimes.begin());
+    auto nIt = cbegin(numPrimes);
+    auto dIt = cbegin(denomPrimes);
     Number res(1);
     Int denom;
     Int num;
 
-    while (nIt != numPrimes.end() || dIt != denomPrimes.end()) {
-        num = nIt == numPrimes.end() ? 1 : *nIt++;
-        denom = dIt == denomPrimes.end() ? 1 : *dIt++;
+    while (nIt != cend(numPrimes) || dIt != cend(denomPrimes)) {
+        num = nIt == cend(numPrimes) ? 1 : *nIt++;
+        denom = dIt == cend(denomPrimes) ? 1 : *dIt++;
         res *= Number(num, denom);
     }
 

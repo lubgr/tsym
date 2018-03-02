@@ -15,7 +15,7 @@ std::ostream& tsym::operator << (std::ostream& stream, const BasePtrList& items)
     for (const auto& item : items) {
         printer::print(engine, item);
 
-        if (&item != &*(--items.end()))
+        if (&item != &*(--end(items)))
             stream << "   ";
     }
 

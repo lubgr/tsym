@@ -265,7 +265,7 @@ const tsym::BasePtr *tsym::NumTrigoSimpl::getValue(
 {
     const auto lookup = table.find(arg);
 
-    return lookup == table.end() ? getValueNumEval(table) : &lookup->second;
+    return lookup == cend(table) ? getValueNumEval(table) : &lookup->second;
 }
 
 const tsym::BasePtr *tsym::NumTrigoSimpl::getValueNumEval(

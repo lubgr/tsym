@@ -113,13 +113,13 @@ namespace tsym {
              * made, to ensure correct simplification of every possible combination of factors. */
         {
             bool hasChanged = false;
-            auto it1(u.begin());
+            auto it1 = begin(u);
             decltype(it1) it2;
             BasePtrList res;
             bool found;
 
-            while (it1 != u.end()) {
-                for (found = false, it2 = it1, ++it2; it2 != u.end(); ++it2)
+            while (it1 != end(u)) {
+                for (found = false, it2 = it1, ++it2; it2 != end(u); ++it2)
                     if ((check)(*it1, *it2)) {
                         res = (simpl)(*it1, *it2);
 
@@ -127,7 +127,7 @@ namespace tsym {
                             continue;
 
                         it1 = u.erase(it1);
-                        u.insert(it1, res.begin(), res.end());
+                        u.insert(it1, cbegin(res), cend(res));
                         std::advance(it1, -static_cast<long>(res.size()));
                         u.erase(it2);
                         it2 = it1;
@@ -218,8 +218,8 @@ namespace tsym {
 
         BasePtrList simplTwoFactors(const BasePtrList& u)
         {
-            BasePtr f1(*u.begin());
-            BasePtr f2(*(++u.begin()));
+            BasePtr f1 = *cbegin(u);
+            BasePtr f2 = *(++cbegin(u));
 
             return simplTwoFactors(f1, f2);
         }
@@ -562,10 +562,10 @@ namespace tsym {
 
         void contractNumerics(BasePtrList& u)
         {
-            auto it(u.begin());
+            auto it = begin(u);
             Number n(1);
 
-            while (it != u.end())
+            while (it != end(u))
                 if ((*it)->isNumeric()) {
                     n *= (*it)->numericEval();
                     it = u.erase(it);
@@ -578,8 +578,8 @@ namespace tsym {
 
         void contractConst(BasePtrList& u)
         {
-            for (auto it1 = u.begin(); it1 != u.end(); ++it1)
-                for (auto it2 = it1; it2 != u.end(); ++it2)
+            for (auto it1 = begin(u); it1 != end(u); ++it1)
+                for (auto it2 = it1; it2 != end(u); ++it2)
                     if (it1 == it2)
                         continue;
                     else if (areTwoContractableConst(*it1, *it2))

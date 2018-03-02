@@ -39,8 +39,8 @@ namespace tsym {
 
         BasePtrList simplTwoSummands(const BasePtrList& u)
         {
-            BasePtr s1(*u.begin());
-            BasePtr s2(*(++u.begin()));
+            BasePtr s1(*cbegin(u));
+            BasePtr s2(*(++cbegin(u)));
 
             return simplTwoSummands(s1, s2);
         }

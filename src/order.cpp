@@ -111,16 +111,16 @@ bool tsym::doPermuteBothProduct(const BasePtr& left, const BasePtr& right)
 
 bool tsym::doPermuteListReverse(const BasePtrList& left, const BasePtrList& right)
 {
-    auto lIt(left.rbegin());
-    auto rIt(right.rbegin());
+    auto lIt(crbegin(left));
+    auto rIt(crbegin(right));
 
-    for (; lIt != left.rend() && rIt != right.rend(); ++lIt, ++rIt)
+    for (; lIt != crend(left) && rIt != crend(right); ++lIt, ++rIt)
         if ((*lIt)->isDifferent(*rIt))
             return order::doPermute(*lIt, *rIt);
 
-    if (lIt == left.rend() && rIt != right.rend())
+    if (lIt == crend(left) && rIt != crend(right))
         return false;
-    else if (rIt == right.rend() && lIt != left.rend())
+    else if (rIt == crend(right) && lIt != crend(left))
         return true;
     else
         return left.size() < right.size();

@@ -580,7 +580,7 @@ TEST(Product, twoProducts)
     expected[4] = d;
     expected[5] = Power::create(e, two);
 
-    for (i = 0, it = res->operands().begin(); it != res->operands().end(); ++it, ++i)
+    for (i = 0, it = cbegin(res->operands()); it != cend(res->operands()); ++it, ++i)
         CHECK_EQUAL(expected[i], *it);
 }
 
@@ -620,7 +620,7 @@ TEST(Product, productOfSymbolAndProduct)
     const BasePtr product1 = Product::create(a, c);
     const BasePtr res = Product::create(product1, b);
     const BasePtrList& fac(res->operands());
-    auto it = fac.begin();
+    auto it = cbegin(fac);
 
     CHECK(res->isProduct());
 
@@ -637,7 +637,7 @@ TEST(Product, productOfProductAndSymbol)
     const BasePtr p2 = Product::create(e, b);
     const BasePtr res = Product::create(a, p2);
     const BasePtrList& fac(res->operands());
-    auto it = fac.begin();
+    auto it = cbegin(fac);
 
     CHECK(res->isProduct());
     CHECK_EQUAL(3, fac.size());
@@ -654,7 +654,7 @@ TEST(Product, productOfThreeProducts)
     const BasePtr p2 = Product::create(b, e);
     const BasePtr p3 = Product::create(a, d);
     const BasePtr res = Product::create(p1, p2, p3);
-    auto it = res->operands().begin();
+    auto it = cbegin(res->operands());
 
     CHECK(res->isProduct());
 

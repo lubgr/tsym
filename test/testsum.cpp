@@ -119,7 +119,7 @@ TEST(Sum, rearrangeFiveSymbols)
     for (const auto& summand : summands)
         CHECK(summand->isSymbol());
 
-    auto it = summands.begin();
+    auto it = cbegin(summands);
     CHECK_EQUAL(a, *it);
     CHECK_EQUAL(b, *++it);
     CHECK_EQUAL(c, *++it);
@@ -163,7 +163,7 @@ TEST(Sum, collectProducts)
 
     CHECK_EQUAL(3, summands.size());
     CHECK_EQUAL(five, summands.front());
-    CHECK_EQUAL(a, *++summands.begin());
+    CHECK_EQUAL(a, *++cbegin(summands));
     CHECK_EQUAL(b, summands.back());
 }
 
@@ -220,7 +220,7 @@ TEST(Sum, twoSums)
 
     CHECK_EQUAL(3, summands.size());
     CHECK_EQUAL(Product::create(two, a), summands.front());
-    CHECK_EQUAL(b, *++summands.begin());
+    CHECK_EQUAL(b, *++cbegin(summands));
     CHECK_EQUAL(c, summands.back());
 }
 
@@ -239,8 +239,8 @@ TEST(Sum, sumOfSumAndSymbols)
 
     CHECK_EQUAL(4, summands.size());
     CHECK_EQUAL(a, summands.front());
-    CHECK_EQUAL(c, *++summands.begin());
-    CHECK_EQUAL(d, *++(++summands.begin()));
+    CHECK_EQUAL(c, *++cbegin(summands));
+    CHECK_EQUAL(d, *++(++cbegin(summands)));
     CHECK_EQUAL(e, summands.back());
 }
 

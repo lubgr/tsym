@@ -77,27 +77,27 @@ void tsym::bplist::rest(BasePtrList& list)
 
 bool tsym::bplist::hasUndefinedElements(const BasePtrList& list)
 {
-    return std::any_of(list.begin(), list.end(), std::mem_fn(&Base::isUndefined));
+    return std::any_of(cbegin(list), cend(list), std::mem_fn(&Base::isUndefined));
 }
 
 bool tsym::bplist::hasZeroElements(const BasePtrList& list)
 {
-    return std::any_of(list.begin(), list.end(), std::mem_fn(&Base::isZero));
+    return std::any_of(cbegin(list), cend(list), std::mem_fn(&Base::isZero));
 }
 
 bool tsym::bplist::hasSumElements(const BasePtrList& list)
 {
-    return std::any_of(list.begin(), list.end(), std::mem_fn(&Base::isSum));
+    return std::any_of(cbegin(list), cend(list), std::mem_fn(&Base::isSum));
 }
 
 bool tsym::bplist::areElementsNumericallyEvaluable(const BasePtrList& list)
 {
-    return std::all_of(list.begin(), list.end(), std::mem_fn(&Base::isNumericallyEvaluable));
+    return std::all_of(cbegin(list), cend(list), std::mem_fn(&Base::isNumericallyEvaluable));
 }
 
 bool tsym::bplist::areAllElementsConst(const BasePtrList& list)
 {
-    return std::all_of(list.begin(), list.end(), std::mem_fn(&Base::isConst));
+    return std::all_of(cbegin(list), cend(list), std::mem_fn(&Base::isConst));
 }
 
 unsigned tsym::bplist::complexitySum(const BasePtrList& list)
@@ -110,7 +110,7 @@ tsym::BasePtrList tsym::bplist::getConstElements(const BasePtrList& list)
 {
     BasePtrList items;
 
-    std::copy_if(begin(list), end(list), std::back_inserter(items),
+    std::copy_if(cbegin(list), cend(list), std::back_inserter(items),
             std::mem_fn(&Base::isConst));
 
     return items;
@@ -120,7 +120,7 @@ tsym::BasePtrList tsym::bplist::getNonConstElements(const BasePtrList& list)
 {
     BasePtrList items;
 
-    std::copy_if(begin(list), end(list), std::back_inserter(items), [](const BasePtr& bp) {
+    std::copy_if(cbegin(list), cend(list), std::back_inserter(items), [](const BasePtr& bp) {
             return !bp->isConst(); });
 
     return items;

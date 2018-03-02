@@ -192,10 +192,10 @@ namespace tsym {
 
         int minDegreeOfSum(const BasePtr& sum, const tsym::BasePtr& variable)
         {
-            auto it(sum->operands().begin());
+            auto it(cbegin(sum->operands()));
             int result = poly::minDegree(*it, variable);
 
-            while (++it != sum->operands().end()) {
+            while (++it != cend(sum->operands())) {
                 int minDeg = poly::minDegree(*it, variable);
                 if (minDeg < result)
                     result = minDeg;
