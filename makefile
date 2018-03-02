@@ -2,7 +2,7 @@
 include $(wildcard makefile.in Makefile.in)
 
 BUILD ?= build
-CXXFLAGS ?= -O2 -fPIC -pedantic -Wall -Wextra -Wconversion -DNDEBUG -std=c++14
+CXXFLAGS ?= -O2 -fPIC -pedantic -Wall -Wextra -Wconversion -Wsign-conversion -DNDEBUG -std=c++14
 CFLAGS ?= -O2 -fPIC -DNDEBUG
 CPPFLAGS += -I src
 PROFILE ?=
