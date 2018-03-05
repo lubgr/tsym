@@ -52,4 +52,4 @@ matrix:
           - COMPILER="gcc-7"
 
 script:
-  - ./bin/travis.ch
+  - ./bin/travis.sh
