@@ -34,66 +34,23 @@ addons:
       - g++-5
       - g++-6
       - g++-7
+      - g++-8
       - lcov
       - valgrind
 
 matrix:
   include:
     - env:
-          - ID='gcc 5, release build'
-          - _CXX=g++-5
-          - _CC=gcc-5
+          - MODE=RELEASE
+          - COMPILER="gcc-5 gcc-6 gcc-7 gcc-8 clang"
 
     - env:
-          - ID='gcc 6, release build'
-          - _CXX=g++-6
-          - _CC=gcc-6
+          - MODE=DEBUG
+          - COMPILER="gcc-7"
 
     - env:
-          - ID='gcc 7, release build'
-          - _CXX=g++-7
-          - _CC=gcc-7
-
-    - env:
-          - ID='gcc 7 test coverage, release build'
-          - _CXX=g++-7
-          - _CC=gcc-7
-          - PROFILE=--coverage
-
-    - env:
-          - ID='gcc 7 address sanitizer, debug build'
-          - _CXX=g++-7
-          - _CC=gcc-7
-          - CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer -O0 -g -std=c++14 -fPIC"
-          - CFLAGS="-fsanitize=address -fno-omit-frame-pointer -O0 -g -fPIC"
-          - LIBS=-lasan
-
-    - env:
-          - ID='gcc 7 valgrind run, debug build'
-          - _CXX=g++-7
-          - _CC=gcc-7
-          - CXXFLAGS="-O0 -g -std=c++14 -fPIC"
-          - CFLAGS="-O0 -g -fPIC"
-          - TOOL="valgrind --error-exitcode=1 --leak-check=full"
-
-    - env:
-          - ID='gcc 7 gprof profiling, release build'
-          - _CXX=g++-7
-          - _CC=gcc-7
-          - PROFILE="-pg"
-
-    - env:
-          - ID='clang, release build'
-          - _CXX=clang++
-          - _CC=clang
+          - MODE=PROFILING
+          - COMPILER="gcc-7"
 
 script:
-  - make CXX=${_CXX} CC=${_CC} CPPFLAGS="-isystem ${BOOSTDIR} -I src" lib staticlib tests
-  - cat build/buildinfo.h
-  - $TOOL ./build/runtests
-
-after_success:
-  - lcov -c -d . -o build/coverage.info
-  - lcov --remove build/coverage.info '*/include/*' '*/boost/*' -o build/filtered.info
-  - test -f build/filtered.info && coveralls-lcov build/filtered.info
-  - test -f gmon.out && gprof ./build/runtests gmon.out | head -n 100
+  - ./bin/travis.ch
