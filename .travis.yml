@@ -34,7 +34,6 @@ addons:
       - g++-5
       - g++-6
       - g++-7
-      - g++-8
       - lcov
       - valgrind
 
@@ -42,7 +41,7 @@ matrix:
   include:
     - env:
           - MODE=RELEASE
-          - COMPILER="gcc-5 gcc-6 gcc-7 gcc-8 clang"
+          - COMPILER="gcc-5 gcc-6 gcc-7 clang"
 
     - env:
           - MODE=DEBUG
