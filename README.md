@@ -13,7 +13,7 @@ for some). The main features are:
 * trigonometric functions `sin(pi/4) = 1/sqrt(2)` or `sin^2(a) + cos^2(a) = 1`
 * expression normalization via gcd `a/b + 1/(5*b) = 1/5*(1 + 5*a)/b`
 * differentiation `d/da 2*a^4 = 8*a^3`
-* solution of simple linear systems of equations
+* solution of linear systems of equations, matrix inversion and determinant
 * parsing of expressions from strings
 * big integer arithmetic (by use of boost multiprecision)
 
@@ -121,7 +121,44 @@ tsym::Var wrong = tsym::parse("a*cos(3!)", &success); /* Results in a*cos(3). */
 if (!success)
     std::cout << "Factorials aren't implemented" << std::endl;
 ```
-The parser does very limited error recovery, you shouldn't rely on it.
+The parser does very limited error recovery, you shouldn't rely on it. Three standard operations
+for matrices are provided as free functions, i.e., solution of linear systems of equations, matrix
+inversion and computing determinants. All three use the LU decomposition and a partial pivoting
+scheme and are implemented as function templates that accept any matrix type providing element
+access via `(i, j)` or `[i][j]` operators and any vector type with `(i)` or `[i]` operators. It's
+fine to use simple container types (`std::vector<tsym::Var>`, `std::vector<std::vector<tsym::Var>`,
+plain C-style arrays, `std::array` and so on. More sophisticated matrix/vector types don't help the
+performance that is solely governed by internal simplifications.
+```c++
+std::vector<std::vector<tsym::Var>> A;
+boost::numeric::ublas::matrix<tsym::Var> B;
+
+/* ... fill matrices with values ... */
+
+tsym::determinant(A, A.size()); /* A is modified in place! */
+tsym::invert(B, B.size1());
+```
+The dimension (second parameter in the example above) should be passed as the container index type
+(usually some `unsigned` integral type). Instantiating the function with e.g. a literal integer
+will probably result in many unwanted sign conversions. When using a type that doesn't support the
+standard access operators, a callable entity can be passed to these functions.
+```c++
+std::array<tsym::Var, 16> C; /* A 4x4 matrix with elements stored contingously. */
+std::unique_ptr<tsym::Var[]> rhs(new tsym::Var[4]);
+std::unique_ptr<tsym::Var[]> x(new tsym::Var[4]);
+
+/* ... fill matrix and and right hand side with values ... */
+
+tsym::solve(C, rhs, x, std::size_t{4}, [](auto& A, auto i, auto j) -> tsym::Var& { return A[4u*i + j]; });
+
+/* A and rhs have changed now, x contains the solution. */
+```
+Different vector types for solution and right hand side aren't supported. Last, a sixth functions
+argument can be passed to `solve`, specifying the vector access function. When the given coefficient
+matrix is singular, all functions will throw an instance of `std::invalid_argument`. To keep the
+requirements on vector/matrix types low, no sanity checks are made (client code is hence responsible
+for correct dimensions)
+
 
 Compiling the example code
 --------------------------
