@@ -3,6 +3,7 @@ language: cpp
 dist: trusty
 sudo: required
 os: linux
+python: 3.6
 
 branches:
   only:
