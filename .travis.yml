@@ -25,6 +25,8 @@ before_install:
   - cd ..
   - gem install coveralls-lcov
   - sudo apt-get -qq update
+  - sudo apt-get install -qq cppcheck
+  - pip install --upgrade cppclean
 
 addons:
   apt:
@@ -50,6 +52,9 @@ matrix:
     - env:
           - MODE=PROFILING
           - COMPILER="gcc-7"
+
+    - env:
+          - MODE=ANALYSIS
 
 script:
   - ./bin/travis.sh

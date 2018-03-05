@@ -52,4 +52,6 @@ elif [ "${MODE}" = "DEBUG" ]; then
     build "${COMPILER}"
     valgrind --error-exitcode=1 --leak-check=full "${TESTEXEC}"
     clean
+elif [ "${MODE}" = "ANALYSIS" ]; then
+    ./bin/staticcheck.sh
 fi
