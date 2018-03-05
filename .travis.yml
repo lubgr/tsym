@@ -3,7 +3,6 @@ language: cpp
 dist: trusty
 sudo: required
 os: linux
-python: 3.6
 
 branches:
   only:
@@ -27,7 +26,7 @@ before_install:
   - gem install coveralls-lcov
   - sudo apt-get -qq update
   - sudo apt-get install -qq cppcheck
-  - pip install --upgrade cppclean
+  - sudo pip3 install --upgrade cppclean
 
 addons:
   apt:
