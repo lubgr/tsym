@@ -22,7 +22,7 @@ TEST_EXEC = $(BUILD)/runtests
 LIB_TARGET = $(BUILD)/lib$(NAME).$(SO)
 LIB_STATIC = $(BUILD)/lib$(NAME).a
 LIB_HEADER = $(BUILD)/$(NAME).h
-PUBLIC_HEADER = globals logger var version
+PUBLIC_HEADER = globals logger plu var version
 
 LIB_SRC = $(wildcard src/*.cpp)
 LIB_PARSER_H = $(BUILD)/src/parser.h
