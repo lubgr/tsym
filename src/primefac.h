@@ -3,19 +3,28 @@
 
 #include <vector>
 #include "int.h"
+#include "number.h"
+#include "simpleprimepolicy.h"
 
 namespace tsym { class Number; }
 
 namespace tsym {
     class PrimeFac {
-        /* Utilty class for prime factorization of a rational, positive number. The prime numbers
-         * (numerator and denominator) are stored as vectors, where empty vectors means, that the
-         * number is one. Multiplication and exponentiation with integer exponents are possible.
-         * Extraction of prime numbers for a given rational exponent is additionaly provided. In
-         * that case, the exponent may be changed, too.*/
+        /* Utilty class for prime factorization of a rational, positive number. Upon construction,
+         * the policy for computing prime numbers can be injected as a class template for integer
+         * types. The prime numbers (numerator and denominator) are stored as vectors, where empty
+         * vectors means, that the number is one. Multiplication and exponentiation with integer
+         * exponents are possible. Extraction of prime numbers for a given rational exponent is
+         * additionaly provided. In that case, the exponent may be changed, too.*/
         public:
             PrimeFac() = default;
-            explicit PrimeFac(const Number& n);
+            template<template<class> class PrimeFacPolicy = SimplePrimePolicy> explicit PrimeFac(const Number& n)
+            {
+                if (n.isDouble() || n < 0)
+                    return;
+                else
+                    factorize<PrimeFacPolicy<Int>>(n);
+            }
 
             /* Integer exponents only (restricition to rational numbers). */
             void toThe(const Int& exponent);
@@ -37,8 +46,12 @@ namespace tsym {
             Number eval() const;
 
         private:
-            void factorize(const Number& n);
-            void defPrimes(Int n, std::vector<Int>& primes);
+            template<class PrimeFacPolicy> void factorize(const Number& n)
+            {
+                PrimeFacPolicy::computeAndStore(n.numerator(), numPrimes);
+                PrimeFacPolicy::computeAndStore(n.denominator(), denomPrimes);
+            }
+
             void copyElementsNTimes(const Int& n, std::vector<Int>& primes);
             void cancelPrimes(std::vector<Int>& p1, std::vector<Int>& p2);
             void merge(std::vector<Int>& target, const std::vector<Int>& source);

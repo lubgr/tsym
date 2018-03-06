@@ -1,52 +1,5 @@
 
-#include <cmath>
-#include <algorithm>
 #include "primefac.h"
-#include "number.h"
-#include "logging.h"
-
-tsym::PrimeFac::PrimeFac(const Number& n)
-{
-    if (n.isDouble() || n < 0)
-        return;
-    else
-        factorize(n);
-}
-
-void tsym::PrimeFac::factorize(const Number& n)
-{
-    defPrimes(n.numerator(), numPrimes);
-    defPrimes(n.denominator(), denomPrimes);
-}
-
-void tsym::PrimeFac::defPrimes(Int n, std::vector<Int>& primes)
-    /* Saves the prime factorization of n into the given vector. This is done without any special
-     * algorithm, meaning that the speed of this operation is poor. However, this method will mostly
-     * been called for moderate values, and even for high numbers the factorization didn't cause a
-     * remarkable break of the program, so for now, this is supposed to be sufficient. */
-{
-    static const Int zero(0);
-    static const Int two(2);
-    double upperLimit;
-
-    primes.clear();
-
-    while (n % two == zero) {
-        primes.push_back(two);
-        n /= two;
-    }
-
-    upperLimit = std::sqrt(static_cast<double>(n)) + 0.5;
-
-    for (Int i(3); static_cast<double>(i) < upperLimit; i = i + two)
-        while (n % i == zero) {
-            primes.push_back(i);
-            n /= i;
-        }
-
-    if (n > two)
-        primes.push_back(n);
-}
 
 void tsym::PrimeFac::toThe(const Int& exponent)
 {
