@@ -7,11 +7,6 @@
 
 tsym::PrimeFac::PrimeFac(const Number& n)
 {
-    checkAndFactorize(n);
-}
-
-void tsym::PrimeFac::checkAndFactorize(const Number& n)
-{
     if (n.isDouble() || n < 0)
         return;
     else
@@ -51,11 +46,6 @@ void tsym::PrimeFac::defPrimes(Int n, std::vector<Int>& primes)
 
     if (n > two)
         primes.push_back(n);
-}
-
-void tsym::PrimeFac::set(const Number& n)
-{
-    checkAndFactorize(n);
 }
 
 void tsym::PrimeFac::toThe(const Int& exponent)

@@ -51,7 +51,7 @@ TEST_GROUP(PrimeFac)
 
 TEST(PrimeFac, doubleArgument)
 {
-    pf.set(0.123456789);
+    pf = PrimeFac(0.123456789);
 
     CHECK(pf.getNumPrimes().empty());
     CHECK(pf.getDenomPrimes().empty());
@@ -59,7 +59,7 @@ TEST(PrimeFac, doubleArgument)
 
 TEST(PrimeFac, negativeArgument)
 {
-    pf.set(-2);
+    pf = PrimeFac(-2);
 
     CHECK(pf.getNumPrimes().empty());
     CHECK(pf.getDenomPrimes().empty());
@@ -67,7 +67,7 @@ TEST(PrimeFac, negativeArgument)
 
 TEST(PrimeFac, simpleInt)
 {
-    pf.set(13650);
+    pf = PrimeFac(13650);
 
     checkNum(2, 3, 5, 5, 7, 13);
     CHECK(pf.getDenomPrimes().empty());
@@ -75,7 +75,7 @@ TEST(PrimeFac, simpleInt)
 
 TEST(PrimeFac, simpleFraction)
 {
-    pf.set(twoThird);
+    pf = PrimeFac(twoThird);
 
     checkNum(2);
     checkDenom(3);
@@ -83,7 +83,7 @@ TEST(PrimeFac, simpleFraction)
 
 TEST(PrimeFac, largeFraction)
 {
-    pf.set(Number(6578, 4515));
+    pf = PrimeFac(Number(6578, 4515));
 
     checkNum(2, 11, 13, 23);
     checkDenom(3, 5, 7, 43);
@@ -91,7 +91,7 @@ TEST(PrimeFac, largeFraction)
 
 TEST(PrimeFac, positivePower)
 {
-    pf.set(Number(4, 3));
+    pf = PrimeFac(Number(4, 3));
     pf.toThe(3);
 
     checkNum(2, 2, 2, 2, 2, 2);
@@ -100,7 +100,7 @@ TEST(PrimeFac, positivePower)
 
 TEST(PrimeFac, negativePower)
 {
-    pf.set(Number(9, 17));
+    pf = PrimeFac(Number(9, 17));
     pf.toThe(-2);
 
     checkNum(17, 17);
@@ -109,7 +109,7 @@ TEST(PrimeFac, negativePower)
 
 TEST(PrimeFac, powerWithZeroExponent)
 {
-    pf.set(7);
+    pf = PrimeFac(7);
     pf.toThe(0);
 
     CHECK(pf.getNumPrimes().empty());
@@ -118,7 +118,7 @@ TEST(PrimeFac, powerWithZeroExponent)
 
 TEST(PrimeFac, simpleProduct)
 {
-    pf.set(Number(7, 2));
+    pf = PrimeFac(Number(7, 2));
     pf.multiply(Number(3, 2));
 
     checkNum(3, 7);
@@ -127,7 +127,7 @@ TEST(PrimeFac, simpleProduct)
 
 TEST(PrimeFac, productWithEmptyPrimes)
 {
-    pf.set(36);
+    pf = PrimeFac(36);
     pf.multiply(1);
 
     checkNum(2, 2, 3, 3);
@@ -138,7 +138,7 @@ TEST(PrimeFac, product)
 {
     PrimeFac other(Number(65, 46));
 
-    pf.set(Number(154, 975));
+    pf = PrimeFac(Number(154, 975));
     pf.multiply(other);
 
     checkNum(7, 11);
@@ -150,7 +150,7 @@ TEST(PrimeFac, noExtractionFromInt)
 {
     PrimeFac extraction;
 
-    pf.set(5);
+    pf = PrimeFac(5);
 
     extraction = pf.extract(twoThird);
 
@@ -168,7 +168,7 @@ TEST(PrimeFac, simpleExtraction)
 {
     PrimeFac extraction;
 
-    pf.set(4);
+    pf = PrimeFac(4);
 
     extraction = pf.extract(Number(1, 2));
 
@@ -186,7 +186,7 @@ TEST(PrimeFac, extraction)
 {
     PrimeFac extraction;
 
-    pf.set(12);
+    pf = PrimeFac(12);
 
     extraction = pf.extract(Number(1, 2));
 
@@ -204,7 +204,7 @@ TEST(PrimeFac, noExtractionFromFraction)
 {
     PrimeFac extraction;
 
-    pf.set(Number(297, 65000));
+    pf = PrimeFac(Number(297, 65000));
     extraction = pf.extract(Number(2, 5));
 
     CHECK(extraction.getNumPrimes().empty());
@@ -216,7 +216,7 @@ TEST(PrimeFac, extractionFromFraction)
 {
     PrimeFac extraction;
 
-    pf.set(Number(297, 65000));
+    pf = PrimeFac(Number(297, 65000));
     extraction = pf.extract(twoThird);
 
     checkNum(11);
@@ -233,7 +233,7 @@ TEST(PrimeFac, extractionNegativeExponent)
 {
     PrimeFac extraction;
 
-    pf.set(Number(4, 9));
+    pf = PrimeFac(Number(4, 9));
     extraction = pf.extract(Number(-3, 2));
 
     CHECK(pf.getNumPrimes().empty());
@@ -250,7 +250,7 @@ TEST(PrimeFac, emptyCount)
 {
     int count;
 
-    pf.set(1);
+    pf = PrimeFac(1);
     count = pf.getEqualCount();
 
     CHECK_EQUAL(0, count);
@@ -261,7 +261,7 @@ TEST(PrimeFac, intCount)
 {
     int count;
 
-    pf.set(7776);
+    pf = PrimeFac(7776);
     count = pf.getEqualCount();
 
     CHECK_EQUAL(5, count);
@@ -272,7 +272,7 @@ TEST(PrimeFac, intCountNonEqual)
 {
     int count;
 
-    pf.set(14087304);
+    pf = PrimeFac(14087304);
     count = pf.getEqualCount();
 
     CHECK_EQUAL(0, count);
@@ -283,7 +283,7 @@ TEST(PrimeFac, fractionCount)
 {
     int count;
 
-    pf.set(Number(1296, 2401));
+    pf = PrimeFac(Number(1296, 2401));
     count = pf.getEqualCount();
 
     CHECK_EQUAL(4, count);
@@ -294,7 +294,7 @@ TEST(PrimeFac, fractionCountNumeratorOne)
 {
     int count;
 
-    pf.set(Number(1, 5336100));
+    pf = PrimeFac(Number(1, 5336100));
     count = pf.getEqualCount();
 
     CHECK_EQUAL(2, count);
@@ -305,7 +305,7 @@ TEST(PrimeFac, fractionCountNonEqual)
 {
     int count;
 
-    pf.set(Number(210, 1859));
+    pf = PrimeFac(Number(210, 1859));
     count = pf.getEqualCount();
 
     CHECK_EQUAL(0, count);
@@ -316,7 +316,7 @@ TEST(PrimeFac, intCollection)
 {
     Number newExp;
 
-    pf.set(25);
+    pf = PrimeFac(25);
     newExp = pf.collectToNewExp(third);
 
     checkNum(5);
@@ -330,7 +330,7 @@ TEST(PrimeFac, intNoCollection)
 {
     Number newExp;
 
-    pf.set(18);
+    pf = PrimeFac(18);
     newExp = pf.collectToNewExp(third);
 
     checkNum(2, 3, 3);
@@ -344,7 +344,7 @@ TEST(PrimeFac, simpleFractionCollection)
 {
     Number newExp;
 
-    pf.set(4);
+    pf = PrimeFac(4);
     newExp = pf.collectToNewExp(twoThird);
 
     checkNum(2);
@@ -358,7 +358,7 @@ TEST(PrimeFac, fractionCollection)
 {
     Number newExp;
 
-    pf.set(Number(8, 27));
+    pf = PrimeFac(Number(8, 27));
     newExp = pf.collectToNewExp(Number(5, 6));
 
     checkNum(2);
@@ -372,7 +372,7 @@ TEST(PrimeFac, emptyColletion)
 {
     Number newExp;
 
-    pf.set(1);
+    pf = PrimeFac(1);
     newExp = pf.collectToNewExp(Number(2, 3));
 
     CHECK(pf.getNumPrimes().empty());
@@ -385,7 +385,7 @@ TEST(PrimeFac, evaluate)
 {
     const Number n(10626, 3211);
 
-    pf.set(n);
+    pf = PrimeFac(n);
 
     CHECK_EQUAL(n, pf.eval());
 }

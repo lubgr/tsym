@@ -192,7 +192,7 @@ void tsym::NumPowerSimpl::cancel()
 
 void tsym::NumPowerSimpl::defNewBasePrimes()
 {
-    nbPrimes.set(newBase);
+    nbPrimes = PrimeFac(newBase);
 }
 
 void tsym::NumPowerSimpl::defPreFacPrimesInPower()
@@ -206,7 +206,7 @@ void tsym::NumPowerSimpl::defPreFacPrimesInPower()
     if (preFacInPower.isDouble())
         return;
 
-    pfPrimes.set(preFacInPower);
+    pfPrimes = PrimeFac(preFacInPower);
     pfPrimes.toThe(newExp.denominator());
 
     preFac = 1;

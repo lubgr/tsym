@@ -17,8 +17,6 @@ namespace tsym {
             PrimeFac() = default;
             explicit PrimeFac(const Number& n);
 
-            void set(const Number& n);
-
             /* Integer exponents only (restricition to rational numbers). */
             void toThe(const Int& exponent);
             void multiply(const Number& n);
@@ -39,7 +37,6 @@ namespace tsym {
             Number eval() const;
 
         private:
-            void checkAndFactorize(const Number& n);
             void factorize(const Number& n);
             void defPrimes(Int n, std::vector<Int>& primes);
             void copyElementsNTimes(const Int& n, std::vector<Int>& primes);
