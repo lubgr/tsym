@@ -25,8 +25,13 @@ before_install:
   - cd ..
   - gem install coveralls-lcov
   - sudo apt-get -qq update
-  - sudo apt-get install -qq cppcheck
   - sudo pip install --upgrade cppclean
+  - wget https://github.com/danmar/cppcheck/archive/1.82.tar.gz
+  - tar xf 1.82.tar.gz
+  - cd ./cppcheck-1.82
+  - make SRCDIR=build CFGDIR=cfg HAVE_RULES=yes CXXFLAGS="-O2 -DNDEBUG"
+  - sudo make SRCDIR=build CFGDIR=/usr/share/cppcheck/cfg HAVE_RULES=yes install
+  - cd ..
 
 addons:
   apt:
