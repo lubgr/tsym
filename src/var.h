@@ -30,8 +30,8 @@ namespace tsym {
              * alphanumeric characters are valid, though the symbol name must not start with a
              * digit. It can contain subscripts though: if it's only one character, a_1 is
              * sufficient, for longer subscripts, use a_{10}. */
-            explicit Var(const char *str);
-            explicit Var(const char *str, Sign sign);
+            explicit Var(const std::string& str);
+            explicit Var(const std::string& str, Sign sign);
 
             Var& operator += (const Var& rhs);
             Var& operator -= (const Var& rhs);

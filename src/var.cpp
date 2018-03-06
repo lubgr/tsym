@@ -50,7 +50,7 @@ tsym::Var::Var(int numerator, int denominator) :
     rep(Numeric::create(numerator, denominator))
 {}
 
-tsym::Var::Var(const char *str)
+tsym::Var::Var(const std::string& str)
 {
     bool success;
     const Var tmp(parse(str, &success));
@@ -66,7 +66,7 @@ tsym::Var::Var(const char *str)
     rep = Undefined::create();
 }
 
-tsym::Var::Var(const char *str, Var::Sign sign)
+tsym::Var::Var(const std::string& str, Var::Sign sign)
 {
     const Var withoutSign(str);
     const Type type(withoutSign.type());
