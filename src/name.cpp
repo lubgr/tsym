@@ -1,4 +1,5 @@
 
+#include <cctype>
 #include "name.h"
 
 tsym::Name::Name(const std::string& name) :
@@ -75,7 +76,7 @@ size_t tsym::Name::greekAlphabetIndex() const
     for (size_t i = 0; i < nLetters; ++i)
         if (name.substr(1).compare(alphabet[i].substr(1)) != 0)
             continue;
-        else if (alphabet[i][0] == name[0] || alphabet[i][0] == static_cast<char>(tolower(name[0])))
+        else if (alphabet[i][0] == name[0] || alphabet[i][0] == static_cast<char>(std::tolower(name[0])))
             return i;
 
     return static_cast<size_t>(-1);
@@ -97,7 +98,7 @@ std::string tsym::Name::unicodeForGreekLetter() const
 
 bool tsym::Name::startsWithCapitalLetter() const
 {
-    return (char)tolower(name[0]) != name[0];
+    return static_cast<char>(std::tolower(name[0])) != name[0];
 }
 
 std::string tsym::Name::tex() const

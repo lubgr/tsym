@@ -181,7 +181,7 @@ TEST(StringToVar, symbolWithSubscriptErrorInProduct)
 
 TEST(StringToVar, symbolWithSubscriptErrorRecovery)
 {
-    const Var expected = a*Var(getSymbol("aBc123", "a"));
+    const Var expected = a*getSymbol("aBc123", "a");
     disableLog();
     const StringToVar stv("a*aBc123_abc*2");
     enableLog();

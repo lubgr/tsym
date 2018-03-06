@@ -3,8 +3,7 @@
 
 BoostVector createBoostVector(std::initializer_list<tsym::Var> values)
 {
-    const auto dim = static_cast<BoostSizeType>(values.size());
-    BoostVector vec(dim);
+    BoostVector vec(values.size());
     BoostSizeType i = 0;
 
     for (const auto& entry: values)
@@ -15,7 +14,7 @@ BoostVector createBoostVector(std::initializer_list<tsym::Var> values)
 
 BoostMatrix createBoostMatrix(std::initializer_list<std::initializer_list<tsym::Var>> values)
 {
-    const auto dim = static_cast<BoostSizeType>(values.size());
+    const auto dim = values.size();
     BoostMatrix m(dim, dim);
     BoostSizeType i = 0;
 

@@ -184,7 +184,7 @@ const tsym::Name& tsym::Base::name() const
 
 tsym::BasePtr tsym::Base::clone() const
 {
-    return BasePtr(shared_from_this());
+    return shared_from_this();
 }
 
 tsym::BasePtr tsym::Base::normal() const
