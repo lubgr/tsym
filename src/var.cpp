@@ -14,8 +14,8 @@
 #include "plaintextprintengine.h"
 #include "fraction.h"
 #include "symbolmap.h"
+#include "parser.h"
 #include "logging.h"
-#include "globals.h"
 
 namespace tsym {
     namespace {
@@ -29,6 +29,17 @@ namespace tsym {
                 { "Double", Var::Type::DOUBLE }};
 
             return map;
+        }
+
+        bool isCorrectIntOrSymbol(const parser::Result& parsed)
+        {
+            const bool parsingSuccess = parsed.success && parsed.matchedWholeString;
+            const BasePtr& value(parsed.value);
+
+            if (parsingSuccess)
+                return value->isSymbol() || (value->isNumeric() && value->numericEval().isInt());
+
+            return false;
         }
     }
 }
@@ -52,16 +63,15 @@ tsym::Var::Var(int numerator, int denominator) :
 
 tsym::Var::Var(const std::string& str)
 {
-    bool success;
-    const Var tmp(parse(str, &success));
+    const parser::Result parsed = parser::parse(str);
 
-    if (success && (tmp.type() == Type::SYMBOL || tmp.type() == Type::INT)) {
-        rep = tmp.rep;
+    if (isCorrectIntOrSymbol(parsed)) {
+        rep = parsed.value;
         return;
     }
 
     TSYM_ERROR("Parsing symbol or integer from '%s' failed, result: %S (%S). "
-            "Create undefined Var object.", str, tmp, tmp.type());
+            "Create undefined Var object.", str, parsed.value, Var(parsed.value).type());
 
     rep = Undefined::create();
 }
