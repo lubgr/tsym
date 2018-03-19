@@ -80,16 +80,16 @@ namespace tsym {
                         | scalar
                         | '(' >> expression >> ')';
 
-                    factor = operand >> *('^' >> factor[bind(toPower)]);
+                    factor = operand >> *('^' >> factor[bind(&QiParser::toPower)]);
 
                     posNegOperand = factor
-                        | '-' >> factor[bind(flipSign)];
+                        | '-' >> factor[bind(&QiParser::flipSign)];
 
-                    summand = posNegOperand >> *(('*' >> posNegOperand)[bind(toProduct)]
-                            | ('/' >> posNegOperand)[bind(toQuotient)]);
+                    summand = posNegOperand >> *(('*' >> posNegOperand)[bind(&QiParser::toProduct)]
+                            | ('/' >> posNegOperand)[bind(&QiParser::toQuotient)]);
 
-                    expression = -qi::lit('+') >> summand >> *(('+' >> summand)[bind(toSum)]
-                            | ('-' >> summand)[bind(toDifference)]);
+                    expression = -qi::lit('+') >> summand >> *(('+' >> summand)[bind(&QiParser::toSum)]
+                            | ('-' >> summand)[bind(&QiParser::toDifference)]);
                 }
 
                 parser::Result parse(Iterator first, Iterator last)
