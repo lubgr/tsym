@@ -53,7 +53,6 @@ namespace tsym {
             Var diff(const Var& symbol) const;
             bool equal(const Var& other) const;
             bool has(const Var& other) const;
-            bool isZero() const;
             bool isPositive() const;
             bool isNegative() const;
             unsigned complexity() const;

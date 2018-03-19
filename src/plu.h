@@ -192,7 +192,7 @@ namespace tsym {
                         };
 
                         for (SizeType j = 0; j < dim; ++j)
-                            if (!matrix(i, j).isZero())
+                            if (matrix(i, j) != 0)
                                 lineIndices.push_back(j);
 
                         assert(lineIndices.size() > 0);
@@ -282,13 +282,13 @@ namespace tsym {
                         dim(dim)
                 {
                     for (SizeType j = 0; j + 1 < dim; ++j) {
-                        if (!m(j, j).isZero()) {
+                        if (m(j, j) != 0) {
                             newRowIndices[toUnsigned(j)] = j;
                             continue;
                         }
 
                         for (SizeType i = j + 1; i < dim; ++i)
-                            if (!m(i, j).isZero()) {
+                            if (m(i, j) != 0) {
                                 newRowIndices[toUnsigned(j)] = i;
 
                                 ++swapCount;
@@ -379,7 +379,7 @@ namespace tsym {
 
                             matrix(i, i) = matrix(i, i).simplify();
 
-                            if (matrix(i, i).isZero())
+                            if (matrix(i, i) == 0)
                                 throw std::invalid_argument("Coefficient matrix is singular");
 
                             x(i) = ((rhs(i) + x(i))/matrix(i, i)).simplify();

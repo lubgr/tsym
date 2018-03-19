@@ -260,7 +260,7 @@ TEST(Var, defaultAssignment)
 
     var = Var();
 
-    CHECK(var.isZero());
+    CHECK_EQUAL(0, var);
 }
 
 TEST(Var, equalityOfSymbols)
@@ -462,7 +462,7 @@ TEST(Var, powerWithZeroBase)
 {
     zero.toThe(2);
 
-    CHECK(zero.isZero());
+    CHECK_EQUAL(0, zero);
 }
 
 TEST(Var, powerWithZeroBaseNegExp)
@@ -955,8 +955,8 @@ TEST(Var, normalToZero)
 {
     const Var sum = a*b + a*c - a*(b + c);
 
-    CHECK(sum.expand().isZero());
-    CHECK(sum.normal().isZero());
+    CHECK_EQUAL(0, sum.expand());
+    CHECK_EQUAL(0, sum.normal());
 }
 
 TEST(Var, simplifyExpandLessComplex)

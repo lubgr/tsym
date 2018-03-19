@@ -207,11 +207,6 @@ bool tsym::Var::has(const Var& other) const
     return rep->has(other.rep);
 }
 
-bool tsym::Var::isZero() const
-{
-    return rep->isZero();
-}
-
 bool tsym::Var::isPositive() const
 {
     return rep->isPositive();
