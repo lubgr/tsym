@@ -6,9 +6,8 @@ TESTEXEC="./build/runtests"
 export CPPFLAGS="-isystem ${BOOSTDIR} -I src"
 
 build() {
-    CXX=`echo $1 | sed 's/gcc/g++/' | sed 's/clang/clang++/'`
-    CC=$1
-    make -j 4 CXX="${CXX}" CC="${CC}" lib staticlib tests
+    CXX=$1
+    make -j 4 CXX="${CXX}" lib staticlib tests
     cat build/buildinfo.h
 }
 

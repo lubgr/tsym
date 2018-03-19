@@ -43,15 +43,15 @@ matrix:
   include:
     - env:
           - MODE=RELEASE
-          - COMPILER="gcc-5 gcc-6 gcc-7 clang"
+          - COMPILER="g++-7 g++-6 g++-5 clang++"
 
     - env:
           - MODE=DEBUG
-          - COMPILER="gcc-7"
+          - COMPILER="g++-7"
 
     - env:
           - MODE=PROFILING
-          - COMPILER="gcc-7"
+          - COMPILER="g++-7"
 
     - env:
           - MODE=ANALYSIS
