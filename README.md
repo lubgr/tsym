@@ -26,17 +26,16 @@ series expansion.
 
 Installation
 ------------
-To compile tsym, you need [boost](https://boost.org),
-flex and bison (or their non-GPL counterparts), C and C++ compiler recent enough to support C++14
-and (GNU-)[make](https://www.gnu.org/software/make/). For unit tests,
+To compile tsym, you need [boost](https://boost.org) and a C++ compiler recent enough to support
+C++14 and (GNU-)[make](https://www.gnu.org/software/make/). For unit tests,
 [CppUTest](https://github.com/cpputest/cpputest) is required. tsym should build on all major Linux
 distributions by e.g.
 ```bash
 make CXXFLAGS="-march=native -O2" lib
 ```
 where the flag specifications are of course optional. All standard variables will be recognized
-(`LIBS`, `LDFLAGS`, `CC`, `CXX`, `DESTDIR`... see the top of the makefile for all variables) and can
-be saved in a `makefile.in`. To install header files and the shared library:
+(`LIBS`, `LDFLAGS`, `CXX`, `DESTDIR`... see the top of the makefile for all variables) and can be
+saved in a `makefile.in`. To install header files and the shared library:
 ```bash
 make install PREFIX=/usr/local
 ```

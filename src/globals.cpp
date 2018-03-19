@@ -3,6 +3,7 @@
 #include "trigonometric.h"
 #include "logarithm.h"
 #include "constant.h"
+#include "parser.h"
 #include "logging.h"
 
 tsym::Var tsym::sqrt(const Var& base)
@@ -73,5 +74,12 @@ const tsym::Var& tsym::euler()
 
 tsym::Var tsym::parse(const std::string& str, bool *success)
 {
-    return Var{};
+    parser::Result result = parser::parse(str);
+
+    TSYM_DEBUG("Parsed '%s' with result: %S", str.c_str(), result.value);
+
+    if (success != nullptr)
+        *success = result.success && result.matchedWholeString;
+
+    return Var(result.value);
 }
