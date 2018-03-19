@@ -2,13 +2,10 @@
 include $(wildcard makefile.in Makefile.in)
 
 BUILD ?= build
-CXXFLAGS ?= -O2 -fPIC -pedantic -Wall -Wextra -Wconversion -Wsign-conversion -Wuseless-cast -Wold-style-cast -DNDEBUG -std=c++14
-CFLAGS ?= -O2 -fPIC -DNDEBUG
+CXXFLAGS ?= -O2 -fPIC -pedantic -Wall -Wextra -Wconversion -Wsign-conversion -Wsign-compare -Wuseless-cast -Wold-style-cast -DNDEBUG -std=c++14
 CPPFLAGS += -I src
 PROFILE ?=
 LIBS ?=
-LEX ?= flex
-YACC ?= bison
 TAGS ?= $(BUILD)/tags
 SO ?= so
 PREFIX ?= /usr/local
@@ -25,8 +22,7 @@ LIB_HEADER = $(BUILD)/$(NAME).h
 PUBLIC_HEADER = globals logger plu var version
 
 LIB_SRC = $(wildcard src/*.cpp)
-LIB_PARSER_H = $(BUILD)/src/parser.h
-LIB_OBJ = $(LIB_SRC:%.cpp=$(BUILD)/%.o) $(BUILD)/src/scanner.o $(LIB_PARSER_H:%.h=%.o)
+LIB_OBJ = $(LIB_SRC:%.cpp=$(BUILD)/%.o)
 TEST_SRC = $(wildcard test/*.cpp)
 TEST_OBJ = $(TEST_SRC:%.cpp=$(BUILD)/%.o)
 DEPS = $(LIB_OBJ:%.o=%.d) $(TEST_OBJ:%.o=%.d)
@@ -51,17 +47,6 @@ $(LIB_STATIC): $(LIB_OBJ) $(BUILDINFO)
 $(BUILD)/src/%.o: src/%.cpp | $(BUILD)/src
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(PROFILE) -o $@ -c $<
 
-$(BUILD)/src/%.o: $(BUILD)/src/%.c $(LIB_PARSER_H)
-	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $<
-
-$(LIB_PARSER_H): $(LIB_PARSER_H:%.h=%.c)
-
-$(BUILD)/src/%.c: src/%.l | $(BUILD)/src
-	$(LEX) -o $@ $<
-
-$(BUILD)/src/%.c: src/%.y | $(BUILD)/src
-	$(YACC) -d -o $@ $<
-
 $(BUILD)/test/%.o: test/%.cpp | $(BUILD)/test
 	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -I test -o $@ -c $<
 
@@ -78,10 +63,6 @@ $(BUILDINFO):
 	@echo "#define TSYM_CPP_FLAGS \"$(CPPFLAGS)\"" >> $(BUILDINFO)
 	@echo "#define TSYM_CXX_COMPILER \"`$(CXX) --version | head -n 1`\"" >> $(BUILDINFO)
 	@echo "#define TSYM_CXX_FLAGS \"$(CXXFLAGS)\"" >> $(BUILDINFO)
-	@echo "#define TSYM_C_COMPILER \"`$(CC) --version | head -n 1`\"" >> $(BUILDINFO)
-	@echo "#define TSYM_C_FLAGS \"$(CFLAGS)\"" >> $(BUILDINFO)
-	@echo "#define TSYM_PARSER_GENERATOR \"`$(YACC) --version | head -n 1`\"" >> $(BUILDINFO)
-	@echo "#define TSYM_LEXICAL_ANALYZER \"`$(LEX) --version | head -n 1`\"" >> $(BUILDINFO)
 	@echo "#define TSYM_BUILD_OS \"$(shell uname -mro)\"" >> $(BUILDINFO)
 	@echo "#define TSYM_BUILD_DATE \"$(shell date +'%d. %b. %Y, %R %Z')\"" >> $(BUILDINFO)
 
@@ -107,7 +88,7 @@ test: tests
 	@$(TEST_EXEC)
 
 clean:
-	$(RM) $(LIB_OBJ) $(LIB_TARGET) $(LIB_STATIC) $(LIB_PARSER_H) $(BUILDINFO)
+	$(RM) $(LIB_OBJ) $(LIB_TARGET) $(LIB_STATIC) $(BUILDINFO)
 	$(RM) $(TEST_OBJ) $(TEST_EXEC)
 	$(RM) $(DEPS)
 	$(RM) $(BUILD)/src/*.c
