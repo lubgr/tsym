@@ -112,8 +112,8 @@ namespace tsym {
                 public:
                     explicit VectorWrapper(SizeType dim) :
                         VectorAccessProxy<std::unique_ptr<Var[]>, SizeType>(rep,
-                                [dim](decltype(rep)& m, SizeType i) -> Var& { return m.get()[i]; }),
-                        rep(new Var[dim])
+                                [](decltype(rep)& m, SizeType i) -> Var& { return m.get()[i]; }),
+                        rep(new Var[toUnsigned(dim)])
                 {}
 
                 private:
@@ -125,7 +125,7 @@ namespace tsym {
                     explicit SquareMatrixWrapper(SizeType dim) :
                         MatrixAccessProxy<decltype(rep), SizeType>(rep,
                                 [dim](decltype(rep)& m, SizeType i, SizeType j) -> Var& { return m.get()[i*dim + j]; }),
-                        rep(new Var[dim*dim]),
+                        rep(new Var[toUnsigned(dim)*toUnsigned(dim)]),
                         dim(dim)
                 {}
 

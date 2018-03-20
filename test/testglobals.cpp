@@ -470,9 +470,9 @@ TEST(Globals, solveLinearSystemDim3WithStdArray)
     std::array<tsym::Var, 3> x;
     std::array<tsym::Var, 3> rhs;
 
-    A[0] = { 1, -1, a };
-    A[1] = { b, 0, 4 };
-    A[2] = { 10, 1, -a };
+    A[0] = {{ 1, -1, a }};
+    A[1] = {{ b, 0, 4 }};
+    A[2] = {{ 10, 1, -a }};
 
     rhs[0] = a - b + a*c;
     rhs[1] = a*b + 4*c;
@@ -692,9 +692,9 @@ TEST(Globals, detDim3SpecifyAccess)
     std::array<std::array<Var, 3>, 3> A;
     const Var expected(a*b*d + 2*c);
 
-    A[0] = { a, 1, 0 };
-    A[1] = { -2, 0, -b };
-    A[2] = { 0, d, c };
+    A[0] = {{ a, 1, 0 }};
+    A[1] = {{ -2, 0, -b }};
+    A[2] = {{ 0, d, c }};
 
     const Var det = determinant(A, std::size_t{3}, [](auto& A, auto i, auto j) -> Var& { return A.at(i).at(j); }); 
 
