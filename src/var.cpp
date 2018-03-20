@@ -101,6 +101,10 @@ tsym::Var::Var(const BasePtr& ptr) :
     rep(ptr)
 {}
 
+tsym::Var::Var(BasePtr&& ptr) :
+    rep(std::move(ptr))
+{}
+
 tsym::Var& tsym::Var::operator += (const Var& rhs)
 {
     rep = Sum::create(rep, rhs.rep);

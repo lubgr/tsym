@@ -68,9 +68,10 @@ namespace tsym {
             std::vector<Var> collectSymbols() const;
 
         public:
-            /* Can only be used internally: */
+            /* To be used internally: */
             typedef std::shared_ptr<const Base> BasePtr;
             explicit Var(const BasePtr& ptr);
+            explicit Var(BasePtr&& ptr);
             const BasePtr& get() const;
 
         private:
