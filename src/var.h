@@ -71,7 +71,7 @@ namespace tsym {
             /* Can only be used internally: */
             typedef std::shared_ptr<const Base> BasePtr;
             explicit Var(const BasePtr& ptr);
-            const BasePtr& getBasePtr() const;
+            const BasePtr& get() const;
 
         private:
             Type numericType() const;

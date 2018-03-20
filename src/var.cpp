@@ -353,7 +353,7 @@ void tsym::Var::insertSymbolIfNotPresent(const BasePtr& symbol, std::vector<Var>
         symbols.push_back(term);
 }
 
-const tsym::BasePtr& tsym::Var::getBasePtr() const
+const tsym::BasePtr& tsym::Var::get() const
 {
     return rep;
 }
@@ -400,7 +400,7 @@ std::ostream& tsym::operator << (std::ostream& stream, const Var& var)
 {
     PlaintextPrintEngine engine(stream);
 
-    printer::print(engine, var.getBasePtr());
+    printer::print(engine, var.get());
 
     return stream;
 }
@@ -420,5 +420,5 @@ std::ostream& tsym::operator << (std::ostream& stream, const Var::Type& type)
 
 size_t std::hash<tsym::Var>::operator () (const tsym::Var& var) const
 {
-    return var.getBasePtr()->hash();
+    return var.get()->hash();
 }

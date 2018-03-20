@@ -20,42 +20,42 @@ tsym::Var tsym::pow(const Var& base, const Var& exp)
 
 tsym::Var tsym::log(const Var& arg)
 {
-    return Var(Logarithm::create(arg.getBasePtr()));
+    return Var(Logarithm::create(arg.get()));
 }
 
 tsym::Var tsym::sin(const Var& arg)
 {
-    return Var(Trigonometric::createSin(arg.getBasePtr()));
+    return Var(Trigonometric::createSin(arg.get()));
 }
 
 tsym::Var tsym::cos(const Var& arg)
 {
-    return Var(Trigonometric::createCos(arg.getBasePtr()));
+    return Var(Trigonometric::createCos(arg.get()));
 }
 
 tsym::Var tsym::tan(const Var& arg)
 {
-    return Var(Trigonometric::createTan(arg.getBasePtr()));
+    return Var(Trigonometric::createTan(arg.get()));
 }
 
 tsym::Var tsym::asin(const Var& arg)
 {
-    return Var(Trigonometric::createAsin(arg.getBasePtr()));
+    return Var(Trigonometric::createAsin(arg.get()));
 }
 
 tsym::Var tsym::acos(const Var& arg)
 {
-    return Var(Trigonometric::createAcos(arg.getBasePtr()));
+    return Var(Trigonometric::createAcos(arg.get()));
 }
 
 tsym::Var tsym::atan(const Var& arg)
 {
-    return Var(Trigonometric::createAtan(arg.getBasePtr()));
+    return Var(Trigonometric::createAtan(arg.get()));
 }
 
 tsym::Var tsym::atan2(const Var& y, const Var& x)
 {
-    return Var(Trigonometric::createAtan2(y.getBasePtr(), x.getBasePtr()));
+    return Var(Trigonometric::createAtan2(y.get(), x.get()));
 }
 
 const tsym::Var& tsym::pi()

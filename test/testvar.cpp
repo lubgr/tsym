@@ -59,7 +59,7 @@ TEST(Var, emptyStringCreation)
 TEST(Var, simpleSubcriptParsing)
 {
     const Var var("a_b");
-    const Name name(var.getBasePtr()->name());
+    const Name name(var.get()->name());
 
     CHECK_EQUAL("a_b", var.name());
     CHECK_EQUAL("a", name.getName());
@@ -70,7 +70,7 @@ TEST(Var, simpleSubcriptParsing)
 TEST(Var, subscriptParsing)
 {
     const Var var("abc_{10}");
-    const Name name(var.getBasePtr()->name());
+    const Name name(var.get()->name());
 
     CHECK_EQUAL("abc", name.getName());
     CHECK_EQUAL("10", name.getSubscript());
@@ -93,7 +93,7 @@ TEST(Var, bigIntParsing)
 
     CHECK_EQUAL(Var::Type::INT, n.type());
     CHECK_FALSE(n.fitsIntoInt());
-    CHECK_EQUAL(numeric, n.getBasePtr());
+    CHECK_EQUAL(numeric, n.get());
 }
 
 TEST(Var, posIntWithPosSign)
