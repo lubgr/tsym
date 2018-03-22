@@ -2,6 +2,7 @@
 
 CPPCHECK=cppcheck
 CPPCLEAN=cppclean
+OCLINT=oclint
 CONFIGDIR=misc
 
 INCLUDE="-I src -I test"
@@ -23,3 +24,7 @@ which $CPPCLEAN &> /dev/null && \
     || echo "$CPPCLEAN not found"
 
 echo ''
+
+which $OCLINT &> /dev/null && \
+    $OCLINT -version
+    || echo "$OCLINT not found"
