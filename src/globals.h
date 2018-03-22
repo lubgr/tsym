@@ -1,8 +1,8 @@
 #ifndef TSYM_GLOBALS_H
 #define TSYM_GLOBALS_H
 
+#include <vector>
 #include <string>
-#include "plu.h"
 #include "var.h"
 
 namespace tsym {
@@ -25,24 +25,24 @@ namespace tsym {
     const Var& pi();
     const Var& euler();
 
-    template<class Matrix, class Vector, typename SizeType, class MatrixAccess = plu::detail::DefaultAccess<Matrix>,
-        class VectorAccess = plu::detail::DefaultAccess<Vector>> void solve(
-                Matrix& A, Vector& b, Vector& x, SizeType dim, MatrixAccess&& mAccess = MatrixAccess{}, VectorAccess&& vAccess = VectorAccess{})
-    {
-        plu::detail::solve(A, std::forward<MatrixAccess>(mAccess), b, x, std::forward<VectorAccess>(vAccess), dim);
-    }
-
-    template<class Matrix, typename SizeType, class MatrixAccess = plu::detail::DefaultAccess<Matrix>> Var determinant(
-            Matrix& A, SizeType dim, MatrixAccess&& access = MatrixAccess{})
-    {
-        return plu::detail::determinant(A, std::forward<MatrixAccess>(access), dim);
-    }
-
-    template<class Matrix, typename SizeType, class MatrixAccess = plu::detail::DefaultAccess<Matrix>> void invert(
-            Matrix& A, SizeType dim, MatrixAccess&& access = MatrixAccess{})
-    {
-        plu::detail::invert(A, std::forward<MatrixAccess>(access), dim);
-    }
+    Var subst(const Var& arg, const Var& from, const Var& to);
+    Var expand(const Var& arg);
+    Var normal(const Var& arg);
+    /* Determines the simplest representation, currently by comparing the expanded with the
+     * normalized one: */
+    Var simplify(const Var& arg);
+    /* The argument must be a Symbol: */
+    Var diff(const Var& arg, const Var& symbol);
+    bool has(const Var& arg, const Var& what);
+    bool isPositive(const Var& arg);
+    bool isNegative(const Var& arg);
+    unsigned complexity(const Var& arg);
+    Var numerator(const Var& arg);
+    Var denominator(const Var& arg);
+    /* Returns names for Symbols, Functions and Constants, an empty string otherwise: */
+    std::string name(const Var& arg);
+    std::vector<Var> operands(const Var& arg);
+    std::vector<Var> collectSymbols(const Var& arg);
 
     Var parse(const std::string& str, bool *success = nullptr);
 }

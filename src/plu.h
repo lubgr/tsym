@@ -11,6 +11,7 @@
 #include <type_traits>
 #include <vector>
 #include "var.h"
+#include "globals.h"
 
 namespace tsym {
     namespace plu {
@@ -188,7 +189,7 @@ namespace tsym {
                     void collectAndSort(const MatrixProxy& matrix, SizeType i, std::vector<SizeType>& lineIndices) const
                     {
                         auto sortByComplexity = [i, &matrix] (SizeType pivotA, SizeType pivotB) {
-                            return matrix(i, pivotA).complexity() < matrix(i, pivotB).complexity();
+                            return complexity(matrix(i, pivotA)) < complexity(matrix(i, pivotB));
                         };
 
                         for (SizeType j = 0; j < dim; ++j)
@@ -377,12 +378,12 @@ namespace tsym {
                             for (SizeType j = i + 1; j < dim; ++j)
                                 x(i) -= matrix(i, j)*x(j);
 
-                            matrix(i, i) = matrix(i, i).simplify();
+                            matrix(i, i) = simplify(matrix(i, i));
 
                             if (matrix(i, i) == 0)
                                 throw std::invalid_argument("Coefficient matrix is singular");
 
-                            x(i) = ((rhs(i) + x(i))/matrix(i, i)).simplify();
+                            x(i) = simplify((rhs(i) + x(i))/matrix(i, i));
                         }
                     }
 
@@ -419,7 +420,7 @@ namespace tsym {
                 for (SizeType i = 0; i < dim; ++i)
                     det *= A(i, i);
 
-                return det.simplify();
+                return simplify(det);
             }
 
             template<class MatrixProxy, typename SizeType> Var detViaProxy(MatrixProxy& matrix, SizeType dim)
@@ -473,6 +474,25 @@ namespace tsym {
                 plu::detail::invertViaProxy(mProxy, dim);
             }
         }
+    }
+
+    template<class Matrix, class Vector, typename SizeType, class MatrixAccess = plu::detail::DefaultAccess<Matrix>,
+        class VectorAccess = plu::detail::DefaultAccess<Vector>> void solve(
+                Matrix& A, Vector& b, Vector& x, SizeType dim, MatrixAccess&& mAccess = MatrixAccess{}, VectorAccess&& vAccess = VectorAccess{})
+        {
+            plu::detail::solve(A, std::forward<MatrixAccess>(mAccess), b, x, std::forward<VectorAccess>(vAccess), dim);
+        }
+
+    template<class Matrix, typename SizeType, class MatrixAccess = plu::detail::DefaultAccess<Matrix>> Var determinant(
+            Matrix& A, SizeType dim, MatrixAccess&& access = MatrixAccess{})
+    {
+        return plu::detail::determinant(A, std::forward<MatrixAccess>(access), dim);
+    }
+
+    template<class Matrix, typename SizeType, class MatrixAccess = plu::detail::DefaultAccess<Matrix>> void invert(
+            Matrix& A, SizeType dim, MatrixAccess&& access = MatrixAccess{})
+    {
+        plu::detail::invert(A, std::forward<MatrixAccess>(access), dim);
     }
 }
 

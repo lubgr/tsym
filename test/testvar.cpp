@@ -3,6 +3,7 @@
 #include <sstream>
 #include <limits>
 #include <algorithm>
+#include <stdexcept>
 #include "number.h"
 #include "var.h"
 #include "globals.h"
@@ -35,7 +36,7 @@ TEST(Var, undefinedType)
     Var u = 1/a;
 
     disableLog();
-    u = u.subst(a, 0);
+    u = subst(u, a, 0);
     enableLog();
 
     CHECK_EQUAL(Var::Type::UNDEFINED, u.type());
@@ -44,7 +45,7 @@ TEST(Var, undefinedType)
 TEST(Var, symbolType)
 {
     CHECK_EQUAL(Var::Type::SYMBOL, a.type());
-    CHECK_EQUAL("a", a.name());
+    CHECK_EQUAL("a", name(a));
 }
 
 TEST(Var, emptyStringCreation)
@@ -59,12 +60,12 @@ TEST(Var, emptyStringCreation)
 TEST(Var, simpleSubcriptParsing)
 {
     const Var var("a_b");
-    const Name name(var.get()->name());
+    const Name fullName(var.get()->name());
 
-    CHECK_EQUAL("a_b", var.name());
-    CHECK_EQUAL("a", name.getName());
-    CHECK_EQUAL("b", name.getSubscript());
-    CHECK_EQUAL("", name.getSuperscript());
+    CHECK_EQUAL("a_b", name(var));
+    CHECK_EQUAL("a", fullName.getName());
+    CHECK_EQUAL("b", fullName.getSubscript());
+    CHECK_EQUAL("", fullName.getSuperscript());
 }
 
 TEST(Var, subscriptParsing)
@@ -92,7 +93,6 @@ TEST(Var, bigIntParsing)
     const Var n(intStr);
 
     CHECK_EQUAL(Var::Type::INT, n.type());
-    CHECK_FALSE(n.fitsIntoInt());
     CHECK_EQUAL(numeric, n.get());
 }
 
@@ -129,7 +129,7 @@ TEST(Var, illegalCharacter)
     enableLog();
 
     CHECK_EQUAL(Var::Type::UNDEFINED, illegal.type());
-    CHECK_EQUAL("", illegal.name());
+    CHECK_EQUAL("", name(illegal));
 }
 
 TEST(Var, illegalSymbolName)
@@ -139,15 +139,15 @@ TEST(Var, illegalSymbolName)
     enableLog();
 
     CHECK_EQUAL(Var::Type::UNDEFINED, illegal.type());
-    CHECK_EQUAL("", illegal.name());
+    CHECK_EQUAL("", name(illegal));
 }
 
 TEST(Var, constructPositiveSymbol)
 {
     const Var aPos("a", Var::Sign::POSITIVE);
 
-    CHECK(aPos.isPositive());
-    CHECK_FALSE(a.isPositive());
+    CHECK(isPositive(aPos));
+    CHECK_FALSE(isPositive(a));
 }
 
 TEST(Var, numberTypes)
@@ -159,48 +159,50 @@ TEST(Var, numberTypes)
 
 TEST(Var, numberRequest)
 {
-    CHECK_EQUAL(1, one.toInt());
+    CHECK_EQUAL(1, static_cast<int>(one));
 }
 
-TEST(Var, smallIntegerfitsIntoInt)
-{
-    CHECK(three.fitsIntoInt());
-}
-
-TEST(Var, nonIntegerfitsIntoInt)
+TEST(Var, failingFractionToIntegerCast)
 {
     const Var fraction(2, 3);
 
-    CHECK_FALSE(fraction.fitsIntoInt());
+    CHECK_THROWS(std::domain_error, static_cast<int>(fraction));
 }
 
-TEST(Var, doesntFitIntoInt)
+TEST(Var, failingCastOfTwiceMaxIntToPrimitiveInt)
 {
     Var n(std::numeric_limits<int>::max());
 
     n *= 2;
 
-    CHECK_FALSE(n.fitsIntoInt());
+    CHECK_THROWS(std::overflow_error, static_cast<int>(n));
+}
+
+TEST(Var, failingCastOfBigIntToPrimitiveInt)
+{
+    CHECK_THROWS(std::overflow_error, static_cast<int>(Var("2384729384609865192859238659823659287589273985723029348")));
+}
+
+TEST(Var, illegalNumberRequestSymbol)
+{
+    CHECK_THROWS(std::domain_error, static_cast<int>(a));
 }
 
 TEST(Var, toDouble)
 {
     const Var frac(2, 3);
 
-    DOUBLES_EQUAL(2.0/3.0, frac.toDouble(), 1.e-10);
+    DOUBLES_EQUAL(2.0/3.0, static_cast<double>(frac), 1.e-10);
 }
 
-TEST(Var, illegalNumberRequest)
-    /* Requesting a number from a non-numeric expression should return zero. */
+TEST(Var, toDoubleNonNumeric)
 {
-    disableLog();
-    CHECK_EQUAL(0, a.toInt());
-    enableLog();
+    CHECK_THROWS(std::domain_error, static_cast<double>(a));
 }
 
 TEST(Var, powerType)
 {
-    const Var res = a.toThe(2);
+    const Var res = pow(a, 2);
 
     CHECK_EQUAL(Var::Type::POWER, res.type());
 }
@@ -215,8 +217,8 @@ TEST(Var, productType)
 TEST(Var, constantPi)
 {
     CHECK_EQUAL(Var::Type::CONSTANT, pi().type());
-    CHECK_EQUAL("pi", pi().name());
-    CHECK(pi().operands().empty());
+    CHECK_EQUAL("pi", name(pi()));
+    CHECK(operands(pi()).empty());
 }
 
 TEST(Var, functionType)
@@ -226,7 +228,7 @@ TEST(Var, functionType)
     res = sin(Var(1, 4));
 
     CHECK_EQUAL(Var::Type::FUNCTION, res.type());
-    CHECK_EQUAL("sin", res.name());
+    CHECK_EQUAL("sin", name(res));
 }
 
 TEST(Var, sumType)
@@ -240,8 +242,8 @@ TEST(Var, sumHasSymbol)
 {
     const Var sum(a + b + c);
 
-    CHECK(sum.has(a));
-    CHECK_FALSE(sum.has(a + b));
+    CHECK(has(sum, a));
+    CHECK_FALSE(has(sum, a + b));
 }
 
 TEST(Var, substSymbolInProduct)
@@ -249,9 +251,17 @@ TEST(Var, substSymbolInProduct)
     const Var p(2*a*b*c);
     Var result;
 
-    result = p.subst(b, 4);
+    result = subst(p, b, 4);
 
     CHECK_EQUAL(8*a*c, result);
+}
+
+TEST(Var, substituteInSimpleSum)
+{
+    const Var orig = a/b + 1/(5*b);
+    const Var expected = 3*a + Var(3, 5);
+
+    CHECK_EQUAL(expected, subst(orig, b, Var(1, 3)));
 }
 
 TEST(Var, defaultAssignment)
@@ -270,7 +280,7 @@ TEST(Var, equalityOfSymbols)
 
 TEST(Var, emptyOperandsList)
 {
-    CHECK(a.operands().empty());
+    CHECK(operands(a).empty());
 }
 
 TEST(Var, symbolMinusSymbolToZero)
@@ -300,8 +310,8 @@ TEST(Var, addDifferentSymbols)
     res = a + b;
 
     CHECK_EQUAL(Var::Type::SUM, res.type());
-    CHECK_EQUAL(a, res.operands().front());
-    CHECK_EQUAL(b, res.operands().back());
+    CHECK_EQUAL(a, operands(res).front());
+    CHECK_EQUAL(b, operands(res).back());
 }
 
 TEST(Var, addDifferentSymbolsOperator)
@@ -395,9 +405,9 @@ TEST(Var, multiplicationOfExpPosSymbol)
     const Var expected(tsym::pow(aPos, Var(10, 3)));
     Var res(aPos);
 
-    res = res.toThe(2);
-    res = res.toThe(5);
-    res = res.toThe(Var(1, 3));
+    res = pow(res, 2);
+    res = pow(res, 5);
+    res = pow(res, Var(1, 3));
 
     CHECK_EQUAL(expected, res);
 }
@@ -406,7 +416,7 @@ TEST(Var, noMultiplicationOfExpUnclearSymbol)
 {
     Var res(tsym::pow(a, Var(1, 3)));
 
-    res = res.toThe(3);
+    res = pow(res, 3);
 
     CHECK_EQUAL(Var::Type::POWER, res.type());
 }
@@ -416,7 +426,7 @@ TEST(Var, multiplicationOfExpUnclearSymbol)
     const Var expected(tsym::pow(a, Var(-2, 3)));
     Var res(1/a);
 
-    res = res.toThe(Var(2, 3));
+    res = pow(res, Var(2, 3));
 
     CHECK_EQUAL(expected, res);
 }
@@ -452,23 +462,23 @@ TEST(Var, expAdditionEqualBase)
     Var pow1(a*b);
     Var pow2(b*a);
 
-    pow1 = pow1.toThe(15);
-    pow2 = pow2.toThe(8);
+    pow1 = pow(pow1, 15);
+    pow2 = pow(pow2, 8);
 
     CHECK_EQUAL(expected, pow1*pow2);
 }
 
 TEST(Var, powerWithZeroBase)
 {
-    zero.toThe(2);
+    const Var result = pow(zero, 2);
 
-    CHECK_EQUAL(0, zero);
+    CHECK_EQUAL(0, result);
 }
 
 TEST(Var, powerWithZeroBaseNegExp)
 {
     disableLog();
-    const Var res = zero.toThe(-2);
+    const Var res = pow(zero, -2);
     enableLog();
 
     CHECK_EQUAL(Var::Type::UNDEFINED, res.type());
@@ -476,25 +486,21 @@ TEST(Var, powerWithZeroBaseNegExp)
 
 TEST(Var, powerWithBaseOne)
 {
-    one.toThe(123);
+    const Var res = pow(one, 123);
 
-    CHECK_EQUAL(1, one);
+    CHECK_EQUAL(res,  one);
 }
 
 TEST(Var, powerWithZeroExp)
 {
-    Var res(a);
-
-    res = res.toThe(0);
+    const Var res = pow(a, 0);
 
     CHECK_EQUAL(1, res);
 }
 
 TEST(Var, powerWithExpOne)
 {
-    Var res(a);
-
-    res.toThe(1);
+    const Var res = pow(a, 1);
 
     CHECK_EQUAL(a, res);
 }
@@ -760,7 +766,7 @@ TEST(Var, simpleExpansion)
     const Var orig = a*(b + c)*d;
     Var result;
 
-    result = orig.expand();
+    result = expand(orig);
 
     CHECK_EQUAL(expected, result);
 }
@@ -914,7 +920,7 @@ TEST(Var, largeMixedTerm05)
     tsym::pow(a, Var(1, 5))*tsym::sqrt(5)*tsym::sqrt(3);
 
     CHECK_EQUAL(expected, res);
-    CHECK_EQUAL(8, res.operands().size());
+    CHECK_EQUAL(8, operands(res).size());
 }
 
 TEST(Var, acosOfCosOfThreePiFourth)
@@ -937,35 +943,35 @@ TEST(Var, atan2OfNonResolvableNumericallyEvaluableArgs)
     const Var res(atan2(sqrtSix, sqrtThree));
 
     CHECK_EQUAL(Var::Type::FUNCTION, res.type());
-    CHECK_EQUAL("atan", res.name());
-    CHECK_EQUAL(1, res.operands().size());
-    CHECK_EQUAL(sqrtTwo, res.operands().front());
+    CHECK_EQUAL("atan", name(res));
+    CHECK_EQUAL(1, operands(res).size());
+    CHECK_EQUAL(sqrtTwo, operands(res).front());
 }
 
 TEST(Var, diffOfSum)
 {
     const Var sum(2*tsym::pow(a, 3) + a*b);
-    const Var result(sum.diff(a));
+    const Var result = diff(sum, a);
     const Var expected(6*a*a + b);
 
     CHECK_EQUAL(expected, result);
 }
 
-TEST(Var, normalToZero)
+TEST(Var, simplifyToZero)
 {
     const Var sum = a*b + a*c - a*(b + c);
 
-    CHECK_EQUAL(0, sum.expand());
-    CHECK_EQUAL(0, sum.normal());
+    CHECK_EQUAL(0, expand(sum));
+    CHECK_EQUAL(0, simplify(sum));
 }
 
 TEST(Var, simplifyExpandLessComplex)
 {
     const Var orig = b - 3*c - a*c - (-3 - a)*c;
-    const Var simplified = orig.simplify();
+    const Var simplified = simplify(orig);
 
     CHECK_EQUAL(b, simplified);
-    CHECK(simplified.complexity() < orig.normal().complexity());
+    CHECK(complexity(simplified) < complexity(numerator(orig)));
 }
 
 TEST(Var, simplifyWithUndefinedIntermediateResult)
@@ -974,7 +980,7 @@ TEST(Var, simplifyWithUndefinedIntermediateResult)
     const Var orig = d/denom;
 
     disableLog();
-    const Var result = orig.simplify();
+    const Var result = simplify(orig);
     enableLog();
 
     CHECK_EQUAL(Var::Type::UNDEFINED, result.type());
@@ -984,16 +990,16 @@ TEST(Var, getNumAndDenomFromFraction)
 {
     const Var frac(2, 3);
 
-    CHECK_EQUAL(2, frac.numerator().toInt());
-    CHECK_EQUAL(3, frac.denominator().toInt());
+    CHECK_EQUAL(2, static_cast<int>(numerator(frac)));
+    CHECK_EQUAL(3, static_cast<int>(denominator(frac)));
 }
 
 TEST(Var, getNumAndDenomFromProduct)
 {
     const Var res(a*b*b/(c*c));
 
-    CHECK_EQUAL(a*b*b, res.numerator());
-    CHECK_EQUAL(c*c, res.denominator());
+    CHECK_EQUAL(a*b*b, numerator(res));
+    CHECK_EQUAL(c*c, denominator(res));
 }
 
 TEST(Var, negativeVar)
@@ -1004,8 +1010,8 @@ TEST(Var, negativeVar)
 
     res = -aPos*bPos + 2 - 3*pi();
 
-    CHECK_FALSE(res.isPositive());
-    CHECK(res.isNegative());
+    CHECK_FALSE(isPositive(res));
+    CHECK(isNegative(res));
 }
 
 TEST(Var, comparisonPosAndNonPosSymbols)
@@ -1018,21 +1024,21 @@ TEST(Var, comparisonPosAndNonPosSymbols)
 
 TEST(Var, collectSymbolsFromSymbol)
 {
-    CHECK_EQUAL(1, a.collectSymbols().size());
-    CHECK_EQUAL(a, a.collectSymbols()[0]);
+    CHECK_EQUAL(1, collectSymbols(a).size());
+    CHECK_EQUAL(a, collectSymbols(a)[0]);
 }
 
 TEST(Var, collectSymbolsFromNumber)
 {
     const Var n(2, 3);
 
-    CHECK(n.collectSymbols().empty());
+    CHECK(collectSymbols(n).empty());
 }
 
 TEST(Var, collectSymbolsFromMixedTerm)
 {
     const Var term(a*b + b/3 + 2*c*d*d + c*c*c - tsym::log(e + 12*tsym::pi()));
-    const std::vector<Var> result(term.collectSymbols());
+    const std::vector<Var> result(collectSymbols(term));
 
     CHECK_EQUAL(5, result.size());
     CHECK_EQUAL(b, result[0]);
@@ -1045,7 +1051,7 @@ TEST(Var, collectSymbolsFromMixedTerm)
 TEST(Var, collectSymbolsFromPower)
 {
     const Var term(tsym::pow(a + b, a*d*(2 + tsym::pi()*e*tsym::euler())));
-    const std::vector<Var> result(term.collectSymbols());
+    const std::vector<Var> result(collectSymbols(term));
 
     CHECK_EQUAL(4, result.size());
     CHECK(std::find(cbegin(result), cend(result), a) != cend(result));
@@ -1057,7 +1063,7 @@ TEST(Var, collectSymbolsFromPower)
 TEST(Var, collectSymbolsFromFunction)
 {
     const Var term(tsym::asin(a) + tsym::log(tsym::pi()*b) - tsym::tan(c));
-    const std::vector<Var> result(term.collectSymbols());
+    const std::vector<Var> result(collectSymbols(term));
 
     CHECK_EQUAL(3, result.size());
     CHECK(std::find(cbegin(result), cend(result), a) != cend(result));

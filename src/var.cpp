@@ -1,19 +1,16 @@
 
-#include <algorithm>
-#include <chrono>
 #include <map>
-#include <cstring>
+#include <stdexcept>
 #include "var.h"
-#include "symbol.h"
+#include "base.h"
 #include "numeric.h"
+#include "symbol.h"
 #include "sum.h"
 #include "undefined.h"
 #include "product.h"
 #include "power.h"
 #include "printer.h"
 #include "plaintextprintengine.h"
-#include "fraction.h"
-#include "symbolmap.h"
 #include "parser.h"
 #include "logging.h"
 
@@ -40,6 +37,26 @@ namespace tsym {
                 return value->isSymbol() || (value->isNumeric() && value->numericEval().isInt());
 
             return false;
+        }
+
+        bool isInteger(const BasePtr& rep)
+        {
+            return rep->isNumeric() && rep->numericEval().isInt();
+        }
+
+        Var::Type numericType(const Number& number)
+        {
+            if (number.isInt())
+                return Var::Type::INT;
+            else if (number.isDouble())
+                return Var::Type::DOUBLE;
+            else if (number.isFrac())
+                return Var::Type::FRACTION;
+
+            /* This should never happened, as the BasePtr must be Undefined in the first place. */
+            TSYM_ERROR("Illegal number %S in Var!", number);
+
+            return Var::Type::UNDEFINED;
         }
     }
 }
@@ -143,88 +160,10 @@ tsym::Var tsym::Var::operator - () const
     return Var(Product::minus(rep));
 }
 
-tsym::Var tsym::Var::toThe(const Var& exponent) const
-{
-    return Var(Power::create(rep, exponent.rep));
-}
-
-tsym::Var tsym::Var::subst(const Var& from, const Var& to) const
-{
-    return Var(rep->subst(from.rep, to.rep));
-}
-
-tsym::Var tsym::Var::expand() const
-{
-    return Var(rep->expand());
-}
-
-tsym::Var tsym::Var::normal() const
-{
-    auto ts = std::chrono::high_resolution_clock::now();
-    const auto normalized(rep->normal());
-    std::chrono::microseconds ms;
-    decltype(ts) te;
-
-    te = std::chrono::high_resolution_clock::now();
-    ms = std::chrono::duration_cast<std::chrono::microseconds>(te - ts);
-
-    if (!normalized->isEqual(rep))
-        TSYM_DEBUG("Normalized %S to %S in %.2f ms.", rep, normalized,
-                static_cast<float>(ms.count())/1000.0);
-
-    return Var(normalized);
-}
-
-tsym::Var tsym::Var::simplify() const
-/* Currently, only normalization and expansion is tested for the simplest representation. */
-{
-    const BasePtr expanded(rep->expand());
-    BasePtr normalizedLast(rep);
-    BasePtr normalizedNext(rep->normal());
-
-    if (normalizedNext->isUndefined())
-        return Var(normalizedNext);
-
-    while (normalizedNext->isDifferent(normalizedLast)) {
-        /* Though it's probably not supposed to happen, there has been an expression that changed
-         * upon a second normalization. Most of the time, the first normalization will directly
-         * yield the simplest representation. */
-        normalizedLast = normalizedNext;
-        normalizedNext = normalizedNext->normal();
-    }
-
-    return normalizedNext->complexity() < expanded->complexity() ? Var(normalizedNext) : Var(expanded);
-}
-
-tsym::Var tsym::Var::diff(const Var& symbol) const
-{
-    return Var(rep->diff(symbol.rep));
-}
-
-bool tsym::Var::equal(const Var& other) const
-{
-    return rep->isEqual(other.rep);
-}
-
-bool tsym::Var::has(const Var& other) const
-{
-    return rep->has(other.rep);
-}
-
-bool tsym::Var::isPositive() const
-{
-    return rep->isPositive();
-}
-
-bool tsym::Var::isNegative() const
-{
-    return rep->isNegative();
-}
-
 tsym::Var::Type tsym::Var::type() const
 {
     if (rep->isNumeric())
-        return numericType();
+        return numericType(rep->numericEval());
 
     const auto lookup = typeStringMap().find(rep->typeStr());
 
@@ -233,128 +172,32 @@ tsym::Var::Type tsym::Var::type() const
     return lookup->second;
 }
 
-unsigned tsym::Var::complexity() const
+tsym::Var::operator int() const
 {
-    return rep->complexity();
-}
-
-tsym::Var::Type tsym::Var::numericType() const
-{
-    const Number number(rep->numericEval());
-
-    if (number.isInt())
-        return Type::INT;
-    else if (number.isDouble())
-        return Type::DOUBLE;
-    else if (number.isFrac())
-        return Type::FRACTION;
-
-    /* This should never happened, as the BasePtr must be Undefined in the first place. */
-    TSYM_ERROR("Illegal number %S in Var!", number);
-
-    return Type::UNDEFINED;
-}
-
-tsym::Var tsym::Var::numerator() const
-{
-    return normalToFraction().first;
-}
-
-std::pair<tsym::Var, tsym::Var> tsym::Var::normalToFraction() const
-{
-    Fraction normalizedFrac;
-    SymbolMap map;
-    BasePtr denom;
-    BasePtr num;
-
-    normalizedFrac = rep->normal(map);
-
-    denom = map.replaceTmpSymbolsBackFrom(normalizedFrac.denom());
-    num = map.replaceTmpSymbolsBackFrom(normalizedFrac.num());
-
-    return std::make_pair(Var(num), Var(denom));
-}
-
-tsym::Var tsym::Var::denominator() const
-{
-    return normalToFraction().second;
-}
-
-bool tsym::Var::fitsIntoInt() const
-{
-    if (isInteger())
-        return integer::fitsInto<int>(rep->numericEval().numerator());
-    else
-        return false;
-}
-
-bool tsym::Var::isInteger() const
-{
-    return rep->isNumeric() && rep->numericEval().isInt();
-}
-
-int tsym::Var::toInt() const
-{
+    static const char *errorMessage = "Illegal integer request";
     int result = 0;
 
-    if (!isInteger())
-        TSYM_ERROR("Requesting integer from %S", type());
+    if (!isInteger(rep))
+        throw std::domain_error(errorMessage);
+    else if (!integer::fitsInto<int>(rep->numericEval().numerator()))
+        throw std::overflow_error(errorMessage);
 
     try {
         result = static_cast<int>(rep->numericEval().numerator());
     } catch (const std::exception& e){
         TSYM_ERROR("Conversion from %S to int failed: %s", *this, e.what());
+        throw std::domain_error(errorMessage);
     }
 
     return result;
 }
 
-double tsym::Var::toDouble() const
+tsym::Var::operator double() const
 {
-    assert(rep->isNumeric());
+    if (!rep->isNumeric())
+        throw std::domain_error("Illegal conversion to double requested");
 
     return rep->numericEval().toDouble();
-}
-
-const std::string& tsym::Var::name() const
-{
-    return rep->name().plain();
-}
-
-std::vector<tsym::Var> tsym::Var::operands() const
-{
-    std::vector<Var> ops;
-
-    for (const auto& operand : rep->operands())
-        ops.push_back(Var(operand));
-
-    return ops;
-}
-
-std::vector<tsym::Var> tsym::Var::collectSymbols() const
-{
-    std::vector<Var> symbols;
-
-    collectSymbols(rep, symbols);
-
-    return symbols;
-}
-
-void tsym::Var::collectSymbols(const BasePtr& ptr, std::vector<Var>& symbols) const
-{
-    if (ptr->isSymbol())
-        insertSymbolIfNotPresent(ptr, symbols);
-    else
-        for (const auto& operand : ptr->operands())
-            collectSymbols(operand, symbols);
-}
-
-void tsym::Var::insertSymbolIfNotPresent(const BasePtr& symbol, std::vector<Var>& symbols) const
-{
-    const Var term(symbol);
-
-    if (std::find(cbegin(symbols), cend(symbols), term) == cend(symbols))
-        symbols.push_back(term);
 }
 
 const tsym::BasePtr& tsym::Var::get() const
@@ -364,12 +207,12 @@ const tsym::BasePtr& tsym::Var::get() const
 
 bool tsym::operator == (const Var& lhs, const Var& rhs)
 {
-    return lhs.equal(rhs);
+    return lhs.get()->isEqual(rhs.get());
 }
 
 bool tsym::operator != (const Var& lhs, const Var& rhs)
 {
-    return !lhs.equal(rhs);
+    return !(lhs == rhs);
 }
 
 tsym::Var tsym::operator + (Var lhs, const Var& rhs)

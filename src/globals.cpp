@@ -1,10 +1,51 @@
 
+#include <algorithm>
+#include <chrono>
 #include "globals.h"
+#include "symbolmap.h"
+#include "fraction.h"
 #include "trigonometric.h"
 #include "logarithm.h"
 #include "constant.h"
 #include "parser.h"
+#include "power.h"
 #include "logging.h"
+
+namespace tsym {
+    namespace {
+        std::pair<Var, Var> normalToFraction(const BasePtr& rep)
+        {
+            Fraction normalizedFrac;
+            SymbolMap map;
+            BasePtr denom;
+            BasePtr num;
+
+            normalizedFrac = rep->normal(map);
+
+            denom = map.replaceTmpSymbolsBackFrom(normalizedFrac.denom());
+            num = map.replaceTmpSymbolsBackFrom(normalizedFrac.num());
+
+            return std::make_pair(Var(num), Var(denom));
+        }
+
+        void insertSymbolIfNotPresent(const BasePtr& symbol, std::vector<Var>& symbols)
+        {
+            const Var term(symbol);
+
+            if (std::find(cbegin(symbols), cend(symbols), term) == cend(symbols))
+                symbols.push_back(term);
+        }
+
+        void collectSymbols(const BasePtr& ptr, std::vector<Var>& symbols)
+        {
+            if (ptr->isSymbol())
+                insertSymbolIfNotPresent(ptr, symbols);
+            else
+                for (const auto& operand : ptr->operands())
+                    collectSymbols(operand, symbols);
+        }
+    }
+}
 
 tsym::Var tsym::sqrt(const Var& base)
 {
@@ -15,7 +56,7 @@ tsym::Var tsym::sqrt(const Var& base)
 
 tsym::Var tsym::pow(const Var& base, const Var& exp)
 {
-    return base.toThe(exp);
+    return Var{Power::create(base.get(), exp.get())};
 }
 
 tsym::Var tsym::log(const Var& arg)
@@ -70,6 +111,107 @@ const tsym::Var& tsym::euler()
     static const tsym::Var instance(Constant::createE());
 
     return instance;
+}
+
+tsym::Var tsym::subst(const Var& arg, const Var& from, const Var& to)
+{
+    return Var(arg.get()->subst(from.get(), to.get()));
+}
+
+tsym::Var tsym::expand(const Var& arg)
+{
+    return Var(arg.get()->expand());
+}
+
+tsym::Var tsym::simplify(const Var& arg)
+    /* Currently, only normalization and expansion is tested for the simplest representation. */
+{
+    using clock = std::chrono::high_resolution_clock;
+    auto before = clock::now();
+    const BasePtr& rep = arg.get();
+    const BasePtr expanded(rep->expand());
+    BasePtr normalizedLast(rep);
+    BasePtr normalizedNext(rep->normal());
+
+    if (normalizedNext->isUndefined())
+        return Var(normalizedNext);
+
+    while (normalizedNext->isDifferent(normalizedLast)) {
+        /* Though it's probably not supposed to happen, there has been an expression that changed
+         * upon a second normalization. Most of the time, the first normalization will directly
+         * yield the simplest representation. */
+        normalizedLast = normalizedNext;
+        normalizedNext = normalizedNext->normal();
+    }
+
+    const BasePtr& result = normalizedNext->complexity() < expanded->complexity() ? normalizedNext : expanded;
+
+    if (result->isDifferent(rep)) {
+        auto duration = std::chrono::duration_cast<std::chrono::microseconds>(clock::now() - before);
+
+        TSYM_DEBUG("Simplified %S to %S in %.2f ms.", rep, result, static_cast<float>(duration.count())/1000.0);
+    }
+
+    return Var(result);
+}
+
+tsym::Var tsym::diff(const Var& arg, const Var& symbol)
+{
+    return Var(arg.get()->diff(symbol.get()));
+}
+
+bool tsym::has(const Var& arg, const Var& what)
+{
+    return arg.get()->has(what.get());
+}
+
+bool tsym::isPositive(const Var& arg)
+{
+    return arg.get()->isPositive();
+}
+
+bool tsym::isNegative(const Var& arg)
+{
+    return arg.get()->isNegative();
+}
+
+unsigned tsym::complexity(const Var& arg)
+{
+    return arg.get()->complexity();
+}
+
+tsym::Var tsym::numerator(const Var& arg)
+{
+    return normalToFraction(arg.get()).first;
+}
+
+tsym::Var tsym::denominator(const Var& arg)
+{
+    return normalToFraction(arg.get()).second;
+}
+
+std::string tsym::name(const Var& arg)
+{
+    return arg.get()->name().plain();
+}
+
+std::vector<tsym::Var> tsym::operands(const Var& arg)
+{
+    std::vector<Var> ops;
+
+    for (const auto& operand : arg.get()->operands())
+        ops.push_back(Var{operand});
+
+    return ops;
+}
+
+std::vector<tsym::Var> tsym::collectSymbols(const Var& arg)
+{
+    std::vector<Var> symbols;
+
+    collectSymbols(arg.get(), symbols);
+
+    return symbols;
 }
 
 tsym::Var tsym::parse(const std::string& str, bool *success)

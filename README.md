@@ -79,33 +79,35 @@ tsym::Var minusPiFourth = tsym::pi()/4 - tsym::asin(1);
 tsym::Var onePlusPiFourth = tsym::log(tsym::euler()) + tsym::acos(1/tsym::sqrt(2));
 tsym::Var eToTheFour = tsym::pow(tsym::euler(), 4);
 ```
-Information about expressions can be queried via methods of Var:
+Information about expressions can be queried via free functions accepting a Var instance or member
+functions:
 ```c++
 tsym::Var b("b");
 tsym::Var c = 2*tsym::Var("a")/b/5;
 
-if (c.has(b) && c.type() == tsym::Var::PRODUCT)
+if (tsym::has(c, b) && c.type() == tsym::Var::PRODUCT)
     std::cout << "c contains " << b << " and is a " << c.type() << std::endl;
 
-std::cout << c.numerator() << ", " << c.denominator() << std::endl; /* 2*a, 5*b */
+std::cout << tsym::numerator(c) << ", " << tsym::denominator(c) << std::endl; /* 2*a, 5*b */
 
-c.collectSymbols(); /* Returns a vector containing the symbols a and b. */
-c.operands(); /* Returns a vector with a, b^(-1) and the fraction 2/5. */
+tsym::collectSymbols(c); /* Returns a vector containing the symbols a and b. */
+tsym::operands(c); /* Returns a vector with a, b^(-1) and the fraction 2/5. */
 ```
 The type() method used in this snippet returns a enum class inside of Var with possible values
 `PRODUCT`, `SYMBOL`, `INT`, `FRACTION`, `DOUBLE`, `CONSTANT`, `UNDEFINED`, `FUNCTION`, `SUM` and
-`POWER`. Normalization, expansion and differentiation can be done as follows (all methods are
-declared const, thus don't modify the object).
+`POWER`. Simplification, expansion and differentiation can be done as follows (all Var parameters
+are const, thus don't modify the object).
 ```c++
+tsym::Var a = tsym::Var("a");
 tsym::Var b = tsym::Var("b");
-tsym::Var c = tsym::Var("a")/b + 1/(5*b);
+tsym::Var c = a/b + 1/(5*b);
 
-std::cout << c.normal() << std::endl; /* 1/5*(1 + 5*a)/b */
-std::cout << c.diff(b) << std::endl; /* (-1/5)/b^2 - a/b^2 */
+std::cout << tsym::subst(c, b, Var(1, 3)) << std::endl; /* 3a + 3/5 */
+std::cout << tsym::diff(c, b) << std::endl; /* (-1/5)/b^2 - a/b^2 */
 
 c = c*b;
 
-std::cout << c.expand() << std::endl; /* 1/5 + a */
+std::cout << tsym::expand(c) << std::endl; /* 1/5 + a */
 ```
 The construction of expressions can be done by parsing of strings, too, by invocation of a free
 function
