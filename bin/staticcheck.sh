@@ -26,5 +26,6 @@ which $CPPCLEAN &> /dev/null && \
 echo ''
 
 which $OCLINT &> /dev/null && \
-    $OCLINT -version
+    $OCLINT -version && \
+    $OCLINT `find $SRC -iname '*.cpp' -or -iname '*.h'` -max-priority-3=0 -- -std=c++14 $INCLUDE \
     || echo "$OCLINT not found"
