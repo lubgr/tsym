@@ -5,7 +5,7 @@ CPPCLEAN=cppclean
 OCLINT=oclint
 CONFIGDIR=misc
 
-INCLUDE="-I src -I test"
+INCLUDE="-I src -I test ${BOOSTDIR}"
 SRC="src/ test/"
 
 which $CPPCHECK &> /dev/null && \
