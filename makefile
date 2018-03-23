@@ -2,7 +2,7 @@
 include $(wildcard makefile.in Makefile.in)
 
 BUILD ?= build
-CXXFLAGS ?= -O2 -fPIC -pedantic -Wall -Wextra -Wconversion -Wsign-conversion -Wsign-compare -Wuseless-cast -Wold-style-cast -DNDEBUG -std=c++14
+CXXFLAGS ?= -O2 -fPIC -pedantic -Wall -Wextra -Wconversion -Wsign-conversion -Wsign-compare -Wold-style-cast -DNDEBUG -std=c++14
 CPPFLAGS += -I src
 PROFILE ?=
 LIBS ?=
@@ -93,4 +93,4 @@ clean:
 	$(RM) $(DEPS)
 	$(RM) $(BUILD)/src/*.c
 
-.PHONY: clean default lib tests test install uninstall
+.PHONY: clean default lib staticlib tags tests test install uninstall
