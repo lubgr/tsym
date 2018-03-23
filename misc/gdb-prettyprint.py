@@ -31,7 +31,7 @@ class BasePtrPrinter:
         self.val = val
 
     def to_string(self):
-        prettyStr = self.val['_M_ptr']['prettyStr']
+        prettyStr = self.val['prettyStr']
         return extractStrData(prettyStr)
 
 class VarPrinter:
@@ -49,9 +49,9 @@ def lookupVariations(base):
 def lookup(val):
     typeStr = str(val.type)
 
-    if typeStr in lookupVariations('BasePtr'):
+    if 'shared_ptr<tsym::Base' in typeStr:
         return BasePtrPrinter(val)
-    if typeStr in lookupVariations('Var'):
+    elif typeStr in lookupVariations('Var'):
         return VarPrinter(val)
     elif typeStr in lookupVariations('Number'):
         return NumberPrinter(val)
