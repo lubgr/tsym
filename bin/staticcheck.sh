@@ -5,7 +5,8 @@ CPPCLEAN=cppclean
 OCLINT=oclint
 CONFIGDIR=misc
 
-INCLUDE="-I src -I test ${BOOSTDIR}"
+INCLUDE="-I src -I test"
+SYSTEM_INCLUDE="-isystem ${BOOSTDIR}"
 SRC="src/ test/"
 
 which $CPPCHECK &> /dev/null && \
@@ -27,5 +28,5 @@ echo ''
 
 which $OCLINT &> /dev/null && \
     $OCLINT -version && \
-    $OCLINT `find $SRC -iname '*.cpp' -or -iname '*.h'` -max-priority-3=0 -- -std=c++14 $INCLUDE \
+    $OCLINT `find $SRC -iname '*.cpp' -or -iname '*.h'` -max-priority-3=0 -- -std=c++14 $INCLUDE $SYSTEM_INCLUDE\
     || echo "$OCLINT not found"
