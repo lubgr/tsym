@@ -46,7 +46,8 @@ tsym::BasePtr tsym::Symbol::create(const Name& name, bool positive)
         TSYM_ERROR("Creating Symbol with empty name, return Undefined instead");
         return Undefined::create();
     } else if (name.getName().find(tmpSymbolNamePrefix) == 0) {
-        TSYM_ERROR("");
+        TSYM_ERROR("Instantiation of a non-temporary Symbol containing the temporary name prefix %s,"
+                " return true temporary Symbol", name.getName());
         return createTmpSymbol(positive);
     }
 
