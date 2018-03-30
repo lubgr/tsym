@@ -20,13 +20,6 @@ template<class T> SimpleString StringFrom(const T& obj)
     return StringFrom(stream.str());
 }
 
-namespace tsym {
-    class Matrix;
-    class Vector;
-}
-
-template<> SimpleString StringFrom(const tsym::Matrix& m);
-template<> SimpleString StringFrom(const tsym::Vector& v);
 
 /* For using the CHECK_EQUAL macro on BasePtr objects and the appropiate containers: */
 #include "baseptr.h"
