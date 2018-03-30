@@ -13,7 +13,7 @@ class TestSuiteLogger : public tsym::Logger {
         void critical(const Logger::Message& msg) const override;
 
     private:
-        void log(const Logger::Message& msg) const;
+        void log(std::string&& level, const Logger::Message& msg) const;
 
         bool& suppressLogs;
 };
