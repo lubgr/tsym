@@ -12,17 +12,14 @@ git:
     depth: 3
 
 before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get remove libboost libboost-dev
   - export BOOSTVER=1_66_0
-  - export BOOSTDIR="${PWD}/boost_${BOOSTVER}"
   - wget -qO- https://downloads.sourceforge.net/project/boost/boost/${BOOSTVER//_/.}/boost_${BOOSTVER}.tar.bz2 | tar xj
-  - export CPPUTESTVER=3.8
-  - wget -qO- https://github.com/cpputest/cpputest/releases/download/v3.8/cpputest-${CPPUTESTVER}.tar.gz | tar xz
-  - cd ./cpputest-${CPPUTESTVER}
-  - CC=gcc-6 CXX=g++-6 CXXFLAGS="-O2" CFLAGS="-O2" ./configure --enable-std-cpp11 --prefix=/usr --disable-memory-leak-detection
-  - sudo make install
+  - cd boost_*
+  - ./bootstrap.sh && ./b2 --with-test --prefix=/usr/local link=static install
   - cd ..
   - gem install coveralls-lcov
-  - sudo apt-get -qq update
   - sudo pip install --upgrade cppclean
   - export CPPCHECKVER=1.82
   - wget -qO- https://github.com/danmar/cppcheck/archive/${CPPCHECKVER}.tar.gz | tar xz
