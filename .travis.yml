@@ -13,7 +13,7 @@ git:
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get remove libboost libboost-dev
+  - sudo apt-get remove -y '^libboost.*'
   - export BOOSTVER=1_66_0
   - wget -qO- https://downloads.sourceforge.net/project/boost/boost/${BOOSTVER//_/.}/boost_${BOOSTVER}.tar.bz2 | tar xj
   - cd boost_*
