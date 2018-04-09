@@ -6,9 +6,9 @@
 
 using namespace tsym;
 
-TEST_GROUP(BpList) {};
+BOOST_AUTO_TEST_SUITE(TestBpList)
 
-TEST(BpList, restOfEmptyList)
+BOOST_AUTO_TEST_CASE(restOfEmptyList)
 {
     const BasePtrList empty{};
 
@@ -16,15 +16,17 @@ TEST(BpList, restOfEmptyList)
     auto result = bplist::rest(empty);
     enableLog();
 
-    CHECK(result.empty());
+    BOOST_TEST(result.empty());
 }
 
-TEST(BpList, restOfNonCVList)
+BOOST_AUTO_TEST_CASE(restOfNonCVList)
 {
+    const BasePtrList expected{ b, c, d, ten };
     BasePtrList list{ a, b, c, d, ten };
-    BasePtrList expected{ b, c, d, ten };
 
     bplist::rest(list);
 
-    CHECK_EQUAL(expected, list);
+    BOOST_CHECK_EQUAL_COLLECTIONS(cbegin(expected), cend(expected), cbegin(list), cend(list));
 }
+
+BOOST_AUTO_TEST_SUITE_END()

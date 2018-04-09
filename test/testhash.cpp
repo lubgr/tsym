@@ -13,162 +13,165 @@
 
 using namespace tsym;
 
-TEST_GROUP(Hash)
-{
+BOOST_AUTO_TEST_SUITE(TestHash)
+
+namespace {
     size_t hash(const BasePtr& ptr)
     {
         return std::hash<BasePtr>{}(ptr);
     }
-};
+}
 
-TEST(Hash, smallAndLargeInts)
+BOOST_AUTO_TEST_CASE(smallAndLargeInts)
 {
     const size_t largeN1 = std::hash<Int>{}(Int("987928309824092309420934809284309283049204"));
     const size_t largeN2 = std::hash<Int>{}(Int("734859834598374985739847598345374398475"));
     const size_t smallN1 = std::hash<Int>{}(Int(1234));
     const size_t smallN2 = std::hash<Int>{}(Int(12345));
 
-    CHECK(smallN1 != smallN2);
-    CHECK(smallN1 != largeN1);
-    CHECK(smallN2 != largeN2);
-    CHECK(largeN1 != largeN2);
+    BOOST_TEST(smallN1 != smallN2);
+    BOOST_TEST(smallN1 != largeN1);
+    BOOST_TEST(smallN2 != largeN2);
+    BOOST_TEST(largeN1 != largeN2);
 }
 
-TEST(Hash, number)
+BOOST_AUTO_TEST_CASE(number)
 {
     const size_t n1 = std::hash<Number>{}(Number(2, 3));
     const size_t n2 = std::hash<Number>{}(Number(-10));
     const size_t n3 = std::hash<Number>{}(Number(1.23456789));
 
-    CHECK(n1 != n2);
-    CHECK(n2 != n3);
-    CHECK(n1 != n3);
+    BOOST_TEST(n1 != n2);
+    BOOST_TEST(n2 != n3);
+    BOOST_TEST(n1 != n3);
 }
 
-TEST(Hash, name)
+BOOST_AUTO_TEST_CASE(name)
 {
     const size_t textualHash = std::hash<Name>{}(Name("a", "b", "c"));
     const size_t shortTextualHash = std::hash<Name>{}(Name("a"));
     const size_t numericHash = std::hash<Name>{}(Name("123"));
 
-    CHECK(textualHash != numericHash);
-    CHECK(textualHash != shortTextualHash);
-    CHECK(numericHash != shortTextualHash);
+    BOOST_TEST(textualHash != numericHash);
+    BOOST_TEST(textualHash != shortTextualHash);
+    BOOST_TEST(numericHash != shortTextualHash);
 }
 
-TEST(Hash, constant)
+BOOST_AUTO_TEST_CASE(constant)
 {
     const size_t hashPi = hash(Constant::createPi());
     const size_t hashE = hash(Constant::createE());
     const size_t hashPiSymbol = hash(Symbol::create("Pi"));
 
-    CHECK(hashPi != hashE);
-    CHECK(hashPi != hashPiSymbol);
+    BOOST_TEST(hashPi != hashE);
+    BOOST_TEST(hashPi != hashPiSymbol);
 }
 
-TEST(Hash, trigoAndLogSameArgument)
+BOOST_AUTO_TEST_CASE(trigoAndLogSameArgument)
 {
     const size_t hashTrig = hash(Trigonometric::createSin(a));
     const size_t hashLog = hash(Logarithm::create(a));
 
-    CHECK(hashTrig != hashLog);
+    BOOST_TEST(hashTrig != hashLog);
 }
 
-TEST(Hash, differentTrigFctSameArgument)
+BOOST_AUTO_TEST_CASE(differentTrigFctSameArgument)
 {
     const size_t hashSin = hash(Trigonometric::createSin(a));
     const size_t hashCos = hash(Trigonometric::createCos(a));
 
-    CHECK(hashSin != hashCos);
+    BOOST_TEST(hashSin != hashCos);
 }
 
-TEST(Hash, sameTrigFctDifferentInstance)
+BOOST_AUTO_TEST_CASE(sameTrigFctDifferentInstance)
 {
     const size_t hashTrig1 = hash(Trigonometric::createAsin(a));
     const size_t hashTrig2 = hash(Trigonometric::createAsin(a));
 
-    CHECK_EQUAL(hashTrig1, hashTrig2);
+    BOOST_CHECK_EQUAL(hashTrig1, hashTrig2);
 }
 
-TEST(Hash, logarithDifferentArgument)
+BOOST_AUTO_TEST_CASE(logarithDifferentArgument)
 {
     const size_t hashLogA = hash(Logarithm::create(a));
     const size_t hashLogB = hash(Logarithm::create(b));
 
-    CHECK(hashLogA != hashLogB);
+    BOOST_TEST(hashLogA != hashLogB);
 }
 
-TEST(Hash, sameSymbolDifferentInstance)
+BOOST_AUTO_TEST_CASE(sameSymbolDifferentInstance)
 {
     const size_t hashA1 = hash(Symbol::create("a"));
     const size_t hashA2 = hash(a);
 
-    CHECK_EQUAL(hashA1, hashA2);
+    BOOST_CHECK_EQUAL(hashA1, hashA2);
 }
 
-TEST(Hash, sameSymbolNameOnePositive)
+BOOST_AUTO_TEST_CASE(sameSymbolNameOnePositive)
 {
     const size_t hashPosA = hash(Symbol::createPositive("a"));
     const size_t hashA = hash(a);
 
-    CHECK(hashA != hashPosA);
+    BOOST_TEST(hashA != hashPosA);
 }
 
-TEST(Hash, equalPowers)
+BOOST_AUTO_TEST_CASE(equalPowers)
 {
     const size_t hashPow1 = hash(Power::create(a, b));
     const size_t hashPow2 = hash(Power::create(a, b));
 
-    CHECK_EQUAL(hashPow1, hashPow2);
+    BOOST_CHECK_EQUAL(hashPow1, hashPow2);
 }
 
-TEST(Hash, powerDifferentBase)
+BOOST_AUTO_TEST_CASE(powerDifferentBase)
 {
     const size_t hashPow1 = hash(Power::create(a, b));
     const size_t hashPow2 = hash(Power::create(b, b));
 
-    CHECK(hashPow1 != hashPow2);
+    BOOST_TEST(hashPow1 != hashPow2);
 }
 
-TEST(Hash, powerDifferentExp)
+BOOST_AUTO_TEST_CASE(powerDifferentExp)
 {
     const size_t hashPow1 = hash(Power::create(a, b));
     const size_t hashPow2 = hash(Power::create(a, c));
 
-    CHECK(hashPow1 != hashPow2);
+    BOOST_TEST(hashPow1 != hashPow2);
 }
 
-TEST(Hash, compositeTypesSameOperands)
+BOOST_AUTO_TEST_CASE(compositeTypesSameOperands)
 {
     const size_t sumHash = hash(Sum::create(a, b));
     const size_t productHash = hash(Product::create(a, b));
     const size_t powerHash = hash(Power::create(a, b));
 
-    CHECK(sumHash != productHash);
-    CHECK(sumHash != powerHash);
-    CHECK(productHash != powerHash);
+    BOOST_TEST(sumHash != productHash);
+    BOOST_TEST(sumHash != powerHash);
+    BOOST_TEST(productHash != powerHash);
 }
 
-TEST(Hash, differentSums)
+BOOST_AUTO_TEST_CASE(differentSums)
 {
     const size_t sumHash1 = hash(Sum::create(a, b));
     const size_t sumHash2 = hash(Sum::create(b, c));
 
-    CHECK(sumHash1 != sumHash2);
+    BOOST_TEST(sumHash1 != sumHash2);
 }
 
-TEST(Hash, equalSums)
+BOOST_AUTO_TEST_CASE(equalSums)
 {
     const size_t sumHash1 = hash(Sum::create(a, b, c));
     const size_t sumHash2 = hash(Sum::create(a, b, c));
 
-    CHECK_EQUAL(sumHash1, sumHash2);
+    BOOST_CHECK_EQUAL(sumHash1, sumHash2);
 }
 
-TEST(Hash, sumAndProductEqualOperands)
+BOOST_AUTO_TEST_CASE(sumAndProductEqualOperands)
 {
     const size_t sumHash = hash(Sum::create(a, b, c));
     const size_t productHash = hash(Product::create(a, b, c));
 
-    CHECK_FALSE(sumHash == productHash);
+    BOOST_TEST(sumHash != productHash);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

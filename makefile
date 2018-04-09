@@ -34,7 +34,7 @@ staticlib: $(LIB_STATIC)
 tags: $(TAGS)
 
 $(TEST_EXEC): $(LIB_OBJ) $(TEST_OBJ)
-	$(CXX) -o $(TEST_EXEC) $(PROFILE) $(LIB_OBJ) $(TEST_OBJ) $(LDFLAGS) $(LIBS) -lCppUTest
+	$(CXX) -o $(TEST_EXEC) $(PROFILE) $(LIB_OBJ) $(TEST_OBJ) $(LDFLAGS) $(LIBS) -l:libboost_unit_test_framework.a
 
 $(LIB_TARGET): $(LIB_OBJ) $(BUILDINFO)
 	$(CXX) -shared -o $(LIB_TARGET) $(PROFILE) $(LIB_OBJ) $(LIBS)

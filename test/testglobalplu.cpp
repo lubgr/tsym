@@ -7,8 +7,7 @@
 
 using namespace tsym;
 
-TEST_GROUP(GlobalPlu)
-{
+struct GlobalPluFixture {
     const Var a = Var("a");
     const Var b = Var("b");
     const Var c = Var("c");
@@ -18,22 +17,26 @@ TEST_GROUP(GlobalPlu)
     const Var half = Var(1, 2);
 };
 
-Var& localGet3d(Var A[][3], int i, int j)
-{
-    return A[i][j];
+namespace {
+    Var& localGet3d(Var A[][3], int i, int j)
+    {
+        return A[i][j];
+    }
 }
 
-TEST(GlobalPlu, solveWithSingularMatrix)
+BOOST_FIXTURE_TEST_SUITE(TestGlobalPlu, GlobalPluFixture)
+
+BOOST_AUTO_TEST_CASE(solveWithSingularMatrix)
 {
     const auto bCosA = tsym::pow(b, cos(a));
     auto A = createBoostMatrix({ { 12*a, a*bCosA + a*c }, { 12, bCosA + c} });
     auto rhs = createBoostVector({ 10, b });
     auto x = createBoostVector({ 0, 0 });
 
-    CHECK_THROWS(std::invalid_argument, solve(A, rhs, x, x.size()));
+    BOOST_CHECK_THROW(solve(A, rhs, x, x.size()), std::invalid_argument);
 }
 
-TEST(GlobalPlu, solveLinearSystemDim2a)
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim2a)
 {
     auto A = createBoostMatrix({{ 0, 1 }, { 1, 0 }});
     auto rhs = createBoostVector({ a, b });
@@ -42,10 +45,10 @@ TEST(GlobalPlu, solveLinearSystemDim2a)
 
     solve(A, rhs, x, x.size());
 
-    CHECK_EQUAL(expected, x);
+    BOOST_CHECK_EQUAL(expected, x);
 }
 
-TEST(GlobalPlu, solveLinearSystemDim2b)
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim2b)
 {
     BoostMatrix A(2, 2);
     BoostVector rhs(2);
@@ -61,11 +64,11 @@ TEST(GlobalPlu, solveLinearSystemDim2b)
 
     solve(A, rhs, x, x.size());
 
-    CHECK_EQUAL(1, x(0));
-    CHECK_EQUAL(1, x(1));
+    BOOST_CHECK_EQUAL(1, x(0));
+    BOOST_CHECK_EQUAL(1, x(1));
 }
 
-TEST(GlobalPlu, solveLinearSystemDim2CustomAccess)
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim2CustomAccess)
 {
     const std::size_t dim = 2;
     class Custom2dVector {
@@ -108,11 +111,11 @@ TEST(GlobalPlu, solveLinearSystemDim2CustomAccess)
 
     solve(A, rhs, x, dim, Callable(), Callable());
 
-    CHECK_EQUAL(1, x.get(0));
-    CHECK_EQUAL(1, x.get(1));
+    BOOST_CHECK_EQUAL(1, x.get(0));
+    BOOST_CHECK_EQUAL(1, x.get(1));
 }
 
-TEST(GlobalPlu, solveLinearSystemDim3a)
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim3a)
 {
     auto A = createBoostMatrix({{ a, 17*b/29, 0 }, { 0, 1/(a*b*c), tsym::pow(12, d) }, { 1, 4*a, 0 }});
     auto rhs = createBoostVector({ a*d + 17*a*b/116, b*tsym::pow(12, d) + 1/(b*c*4), d + a*a });
@@ -120,13 +123,13 @@ TEST(GlobalPlu, solveLinearSystemDim3a)
 
     solve(A, rhs, x, x.size());
 
-    CHECK_EQUAL(3, x.size());
-    CHECK_EQUAL(d, x(0));
-    CHECK_EQUAL(a/4, x(1));
-    CHECK_EQUAL(b, x(2));
+    BOOST_CHECK_EQUAL(3, x.size());
+    BOOST_CHECK_EQUAL(d, x(0));
+    BOOST_CHECK_EQUAL(a/4, x(1));
+    BOOST_CHECK_EQUAL(b, x(2));
 }
 
-TEST(GlobalPlu, solveLinearSystemDim3b)
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim3b)
 {
     const BoostSizeType dim(3);
     BoostMatrix A(dim, dim);
@@ -150,12 +153,12 @@ TEST(GlobalPlu, solveLinearSystemDim3b)
 
     solve(A, rhs, x, dim);
 
-    CHECK_EQUAL(a*e*f, x(0));
-    CHECK_EQUAL(3*b/5, x(1));
-    CHECK_EQUAL(f*f, x(2));
+    BOOST_CHECK_EQUAL(a*e*f, x(0));
+    BOOST_CHECK_EQUAL(3*b/5, x(1));
+    BOOST_CHECK_EQUAL(f*f, x(2));
 }
 
-TEST(GlobalPlu, solveLinearSystemDim4)
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim4)
 {
     BoostMatrix A(4, 4);
     BoostVector rhs(4);
@@ -177,13 +180,13 @@ TEST(GlobalPlu, solveLinearSystemDim4)
 
     solve(A, rhs, x, rhs.size());
 
-    CHECK_EQUAL((4*c - 3*b)/(a*c), x(0));
-    CHECK_EQUAL(-3 + 3*b/c, x(1));
-    CHECK_EQUAL(3/c, x(2));
-    CHECK_EQUAL(1 - 2*a*a + 3*b/2 + 3*a*a*b/(2*c) - 3*b*b/(2*c), x(3));
+    BOOST_CHECK_EQUAL((4*c - 3*b)/(a*c), x(0));
+    BOOST_CHECK_EQUAL(-3 + 3*b/c, x(1));
+    BOOST_CHECK_EQUAL(3/c, x(2));
+    BOOST_CHECK_EQUAL(1 - 2*a*a + 3*b/2 + 3*a*a*b/(2*c) - 3*b*b/(2*c), x(3));
 }
 
-TEST(GlobalPlu, solveDependentLinearSystemDim4)
+BOOST_AUTO_TEST_CASE(solveDependentLinearSystemDim4)
 {
     const BoostSizeType dim(4);
     BoostMatrix A(dim, dim);
@@ -208,10 +211,10 @@ TEST(GlobalPlu, solveDependentLinearSystemDim4)
     rhs(2) = b*b;
     rhs(3) = a*a;
 
-    CHECK_THROWS(std::invalid_argument, solve(A, rhs, x, x.size()));
+    BOOST_CHECK_THROW(solve(A, rhs, x, x.size()), std::invalid_argument);
 }
 
-TEST(GlobalPlu, solveLinearSystemDim3WithStdVector)
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim3WithStdVector)
 {
     std::vector<std::vector<tsym::Var>> A;
     std::vector<tsym::Var> x(3);
@@ -227,12 +230,12 @@ TEST(GlobalPlu, solveLinearSystemDim3WithStdVector)
 
     solve(A, rhs, x, x.size());
 
-    CHECK_EQUAL(a, x[0]);
-    CHECK_EQUAL(b, x[1]);
-    CHECK_EQUAL(c, x[2]);
+    BOOST_CHECK_EQUAL(a, x[0]);
+    BOOST_CHECK_EQUAL(b, x[1]);
+    BOOST_CHECK_EQUAL(c, x[2]);
 }
 
-TEST(GlobalPlu, solveLinearSystemDim3WithStdArray)
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim3WithStdArray)
 {
     std::array<std::array<tsym::Var, 3>, 3> A;
     std::array<tsym::Var, 3> x;
@@ -248,12 +251,12 @@ TEST(GlobalPlu, solveLinearSystemDim3WithStdArray)
 
     solve(A, rhs, x, x.size());
 
-    CHECK_EQUAL(a, x[0]);
-    CHECK_EQUAL(b, x[1]);
-    CHECK_EQUAL(c, x[2]);
+    BOOST_CHECK_EQUAL(a, x[0]);
+    BOOST_CHECK_EQUAL(b, x[1]);
+    BOOST_CHECK_EQUAL(c, x[2]);
 }
 
-TEST(GlobalPlu, solveLinearSystemDim3WithMixedTypes)
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim3WithMixedTypes)
 {
     tsym::Var A[3][3];
     std::vector<Var> rhs(3);
@@ -275,12 +278,12 @@ TEST(GlobalPlu, solveLinearSystemDim3WithMixedTypes)
 
     solve(A, rhs, x, std::vector<Var>::size_type{3});
 
-    CHECK_EQUAL(0, x[0]);
-    CHECK_EQUAL(2*a, x[1]);
-    CHECK_EQUAL(3*b, x[2]);
+    BOOST_CHECK_EQUAL(0, x[0]);
+    BOOST_CHECK_EQUAL(2*a, x[1]);
+    BOOST_CHECK_EQUAL(3*b, x[2]);
 }
 
-TEST(GlobalPlu, solveZeroDimension)
+BOOST_AUTO_TEST_CASE(solveZeroDimension)
 {
     auto A = createBoostMatrix({{}});
     auto rhs = createBoostVector({});
@@ -289,7 +292,7 @@ TEST(GlobalPlu, solveZeroDimension)
     solve(A, rhs, x, std::vector<Var>::size_type{0});
 }
 
-TEST(GlobalPlu, solveWithPlainCArrayAndSimplePivoting)
+BOOST_AUTO_TEST_CASE(solveWithPlainCArrayAndSimplePivoting)
 {
     Var A[3][3];
     Var b[3];
@@ -311,12 +314,12 @@ TEST(GlobalPlu, solveWithPlainCArrayAndSimplePivoting)
 
     solve(A, b, x, 3, &localGet3d);
 
-    CHECK_EQUAL(1, x[0]);
-    CHECK_EQUAL(2, x[1]);
-    CHECK_EQUAL(3, x[2]);
+    BOOST_CHECK_EQUAL(1, x[0]);
+    BOOST_CHECK_EQUAL(2, x[1]);
+    BOOST_CHECK_EQUAL(3, x[2]);
 }
 
-TEST(GlobalPlu, solveLinearSystemDim3PivotingByCycling)
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim3PivotingByCycling)
 {
     BoostMatrix A(3, 3);
     BoostVector rhs(3);
@@ -333,29 +336,29 @@ TEST(GlobalPlu, solveLinearSystemDim3PivotingByCycling)
 
     solve(A, rhs, x, x.size());
 
-    CHECK_EQUAL(0, x(0));
-    CHECK_EQUAL(2, x(1));
-    CHECK_EQUAL(3, x(2));
+    BOOST_CHECK_EQUAL(0, x(0));
+    BOOST_CHECK_EQUAL(2, x(1));
+    BOOST_CHECK_EQUAL(3, x(2));
 }
 
-TEST(GlobalPlu, detDim0)
+BOOST_AUTO_TEST_CASE(detDim0)
 {
     const BoostSizeType dim(0);
     BoostMatrix A(dim, dim);
     const Var det = determinant(A, dim);
 
-    CHECK_EQUAL(1, det);
+    BOOST_CHECK_EQUAL(1, det);
 }
 
-TEST(GlobalPlu, numericDetDim2)
+BOOST_AUTO_TEST_CASE(numericDetDim2)
 {
     auto A = createBoostMatrix({{ 0, 1 }, { 1, 0 }});
     const Var det = determinant(A, A.size1());
 
-    CHECK_EQUAL(-1, det);
+    BOOST_CHECK_EQUAL(-1, det);
 }
 
-TEST(GlobalPlu, symbolDetDim2)
+BOOST_AUTO_TEST_CASE(symbolDetDim2)
 {
     const Var expected(a*d - b*c);
     const BoostSizeType dim(2);
@@ -368,10 +371,10 @@ TEST(GlobalPlu, symbolDetDim2)
 
     const Var det = determinant(A, dim);
 
-    CHECK_EQUAL(expected, det);
+    BOOST_CHECK_EQUAL(expected, det);
 }
 
-TEST(GlobalPlu, numericDetDim20)
+BOOST_AUTO_TEST_CASE(numericDetDim20)
 {
     const double expected(352255267.354137);
     const size_t dim = 20;
@@ -443,19 +446,19 @@ TEST(GlobalPlu, numericDetDim20)
     const Var det = determinant(A, dim);
 
     /* The tolerance shouldn't be too high here, because the resulting determinant is large. */
-    DOUBLES_EQUAL(expected, static_cast<double>(det), 1.e-3);
+    BOOST_CHECK_CLOSE(expected, static_cast<double>(det), 1.e-3);
 }
 
-TEST(GlobalPlu, detDim3)
+BOOST_AUTO_TEST_CASE(detDim3)
 {
     auto A = createBoostMatrix({{ 0, 1, a }, { b, 0, 2 }, { a, Var(-1, 2), 0 }});
     const Var expected(-a*b/2 + 2*a);
     const Var det = determinant(A, A.size1());
 
-    CHECK_EQUAL(expected, det);
+    BOOST_CHECK_EQUAL(expected, det);
 }
 
-TEST(GlobalPlu, detDim3SpecifyAccess)
+BOOST_AUTO_TEST_CASE(detDim3SpecifyAccess)
 {
     std::array<std::array<Var, 3>, 3> A;
     const Var expected(a*b*d + 2*c);
@@ -466,19 +469,19 @@ TEST(GlobalPlu, detDim3SpecifyAccess)
 
     const Var det = determinant(A, std::size_t{3}, [](auto& A, auto i, auto j) -> Var& { return A.at(i).at(j); }); 
 
-    CHECK_EQUAL(expected, det);
+    BOOST_CHECK_EQUAL(expected, det);
 }
 
-TEST(GlobalPlu, detDim4)
+BOOST_AUTO_TEST_CASE(detDim4)
 {
     auto A = createBoostMatrix({{ 0, 1, a, 3 }, { b, 0, 2, 0 }, { a, Var(-1, 2), 0 , 2}, { 0, b, 3, 0 }});
     const Var expected(-6*a*b - 2*a*b*b + 21*b/2);
     const Var det = determinant(A, BoostSizeType{4});
 
-    CHECK_EQUAL(expected, det);
+    BOOST_CHECK_EQUAL(expected, det);
 }
 
-TEST(GlobalPlu, inverseDim2)
+BOOST_AUTO_TEST_CASE(inverseDim2)
 {
     auto A = createBoostMatrix({{ a, b }, { c, d }});
     const Var det = a*d - b*c;
@@ -486,10 +489,10 @@ TEST(GlobalPlu, inverseDim2)
 
     invert(A, A.size1());
 
-    CHECK_EQUAL(expected, A);
+    BOOST_CHECK_EQUAL(expected, A);
 }
 
-TEST(GlobalPlu, inverseDim2SpecifyAccess)
+BOOST_AUTO_TEST_CASE(inverseDim2SpecifyAccess)
 {
     const Var det = a*d - b*c;
     const std::vector<Var> expected { d/det, -b/det, -c/det, 1/(d - b*c/a) };
@@ -498,20 +501,20 @@ TEST(GlobalPlu, inverseDim2SpecifyAccess)
     invert(A, 2u, [](auto& a, auto i, auto j) -> Var& { return a[i*2 + j]; });
 
     for (unsigned i = 0; i < 4; ++i)
-        CHECK_EQUAL(expected[i], A[i]);
+        BOOST_CHECK_EQUAL(expected[i], A[i]);
 }
 
-TEST(GlobalPlu, numericInverseDim3)
+BOOST_AUTO_TEST_CASE(numericInverseDim3)
 {
     auto A = createBoostMatrix({{ 1, 2, 3 }, { 2, 1, 0 }, {3, -1, -4 }});
     auto expected = createBoostMatrix({{ Var(4, 3), Var(-5, 3), 1 }, { Var(-8, 3), Var(13, 3), -2 }, { Var(5, 3), Var(-7, 3), 1 }});
 
     invert(A, A.size1());
 
-    CHECK_EQUAL(expected, A);
+    BOOST_CHECK_EQUAL(expected, A);
 }
 
-TEST(GlobalPlu, inverseDim3)
+BOOST_AUTO_TEST_CASE(inverseDim3)
 {
     const unsigned dim = 3;
     std::vector<std::vector<Var>> A(dim);
@@ -529,21 +532,21 @@ TEST(GlobalPlu, inverseDim3)
 
     for (unsigned i = 0; i < dim; ++i)
         for (unsigned j = 0; j < dim; ++j) {
-            CHECK_EQUAL(expected[i][j], A[i][j]);
+            BOOST_CHECK_EQUAL(expected[i][j], A[i][j]);
         }
 }
 
-TEST(GlobalPlu, trivialInverseDim5)
+BOOST_AUTO_TEST_CASE(trivialInverseDim5)
 {
     auto identity = createBoostMatrix({{ 1, 0, 0, 0, 0 }, { 0, 1, 0, 0, 0 }, { 0, 0, 1, 0, 0 }, { 0, 0, 0, 1, 0 }, { 0, 0, 0, 0, 1 }});
     auto copy(identity);
 
     invert(identity, identity.size1());
 
-    CHECK_EQUAL(copy, identity);
+    BOOST_CHECK_EQUAL(copy, identity);
 }
 
-TEST(GlobalPlu, inverseDim15)
+BOOST_AUTO_TEST_CASE(inverseDim15)
 {
     const size_t size = 15;
     Var A[size][size] = {
@@ -670,16 +673,16 @@ TEST(GlobalPlu, inverseDim15)
             -0.270239299567082, 0.123891329811036, 0.148933843661104, -0.152214341949777,
             -0.169178936494543, 0.0670248276011444, 0.0957528399161877 }
     };
-    const double TOL = 1.e-10;
+    const double TOL = 1.e-8;
 
     invert(A, size);
 
     for (size_t i = 0; i < size; ++i)
         for (size_t j = 0; j < size; ++j)
-            DOUBLES_EQUAL(static_cast<double>(expected[i][j]), static_cast<double>(A[i][j]), TOL);
+            BOOST_CHECK_CLOSE(static_cast<double>(expected[i][j]), static_cast<double>(A[i][j]), TOL);
 }
 
-TEST(GlobalPlu, illegalInverseSingular)
+BOOST_AUTO_TEST_CASE(illegalInverseSingular)
 {
     BoostMatrix A(2, 2);
 
@@ -688,5 +691,7 @@ TEST(GlobalPlu, illegalInverseSingular)
     A(1, 1) = a;
     A(1, 0) = -2;
 
-    CHECK_THROWS(std::invalid_argument, invert(A, A.size1()));
+    BOOST_CHECK_THROW(invert(A, A.size1()), std::invalid_argument);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

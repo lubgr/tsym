@@ -6,15 +6,16 @@
 
 using namespace tsym;
 
-TEST_GROUP(Pivoting)
-{
+struct PivotingFixture {
     Var a{"a"};
     Var b{"b"};
     Var c{"c"};
     Var d{"d"};
 };
 
-TEST(Pivoting, nothingToDo)
+BOOST_FIXTURE_TEST_SUITE(TestPivoting, PivotingFixture)
+
+BOOST_AUTO_TEST_CASE(nothingToDo)
 {
     auto m = createBoostMatrix({{ a, b, }, { c, d }});
     auto mProxy = BoostMatrixProxy(m);
@@ -23,10 +24,10 @@ TEST(Pivoting, nothingToDo)
 
     pivot.applyTo(mProxy);
 
-    CHECK_EQUAL(copyOfM, m);
+    BOOST_CHECK_EQUAL(copyOfM, m);
 }
 
-TEST(Pivoting, numericPivotingDim3)
+BOOST_AUTO_TEST_CASE(numericPivotingDim3)
 {
     std::initializer_list<Var> row1 = { 0, 2, 1 };
     std::initializer_list<Var> row2 = { 3, 4, 2 };
@@ -39,16 +40,16 @@ TEST(Pivoting, numericPivotingDim3)
 
     firstNonZeroPivot.applyTo(mProxy);
 
-    CHECK_EQUAL(expected, m);
+    BOOST_CHECK_EQUAL(expected, m);
 
     m = createBoostMatrix({ row1, row2, row3 });
 
     leastComplexityPivot.applyTo(mProxy);
 
-    CHECK_EQUAL(expected, m);
+    BOOST_CHECK_EQUAL(expected, m);
 }
 
-TEST(Pivoting, pivotingDim2ApplyToRhs)
+BOOST_AUTO_TEST_CASE(pivotingDim2ApplyToRhs)
 {
     std::initializer_list<Var> row1 = { 0, b };
     std::initializer_list<Var> row2 = { c, a };
@@ -61,11 +62,11 @@ TEST(Pivoting, pivotingDim2ApplyToRhs)
     pivot.applyTo(mProxy);
     pivot.applyTo(vecProxy);
 
-    CHECK_EQUAL(createBoostMatrix({ row2, row1 }), m);
-    CHECK_EQUAL(createBoostVector({ 2*d, d }), vec);
+    BOOST_CHECK_EQUAL(createBoostMatrix({ row2, row1 }), m);
+    BOOST_CHECK_EQUAL(createBoostVector({ 2*d, d }), vec);
 }
 
-TEST(Pivoting, leastComplexityButWithZeroDim2)
+BOOST_AUTO_TEST_CASE(leastComplexityButWithZeroDim2)
 {
     std::initializer_list<Var> row1 = { 0, b };
     std::initializer_list<Var> row2 = { c, a };
@@ -75,11 +76,11 @@ TEST(Pivoting, leastComplexityButWithZeroDim2)
 
     pivot.applyTo(mProxy);
 
-    CHECK_EQUAL(createBoostMatrix({ row2, row1 }), m);
-    CHECK_EQUAL(1, pivot.nRowSwaps());
+    BOOST_CHECK_EQUAL(createBoostMatrix({ row2, row1 }), m);
+    BOOST_CHECK_EQUAL(1, pivot.nRowSwaps());
 }
 
-TEST(Pivoting, leastComplexityButWithZeroDim3)
+BOOST_AUTO_TEST_CASE(leastComplexityButWithZeroDim3)
 {
     std::initializer_list<Var> row1 = { 0, 1, a };
     std::initializer_list<Var> row2 = { b, 0, 2 };
@@ -91,6 +92,8 @@ TEST(Pivoting, leastComplexityButWithZeroDim3)
 
     leastComplexityPivot.applyTo(mProxy);
 
-    CHECK_EQUAL(expected, m);
-    CHECK_EQUAL(2, leastComplexityPivot.nRowSwaps());
+    BOOST_CHECK_EQUAL(expected, m);
+    BOOST_CHECK_EQUAL(2, leastComplexityPivot.nRowSwaps());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

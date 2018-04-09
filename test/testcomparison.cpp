@@ -13,164 +13,165 @@
 
 using namespace tsym;
 
-TEST_GROUP(Comparison)
-{
-    const BasePtr undefined = Undefined::create();
+struct ComparisonFixture {
+    const BasePtr& undefined = Undefined::create();
 };
 
-TEST(Comparison, differentTypes)
+BOOST_FIXTURE_TEST_SUITE(TestComparison, ComparisonFixture)
+
+BOOST_AUTO_TEST_CASE(differentTypes)
 {
     two->isDifferent(a);
     two->isDifferent(undefined);
     undefined->isDifferent(a);
 }
 
-TEST(Comparison, equalSymbols)
+BOOST_AUTO_TEST_CASE(equalSymbols)
 {
-    CHECK(a->isEqual(a));
+    BOOST_TEST(a->isEqual(a));
 }
 
-TEST(Comparison, symbolsEqualNameOnePositive)
+BOOST_AUTO_TEST_CASE(symbolsEqualNameOnePositive)
 {
     const BasePtr aPos = Symbol::createPositive("a");
 
-    CHECK_FALSE(a->isEqual(aPos));
+    BOOST_TEST(!a->isEqual(aPos));
 }
 
-TEST(Comparison, equalConstants)
+BOOST_AUTO_TEST_CASE(equalConstants)
 {
     const BasePtr pi = Constant::createPi();
 
-    CHECK(pi->isEqual(pi));
+    BOOST_TEST(pi->isEqual(pi));
 }
 
-TEST(Comparison, differentSymbols)
+BOOST_AUTO_TEST_CASE(differentSymbols)
 {
-    CHECK(a->isDifferent(b));
+    BOOST_TEST(a->isDifferent(b));
 }
 
-TEST(Comparison, equalNumerics)
+BOOST_AUTO_TEST_CASE(equalNumerics)
 {
-    CHECK(two->isEqual(two));
+    BOOST_TEST(two->isEqual(two));
 }
 
-TEST(Comparison, differentNumerics)
+BOOST_AUTO_TEST_CASE(differentNumerics)
 {
-    CHECK(two->isDifferent(Numeric::half()));
+    BOOST_TEST(two->isDifferent(Numeric::half()));
 }
 
-TEST(Comparison, twoUndefined)
+BOOST_AUTO_TEST_CASE(twoUndefined)
     /* Comparing undefined  doesn't make sense, this shall always return false. */
 {
     disableLog();
-    CHECK_FALSE(undefined->isEqual(undefined));
+    BOOST_TEST(!undefined->isEqual(undefined));
     enableLog();
 }
 
-TEST(Comparison, equalPowers)
+BOOST_AUTO_TEST_CASE(equalPowers)
 {
     const BasePtr p1 = Power::create(a, two);
     const BasePtr p2 = Power::create(a, two);
 
-    CHECK(p1->isEqual(p2));
+    BOOST_TEST(p1->isEqual(p2));
 }
 
-TEST(Comparison, differentExpPowers)
+BOOST_AUTO_TEST_CASE(differentExpPowers)
 {
     const BasePtr p1 = Power::create(a, two);
     const BasePtr p2 = Power::sqrt(a);
 
-    CHECK(p1->isDifferent(p2));
+    BOOST_TEST(p1->isDifferent(p2));
 }
 
-TEST(Comparison, diffBasePowers)
+BOOST_AUTO_TEST_CASE(diffBasePowers)
 {
     const BasePtr p1 = Power::sqrt(a);
     const BasePtr p2 = Power::sqrt(b);
 
-    CHECK(p1->isDifferent(p2));
+    BOOST_TEST(p1->isDifferent(p2));
 }
 
-TEST(Comparison, equalProduct)
+BOOST_AUTO_TEST_CASE(equalProduct)
 {
     const BasePtr p1 = Product::create(two, a);
     const BasePtr p2 = Product::create(two, a);
 
-    CHECK(p1->isEqual(p2));
+    BOOST_TEST(p1->isEqual(p2));
 }
 
-TEST(Comparison, differentProduct)
+BOOST_AUTO_TEST_CASE(differentProduct)
 {
     const BasePtr p1 = Product::create(two, a);
     const BasePtr p2 = Product::create(two, b);
 
-    CHECK(p1->isDifferent(p2));
+    BOOST_TEST(p1->isDifferent(p2));
 }
 
-TEST(Comparison, differentProductByNumberOfFactors)
+BOOST_AUTO_TEST_CASE(differentProductByNumberOfFactors)
 {
     const BasePtr p1 = Product::create(a, b);
     const BasePtr p2 = Product::create(a, b, c);
 
-    CHECK(p1->isDifferent(p2));
+    BOOST_TEST(p1->isDifferent(p2));
 }
 
-TEST(Comparison, equalSum)
+BOOST_AUTO_TEST_CASE(equalSum)
 {
     const BasePtr s1 = Sum::create(a, b);
     const BasePtr s2 = Sum::create(a, b);
 
-    CHECK(s1->isEqual(s2));
+    BOOST_TEST(s1->isEqual(s2));
 }
 
-TEST(Comparison, differentSum)
+BOOST_AUTO_TEST_CASE(differentSum)
 {
     const BasePtr s1 = Sum::create(two, a);
     const BasePtr s2 = Sum::create(two, b);
 
-    CHECK(s1->isDifferent(s2));
+    BOOST_TEST(s1->isDifferent(s2));
 }
 
-TEST(Comparison, equalProductOfSymbolAndPower)
+BOOST_AUTO_TEST_CASE(equalProductOfSymbolAndPower)
 {
     const BasePtr bSquare = Power::create(b, two);
     const BasePtr product = Product::create(a, bSquare);
     const BasePtr res = Product::create(product, product);
 
-    CHECK(res->isEqual(res));
+    BOOST_TEST(res->isEqual(res));
 }
 
-TEST(Comparison, equalFunctions)
+BOOST_AUTO_TEST_CASE(equalFunctions)
 {
     const BasePtr sin = Trigonometric::createSin(Product::create(a, b));
 
-    CHECK(sin->isEqual(sin));
+    BOOST_TEST(sin->isEqual(sin));
 }
 
-TEST(Comparison, functionsDifferentArg)
+BOOST_AUTO_TEST_CASE(functionsDifferentArg)
 {
     const BasePtr sin1 = Trigonometric::createSin(a);
     const BasePtr sin2 = Trigonometric::createSin(b);
 
-    CHECK(sin1->isDifferent(sin2));
+    BOOST_TEST(sin1->isDifferent(sin2));
 }
 
-TEST(Comparison, functionsDifferentTrigonometric)
+BOOST_AUTO_TEST_CASE(functionsDifferentTrigonometric)
 {
     const BasePtr sin = Trigonometric::createSin(Sum::create(a, b));
     const BasePtr cos = Trigonometric::createCos(Sum::create(a, b));
 
-    CHECK(sin->isDifferent(cos));
+    BOOST_TEST(sin->isDifferent(cos));
 }
 
-TEST(Comparison, equalContainer)
+BOOST_AUTO_TEST_CASE(equalContainer)
 {
     const BasePtrList container { ten, a, Product::create(two, b), Sum::create(three, c) };
 
-    CHECK(bplist::areEqual(container, container));
+    BOOST_TEST(bplist::areEqual(container, container));
 }
 
-TEST(Comparison, differentContainer)
+BOOST_AUTO_TEST_CASE(differentContainer)
 {
     BasePtrList c1 { three, four, a };
     BasePtrList c2;
@@ -180,6 +181,8 @@ TEST(Comparison, differentContainer)
     c1.push_back(Trigonometric::createSin(a));
     c2.push_back(Product::create(b, c));
 
-    CHECK_FALSE(bplist::areEqual(c1, c2));
-    CHECK_FALSE(bplist::areEqual(c2, c1));
+    BOOST_TEST(!bplist::areEqual(c1, c2));
+    BOOST_TEST(!bplist::areEqual(c2, c1));
 }
+
+BOOST_AUTO_TEST_SUITE_END()

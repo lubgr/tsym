@@ -12,8 +12,7 @@
 
 using namespace tsym;
 
-TEST_GROUP(NumTrigoSimpl)
-{
+struct NumTrigoSimplFixture {
     const BasePtr& minusOne = Numeric::mOne();
     const BasePtr& half = Numeric::half();
     const BasePtr sqrtTwo = Power::sqrt(two);
@@ -34,11 +33,11 @@ TEST_GROUP(NumTrigoSimpl)
         nts.setType(type);
         nts.compute();
 
-        CHECK(nts.hasSimplifiedResult());
+        BOOST_TEST(nts.hasSimplifiedResult());
         if (expected->isUndefined()) {
-            CHECK(nts.get()->isUndefined());
+            BOOST_TEST(nts.get()->isUndefined());
         } else {
-            CHECK_EQUAL(expected, nts.get());
+            BOOST_CHECK_EQUAL(expected, nts.get());
         }
     }
 
@@ -61,16 +60,18 @@ TEST_GROUP(NumTrigoSimpl)
     {
         nts.setType(type);
         nts.compute();
-        CHECK_FALSE(nts.hasSimplifiedResult());
+        BOOST_TEST(!nts.hasSimplifiedResult());
 
         disableLog();
         /* Requesting the result should give an Undefined. */
-        CHECK(nts.get()->isUndefined());
+        BOOST_TEST(nts.get()->isUndefined());
         enableLog();
     }
 };
 
-TEST(NumTrigoSimpl, zero)
+BOOST_FIXTURE_TEST_SUITE(TestNumTrigoSimpl, NumTrigoSimplFixture)
+
+BOOST_AUTO_TEST_CASE(triviallyZero)
     /* Sin/cos/tan(0) = 0, 1, 0. */
 {
     nts.setArg(zero);
@@ -78,7 +79,7 @@ TEST(NumTrigoSimpl, zero)
     check(zero, one, zero);
 }
 
-TEST(NumTrigoSimpl, eightPi)
+BOOST_AUTO_TEST_CASE(eightPi)
     /* Sin/cos/tan(8*Pi) = 0, 1, 0. */
 {
     nts.setArg(Product::create(eight, pi));
@@ -86,7 +87,7 @@ TEST(NumTrigoSimpl, eightPi)
     check(zero, one, zero);
 }
 
-TEST(NumTrigoSimpl, minusTwoPi)
+BOOST_AUTO_TEST_CASE(minusTwoPi)
     /* Sin/cos/tan(-2*Pi) = 0, 1, 0. */
 {
     nts.setArg(Product::create(Numeric::create(-2), pi));
@@ -94,7 +95,7 @@ TEST(NumTrigoSimpl, minusTwoPi)
     check(zero, one, zero);
 }
 
-TEST(NumTrigoSimpl, minusPi)
+BOOST_AUTO_TEST_CASE(minusPi)
     /* Sin/cos/tan(-Pi) = 0, -1, 0. */
 {
     nts.setArg(Product::minus(pi));
@@ -102,7 +103,7 @@ TEST(NumTrigoSimpl, minusPi)
     check(zero, minusOne, zero);
 }
 
-TEST(NumTrigoSimpl, piFourth)
+BOOST_AUTO_TEST_CASE(piFourth)
     /* Sin/cos/tan(Pi/4) = 1/sqrt(2), 1/sqrt(2), 1. */
 {
     const BasePtr sinCos = Power::create(two, Numeric::create(-1, 2));
@@ -112,7 +113,7 @@ TEST(NumTrigoSimpl, piFourth)
     check(sinCos, sinCos, one);
 }
 
-TEST(NumTrigoSimpl, threeFourthPi)
+BOOST_AUTO_TEST_CASE(threeFourthPi)
     /* Sin/cos/tan(3*Pi/4) = -1/sqrt(2), 1/sqrt(2), -1. */
 {
     const BasePtr expectedSin = Power::oneOver(sqrtTwo);
@@ -123,7 +124,7 @@ TEST(NumTrigoSimpl, threeFourthPi)
     check(expectedSin, expectedCos, minusOne);
 }
 
-TEST(NumTrigoSimpl, fiveFourthPi)
+BOOST_AUTO_TEST_CASE(fiveFourthPi)
     /* Sin/cos/tan(5*Pi/4) = 1/sqrt(2), -1/sqrt(2), -1. */
 {
     const BasePtr expectedSinCos = Product::minus(Power::oneOver(sqrtTwo));
@@ -133,7 +134,7 @@ TEST(NumTrigoSimpl, fiveFourthPi)
     check(expectedSinCos, expectedSinCos, one);
 }
 
-TEST(NumTrigoSimpl, sevenFourthPi)
+BOOST_AUTO_TEST_CASE(sevenFourthPi)
     /* Sin/cos/tan(7*Pi/4) = -1/sqrt(2), 1/sqrt(2), -1. */
 {
     const BasePtr expectedCos = Power::oneOver(sqrtTwo);
@@ -144,7 +145,7 @@ TEST(NumTrigoSimpl, sevenFourthPi)
     check(expectedSin, expectedCos, minusOne);
 }
 
-TEST(NumTrigoSimpl, threePiOverEight)
+BOOST_AUTO_TEST_CASE(threePiOverEight)
     /* Sin/cos/tan(3*Pi/8) = sqrt(2 + sqrt(2))/2, sqrt(2 - sqrt(2))/2, 1 + sqrt(2). */
 {
     const BasePtr expectedSin = Product::create(half, Power::sqrt(Sum::create(two, sqrtTwo)));
@@ -157,7 +158,7 @@ TEST(NumTrigoSimpl, threePiOverEight)
     check(expectedSin, expectedCos, expectedTan);
 }
 
-TEST(NumTrigoSimpl, cosLeadsToNewAdjustment)
+BOOST_AUTO_TEST_CASE(cosLeadsToNewAdjustment)
     /* Cos(5/3*Pi) is computed via Sin(5/3*Pi + Pi/2), where the argument is again greater than 2*Pi
      * and needs to be shifted back. */
 {
@@ -169,7 +170,7 @@ TEST(NumTrigoSimpl, cosLeadsToNewAdjustment)
     check(expectedSin, half, expectedTan);
 }
 
-TEST(NumTrigoSimpl, unresolvableNumeric)
+BOOST_AUTO_TEST_CASE(unresolvableNumeric)
     /* Sin/cos/tan(1/4) shouldn't be simplified. */
 {
     nts.setArg(Numeric::fourth());
@@ -177,7 +178,7 @@ TEST(NumTrigoSimpl, unresolvableNumeric)
     checkUnsimplified();
 }
 
-TEST(NumTrigoSimpl, unresolvableNumericPower)
+BOOST_AUTO_TEST_CASE(unresolvableNumericPower)
     /* Sin/cos/tan(sqrt(2)) shouldn't be simplified. */
 {
     nts.setArg(sqrtTwo);
@@ -185,7 +186,7 @@ TEST(NumTrigoSimpl, unresolvableNumericPower)
     checkUnsimplified();
 }
 
-TEST(NumTrigoSimpl, exactFromDouble)
+BOOST_AUTO_TEST_CASE(exactFromDouble)
     /* Sin/cos/tan(Pi/12.0) = (sqrt(6) - sqrt(2))/4, (sqrt(6) + sqrt(2))/4, 2 - sqrt(3). */
 {
     const BasePtr expectedSin = Product::create(Numeric::fourth(), Sum::create(sqrtSix,
@@ -199,7 +200,7 @@ TEST(NumTrigoSimpl, exactFromDouble)
     check(expectedSin, expectedCos, expectedTan);
 }
 
-TEST(NumTrigoSimpl, exactFromNumericallyEvaluable)
+BOOST_AUTO_TEST_CASE(exactFromNumericallyEvaluable)
     /* A product of numerically evaluable factors, that matches an entry of the exact tables of the
      * class will lead to an exact result. */
 {
@@ -212,7 +213,7 @@ TEST(NumTrigoSimpl, exactFromNumericallyEvaluable)
     check(Trigonometric::Type::SIN, expectedSin);
 }
 
-TEST(NumTrigoSimpl, numericEvaluation)
+BOOST_AUTO_TEST_CASE(numericEvaluation)
     /* Sin/cos/tan(1.23456789) should be evaluated to a plain Numeric. */
 {
     const double arg = 1.23456789;
@@ -227,7 +228,7 @@ TEST(NumTrigoSimpl, numericEvaluation)
     check(Numeric::create(expectedSin), Numeric::create(expectedCos), Numeric::create(expectedTan));
 }
 
-TEST(NumTrigoSimpl, numEvalSecondQuadrant)
+BOOST_AUTO_TEST_CASE(numEvalSecondQuadrant)
     /* Sin/cos/tan(2.3456789) should be evaluated to a plain Numeric. */
 {
     const double arg = 3.456789;
@@ -240,7 +241,7 @@ TEST(NumTrigoSimpl, numEvalSecondQuadrant)
     check(Numeric::create(expectedSin), Numeric::create(expectedCos), Numeric::create(expectedTan));
 }
 
-TEST(NumTrigoSimpl, undefinedTan)
+BOOST_AUTO_TEST_CASE(undefinedTan)
     /* Tan(Pi/2) = Undefined. */
 {
     nts.setArg(Product::create(half, pi));
@@ -248,7 +249,7 @@ TEST(NumTrigoSimpl, undefinedTan)
     check(one, zero, Undefined::create());
 }
 
-TEST(NumTrigoSimpl, inverseZero)
+BOOST_AUTO_TEST_CASE(inverseZero)
     /* Asin/acos/atan(0) = 0, Pi/2, 0. */
 {
     nts.setArg(zero);
@@ -256,7 +257,7 @@ TEST(NumTrigoSimpl, inverseZero)
     checkInverse(zero, Product::create(half, pi), zero);
 }
 
-TEST(NumTrigoSimpl, inverseOneOverSqrtTwo)
+BOOST_AUTO_TEST_CASE(inverseOneOverSqrtTwo)
     /* Asin/acos/atan(1/sqrt(2)) = Pi/4, Pi/4, unsimplified. */
 {
     const BasePtr piFourth = Product::create(pi, Numeric::fourth());
@@ -268,7 +269,7 @@ TEST(NumTrigoSimpl, inverseOneOverSqrtTwo)
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-TEST(NumTrigoSimpl, inverseNegativeArg)
+BOOST_AUTO_TEST_CASE(inverseNegativeArg)
     /* Asin/acos/atan(-1/sqrt(2)) = -Pi/4, 3*Pi/4, unsimplified. */
 {
     const BasePtr arg = Product::minus(Power::oneOver(sqrtTwo));
@@ -282,7 +283,7 @@ TEST(NumTrigoSimpl, inverseNegativeArg)
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-TEST(NumTrigoSimpl, inverseFromSum)
+BOOST_AUTO_TEST_CASE(inverseFromSum)
     /* Asin/acos/atan((sqrt(6) - sqrt(2))/4  = Pi/12, 5*Pi/12, unsimplified. */
 {
     const BasePtr arg = Product::create(Numeric::fourth(), Sum::create(sqrtSix,
@@ -297,7 +298,7 @@ TEST(NumTrigoSimpl, inverseFromSum)
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-TEST(NumTrigoSimpl, inverseNegativeSum)
+BOOST_AUTO_TEST_CASE(inverseNegativeSum)
     /* Asin/acos/atan(-(sqrt(6) + sqrt(2))/4) = -5/12*pi, 11/12*pi, unsimplified. */
 {
     const BasePtr arg = Product::create(Numeric::create(-1, 4), Sum::create(sqrtSix, sqrtTwo));
@@ -311,7 +312,7 @@ TEST(NumTrigoSimpl, inverseNegativeSum)
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-TEST(NumTrigoSimpl, atanNegativeArg)
+BOOST_AUTO_TEST_CASE(atanNegativeArg)
     /* Atan(-sqrt(3)) = -Pi/3. */
 {
     const BasePtr expected = Product::create(Numeric::create(-1, 3), pi);
@@ -321,7 +322,7 @@ TEST(NumTrigoSimpl, atanNegativeArg)
     check(Trigonometric::Type::ATAN, expected);
 }
 
-TEST(NumTrigoSimpl, atanNegativeSum)
+BOOST_AUTO_TEST_CASE(atanNegativeSum)
     /* Atan(-sqrt(2) - 1) = -3/8*pi. */
 {
     const BasePtr expected = Product::create(Numeric::create(-3, 8), pi);
@@ -332,7 +333,7 @@ TEST(NumTrigoSimpl, atanNegativeSum)
     check(Trigonometric::Type::ATAN, expected);
 }
 
-TEST(NumTrigoSimpl, inverseExactFromDouble)
+BOOST_AUTO_TEST_CASE(inverseExactFromDouble)
     /* The same as before, but the argument is a double. This implies, that the inverse tangent
      * evaluates to a double, and is thus simplified. */
 {
@@ -346,7 +347,7 @@ TEST(NumTrigoSimpl, inverseExactFromDouble)
     checkInverse(expectedAsin, expectedAcos, expectedAtan);
 }
 
-TEST(NumTrigoSimpl, inverseFromSumAtan)
+BOOST_AUTO_TEST_CASE(inverseFromSumAtan)
     /* Asin/acos/atan(sqrt(2) + 1) = undefined, undefined, 3/8*Pi. */
 {
     const BasePtr expectedAtan = Product::create(Numeric::create(3, 8), pi);
@@ -358,7 +359,7 @@ TEST(NumTrigoSimpl, inverseFromSumAtan)
     checkInverse(undefined, undefined, expectedAtan);
 }
 
-TEST(NumTrigoSimpl, inverseExactFromDoubleAtan)
+BOOST_AUTO_TEST_CASE(inverseExactFromDoubleAtan)
     /* Asin/acos/atan(2 - sqrt(3)) = 0.27126(...), 1.2995(...), 1/12*Pi. */
 {
     const BasePtr expectedAtan = Product::create(Numeric::create(1, 12), pi);
@@ -371,7 +372,7 @@ TEST(NumTrigoSimpl, inverseExactFromDoubleAtan)
     checkInverse(expectedAsin, expectedAcos, expectedAtan);
 }
 
-TEST(NumTrigoSimpl, noSimplification)
+BOOST_AUTO_TEST_CASE(noSimplification)
     /* Sin/cos/tan aren't simplified for a numerically evaluable argument, that isn't in the
      * exact tables. */
 {
@@ -384,7 +385,7 @@ TEST(NumTrigoSimpl, noSimplification)
     checkUnsimplified(Trigonometric::Type::TAN);
 }
 
-TEST(NumTrigoSimpl, noSimplificationInverse)
+BOOST_AUTO_TEST_CASE(noSimplificationInverse)
     /* The same for inverse functions. */
 {
     const BasePtr arg = Product::create(sqrtTwo, Numeric::create(1, 10), pi);
@@ -396,7 +397,7 @@ TEST(NumTrigoSimpl, noSimplificationInverse)
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-TEST(NumTrigoSimpl, noSimplificationLargeInput)
+BOOST_AUTO_TEST_CASE(noSimplificationLargeInput)
 {
     BasePtrList fac;
     BasePtr arg;
@@ -419,7 +420,7 @@ TEST(NumTrigoSimpl, noSimplificationLargeInput)
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-TEST(NumTrigoSimpl, greaterThanRange)
+BOOST_AUTO_TEST_CASE(greaterThanRange)
     /* Asin/acos aren't defined for arguments < -1. */
 {
     const BasePtr arg = Product::create(Numeric::create(-17), sqrtTwo);
@@ -431,7 +432,7 @@ TEST(NumTrigoSimpl, greaterThanRange)
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-TEST(NumTrigoSimpl, lessThanRange)
+BOOST_AUTO_TEST_CASE(lessThanRange)
     /* The same for arguments > 1. */
 {
     const double arg = 1.0000001;
@@ -441,7 +442,7 @@ TEST(NumTrigoSimpl, lessThanRange)
     checkInverse(Undefined::create(), Undefined::create(), Numeric::create(std::atan(arg)));
 }
 
-TEST(NumTrigoSimpl, largeNumericEvaluationToExact)
+BOOST_AUTO_TEST_CASE(largeNumericEvaluationToExact)
     /* A product of numerically evaluable factors, that matches an entry of the exact tables of the
      * class will lead to an exact result. */
 {
@@ -454,7 +455,7 @@ TEST(NumTrigoSimpl, largeNumericEvaluationToExact)
     check(Trigonometric::Type::ASIN, piFourth);
 }
 
-TEST(NumTrigoSimpl, inverseUnresolvableNumeric)
+BOOST_AUTO_TEST_CASE(inverseUnresolvableNumeric)
     /* Asin/acos/atan(-1/10) shouldn't be simplified. */
 {
     nts.setArg(Numeric::create(-1, 10));
@@ -463,3 +464,5 @@ TEST(NumTrigoSimpl, inverseUnresolvableNumeric)
     checkUnsimplified(Trigonometric::Type::ACOS);
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -13,15 +13,9 @@
 
 using namespace tsym;
 
-TEST_GROUP(Printer)
-{
-    const BasePtr pi = Constant::createPi();
+struct PrinterFixture {
+    const BasePtr& pi = Constant::createPi();
     std::stringstream stream;
-
-    void setup()
-    {
-        stream.str("");
-    }
 
     template<class Engine, class T> std::string print(Engine& engine, const T& toBePrinted)
     {
@@ -47,193 +41,195 @@ TEST_GROUP(Printer)
     }
 };
 
-TEST(Printer, positiveIntNumber)
+BOOST_FIXTURE_TEST_SUITE(TestPrinter, PrinterFixture)
+
+BOOST_AUTO_TEST_CASE(positiveIntNumber)
 {
-    CHECK_EQUAL("5", print(five));
+    BOOST_CHECK_EQUAL("5", print(five));
 }
 
-TEST(Printer, negativeIntNumber)
+BOOST_AUTO_TEST_CASE(negativeIntNumber)
 {
-    CHECK_EQUAL("-5", print(-5));
+    BOOST_CHECK_EQUAL("-5", print(-5));
 }
 
-TEST(Printer, doubleNumber)
+BOOST_AUTO_TEST_CASE(doubleNumber)
 {
-    CHECK_EQUAL("0.123456", print(0.123456));
+    BOOST_CHECK_EQUAL("0.123456", print(0.123456));
 }
 
-TEST(Printer, fractionNumber)
+BOOST_AUTO_TEST_CASE(fractionNumber)
 {
-    CHECK_EQUAL("2/33", print(Number(2, 33)));
+    BOOST_CHECK_EQUAL("2/33", print(Number(2, 33)));
 }
 
-TEST(Printer, operatorWithNumber)
+BOOST_AUTO_TEST_CASE(operatorWithNumber)
 {
     const Number frac(-4, 17);
 
     stream << frac;
 
-    CHECK_EQUAL("-4/17", stream.str());
+    BOOST_CHECK_EQUAL("-4/17", stream.str());
 }
 
-TEST(Printer, piUnicode)
+BOOST_AUTO_TEST_CASE(piUnicode)
 {
-    CHECK_EQUAL("\u03c0", print(pi));
+    BOOST_CHECK_EQUAL("\u03c0", print(pi));
 }
 
-TEST(Printer, piAscii)
+BOOST_AUTO_TEST_CASE(piAscii)
 {
     PlaintextPrintEngine engine(stream, PlaintextPrintEngine::CharSet::ASCII);
 
-    CHECK_EQUAL("pi", print(engine, pi));
+    BOOST_CHECK_EQUAL("pi", print(engine, pi));
 }
 
-TEST(Printer, e)
+BOOST_AUTO_TEST_CASE(euler)
 {
-    CHECK_EQUAL("e", print(Constant::createE()));
+    BOOST_CHECK_EQUAL("e", print(Constant::createE()));
 }
 
-TEST(Printer, function)
+BOOST_AUTO_TEST_CASE(function)
 {
-    CHECK_EQUAL("sin(a)", print(Trigonometric::createSin(a)));
+    BOOST_CHECK_EQUAL("sin(a)", print(Trigonometric::createSin(a)));
 }
 
-TEST(Printer, functionWithMoreThanOneArgument)
+BOOST_AUTO_TEST_CASE(functionWithMoreThanOneArgument)
 {
     const BasePtr atan2 = Trigonometric::createAtan2(Product::create(two, a), b);
 
-    CHECK_EQUAL("atan2(2*a, b)", print(atan2));
+    BOOST_CHECK_EQUAL("atan2(2*a, b)", print(atan2));
 }
 
-TEST(Printer, symbol)
+BOOST_AUTO_TEST_CASE(symbol)
 {
     const std::string name("abcde");
 
-    CHECK_EQUAL(name, print(Symbol::create(name)));
+    BOOST_CHECK_EQUAL(name, print(Symbol::create(name)));
 }
 
-TEST(Printer, positiveSymbol)
+BOOST_AUTO_TEST_CASE(positiveSymbol)
 {
     const BasePtr aPos = Symbol::createPositive("a");
 
-    CHECK_EQUAL("a\u208A", print(aPos));
+    BOOST_CHECK_EQUAL("a\u208A", print(aPos));
 }
 
-TEST(Printer, positiveSymbolWithSubAndSuperscript)
+BOOST_AUTO_TEST_CASE(positiveSymbolWithSubAndSuperscript)
 {
     const Name name("a", "b", "c");
     const BasePtr aPos = Symbol::createPositive(name);
 
-    CHECK_EQUAL("a_b_c\u208A", print(aPos));
+    BOOST_CHECK_EQUAL("a_b_c\u208A", print(aPos));
 }
 
-TEST(Printer, positiveSymbolAsciiCharset)
+BOOST_AUTO_TEST_CASE(positiveSymbolAsciiCharset)
 {
     PlaintextPrintEngine engine(stream, PlaintextPrintEngine::CharSet::ASCII);
     const BasePtr aPos = Symbol::createPositive("a");
 
-    CHECK_EQUAL("a", print(engine, aPos));
+    BOOST_CHECK_EQUAL("a", print(engine, aPos));
 }
 
-TEST(Printer, symbolGreekLetterWithoutUnicode)
+BOOST_AUTO_TEST_CASE(symbolGreekLetterWithoutUnicode)
 {
     const std::string name("omega");
     const BasePtr omega = Symbol::create(name);
     PlaintextPrintEngine engine(stream, PlaintextPrintEngine::CharSet::ASCII);
 
-    CHECK_EQUAL(name, print(engine, omega));
+    BOOST_CHECK_EQUAL(name, print(engine, omega));
 }
 
-TEST(Printer, symbolGreekLetterWithUnicode)
+BOOST_AUTO_TEST_CASE(symbolGreekLetterWithUnicode)
 {
     const BasePtr omega = Symbol::create("omega");
 
-    CHECK_EQUAL("\u03C9", print(omega));
+    BOOST_CHECK_EQUAL("\u03C9", print(omega));
 }
 
-TEST(Printer, capitalOmega)
+BOOST_AUTO_TEST_CASE(capitalOmega)
 {
     const BasePtr omega = Symbol::create("Omega");
 
-    CHECK_EQUAL("\u03a9", print(omega));
+    BOOST_CHECK_EQUAL("\u03a9", print(omega));
 }
 
-TEST(Printer, lowerCaseAlpha)
+BOOST_AUTO_TEST_CASE(lowerCaseAlpha)
 {
     const BasePtr alpha = Symbol::create("alpha");
 
-    CHECK_EQUAL("\u03B1", print(alpha));
+    BOOST_CHECK_EQUAL("\u03B1", print(alpha));
 }
 
-TEST(Printer, upperCaseAlpha)
+BOOST_AUTO_TEST_CASE(upperCaseAlpha)
 {
     const BasePtr capitalAlpha = Symbol::create("Alpha");
     
-    CHECK_EQUAL("\u0391", print(capitalAlpha));
+    BOOST_CHECK_EQUAL("\u0391", print(capitalAlpha));
 }
 
-TEST(Printer, sumWithPi)
+BOOST_AUTO_TEST_CASE(sumWithPi)
 {
     const BasePtr sum = Sum::create(two, a, b, pi);
 
-    CHECK_EQUAL("2 + \u03c0 + a + b", print(sum));
+    BOOST_CHECK_EQUAL("2 + \u03c0 + a + b", print(sum));
 }
 
-TEST(Printer, sumWithFunction)
+BOOST_AUTO_TEST_CASE(sumWithFunction)
 {
     const BasePtr sum = Sum::create(a, Trigonometric::createTan(c), Trigonometric::createAcos(b));
 
-    CHECK_EQUAL("a + acos(b) + tan(c)", print(sum));
+    BOOST_CHECK_EQUAL("a + acos(b) + tan(c)", print(sum));
 }
 
-TEST(Printer, product)
+BOOST_AUTO_TEST_CASE(product)
 {
     const BasePtr product = Product::create(a, b, c, d);
 
-    CHECK_EQUAL("a*b*c*d", print(product));
+    BOOST_CHECK_EQUAL("a*b*c*d", print(product));
 }
 
-TEST(Printer, negSymbolAsProduct)
+BOOST_AUTO_TEST_CASE(negSymbolAsProduct)
 {
-    CHECK_EQUAL("-a", print(Product::minus(a)));
+    BOOST_CHECK_EQUAL("-a", print(Product::minus(a)));
 }
 
-TEST(Printer, powerOfSymbolAndPositiveInteger)
+BOOST_AUTO_TEST_CASE(powerOfSymbolAndPositiveInteger)
 {
     const BasePtr pow = Power::create(a, two);
 
-    CHECK_EQUAL("a^2", print(pow));
+    BOOST_CHECK_EQUAL("a^2", print(pow));
 }
 
-TEST(Printer, powerOfSymbolAndNegInt)
+BOOST_AUTO_TEST_CASE(powerOfSymbolAndNegInt)
 {
     const BasePtr pow = Power::create(a, Numeric::create(-3));
 
-    CHECK_EQUAL("1/a^3", print(pow));
+    BOOST_CHECK_EQUAL("1/a^3", print(pow));
 }
 
-TEST(Printer, powerOfSymbolAndMinusOne)
+BOOST_AUTO_TEST_CASE(powerOfSymbolAndMinusOne)
 {
     const BasePtr pow = Power::create(a, Numeric::mOne());
 
-    CHECK_EQUAL("1/a", print(pow));
+    BOOST_CHECK_EQUAL("1/a", print(pow));
 }
 
-TEST(Printer, powerOfSymbolAndMinusOneDebugPrint)
+BOOST_AUTO_TEST_CASE(powerOfSymbolAndMinusOneDebugPrint)
 {
     const BasePtr pow = Power::create(a, Numeric::mOne());
 
-    CHECK_EQUAL("a^(-1)", printDebug(pow));
+    BOOST_CHECK_EQUAL("a^(-1)", printDebug(pow));
 }
 
-TEST(Printer, powerOfProductAndMinusOne)
+BOOST_AUTO_TEST_CASE(powerOfProductAndMinusOne)
 {
     const BasePtr pow = Power::create(Product::create(two, a, b), Numeric::mOne());
 
-    CHECK_EQUAL("1/(2*a*b)", print(pow));
+    BOOST_CHECK_EQUAL("1/(2*a*b)", print(pow));
 }
 
-TEST(Printer, powerOfPowerOfPowerOfPower)
+BOOST_AUTO_TEST_CASE(powerOfPowerOfPowerOfPower)
 {
     const BasePtr pow1 = Power::create(a, b);
     const BasePtr pow2 = Power::create(pow1, c);
@@ -241,221 +237,221 @@ TEST(Printer, powerOfPowerOfPowerOfPower)
                 Constant::createPi()));
     const BasePtr pow4 = Power::create(pow3, d);
 
-    CHECK_EQUAL("(((a^b)^c)^(-1/4*\u03c0))^d", print(pow4));
+    BOOST_CHECK_EQUAL("(((a^b)^c)^(-1/4*\u03c0))^d", print(pow4));
 }
 
-TEST(Printer, omitFirstNumeratorFactorIfOne)
+BOOST_AUTO_TEST_CASE(omitFirstNumeratorFactorIfOne)
 {
     const BasePtr product = Product::create(c,
             Power::create(Product::create(two, a, b), Numeric::mOne()));
 
-    CHECK_EQUAL("c/(2*a*b)", print(product));
+    BOOST_CHECK_EQUAL("c/(2*a*b)", print(product));
 }
 
-TEST(Printer, omitFirstNumeratorFactorIfMinusOne)
+BOOST_AUTO_TEST_CASE(omitFirstNumeratorFactorIfMinusOne)
 {
     const BasePtr product = Product::minus(c,
             Power::create(Product::create(two, a, b), Numeric::mOne()));
 
-    CHECK_EQUAL("-c/(2*a*b)", print(product));
+    BOOST_CHECK_EQUAL("-c/(2*a*b)", print(product));
 }
 
-TEST(Printer, powerOfSymbolAndPosFrac)
+BOOST_AUTO_TEST_CASE(powerOfSymbolAndPosFrac)
 {
     const BasePtr pow = Power::create(a, Numeric::fourth());
 
-    CHECK_EQUAL("a^(1/4)", print(pow));
+    BOOST_CHECK_EQUAL("a^(1/4)", print(pow));
 }
 
-TEST(Printer, sqrtPower)
+BOOST_AUTO_TEST_CASE(sqrtPower)
 {
     const BasePtr pow = Power::sqrt(Product::create(a, b));
 
-    CHECK_EQUAL("sqrt(a*b)", print(pow));
+    BOOST_CHECK_EQUAL("sqrt(a*b)", print(pow));
 }
 
-TEST(Printer, oneOverSqrtPowerDebugPrint)
+BOOST_AUTO_TEST_CASE(oneOverSqrtPowerDebugPrint)
 {
     const BasePtr exp = Numeric::create(-1, 2);
     const BasePtr product = Product::create(Power::create(a, exp), Power::create(b, exp));
     
-    CHECK_EQUAL("a^(-1/2)*b^(-1/2)", printDebug(product));
+    BOOST_CHECK_EQUAL("a^(-1/2)*b^(-1/2)", printDebug(product));
 }
 
-TEST(Printer, oneOverSqrtPower)
+BOOST_AUTO_TEST_CASE(oneOverSqrtPower)
 {
     const BasePtr exp = Numeric::create(-1, 2);
     const BasePtr product = Product::create(Power::create(a, exp), Power::create(b, exp));
 
-    CHECK_EQUAL("1/(sqrt(a)*sqrt(b))", print(product));
+    BOOST_CHECK_EQUAL("1/(sqrt(a)*sqrt(b))", print(product));
 }
 
-TEST(Printer, powerOfSymbolAndNegFracDebugPrint)
+BOOST_AUTO_TEST_CASE(powerOfSymbolAndNegFracDebugPrint)
 {
     const BasePtr pow = Power::create(a, Numeric::create(-2, 3));
 
-    CHECK_EQUAL("a^(-2/3)", printDebug(pow));
+    BOOST_CHECK_EQUAL("a^(-2/3)", printDebug(pow));
 }
 
-TEST(Printer, powerOfSymbolAndNegFrac)
+BOOST_AUTO_TEST_CASE(powerOfSymbolAndNegFrac)
 {
     const BasePtr pow = Power::create(a, Numeric::create(-2, 3));
 
-    CHECK_EQUAL("1/a^(2/3)", print(pow));
+    BOOST_CHECK_EQUAL("1/a^(2/3)", print(pow));
 }
 
-TEST(Printer, powerOfFraction)
+BOOST_AUTO_TEST_CASE(powerOfFraction)
 {
     const BasePtr n = Numeric::create(5, 7);
     const BasePtr pow = Power::create(n, a);
 
-    CHECK_EQUAL("(5/7)^a", print(pow));
+    BOOST_CHECK_EQUAL("(5/7)^a", print(pow));
 }
 
-TEST(Printer, powerWithPiBase)
+BOOST_AUTO_TEST_CASE(powerWithPiBase)
 {
     const BasePtr pow = Power::create(pi, Sum::create(a, b));
 
-    CHECK_EQUAL("\u03c0^(a + b)", print(pow));
+    BOOST_CHECK_EQUAL("\u03c0^(a + b)", print(pow));
 }
 
-TEST(Printer, powerWithPiExp)
+BOOST_AUTO_TEST_CASE(powerWithPiExp)
 {
     const BasePtr pow = Power::create(Sum::create(a, b), pi);
 
-    CHECK_EQUAL("(a + b)^\u03c0", print(pow));
+    BOOST_CHECK_EQUAL("(a + b)^\u03c0", print(pow));
 }
 
-TEST(Printer, powerOfSymbolAndSymbol)
+BOOST_AUTO_TEST_CASE(powerOfSymbolAndSymbol)
 {
     const BasePtr pow = Power::create(a, b);
 
-    CHECK_EQUAL("a^b", print(pow));
+    BOOST_CHECK_EQUAL("a^b", print(pow));
 }
 
-TEST(Printer, powerOfSumAndNumber)
+BOOST_AUTO_TEST_CASE(powerOfSumAndNumber)
 {
     const BasePtr sum = Sum::create(a, b);
     const BasePtr pow = Power::create(sum, two);
 
-    CHECK_EQUAL("(a + b)^2", print(pow));
+    BOOST_CHECK_EQUAL("(a + b)^2", print(pow));
 }
 
-TEST(Printer, powerOfNumberAndSum)
+BOOST_AUTO_TEST_CASE(powerOfNumberAndSum)
 {
     const BasePtr sum = Sum::create(a, b);
     const BasePtr pow = Power::create(two, sum);
 
-    CHECK_EQUAL("2^(a + b)", print(pow));
+    BOOST_CHECK_EQUAL("2^(a + b)", print(pow));
 }
 
-TEST(Printer, powerOfFunctionAndNumber)
+BOOST_AUTO_TEST_CASE(powerOfFunctionAndNumber)
 {
     const BasePtr pow = Power::create(Trigonometric::createSin(a), two);
 
-    CHECK_EQUAL("sin(a)^2", print(pow));
+    BOOST_CHECK_EQUAL("sin(a)^2", print(pow));
 }
 
-TEST(Printer, powerOfSumAndFunction)
+BOOST_AUTO_TEST_CASE(powerOfSumAndFunction)
 {
     const BasePtr sum = Sum::create(two, b, Trigonometric::createSin(a));
     const BasePtr pow = Power::create(sum, Trigonometric::createAsin(Numeric::create(1, 5)));
 
-    CHECK_EQUAL("(2 + b + sin(a))^asin(1/5)", print(pow));
+    BOOST_CHECK_EQUAL("(2 + b + sin(a))^asin(1/5)", print(pow));
 }
 
-TEST(Printer, powerOfProductAndNumber)
+BOOST_AUTO_TEST_CASE(powerOfProductAndNumber)
 {
     const BasePtr product = Product::create(a, b);
     const BasePtr pow = Power::create(product, two);
 
-    CHECK_EQUAL("a^2*b^2", print(pow));
+    BOOST_CHECK_EQUAL("a^2*b^2", print(pow));
 }
 
-TEST(Printer, powerOfProductAndNegNumber)
+BOOST_AUTO_TEST_CASE(powerOfProductAndNegNumber)
 {
     const BasePtr product = Product::create(a, b);
     const BasePtr pow = Power::create(product, Numeric::create(-2));
 
-    CHECK_EQUAL("1/(a^2*b^2)", print(pow));
+    BOOST_CHECK_EQUAL("1/(a^2*b^2)", print(pow));
 }
 
-TEST(Printer, powerOfProductAndNegNumberDebugPrint)
+BOOST_AUTO_TEST_CASE(powerOfProductAndNegNumberDebugPrint)
 {
     const BasePtr product = Product::create(a, b);
     const BasePtr pow = Power::create(product, Numeric::create(-4));
 
-    CHECK_EQUAL("a^(-4)*b^(-4)", printDebug(pow));
+    BOOST_CHECK_EQUAL("a^(-4)*b^(-4)", printDebug(pow));
 }
 
-TEST(Printer, largeProductOfPowers)
+BOOST_AUTO_TEST_CASE(largeProductOfPowers)
 {
     const BasePtr product = Product::create({ a, b, Sum::create(a, c), Power::create(f, a),
             Power::oneOver(d), Power::create(e, Numeric::create(-2)) });
 
-    CHECK_EQUAL("a*b*(a + c)*f^a/(d*e^2)", print(product));
+    BOOST_CHECK_EQUAL("a*b*(a + c)*f^a/(d*e^2)", print(product));
 }
 
-TEST(Printer, largeProductOfPowersDebugPrint)
+BOOST_AUTO_TEST_CASE(largeProductOfPowersDebugPrint)
 {
     const BasePtr product = Product::create({ a, b, Sum::create(a, c), Power::create(f, a),
             Power::oneOver(d), Power::create(e, Numeric::create(-2)) });
     
-    CHECK_EQUAL("a*b*(a + c)*d^(-1)*e^(-2)*f^a", printDebug(product));
+    BOOST_CHECK_EQUAL("a*b*(a + c)*d^(-1)*e^(-2)*f^a", printDebug(product));
 }
 
-TEST(Printer, simpleDivisionOfSymbols)
+BOOST_AUTO_TEST_CASE(simpleDivisionOfSymbols)
 {
     const BasePtr product = Product::create(a, Power::oneOver(b));
 
-    CHECK_EQUAL("a/b", print(product));
+    BOOST_CHECK_EQUAL("a/b", print(product));
 }
 
-TEST(Printer, simpleDivisionOfSymbolsDebugPrint)
+BOOST_AUTO_TEST_CASE(simpleDivisionOfSymbolsDebugPrint)
 {
     const BasePtr product = Product::create(a, Power::oneOver(b));
 
-    CHECK_EQUAL("a*b^(-1)", printDebug(product));
+    BOOST_CHECK_EQUAL("a*b^(-1)", printDebug(product));
 }
 
-TEST(Printer, negProductFactorMinusOne)
+BOOST_AUTO_TEST_CASE(negProductFactorMinusOne)
 {
     const BasePtr product = Product::minus(a, b);
 
-    CHECK_EQUAL("-a*b", print(product));
+    BOOST_CHECK_EQUAL("-a*b", print(product));
 }
 
-TEST(Printer, negProductNonTrivialFactor)
+BOOST_AUTO_TEST_CASE(negProductNonTrivialFactor)
 {
     const BasePtr product = Product::create(a, b, Numeric::create(-2));
 
-    CHECK_EQUAL("-2*a*b", print(product));
+    BOOST_CHECK_EQUAL("-2*a*b", print(product));
 }
 
-TEST(Printer, productWithConstantPi)
+BOOST_AUTO_TEST_CASE(productWithConstantPi)
 {
     const BasePtr product = Product::create({ Numeric::create(-2), a, b, pi });
 
-    CHECK_EQUAL("-2*\u03c0*a*b", print(product));
+    BOOST_CHECK_EQUAL("-2*\u03c0*a*b", print(product));
 }
 
-TEST(Printer, productOfEqualExpPowers)
+BOOST_AUTO_TEST_CASE(productOfEqualExpPowers)
 {
     const BasePtr product = Product::create(Power::sqrt(a), Power::sqrt(b));
 
-    CHECK_EQUAL("sqrt(a)*sqrt(b)", print(product));
+    BOOST_CHECK_EQUAL("sqrt(a)*sqrt(b)", print(product));
 }
 
-TEST(Printer, negProductOfEqualExpPowers)
+BOOST_AUTO_TEST_CASE(negProductOfEqualExpPowers)
 {
     const BasePtr exp = Numeric::create(2, 3);
     const BasePtr product = Product::create({ Numeric::mOne(), Power::create(a, exp),
             Power::create(b, exp) });
 
-    CHECK_EQUAL("-a^(2/3)*b^(2/3)", print(product));
+    BOOST_CHECK_EQUAL("-a^(2/3)*b^(2/3)", print(product));
 }
 
-TEST(Printer, productOfFunctions)
+BOOST_AUTO_TEST_CASE(productOfFunctions)
 {
     BasePtrList fac;
 
@@ -468,10 +464,10 @@ TEST(Printer, productOfFunctions)
 
     const BasePtr product = Product::create(fac);
     
-    CHECK_EQUAL("a*atan(1/sqrt(17))*cos(c*d)*sin(a*b)^3/cos(a*b)", print(product));
+    BOOST_CHECK_EQUAL("a*atan(1/sqrt(17))*cos(c*d)*sin(a*b)^3/cos(a*b)", print(product));
 }
 
-TEST(Printer, productOfFunctionsDebugPrint)
+BOOST_AUTO_TEST_CASE(productOfFunctionsDebugPrint)
 {
     BasePtrList fac;
 
@@ -484,111 +480,113 @@ TEST(Printer, productOfFunctionsDebugPrint)
 
     const BasePtr product = Product::create(fac);
 
-    CHECK_EQUAL("a*atan(17^(-1/2))*cos(a*b)^(-1)*cos(c*d)*sin(a*b)^3", printDebug(product));
+    BOOST_CHECK_EQUAL("a*atan(17^(-1/2))*cos(a*b)^(-1)*cos(c*d)*sin(a*b)^3", printDebug(product));
 }
 
-TEST(Printer, fracOfSumAndProduct)
+BOOST_AUTO_TEST_CASE(fracOfSumAndProduct)
 {
     const BasePtr sum = Sum::create(a, b);
     const BasePtr product = Product::create(c, d);
     const BasePtr frac = Product::create(sum, Power::oneOver(product));
 
-    CHECK_EQUAL("(a + b)/(c*d)", print(frac));
+    BOOST_CHECK_EQUAL("(a + b)/(c*d)", print(frac));
 }
 
-TEST(Printer, fracOfTwoProducts)
+BOOST_AUTO_TEST_CASE(fracOfTwoProducts)
 {
     const BasePtr prod1 = Product::create(a, b);
     const BasePtr prod2 = Product::create(c, d);
     const BasePtr frac = Product::create(prod1, Power::oneOver(prod2));
 
-    CHECK_EQUAL("a*b/(c*d)", print(frac));
+    BOOST_CHECK_EQUAL("a*b/(c*d)", print(frac));
 }
 
-TEST(Printer, fracOfPowerAndSum)
+BOOST_AUTO_TEST_CASE(fracOfPowerAndSum)
 {
     const BasePtr pow = Power::create(a, b);
     const BasePtr sum = Sum::create(c, d);
     const BasePtr frac = Product::create(pow, Power::oneOver(sum));
 
-    CHECK_EQUAL("a^b/(c + d)", print(frac));
+    BOOST_CHECK_EQUAL("a^b/(c + d)", print(frac));
 }
 
-TEST(Printer, negTermsInSum)
+BOOST_AUTO_TEST_CASE(negTermsInSum)
 {
     const BasePtr sum = Sum::create(a, Product::minus(b));
 
-    CHECK_EQUAL("a - b", print(sum));
+    BOOST_CHECK_EQUAL("a - b", print(sum));
 }
 
-TEST(Printer, posProductInSum)
+BOOST_AUTO_TEST_CASE(posProductInSum)
 {
     const BasePtr sum = Sum::create(a, Product::create(b, c));
 
-    CHECK_EQUAL("a + b*c", print(sum));
+    BOOST_CHECK_EQUAL("a + b*c", print(sum));
 }
 
-TEST(Printer, negSumInProduct)
+BOOST_AUTO_TEST_CASE(negSumInProduct)
 {
     const BasePtr product = Product::create(a, Sum::create(b, c));
 
-    CHECK_EQUAL("a*(b + c)", print(product));
+    BOOST_CHECK_EQUAL("a*(b + c)", print(product));
 }
 
-TEST(Printer, posSumInProduct)
+BOOST_AUTO_TEST_CASE(posSumInProduct)
 {
     const BasePtr product = Product::create(a, Sum::create(Product::minus(b), c));
 
-    CHECK_EQUAL("a*(-b + c)", print(product));
+    BOOST_CHECK_EQUAL("a*(-b + c)", print(product));
 }
 
-TEST(Printer, negativePowerWithConstantBase)
+BOOST_AUTO_TEST_CASE(negativePowerWithConstantBase)
 {
     const BasePtr exp = Numeric::create(-123);
     const BasePtr product = Product::minus(Power::create(Constant::createE(), exp));
     const std::string result = print(product);
 
-    CHECK_EQUAL("-1/e^123", result);
+    BOOST_CHECK_EQUAL("-1/e^123", result);
 }
 
-TEST(Printer, negativePowerWithConstantBaseDebug)
+BOOST_AUTO_TEST_CASE(negativePowerWithConstantBaseDebug)
 {
     const BasePtr exp = Numeric::create(-123);
     const BasePtr product = Product::minus(Power::create(Constant::createE(), exp));
 
-    CHECK_EQUAL("-e^(-123)", printDebug(product));
+    BOOST_CHECK_EQUAL("-e^(-123)", printDebug(product));
 }
 
-TEST(Printer, parenthesesInPosProductWithNegSumFactor)
+BOOST_AUTO_TEST_CASE(parenthesesInPosProductWithNegSumFactor)
 {
     const BasePtr product = Product::create(c, Sum::create(Product::minus(a), Numeric::create(-3)));
     const std::string result = print(product);
     
-    CHECK_EQUAL("(-3 - a)*c", result);
+    BOOST_CHECK_EQUAL("(-3 - a)*c", result);
 }
 
-TEST(Printer, parenthesesInNegProductWithSumFactor)
+BOOST_AUTO_TEST_CASE(parenthesesInNegProductWithSumFactor)
 {
     const BasePtr product = Product::minus(c, Sum::create(Product::minus(a), Numeric::create(-3)));
     const std::string result = print(product);
     
-    CHECK_EQUAL("-(-3 - a)*c", result);
+    BOOST_CHECK_EQUAL("-(-3 - a)*c", result);
 }
 
-TEST(Printer, parenthesesInNegProductWithSumFactorInsideSum)
+BOOST_AUTO_TEST_CASE(parenthesesInNegProductWithSumFactorInsideSum)
 {
     const BasePtr sum = Sum::create(a, Product::minus(c, Sum::create(Product::minus(a), Numeric::create(-3))));
     const std::string result = print(sum);
 
-    CHECK_EQUAL("a - (-3 - a)*c", result);
+    BOOST_CHECK_EQUAL("a - (-3 - a)*c", result);
 }
 
-TEST(Printer, parenthesesInNegProductWithSumFactorInsideLargerSum)
+BOOST_AUTO_TEST_CASE(parenthesesInNegProductWithSumFactorInsideLargerSum)
 {
     const BasePtr mThree = Numeric::create(-3);
     const BasePtr sum = Sum::create(b, Product::create(mThree, c), Product::minus(a, c), 
         Product::create(Numeric::mOne(), Sum::create(mThree, Product::minus(a)), c));
     const std::string result = print(sum);
 
-    CHECK_EQUAL("b - 3*c - a*c - (-3 - a)*c", result);
+    BOOST_CHECK_EQUAL("b - 3*c - a*c - (-3 - a)*c", result);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

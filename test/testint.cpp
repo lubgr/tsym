@@ -7,39 +7,40 @@
 
 using namespace tsym;
 
-TEST_GROUP(Int)
-{
+struct IntFixture {
     const Int zero;
 };
 
-TEST(Int, defaultConstruction)
+BOOST_FIXTURE_TEST_SUITE(TestInt, IntFixture)
+
+BOOST_AUTO_TEST_CASE(defaultConstruction)
 {
-    CHECK_EQUAL(0, zero);
+    BOOST_CHECK_EQUAL(0, zero);
 }
 
-TEST(Int, equality)
+BOOST_AUTO_TEST_CASE(equality)
 {
     const Int one(1);
 
-    CHECK(one == 1);
-    CHECK(1 == one);
+    BOOST_TEST(one == 1);
+    BOOST_TEST(1 == one);
 }
 
-TEST(Int, initWithDoubleCeil)
+BOOST_AUTO_TEST_CASE(initWithDoubleCeil)
 {
     const Int n(12345.6789);
 
-    CHECK_EQUAL(12345, n);
+    BOOST_CHECK_EQUAL(12345, n);
 }
 
-TEST(Int, initWithDoubleFloor)
+BOOST_AUTO_TEST_CASE(initWithDoubleFloor)
 {
     const Int n(98765.4321);
 
-    CHECK_EQUAL(98765, n);
+    BOOST_CHECK_EQUAL(98765, n);
 }
 
-TEST(Int, changeOfSign)
+BOOST_AUTO_TEST_CASE(changeOfSign)
 {
     const Int expected(213094234);
     const Int n(-213094234);
@@ -47,186 +48,186 @@ TEST(Int, changeOfSign)
 
     result = integer::abs(n);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Int, gcdBothOperandsZero)
+BOOST_AUTO_TEST_CASE(gcdBothOperandsZero)
 {
     const Int result = integer::gcd(zero, zero);
 
-    CHECK_EQUAL(0, result);
+    BOOST_CHECK_EQUAL(0, result);
 }
 
-TEST(Int, trivialGcd)
+BOOST_AUTO_TEST_CASE(trivialGcd)
 {
     const Int four(4);
     const Int result = integer::gcd(four, 3);
 
-    CHECK_EQUAL(1, result);
+    BOOST_CHECK_EQUAL(1, result);
 }
 
-TEST(Int, largeGcd)
+BOOST_AUTO_TEST_CASE(largeGcd)
 {
     const Int n1("2268768101928008863115135358527391507");
     const Int n2("471097608789240594631830432");
     const Int expected("2309482093840923");
     const Int result = integer::gcd(n1, n2);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Int, lcmBothZero)
+BOOST_AUTO_TEST_CASE(lcmBothZero)
 {
     const Int result = integer::lcm(zero, zero);
 
-    CHECK_EQUAL(0, result);
+    BOOST_CHECK_EQUAL(0, result);
 }
 
-TEST(Int, largeLcm)
+BOOST_AUTO_TEST_CASE(largeLcm)
 {
     const Int expected("47116200935874995263669584298436552275884098991145738935519645420");
     const Int n1("2309820438092849280938402209384209");
     const Int n2("20398209384092840982094382094380");
     const Int result = integer::lcm(n1, n2);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Int, constructFromMaxLong)
+BOOST_AUTO_TEST_CASE(constructFromMaxLong)
 {
     const long maxLong = std::numeric_limits<long>::max();
 
     Int n(maxLong);
 
-    CHECK_EQUAL(maxLong, n);
+    BOOST_CHECK_EQUAL(maxLong, n);
 }
 
-TEST(Int, powerWithZeroExp)
+BOOST_AUTO_TEST_CASE(powerWithZeroExp)
 {
     const Int base(12345);
     const Int result = integer::pow(base, 0);
 
-    CHECK_EQUAL(1, result);
+    BOOST_CHECK_EQUAL(1, result);
 }
 
-TEST(Int, powerZeroBaseAndExp)
+BOOST_AUTO_TEST_CASE(powerZeroBaseAndExp)
 {
     const Int result = integer::pow(zero, 0);
 
-    CHECK_EQUAL(1, result);
+    BOOST_CHECK_EQUAL(1, result);
 }
 
-TEST(Int, powerWithBaseOne)
+BOOST_AUTO_TEST_CASE(powerWithBaseOne)
 {
     const Int base(1);
     const Int result = integer::pow(base, 843098208u);
 
-    CHECK_EQUAL(1, result);
+    BOOST_CHECK_EQUAL(1, result);
 }
 
-TEST(Int, power)
+BOOST_AUTO_TEST_CASE(power)
 {
     const Int base(12345);
     const Int result = integer::pow(base, 9);
 
-    CHECK_EQUAL(Int("6659166111488656281486807152009765625"), result);
+    BOOST_CHECK_EQUAL(Int("6659166111488656281486807152009765625"), result);
 }
 
-TEST(Int, incrementDecrementOperators)
+BOOST_AUTO_TEST_CASE(incrementDecrementOperators)
 {
     Int n(1);
     Int res;
 
     res = ++n;
-    CHECK_EQUAL(2, res);
+    BOOST_CHECK_EQUAL(2, res);
 
     res = n++;
-    CHECK_EQUAL(2, res);
-    CHECK_EQUAL(3, n);
+    BOOST_CHECK_EQUAL(2, res);
+    BOOST_CHECK_EQUAL(3, n);
 
     res = --n;
-    CHECK_EQUAL(2, res);
+    BOOST_CHECK_EQUAL(2, res);
 
     res = n--;
-    CHECK_EQUAL(2, res);
-    CHECK_EQUAL(1, n);
+    BOOST_CHECK_EQUAL(2, res);
+    BOOST_CHECK_EQUAL(1, n);
 }
 
-TEST(Int, unaryPlusOperator)
+BOOST_AUTO_TEST_CASE(unaryPlusOperator)
 {
     const Int five(5);
     Int res;
 
     res = +five;
 
-    CHECK_EQUAL(five, res);
+    BOOST_CHECK_EQUAL(five, res);
 }
 
-TEST(Int, sign)
+BOOST_AUTO_TEST_CASE(sign)
 {
     const Int neg(-2134);
     const Int pos(2345);
 
-    CHECK_EQUAL(-1, neg.sign());
-    CHECK_EQUAL(1, pos.sign());
+    BOOST_CHECK_EQUAL(-1, neg.sign());
+    BOOST_CHECK_EQUAL(1, pos.sign());
 }
 
-TEST(Int, fitsIntoInt)
+BOOST_AUTO_TEST_CASE(fitsIntoInt)
 {
-    CHECK(integer::fitsInto<int>(Int(1234567)));
-    CHECK(integer::fitsInto<int>(Int(-7654321)));
-    CHECK_FALSE(integer::fitsInto<int>(Int("230894203489028394082903849092340")));
-    CHECK_FALSE(integer::fitsInto<int>(Int("-29304209843902894308290384203989")));
+    BOOST_TEST(integer::fitsInto<int>(Int(1234567)));
+    BOOST_TEST(integer::fitsInto<int>(Int(-7654321)));
+    BOOST_TEST(!integer::fitsInto<int>(Int("230894203489028394082903849092340")));
+    BOOST_TEST(!integer::fitsInto<int>(Int("-29304209843902894308290384203989")));
 }
 
-TEST(Int, fitsIntoLong)
+BOOST_AUTO_TEST_CASE(fitsIntoLong)
 {
-    CHECK(integer::fitsInto<long>(Int(1234567)));
-    CHECK(integer::fitsInto<long>(Int(-7654321)));
-    CHECK_FALSE(integer::fitsInto<long>(Int("230894203489028394082903849092340")));
-    CHECK_FALSE(integer::fitsInto<long>(Int("-29304209843902894308290384203989")));
+    BOOST_TEST(integer::fitsInto<long>(Int(1234567)));
+    BOOST_TEST(integer::fitsInto<long>(Int(-7654321)));
+    BOOST_TEST(!integer::fitsInto<long>(Int("230894203489028394082903849092340")));
+    BOOST_TEST(!integer::fitsInto<long>(Int("-29304209843902894308290384203989")));
 }
 
-TEST(Int, toPrimitiveInt)
+BOOST_AUTO_TEST_CASE(toPrimitiveInt)
 {
     const int orig = 12345;
     const Int n(orig);
 
-    CHECK(integer::fitsInto<int>(n));
-    CHECK_EQUAL(orig, static_cast<int>(n));
+    BOOST_TEST(integer::fitsInto<int>(n));
+    BOOST_CHECK_EQUAL(orig, static_cast<int>(n));
 }
 
-TEST(Int, toDoubleLargeNumber)
+BOOST_AUTO_TEST_CASE(toDoubleLargeNumber)
 {
     const Int n("2309420938209384092834902839408209420");
 
-    DOUBLES_EQUAL(2.309420938209384e+36, static_cast<double>(n), 1e-8);
+    BOOST_CHECK_CLOSE(2.309420938209384e+36, static_cast<double>(n), 1e-8);
 }
 
-TEST(Int, comparisonOperators)
+BOOST_AUTO_TEST_CASE(comparisonOperators)
 {
     const Int one(1);
     const Int mTwo(-2);
     const Int four(4);
 
-    CHECK(one < four);
-    CHECK(one <= four);
-    CHECK(one > mTwo);
-    CHECK(one >= mTwo);
+    BOOST_TEST(one < four);
+    BOOST_TEST(one <= four);
+    BOOST_TEST(one > mTwo);
+    BOOST_TEST(one >= mTwo);
 }
 
-TEST(Int, comparisonLargeNumbers)
+BOOST_AUTO_TEST_CASE(comparisonLargeNumbers)
 {
     const Int n1("12092309420932039482093840920940293");
     const Int n2("9234823429340293409243092093840928");
 
-    CHECK(n1 > n2);
-    CHECK(n1 >= n2);
-    CHECK(n2 < n1);
-    CHECK(n2 <= n1);
+    BOOST_TEST(n1 > n2);
+    BOOST_TEST(n1 >= n2);
+    BOOST_TEST(n2 < n1);
+    BOOST_TEST(n2 <= n1);
 }
 
-TEST(Int, addition)
+BOOST_AUTO_TEST_CASE(addition)
 {
     const Int expected(123456l + 654321l);
     const Int n1(123456l);
@@ -235,10 +236,10 @@ TEST(Int, addition)
 
     result = n1 + n2;
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Int, multiplication)
+BOOST_AUTO_TEST_CASE(multiplication)
 {
     const Int expected(123*654);
     const Int n1(123);
@@ -247,10 +248,10 @@ TEST(Int, multiplication)
 
     result = n1*n2;
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Int, exactDivision)
+BOOST_AUTO_TEST_CASE(exactDivision)
 {
     const Int numerator(45*123);
     const Int denominator(45);
@@ -258,10 +259,10 @@ TEST(Int, exactDivision)
 
     result = numerator/denominator;
 
-    CHECK_EQUAL(123, result);
+    BOOST_CHECK_EQUAL(123, result);
 }
 
-TEST(Int, divisionWithRemainder)
+BOOST_AUTO_TEST_CASE(divisionWithRemainder)
 {
     const Int numerator(12345);
     const Int denominator(321);
@@ -269,36 +270,36 @@ TEST(Int, divisionWithRemainder)
 
     result = numerator/denominator;
 
-    CHECK_EQUAL(38, result);
+    BOOST_CHECK_EQUAL(38, result);
 }
 
-TEST(Int, moduloPositiveNumber)
+BOOST_AUTO_TEST_CASE(moduloPositiveNumber)
 {
     const Int n(5);
 
-    CHECK_EQUAL(1, n % 2);
-    CHECK_EQUAL(1, n % -2);
+    BOOST_CHECK_EQUAL(1, n % 2);
+    BOOST_CHECK_EQUAL(1, n % -2);
 }
 
-TEST(Int, moduloLargeNegativeNumber)
+BOOST_AUTO_TEST_CASE(moduloLargeNegativeNumber)
 {
     const Int n("-2938749832749832749283749832749823");
 
-    CHECK_EQUAL(-58, n % 123);
-    CHECK_EQUAL(-58, n % -123);
+    BOOST_CHECK_EQUAL(-58, n % 123);
+    BOOST_CHECK_EQUAL(-58, n % -123);
 }
 
-TEST(Int, moduloZeroPosAndNegNumber)
+BOOST_AUTO_TEST_CASE(moduloZeroPosAndNegNumber)
 {
     const Int n(164);
 
-    CHECK_EQUAL(0, n % 2);
-    CHECK_EQUAL(0, -n % 2);
-    CHECK_EQUAL(0, n % -2);
-    CHECK_EQUAL(0, -n % -2);
+    BOOST_CHECK_EQUAL(0, n % 2);
+    BOOST_CHECK_EQUAL(0, -n % 2);
+    BOOST_CHECK_EQUAL(0, n % -2);
+    BOOST_CHECK_EQUAL(0, -n % -2);
 }
 
-TEST(Int, streamOperator)
+BOOST_AUTO_TEST_CASE(streamOperator)
 {
     const std::string expected("-12309812038209340942385930859034");
     const Int n(expected.c_str());
@@ -306,10 +307,10 @@ TEST(Int, streamOperator)
 
     stream << n;
 
-    CHECK_EQUAL(expected, stream.str());
+    BOOST_CHECK_EQUAL(expected, stream.str());
 }
 
-TEST(Int, streamOperatorVeryLongNumber)
+BOOST_AUTO_TEST_CASE(streamOperatorVeryLongNumber)
 {
     const std::string expected("-1230029380928409280920984098230948099812038209340942385930859034"
             "203984092384092843092809483209482093840928430928309482093480923840928340928309402394"
@@ -319,5 +320,7 @@ TEST(Int, streamOperatorVeryLongNumber)
 
     stream << n;
 
-    CHECK_EQUAL(expected, stream.str());
+    BOOST_CHECK_EQUAL(expected, stream.str());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

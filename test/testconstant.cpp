@@ -7,99 +7,102 @@
 
 using namespace tsym;
 
-TEST_GROUP(Constant)
-{
+struct ConstantFixture {
     const BasePtr pi = Constant::createPi();
     const BasePtr e = Constant::createE();
 };
 
-TEST(Constant, typeString)
+BOOST_FIXTURE_TEST_SUITE(TestConstant, ConstantFixture)
+
+BOOST_AUTO_TEST_CASE(typeString)
 {
     const std::string expected("Constant");
 
-    CHECK_EQUAL(expected, pi->typeStr());
-    CHECK_EQUAL(expected, e->typeStr());
+    BOOST_CHECK_EQUAL(expected, pi->typeStr());
+    BOOST_CHECK_EQUAL(expected, e->typeStr());
 }
 
-TEST(Constant, constRequest)
+BOOST_AUTO_TEST_CASE(constRequest)
     /* A Constant is treated like a Symbol, so it isn't considered const. */
 {
-    CHECK_FALSE(pi->isConst());
-    CHECK_FALSE(e->isConst());
+    BOOST_TEST(!pi->isConst());
+    BOOST_TEST(!e->isConst());
 }
 
-TEST(Constant, typeRequest)
+BOOST_AUTO_TEST_CASE(typeRequest)
 {
-    CHECK(pi->isConstant());
-    CHECK(e->isConstant());
+    BOOST_TEST(pi->isConstant());
+    BOOST_TEST(e->isConstant());
 }
 
-TEST(Constant, getNameFromPi)
+BOOST_AUTO_TEST_CASE(getNameFromPi)
 {
     const Name expected("pi");
     Name name;
 
     name = pi->name();
 
-    CHECK_EQUAL(expected, name);
+    BOOST_CHECK_EQUAL(expected, name);
 }
 
-TEST(Constant, getNameFromE)
+BOOST_AUTO_TEST_CASE(getNameFromE)
 {
     const Name expected("e");
     Name name;
 
     name = e->name();
 
-    CHECK_EQUAL(expected, name);
+    BOOST_CHECK_EQUAL(expected, name);
 }
 
-TEST(Constant, trivialEquality)
+BOOST_AUTO_TEST_CASE(trivialEquality)
 {
-    CHECK(pi->isEqual(pi));
-    CHECK(e->isEqual(e));
+    BOOST_TEST(pi->isEqual(pi));
+    BOOST_TEST(e->isEqual(e));
 }
 
-TEST(Constant, numericEvaluationPi)
-{
-    const double TOL = 1.e-12;
-
-    DOUBLES_EQUAL(M_PI, pi->numericEval().toDouble(), TOL);
-
-    /* Should work with the internal tolerance of the Number class, too. */
-    CHECK_EQUAL(M_PI, pi->numericEval());
-}
-
-TEST(Constant, numericEvaluationE)
+BOOST_AUTO_TEST_CASE(numericEvaluationPi)
 {
     const double TOL = 1.e-12;
 
-    DOUBLES_EQUAL(M_E, e->numericEval().toDouble(), TOL);
+    BOOST_CHECK_CLOSE(M_PI, pi->numericEval().toDouble(), TOL);
 
     /* Should work with the internal tolerance of the Number class, too. */
-    CHECK_EQUAL(M_E, e->numericEval());
+    BOOST_CHECK_EQUAL(M_PI, pi->numericEval());
 }
 
-TEST(Constant, numericTerm)
+BOOST_AUTO_TEST_CASE(numericEvaluationE)
 {
-    CHECK_EQUAL(one, pi->numericTerm());
-    CHECK_EQUAL(one, e->numericTerm());
+    const double TOL = 1.e-12;
+
+    BOOST_CHECK_CLOSE(M_E, e->numericEval().toDouble(), TOL);
+
+    /* Should work with the internal tolerance of the Number class, too. */
+    BOOST_CHECK_EQUAL(M_E, e->numericEval());
 }
 
-TEST(Constant, nonNumericTerm)
+BOOST_AUTO_TEST_CASE(numericTerm)
 {
-    CHECK_EQUAL(pi, pi->nonNumericTerm());
-    CHECK_EQUAL(e, e->nonNumericTerm());
+    BOOST_CHECK_EQUAL(one, pi->numericTerm());
+    BOOST_CHECK_EQUAL(one, e->numericTerm());
 }
 
-TEST(Constant, constTerm)
+BOOST_AUTO_TEST_CASE(nonNumericTerm)
 {
-    CHECK_EQUAL(one, pi->constTerm());
-    CHECK_EQUAL(one, e->constTerm());
+    BOOST_CHECK_EQUAL(pi, pi->nonNumericTerm());
+    BOOST_CHECK_EQUAL(e, e->nonNumericTerm());
 }
 
-TEST(Constant, nonConstTerm)
+BOOST_AUTO_TEST_CASE(constTerm)
 {
-    CHECK_EQUAL(pi, pi->nonConstTerm());
-    CHECK_EQUAL(e, e->nonConstTerm());
+    BOOST_CHECK_EQUAL(one, pi->constTerm());
+    BOOST_CHECK_EQUAL(one, e->constTerm());
 }
+
+BOOST_AUTO_TEST_CASE(nonConstTerm)
+{
+    BOOST_CHECK_EQUAL(pi, pi->nonConstTerm());
+    BOOST_CHECK_EQUAL(e, e->nonConstTerm());
+}
+
+BOOST_AUTO_TEST_SUITE_END()

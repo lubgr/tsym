@@ -6,15 +6,16 @@
 
 using namespace tsym;
 
-TEST_GROUP(LUDecomposition)
-{
-    Var a{"a"};
-    Var b{"b"};
-    Var c{"c"};
-    Var d{"d"};
+struct LUDecompositionFixture {
+    const Var a{"a"};
+    const Var b{"b"};
+    const Var c{"c"};
+    const Var d{"d"};
 };
 
-TEST(LUDecomposition, dimTwoWithDefaults)
+BOOST_FIXTURE_TEST_SUITE(TestLUDecomposition, LUDecompositionFixture)
+
+BOOST_AUTO_TEST_CASE(dimTwoWithDefaults)
 {
     const auto expected = createBoostMatrix({{ a, b }, { c/a, -b*c/a + d }});
     auto m = createBoostMatrix({{ a, b, }, { c, d }});
@@ -23,10 +24,10 @@ TEST(LUDecomposition, dimTwoWithDefaults)
 
     lu.factorize();
 
-    CHECK_EQUAL(expected, m);
+    BOOST_CHECK_EQUAL(expected, m);
 }
 
-TEST(LUDecomposition, dimTwoWithLambdaAccess)
+BOOST_AUTO_TEST_CASE(dimTwoWithLambdaAccess)
 {
     const auto expected = createBoostMatrix({{ a, b }, { c/a, -b*c/a + d }});
     auto accessMatrix = [](BoostMatrix& m, BoostSizeType i, BoostSizeType j) -> Var& { return m(i, j); };
@@ -36,10 +37,10 @@ TEST(LUDecomposition, dimTwoWithLambdaAccess)
 
     lu.factorize();
 
-    CHECK_EQUAL(expected, m);
+    BOOST_CHECK_EQUAL(expected, m);
 }
 
-TEST(LUDecomposition, applyToRightHandSide)
+BOOST_AUTO_TEST_CASE(applyToRightHandSide)
 {
     auto m = createBoostMatrix({{ a, b }, { c/a, -b*c/a + d }});
     auto mProxy = BoostMatrixProxy(m);
@@ -51,11 +52,11 @@ TEST(LUDecomposition, applyToRightHandSide)
     
     lu.computeSolution(rhsProxy, xProxy);
 
-    CHECK_EQUAL(1, x(0));
-    CHECK_EQUAL(-2, x(1));
+    BOOST_CHECK_EQUAL(1, x(0));
+    BOOST_CHECK_EQUAL(-2, x(1));
 }
 
-TEST(LUDecomposition, dimThreeDecompAndApplyToRhs)
+BOOST_AUTO_TEST_CASE(dimThreeDecompAndApplyToRhs)
 {
     BoostSizeType dim = 3;
     BoostMatrix m(dim, dim);
@@ -83,7 +84,9 @@ TEST(LUDecomposition, dimThreeDecompAndApplyToRhs)
     lu.factorize();
     lu.computeSolution(rhsProxy, xProxy);
 
-    CHECK_EQUAL(1, x(0));
-    CHECK_EQUAL(2, x(1));
-    CHECK_EQUAL(3, x(2));
+    BOOST_CHECK_EQUAL(1, x(0));
+    BOOST_CHECK_EQUAL(2, x(1));
+    BOOST_CHECK_EQUAL(3, x(2));
 }
+
+BOOST_AUTO_TEST_SUITE_END()

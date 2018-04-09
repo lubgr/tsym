@@ -12,58 +12,59 @@
 
 using namespace tsym;
 
-TEST_GROUP(Diff)
-{
+namespace {
     void checkWrongDiffToUndefined(const BasePtr& arg1, const BasePtr& arg2)
     {
         disableLog();
 
         const BasePtr result = arg1->diff(arg2);
-        CHECK(result->isUndefined());
+        BOOST_TEST(result->isUndefined());
 
         enableLog();
     }
-};
+}
 
-TEST(Diff, numeric)
+BOOST_AUTO_TEST_SUITE(TestDiff)
+
+BOOST_AUTO_TEST_CASE(numeric)
 {
     const BasePtr num = Numeric::create(11, 17);
     const BasePtr result = num->diff(a);
 
-    CHECK(result->isZero());
+    BOOST_TEST(result->isZero());
 }
 
-TEST(Diff, constant)
+BOOST_AUTO_TEST_CASE(constant)
 {
     const BasePtr pi = Constant::createPi();
     const BasePtr result = pi->diff(a);
 
-    CHECK(result->isZero());
+    BOOST_TEST(result->isZero());
 }
 
-TEST(Diff, undefined)
+BOOST_AUTO_TEST_CASE(undefined)
 {
     const BasePtr undefined = Undefined::create();
     const BasePtr result = undefined->diff(a);
 
-    CHECK(result->isUndefined());
+    BOOST_TEST(result->isUndefined());
 }
 
-TEST(Diff, symbolWrtItself)
+BOOST_AUTO_TEST_CASE(symbolWrtItself)
 {
     const BasePtr result = a->diff(a);
 
-    CHECK_EQUAL(one, result);
+    BOOST_CHECK_EQUAL(one, result);
 }
 
-TEST(Diff, symbolWrtOtherSymbol)
+BOOST_AUTO_TEST_CASE(symbolWrtOtherSymbol)
 {
     const BasePtr result = a->diff(b);
 
-    CHECK(result->isZero());
+    BOOST_TEST(result->isZero());
 }
 
-TEST(Diff, wrongArguments)
+BOOST_AUTO_TEST_CASE(wrongArguments)
 {
     const BasePtr product = Product::create(seven, b);
     const BasePtr pi = Constant::createPi();
@@ -77,71 +78,71 @@ TEST(Diff, wrongArguments)
     checkWrongDiffToUndefined(product, power);
 }
 
-TEST(Diff, powerWithPosIntExp)
+BOOST_AUTO_TEST_CASE(powerWithPosIntExp)
 {
     const BasePtr expected = Product::create(five, Power::create(a, four));
     const BasePtr pow = Power::create(a, five);
     const BasePtr result = pow->diff(a);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Diff, powerWithNegIntExp)
+BOOST_AUTO_TEST_CASE(powerWithNegIntExp)
 {
     const BasePtr expected = Product::create(Numeric::create(-1234),
             Power::create(a, Numeric::create(-1235)));
     const BasePtr pow = Power::create(a, Numeric::create(-1234));
     const BasePtr result = pow->diff(a);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Diff, powerWithPosRationalExp)
+BOOST_AUTO_TEST_CASE(powerWithPosRationalExp)
 {
     const BasePtr expected = Product::create(Numeric::create(3, 7),
             Power::create(a, Numeric::create(-4, 7)));
     const BasePtr pow = Power::create(a, Numeric::create(3, 7));
     const BasePtr result = pow->diff(a);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Diff, powerOfEuler)
+BOOST_AUTO_TEST_CASE(powerOfEuler)
     /* de^a/da = e^a. */
 {
     const BasePtr pow = Power::create(Constant::createE(), a);
     const BasePtr result = pow->diff(a);
 
-    CHECK_EQUAL(pow, result);
+    BOOST_CHECK_EQUAL(pow, result);
 }
 
-TEST(Diff, symbolPower)
+BOOST_AUTO_TEST_CASE(symbolPower)
 {
     const BasePtr pow = Power::create(a, b);
     const BasePtr expected = Product::create(pow, b, Power::oneOver(a));
     const BasePtr result = pow->diff(a);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Diff, logOfSymbol)
+BOOST_AUTO_TEST_CASE(logOfSymbol)
 {
     const BasePtr expected = Power::oneOver(a);
     const BasePtr log = Logarithm::create(a);
     const BasePtr result = log->diff(a);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Diff, logOfSymbolWrtToDifferentSymbol)
+BOOST_AUTO_TEST_CASE(logOfSymbolWrtToDifferentSymbol)
 {
     const BasePtr log = Logarithm::create(a);
     const BasePtr result = log->diff(b);
 
-    CHECK(result->isZero());
+    BOOST_TEST(result->isZero());
 }
 
-TEST(Diff, sinOfSum)
+BOOST_AUTO_TEST_CASE(sinOfSum)
 {
     const BasePtr sum = Sum::create(Product::create(Numeric::half(), a, a), b,
             Product::create(two, c));
@@ -149,20 +150,20 @@ TEST(Diff, sinOfSum)
     const BasePtr sin = Trigonometric::createSin(sum);
     const BasePtr result = sin->diff(a);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Diff, cosOfLogarithmOfProduct)
+BOOST_AUTO_TEST_CASE(cosOfLogarithmOfProduct)
 {
     const BasePtr arg = Logarithm::create(Product::create(four, a, b, c));
     const BasePtr expected = Product::minus(Trigonometric::createSin(arg), Power::oneOver(a));
     const BasePtr cos = Trigonometric::createCos(arg);
     const BasePtr result = cos->diff(a);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Diff, tanOfSinOfSymbol)
+BOOST_AUTO_TEST_CASE(tanOfSinOfSymbol)
     /* d/da(tan(sin(a))) = cos(a)*(1 + tan(sin(a))^2). */
 {
     const BasePtr sinA = Trigonometric::createSin(a);
@@ -171,10 +172,10 @@ TEST(Diff, tanOfSinOfSymbol)
             Sum::create(one, Power::create(tan, two)));
     const BasePtr result = tan->diff(a);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Diff, asinOfCosOfPower)
+BOOST_AUTO_TEST_CASE(asinOfCosOfPower)
     /* d/da(asin(cos(a^2))) = -2*a*sin(a^2)/sqrt(1 - cos(a^2)^2). */
 {
     const BasePtr aSquare = Power::create(a, two);
@@ -185,10 +186,10 @@ TEST(Diff, asinOfCosOfPower)
             Power::create(Sum::create(one, Product::minus(cosASquare, cosASquare)),
                 Numeric::create(-1, 2)));
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Diff, acosOfSum)
+BOOST_AUTO_TEST_CASE(acosOfSum)
     /* d/da(acos(a + 2*a^2 + c)) = (-4*a - 1)/sqrt(1 - (a + 2*a^2 + c)^2). */
 {
     const BasePtr arg = Sum::create(a, Product::create(two, a, a), c);
@@ -198,10 +199,10 @@ TEST(Diff, acosOfSum)
             Power::create(Sum::create(one, Product::minus(Power::create(arg, two))),
                 Numeric::create(-1, 2)));
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Diff, atanOfPower)
+BOOST_AUTO_TEST_CASE(atanOfPower)
     /* d/da(atan(a^10)) = 10*a^9/(1 + a^20). */
 {
     const BasePtr atan = Trigonometric::createAtan(Power::create(a, ten));
@@ -209,10 +210,10 @@ TEST(Diff, atanOfPower)
     const BasePtr expected = Product::create(ten, Power::create(a, nine),
             Power::oneOver(Sum::create(one, Power::create(a, Numeric::create(20)))));
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Diff, atan2OfSymbols)
+BOOST_AUTO_TEST_CASE(atan2OfSymbols)
     /* d/da(atan2(b, a)) = -b/(a^2 + b^2). */
 {
     const BasePtr atan2 = Trigonometric::createAtan2(b, a);
@@ -220,10 +221,10 @@ TEST(Diff, atan2OfSymbols)
     const BasePtr expected = Product::minus(b, Power::oneOver(Sum::create(Power::create(a, two),
                     Power::create(b, two))));
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Diff, mixedTerm01)
+BOOST_AUTO_TEST_CASE(mixedTerm01)
     /* d/da(2*a*b*log(4) + 17*a^5*b - 12/13*a^(-1/5) + a*log(a)) = * 1 + 12/65*a^(-6/5) + 85*a^4*b +
      * 2*b*log(4) + log(a). */
 {
@@ -239,10 +240,10 @@ TEST(Diff, mixedTerm01)
     const BasePtr sum = Sum::create(term1, term2, term3, term4);
     const BasePtr result = sum->diff(a);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Diff, mixedTerm02)
+BOOST_AUTO_TEST_CASE(mixedTerm02)
     /* d/da(a*b*c*log(sin(sqrt(2)*a^4*b + log(sin(2)*a)))) = ... */
 {
     const BasePtr sinTwo = Trigonometric::createSin(two);
@@ -263,5 +264,7 @@ TEST(Diff, mixedTerm02)
     const BasePtr expected = Sum::create(summand1, summand2);
     const BasePtr result = orig->diff(a);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

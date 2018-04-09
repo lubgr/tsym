@@ -12,37 +12,33 @@
 
 using namespace tsym;
 
-TEST_GROUP(PowerNormal)
-{
+struct PowerNormalFixture {
     const BasePtr oneOverB = Power::oneOver(b);
     const BasePtr abSum = Sum::create(a, b);
-    const BasePtr pi = Constant::createPi();
+    const BasePtr& pi = Constant::createPi();
     /* a/b + (c - a)/b - c/b becomes 0 by normalization. */
     const BasePtr zeroByNormal = Sum::create(Product::create(a, oneOverB), Product::minus(c, oneOverB),
         Product::create(Sum::create(c, Product::minus(a)), oneOverB));
     /* a*b + a*c - a*(b + c) is zero after expansion. */
     const BasePtr zeroByExpansion = Sum::create(Product::create(a, b), Product::create(a, c),
             Product::minus(a, Sum::create(b, c)));
-    std::unique_ptr<SymbolMap> map;
-
-    void setup()
-    {
-        map = std::make_unique<SymbolMap>();
-    }
+    std::unique_ptr<SymbolMap> map = std::make_unique<SymbolMap>();
 };
 
-TEST(PowerNormal, unspecifiedInput)
+BOOST_FIXTURE_TEST_SUITE(TestPowerNormal, PowerNormalFixture)
+
+BOOST_AUTO_TEST_CASE(unspecifiedInput)
 {
     PowerNormal pn(*map);
     Fraction res;
 
     res = pn.normal();
 
-    CHECK(res.num()->isUndefined());
-    CHECK_EQUAL(one, res.denom());
+    BOOST_TEST(res.num()->isUndefined());
+    BOOST_CHECK_EQUAL(one, res.denom());
 }
 
-TEST(PowerNormal, powerWithPosIntExp)
+BOOST_AUTO_TEST_CASE(powerWithPosIntExp)
 {
     PowerNormal pn(*map);
     Fraction res;
@@ -52,11 +48,11 @@ TEST(PowerNormal, powerWithPosIntExp)
 
     res = pn.normal();
 
-    CHECK_EQUAL(Power::create(a, two), res.num());
-    CHECK_EQUAL(one, res.denom());
+    BOOST_CHECK_EQUAL(Power::create(a, two), res.num());
+    BOOST_CHECK_EQUAL(one, res.denom());
 }
 
-TEST(PowerNormal, powerWithPosNegExp)
+BOOST_AUTO_TEST_CASE(powerWithPosNegExp)
 {
     PowerNormal pn(*map);
     Fraction res;
@@ -66,11 +62,11 @@ TEST(PowerNormal, powerWithPosNegExp)
 
     res = pn.normal();
 
-    CHECK_EQUAL(one, res.num());
-    CHECK_EQUAL(Power::create(a, two), res.denom());
+    BOOST_CHECK_EQUAL(one, res.num());
+    BOOST_CHECK_EQUAL(Power::create(a, two), res.denom());
 }
 
-TEST(PowerNormal, powerWithSymbolExp)
+BOOST_AUTO_TEST_CASE(powerWithSymbolExp)
     /* (a + b)^c becomes tmp/1. */
 {
     const BasePtr orig = Power::create(abSum, c);
@@ -83,15 +79,15 @@ TEST(PowerNormal, powerWithSymbolExp)
 
     res = pn.normal();
 
-    CHECK_EQUAL(one, res.denom());
-    CHECK(res.num()->isSymbol());
+    BOOST_CHECK_EQUAL(one, res.denom());
+    BOOST_TEST(res.num()->isSymbol());
 
     backReplaced = map->replaceTmpSymbolsBackFrom(res.num());
 
-    CHECK_EQUAL(orig, backReplaced);
+    BOOST_CHECK_EQUAL(orig, backReplaced);
 }
 
-TEST(PowerNormal, fractionBaseSymbolExp)
+BOOST_AUTO_TEST_CASE(fractionBaseSymbolExp)
     /* (3/4)^a becomes tmp1/1. */
 {
     const BasePtr base = Numeric::create(3, 4);
@@ -103,11 +99,11 @@ TEST(PowerNormal, fractionBaseSymbolExp)
 
     res = pn.normal();
 
-    CHECK_EQUAL(one, res.denom());
-    CHECK(res.num()->isSymbol());
+    BOOST_CHECK_EQUAL(one, res.denom());
+    BOOST_TEST(res.num()->isSymbol());
 }
 
-TEST(PowerNormal, fractionBaseNumericallyEvaluableNegExp)
+BOOST_AUTO_TEST_CASE(fractionBaseNumericallyEvaluableNegExp)
     /* (3/4)^(-sin(1)) = tmp1/tmp2 with tmp1 = 4^sin(1) and tmp2 = 3^sin(1). */
 {
     const BasePtr sinOne = Trigonometric::createSin(one);
@@ -124,19 +120,19 @@ TEST(PowerNormal, fractionBaseNumericallyEvaluableNegExp)
 
     res = pn.normal();
 
-    CHECK(res.num()->isSymbol());
-    CHECK(res.denom()->isSymbol());
+    BOOST_TEST(res.num()->isSymbol());
+    BOOST_TEST(res.denom()->isSymbol());
 
     backReplaced = map->replaceTmpSymbolsBackFrom(res.num());
 
-    CHECK_EQUAL(expectedNum, backReplaced);
+    BOOST_CHECK_EQUAL(expectedNum, backReplaced);
 
     backReplaced = map->replaceTmpSymbolsBackFrom(res.denom());
 
-    CHECK_EQUAL(expectedDenom, backReplaced);
+    BOOST_CHECK_EQUAL(expectedDenom, backReplaced);
 }
 
-TEST(PowerNormal, fractionBaseNumericallyEvaluablePosExp)
+BOOST_AUTO_TEST_CASE(fractionBaseNumericallyEvaluablePosExp)
     /* (2/5)^sqrt(2) = tmp1/tmp2 with tmp1 = 2^sqrt(2) and tmp2 = 5^sqrt(2). */
 {
     const BasePtr exp = Power::sqrt(two);
@@ -151,19 +147,19 @@ TEST(PowerNormal, fractionBaseNumericallyEvaluablePosExp)
 
     res = pn.normal();
 
-    CHECK(res.num()->isSymbol());
-    CHECK(res.denom()->isSymbol());
+    BOOST_TEST(res.num()->isSymbol());
+    BOOST_TEST(res.denom()->isSymbol());
 
     backReplaced = map->replaceTmpSymbolsBackFrom(res.num());
 
-    CHECK_EQUAL(expectedNum, backReplaced);
+    BOOST_CHECK_EQUAL(expectedNum, backReplaced);
 
     backReplaced = map->replaceTmpSymbolsBackFrom(res.denom());
 
-    CHECK_EQUAL(expectedDenom, backReplaced);
+    BOOST_CHECK_EQUAL(expectedDenom, backReplaced);
 }
 
-TEST(PowerNormal, symbolicFractionBaseNumericallyEvaluablePosExp)
+BOOST_AUTO_TEST_CASE(symbolicFractionBaseNumericallyEvaluablePosExp)
     /* (a/b)^sqrt(2) = tmp1/tmp2 with tmp1 = a^sqrt(2) and tmp2 = b^sqrt(2). */
 {
     const BasePtr base = Product::create(a, Power::oneOver(b));
@@ -179,19 +175,19 @@ TEST(PowerNormal, symbolicFractionBaseNumericallyEvaluablePosExp)
 
     res = pn.normal();
 
-    CHECK(res.num()->isSymbol());
-    CHECK(res.denom()->isSymbol());
+    BOOST_TEST(res.num()->isSymbol());
+    BOOST_TEST(res.denom()->isSymbol());
 
     backReplaced = map->replaceTmpSymbolsBackFrom(res.num());
 
-    CHECK_EQUAL(expectedNum, backReplaced);
+    BOOST_CHECK_EQUAL(expectedNum, backReplaced);
 
     backReplaced = map->replaceTmpSymbolsBackFrom(res.denom());
 
-    CHECK_EQUAL(expectedDenom, backReplaced);
+    BOOST_CHECK_EQUAL(expectedDenom, backReplaced);
 }
 
-TEST(PowerNormal, powerWithMinusSymbolExp)
+BOOST_AUTO_TEST_CASE(powerWithMinusSymbolExp)
     /* (a + b)^(-c) becomes tmp/1, too. */
 {
     const BasePtr minusC = Product::minus(c);
@@ -204,15 +200,15 @@ TEST(PowerNormal, powerWithMinusSymbolExp)
 
     res = pn.normal();
 
-    CHECK_EQUAL(one, res.denom());
-    CHECK(res.num()->isSymbol());
+    BOOST_CHECK_EQUAL(one, res.denom());
+    BOOST_TEST(res.num()->isSymbol());
 
     backReplaced = map->replaceTmpSymbolsBackFrom(res.num());
 
-    CHECK_EQUAL(Power::create(abSum, minusC), backReplaced);
+    BOOST_CHECK_EQUAL(Power::create(abSum, minusC), backReplaced);
 }
 
-TEST(PowerNormal, powerWithPiExp)
+BOOST_AUTO_TEST_CASE(powerWithPiExp)
     /* a^Pi becomes tmp/1 with tmp = a^Pi. */
 {
     BasePtr backReplaced;
@@ -224,15 +220,15 @@ TEST(PowerNormal, powerWithPiExp)
 
     res = pn.normal();
 
-    CHECK_EQUAL(one, res.denom());
-    CHECK(res.num()->isSymbol());
+    BOOST_CHECK_EQUAL(one, res.denom());
+    BOOST_TEST(res.num()->isSymbol());
 
     backReplaced = map->replaceTmpSymbolsBackFrom(res.num());
 
-    CHECK_EQUAL(Power::create(a, pi), backReplaced);
+    BOOST_CHECK_EQUAL(Power::create(a, pi), backReplaced);
 }
 
-TEST(PowerNormal, powerWithNegNumEvalExp)
+BOOST_AUTO_TEST_CASE(powerWithNegNumEvalExp)
     /* a^(-3*sqrt(2)*Pi) becomes 1/tmp with tmp = a^(3*sqrt(2)*Pi). */
 {
     const BasePtr pos = Product::create(three, pi, Power::sqrt(two));
@@ -245,15 +241,15 @@ TEST(PowerNormal, powerWithNegNumEvalExp)
 
     res = pn.normal();
 
-    CHECK_EQUAL(one, res.num());
-    CHECK(res.denom()->isSymbol());
+    BOOST_CHECK_EQUAL(one, res.num());
+    BOOST_TEST(res.denom()->isSymbol());
 
     backReplaced = map->replaceTmpSymbolsBackFrom(res.denom());
 
-    CHECK_EQUAL(Power::create(a, pos), backReplaced);
+    BOOST_CHECK_EQUAL(Power::create(a, pos), backReplaced);
 }
 
-TEST(PowerNormal, rationalBaseZero)
+BOOST_AUTO_TEST_CASE(rationalBaseZero)
 {
     BasePtr backReplaced;
     PowerNormal pn(*map);
@@ -265,10 +261,10 @@ TEST(PowerNormal, rationalBaseZero)
     res = pn.normal();
     backReplaced = map->replaceTmpSymbolsBackFrom(res.eval());
 
-    CHECK_EQUAL(zero, backReplaced);
+    BOOST_CHECK_EQUAL(zero, backReplaced);
 }
 
-TEST(PowerNormal, rationalBaseOne)
+BOOST_AUTO_TEST_CASE(rationalBaseOne)
 {
     const BasePtr base = Sum::create(zeroByNormal, one);
     BasePtr backReplaced;
@@ -281,10 +277,10 @@ TEST(PowerNormal, rationalBaseOne)
     res = pn.normal();
     backReplaced = map->replaceTmpSymbolsBackFrom(res.eval());
 
-    CHECK_EQUAL(one, backReplaced);
+    BOOST_CHECK_EQUAL(one, backReplaced);
 }
 
-TEST(PowerNormal, rationalBaseUndefined)
+BOOST_AUTO_TEST_CASE(rationalBaseUndefined)
 {
     const BasePtr base = Power::oneOver(zeroByNormal);
     PowerNormal pn(*map);
@@ -295,10 +291,10 @@ TEST(PowerNormal, rationalBaseUndefined)
 
     res = pn.normal().eval();
 
-    CHECK(res->isUndefined());
+    BOOST_TEST(res->isUndefined());
 }
 
-TEST(PowerNormal, rationalBaseUndefinedByExpansion)
+BOOST_AUTO_TEST_CASE(rationalBaseUndefinedByExpansion)
 {
     const BasePtr base = Power::oneOver(zeroByExpansion);
     PowerNormal pn(*map);
@@ -309,5 +305,7 @@ TEST(PowerNormal, rationalBaseUndefinedByExpansion)
 
     res = pn.normal().eval();
 
-    CHECK(res->isUndefined());
+    BOOST_TEST(res->isUndefined());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

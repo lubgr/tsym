@@ -13,61 +13,62 @@
 
 using namespace tsym;
 
-TEST_GROUP(Subst)
-{
-    const BasePtr undefined = Undefined::create();
-    const BasePtr pi = Constant::createPi();
+struct SubstFixture {
+    const BasePtr& undefined = Undefined::create();
+    const BasePtr& pi = Constant::createPi();
 };
 
-TEST(Subst, undefinedToSymbol)
+BOOST_FIXTURE_TEST_SUITE(TestSubst, SubstFixture)
+
+BOOST_AUTO_TEST_CASE(undefinedToSymbol)
 {
     const BasePtr res = undefined->subst(undefined, a);
 
-    CHECK_EQUAL(a, res);
+    BOOST_CHECK_EQUAL(a, res);
 }
 
-TEST(Subst, symbolToNumeric)
+BOOST_AUTO_TEST_CASE(symbolToNumeric)
 {
     const BasePtr res = a->subst(a, two);
 
-    CHECK_EQUAL(two, res);
+    BOOST_CHECK_EQUAL(two, res);
 }
 
-TEST(Subst, symbolNotToNumeric)
+BOOST_AUTO_TEST_CASE(symbolNotToNumeric)
 {
     const BasePtr res = a->subst(b, two);
 
-    CHECK_EQUAL(a, res);
+    BOOST_CHECK_EQUAL(a, res);
 }
 
-TEST(Subst, constantToSum)
+BOOST_AUTO_TEST_CASE(constantToSum)
 {
     const BasePtr sum = Sum::create(a, b);
     BasePtr res;
 
     res = pi->subst(pi, sum);
 
-    CHECK_EQUAL(sum, res);
+    BOOST_CHECK_EQUAL(sum, res);
 }
 
-TEST(Subst, constantNotToNumeric)
+BOOST_AUTO_TEST_CASE(constantNotToNumeric)
 {
     const BasePtr res = pi->subst(a, two);
 
-    CHECK_EQUAL(pi, res);
+    BOOST_CHECK_EQUAL(pi, res);
 }
 
-TEST(Subst, numericToSymbol)
+BOOST_AUTO_TEST_CASE(numericToSymbol)
 {
     const BasePtr orig = Numeric::create(5, 17);
     BasePtr res;
 
     res = orig->subst(orig, a);
 
-    CHECK_EQUAL(a, res);
+    BOOST_CHECK_EQUAL(a, res);
 }
 
-TEST(Subst, powerToSum)
+BOOST_AUTO_TEST_CASE(powerToSum)
 {
     const BasePtr sum = Sum::create(a, b, c);
     const BasePtr orig = Power::create(a, two);
@@ -75,10 +76,10 @@ TEST(Subst, powerToSum)
 
     res = orig->subst(orig, sum);
 
-    CHECK_EQUAL(sum, res);
+    BOOST_CHECK_EQUAL(sum, res);
 }
 
-TEST(Subst, productToPower)
+BOOST_AUTO_TEST_CASE(productToPower)
 {
     const BasePtr pow = Power::create(a, b);
     const BasePtr orig = Product::create(a, b);
@@ -86,37 +87,37 @@ TEST(Subst, productToPower)
 
     res = orig->subst(orig, pow);
 
-    CHECK_EQUAL(pow, res);
+    BOOST_CHECK_EQUAL(pow, res);
 }
 
-TEST(Subst, sumToSymbol)
+BOOST_AUTO_TEST_CASE(sumToSymbol)
 {
     const BasePtr orig = Sum::create(a, b);
     BasePtr res;
 
     res = orig->subst(orig, a);
 
-    CHECK_EQUAL(a, res);
+    BOOST_CHECK_EQUAL(a, res);
 }
 
-TEST(Subst, undefinedNoChange)
+BOOST_AUTO_TEST_CASE(undefinedNoChange)
 {
     const BasePtr result = undefined->subst(a, b);
 
-    CHECK(result->isUndefined());
+    BOOST_TEST(result->isUndefined());
 }
 
-TEST(Subst, cosineToConstant)
+BOOST_AUTO_TEST_CASE(cosineToConstant)
 {
     const BasePtr orig = Trigonometric::createCos(a);
     BasePtr res;
 
     res = orig->subst(orig, pi);
 
-    CHECK_EQUAL(pi, res);
+    BOOST_CHECK_EQUAL(pi, res);
 }
 
-TEST(Subst, atanArgToConstant)
+BOOST_AUTO_TEST_CASE(atanArgToConstant)
 {
     const BasePtr orig = Trigonometric::createAtan(a);
     const BasePtr expected = Trigonometric::createAtan(pi);
@@ -124,10 +125,10 @@ TEST(Subst, atanArgToConstant)
 
     res = orig->subst(a, pi);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Subst, sinToZero)
+BOOST_AUTO_TEST_CASE(sinToZero)
     /* Sin(a) = 0 for a = Pi. */
 {
     const BasePtr orig = Trigonometric::createSin(a);
@@ -135,10 +136,10 @@ TEST(Subst, sinToZero)
 
     res = orig->subst(a, pi);
 
-    CHECK(res->isZero());
+    BOOST_TEST(res->isZero());
 }
 
-TEST(Subst, asinToUndefined)
+BOOST_AUTO_TEST_CASE(asinToUndefined)
     /* Asin(a) = Undefined for |a| > 1. */
 {
     const BasePtr orig = Trigonometric::createAsin(a);
@@ -147,10 +148,10 @@ TEST(Subst, asinToUndefined)
 
     res = orig->subst(a, tmp);
 
-    CHECK(res->isUndefined());
+    BOOST_TEST(res->isUndefined());
 }
 
-TEST(Subst, atan2ToPiFourth)
+BOOST_AUTO_TEST_CASE(atan2ToPiFourth)
     /* Atan(b, a) = Pi/4 for b = 2 and a = 2. */
 {
     const BasePtr orig = Trigonometric::createAtan2(b, a);
@@ -158,14 +159,14 @@ TEST(Subst, atan2ToPiFourth)
     const BasePtr expected = Product::create(Numeric::fourth(), pi);
     BasePtr secondSubst;
 
-    CHECK(firstSubst->isFunction());
+    BOOST_TEST(firstSubst->isFunction());
 
     secondSubst = firstSubst->subst(a, two);
 
-    CHECK_EQUAL(expected, secondSubst);
+    BOOST_CHECK_EQUAL(expected, secondSubst);
 }
 
-TEST(Subst, logToLog)
+BOOST_AUTO_TEST_CASE(logToLog)
     /* Log(a) = log(b) for a = b. */
 {
     const BasePtr expected = Logarithm::create(b);
@@ -174,10 +175,10 @@ TEST(Subst, logToLog)
 
     res = orig->subst(a, b);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Subst, logToZero)
+BOOST_AUTO_TEST_CASE(logToZero)
     /* Log(a) = 0 for a = 1. */
 {
     const BasePtr orig = Logarithm::create(a);
@@ -185,20 +186,20 @@ TEST(Subst, logToZero)
 
     res = orig->subst(a, one);
 
-    CHECK(res->isZero());
+    BOOST_TEST(res->isZero());
 }
 
-TEST(Subst, logEqualArg)
+BOOST_AUTO_TEST_CASE(logEqualArg)
 {
     const BasePtr orig = Logarithm::create(a);
     BasePtr res;
 
     res = orig->subst(orig, a);
 
-    CHECK_EQUAL(a, res);
+    BOOST_CHECK_EQUAL(a, res);
 }
 
-TEST(Subst, powerToUndefined)
+BOOST_AUTO_TEST_CASE(powerToUndefined)
     /* a^(-2) = Undefined for a = 0. */
 {
     const BasePtr orig = Power::create(a, Numeric::create(-2));
@@ -208,19 +209,19 @@ TEST(Subst, powerToUndefined)
     res = orig->subst(a, zero);
     enableLog();
 
-    CHECK(res->isUndefined());
+    BOOST_TEST(res->isUndefined());
 }
 
-TEST(Subst, sumToUndefined)
+BOOST_AUTO_TEST_CASE(sumToUndefined)
     /* a + b + c + d = Undefined for c = Undefined. */
 {
     const BasePtr orig = Sum::create(a, b, c, d);
     const BasePtr res = orig->subst(c, undefined);
 
-    CHECK(res->isUndefined());
+    BOOST_TEST(res->isUndefined());
 }
 
-TEST(Subst, sumToOne)
+BOOST_AUTO_TEST_CASE(sumToOne)
     /* a + b^a + a*(b + c) = 1 for a = 0. */
 {
     const BasePtr orig = Sum::create(a, Power::create(b, a), Product::create(a, Sum::create(b, c)));
@@ -228,10 +229,10 @@ TEST(Subst, sumToOne)
 
     res = orig->subst(a, zero);
 
-    CHECK_EQUAL(one, res);
+    BOOST_CHECK_EQUAL(one, res);
 }
 
-TEST(Subst, noSubExpressionInSum)
+BOOST_AUTO_TEST_CASE(noSubExpressionInSum)
     /* a + b + c stays constant for a + b = 2. */
 {
     const BasePtr abSum = Sum::create(a, b);
@@ -240,10 +241,10 @@ TEST(Subst, noSubExpressionInSum)
 
     res = orig->subst(abSum, two);
 
-    CHECK_EQUAL(orig, res);
+    BOOST_CHECK_EQUAL(orig, res);
 }
 
-TEST(Subst, noSubExpressionInProduct)
+BOOST_AUTO_TEST_CASE(noSubExpressionInProduct)
     /* 2*a*b stays constant for a*b = 3. */
 {
     const BasePtr abProduct = Product::create(a, b);
@@ -252,10 +253,10 @@ TEST(Subst, noSubExpressionInProduct)
 
     res = orig->subst(abProduct, three);
 
-    CHECK_EQUAL(orig, res);
+    BOOST_CHECK_EQUAL(orig, res);
 }
 
-TEST(Subst, powerExpanedBySubst)
+BOOST_AUTO_TEST_CASE(powerExpanedBySubst)
     /* (a*b + c + d)^2= a^2*b^2 for c = d = 0. */
 {
     const BasePtr expected = Product::create(Power::create(a, two), Power::create(b, two));
@@ -266,19 +267,19 @@ TEST(Subst, powerExpanedBySubst)
 
     res = orig->subst(c, zero)->subst(d, zero);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Subst, numPowerSimplInSubstitution)
+BOOST_AUTO_TEST_CASE(numPowerSimplInSubstitution)
 {
     const BasePtr orig = Product::create(two, a, Trigonometric::createCos(b));
     const BasePtr result = orig->subst(b, Product::create(Numeric::create(5, 4), pi));
     const BasePtr expected = Product::minus(Power::sqrt(two), a);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Subst, mixedTerm)
+BOOST_AUTO_TEST_CASE(mixedTerm)
     /* 2*sqrt(3)*(a + b + sqrt(3))*(c + d)/a = 4*17^(1/3)*a + 2*17^(1/3)*b
      * for sqrt(3) = a and c + d = 17^(1/3). */
 {
@@ -300,5 +301,7 @@ TEST(Subst, mixedTerm)
 
     res = orig->subst(sqrtThree, a)->subst(Sum::create(b, c), numPow);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

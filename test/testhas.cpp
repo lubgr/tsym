@@ -10,8 +10,7 @@
 
 using namespace tsym;
 
-TEST_GROUP(Has)
-{
+struct HasFixture {
     const BasePtr undefined = Undefined::create();
     const BasePtr pi = Constant::createPi();
     const BasePtr twoPiAbProduct = Product::create(two, a, b, pi);
@@ -19,153 +18,157 @@ TEST_GROUP(Has)
     const BasePtr aPlusBSquare = Power::create(Sum::create(a, b), two);
 };
 
-TEST(Has, equalSymbols)
+BOOST_FIXTURE_TEST_SUITE(TestHas, HasFixture)
+
+BOOST_AUTO_TEST_CASE(equalSymbols)
 {
-    CHECK(a->has(a));
+    BOOST_TEST(a->has(a));
 }
 
-TEST(Has, differentSymbols)
+BOOST_AUTO_TEST_CASE(differentSymbols)
 {
-    CHECK_FALSE(a->has(b));
+    BOOST_TEST(!a->has(b));
 }
 
-TEST(Has, equalNumerics)
+BOOST_AUTO_TEST_CASE(equalNumerics)
 {
-    CHECK(two->has(two));
+    BOOST_TEST(two->has(two));
 }
 
-TEST(Has, differentNumerics)
+BOOST_AUTO_TEST_CASE(differentNumerics)
 {
-    CHECK_FALSE(two->has(three));
+    BOOST_TEST(!two->has(three));
 }
 
-TEST(Has, equalConstant)
+BOOST_AUTO_TEST_CASE(equalConstant)
 {
-    CHECK(pi->has(pi));
+    BOOST_TEST(pi->has(pi));
 }
 
-TEST(Has, equalUndefined)
+BOOST_AUTO_TEST_CASE(equalUndefined)
     /* Two Undefined are never equal, thus this query shall return false. */
 {
-    CHECK_FALSE(undefined->has(undefined));
+    BOOST_TEST(!undefined->has(undefined));
 }
 
-TEST(Has, differentScalarTypes)
+BOOST_AUTO_TEST_CASE(differentScalarTypes)
 {
-    CHECK_FALSE(a->has(two));
-    CHECK_FALSE(a->has(pi));
-    CHECK_FALSE(a->has(undefined));
-    CHECK_FALSE(ten->has(b));
-    CHECK_FALSE(ten->has(pi));
-    CHECK_FALSE(ten->has(undefined));
-    CHECK_FALSE(pi->has(a));
-    CHECK_FALSE(pi->has(one));
-    CHECK_FALSE(pi->has(undefined));
-    CHECK_FALSE(undefined->has(a));
-    CHECK_FALSE(undefined->has(ten));
-    CHECK_FALSE(undefined->has(pi));
+    BOOST_TEST(!a->has(two));
+    BOOST_TEST(!a->has(pi));
+    BOOST_TEST(!a->has(undefined));
+    BOOST_TEST(!ten->has(b));
+    BOOST_TEST(!ten->has(pi));
+    BOOST_TEST(!ten->has(undefined));
+    BOOST_TEST(!pi->has(a));
+    BOOST_TEST(!pi->has(one));
+    BOOST_TEST(!pi->has(undefined));
+    BOOST_TEST(!undefined->has(a));
+    BOOST_TEST(!undefined->has(ten));
+    BOOST_TEST(!undefined->has(pi));
 }
 
-TEST(Has, equalProducts)
+BOOST_AUTO_TEST_CASE(equalProducts)
 {
-    CHECK(twoPiAbProduct->has(twoPiAbProduct));
+    BOOST_TEST(twoPiAbProduct->has(twoPiAbProduct));
 }
 
-TEST(Has, differentProducts)
+BOOST_AUTO_TEST_CASE(differentProducts)
 {
     const BasePtr different = Product::create(d, e);
 
-    CHECK_FALSE(twoPiAbProduct->has(different));
+    BOOST_TEST(!twoPiAbProduct->has(different));
 }
 
-TEST(Has, subProductsMultipleFactors)
+BOOST_AUTO_TEST_CASE(subProductsMultipleFactors)
 {
     const BasePtr sub = Product::create(a, b);
 
-    CHECK_FALSE(twoPiAbProduct->has(sub));
+    BOOST_TEST(!twoPiAbProduct->has(sub));
 }
 
-TEST(Has, subProductsOneFactor)
+BOOST_AUTO_TEST_CASE(subProductsOneFactor)
 {
     const BasePtr sub = Sum::create(a, b);
     const BasePtr product = Product::create(pi, sub);
 
-    CHECK(product->has(sub));
+    BOOST_TEST(product->has(sub));
 }
 
-TEST(Has, equalSums)
+BOOST_AUTO_TEST_CASE(equalSums)
 {
     onePlusATimesB->has(onePlusATimesB);
 }
 
-TEST(Has, differentSums)
+BOOST_AUTO_TEST_CASE(differentSums)
 {
     const BasePtr different = Sum::create(c, d);
 
-    CHECK_FALSE(onePlusATimesB->has(different));
+    BOOST_TEST(!onePlusATimesB->has(different));
 }
 
-TEST(Has, subSumMultipleSummands)
+BOOST_AUTO_TEST_CASE(subSumMultipleSummands)
 {
     const BasePtr sub = Sum::create(a, b);
     const BasePtr sum = Sum::create(c, sub);
 
-    CHECK_FALSE(sum->has(sub));
+    BOOST_TEST(!sum->has(sub));
 }
 
-TEST(Has, subSumOneSummand)
+BOOST_AUTO_TEST_CASE(subSumOneSummand)
 {
     const BasePtr sub = Product::create(a, b);
 
-    CHECK(onePlusATimesB->has(sub));
+    BOOST_TEST(onePlusATimesB->has(sub));
 }
 
-TEST(Has, equalPowers)
+BOOST_AUTO_TEST_CASE(equalPowers)
 {
-    CHECK(aPlusBSquare->has(aPlusBSquare));
+    BOOST_TEST(aPlusBSquare->has(aPlusBSquare));
 }
 
-TEST(Has, differentPowers)
+BOOST_AUTO_TEST_CASE(differentPowers)
 {
     const BasePtr different = Power::create(pi, Product::create(a, b));
 
-    CHECK_FALSE(aPlusBSquare->has(different));
+    BOOST_TEST(!aPlusBSquare->has(different));
 }
 
-TEST(Has, baseOfPower)
+BOOST_AUTO_TEST_CASE(baseOfPower)
 {
     const BasePtr base = Sum::create(a, b);
 
-    CHECK(aPlusBSquare->has(base));
+    BOOST_TEST(aPlusBSquare->has(base));
 }
 
-TEST(Has, exponentOfPower)
+BOOST_AUTO_TEST_CASE(exponentOfPower)
 {
-    CHECK(aPlusBSquare->has(two));
+    BOOST_TEST(aPlusBSquare->has(two));
 }
 
-TEST(Has, equalFunctions)
+BOOST_AUTO_TEST_CASE(equalFunctions)
 {
     const BasePtr sinA = Trigonometric::createSin(a);
 
-    CHECK(sinA->has(sinA));
+    BOOST_TEST(sinA->has(sinA));
 }
 
-TEST(Has, differentFunctions)
+BOOST_AUTO_TEST_CASE(differentFunctions)
 {
     const BasePtr sinA = Trigonometric::createSin(a);
     const BasePtr cosB = Trigonometric::createCos(b);
 
-    CHECK_FALSE(sinA->has(cosB));
+    BOOST_TEST(!sinA->has(cosB));
 }
 
-TEST(Has, argOfFunction)
+BOOST_AUTO_TEST_CASE(argOfFunction)
 {
     const BasePtr arg = Sum::create(a, two, pi);
     const BasePtr fct = Trigonometric::createAsin(arg);
 
-    CHECK(fct->has(two));
-    CHECK(fct->has(pi));
-    CHECK(fct->has(a));
-    CHECK(fct->has(arg));
+    BOOST_TEST(fct->has(two));
+    BOOST_TEST(fct->has(pi));
+    BOOST_TEST(fct->has(a));
+    BOOST_TEST(fct->has(arg));
 }
+
+BOOST_AUTO_TEST_SUITE_END()

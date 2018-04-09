@@ -6,9 +6,9 @@
 
 using namespace tsym;
 
-TEST_GROUP(SimplePrimePolicy) {};
+BOOST_AUTO_TEST_SUITE(TestSimplePrimePolicy)
 
-TEST(SimplePrimePolicy, factorizeIntegralInt)
+BOOST_AUTO_TEST_CASE(factorizeIntegralInt)
 {
     const std::vector<int> expected { 3, 3, 5, 7, 13, 13, 17, 37 };
     const auto input = std::accumulate(cbegin(expected), cend(expected), 1, std::multiplies<int>{});
@@ -16,14 +16,10 @@ TEST(SimplePrimePolicy, factorizeIntegralInt)
 
     SimplePrimePolicy<int>::computeAndStore(input, result);
 
-    CHECK_EQUAL(expected.size(), result.size());
-
-    for (decltype(result)::size_type i = 0; i < result.size(); ++i) {
-        CHECK_EQUAL(expected[i], result[i]);
-    }
+    BOOST_CHECK_EQUAL_COLLECTIONS(cbegin(expected), cend(expected), cbegin(result), cend(result));
 }
 
-TEST(SimplePrimePolicy, factorizeMultiPrecisionInt)
+BOOST_AUTO_TEST_CASE(factorizeMultiPrecisionInt)
 {
     const std::vector<Int> expected { 2, 2, 5, 7, 11, 83 };
     const auto input = std::accumulate(cbegin(expected), cend(expected), Int{1}, std::multiplies<Int>{});
@@ -31,9 +27,7 @@ TEST(SimplePrimePolicy, factorizeMultiPrecisionInt)
 
     SimplePrimePolicy<Int>::computeAndStore(input, result);
 
-    CHECK_EQUAL(expected.size(), result.size());
-
-    for (decltype(result)::size_type i = 0; i < result.size(); ++i) {
-        CHECK_EQUAL(expected[i], result[i]);
-    }
+    BOOST_CHECK_EQUAL_COLLECTIONS(cbegin(expected), cend(expected), cbegin(result), cend(result));
 }
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -14,58 +14,61 @@
 
 using namespace tsym;
 
-TEST_GROUP(Sign)
-{
+struct SignFixture {
     const BasePtr aPos = Symbol::createPositive("a");
     const BasePtr bPos = Symbol::createPositive("b");
     const BasePtr cPos = Symbol::createPositive("c");
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr pi = Constant::createPi();
+};
 
+namespace {
     void checkPos(const BasePtr& arg)
     {
-        CHECK(arg->isPositive());
-        CHECK_FALSE(arg->isNegative());
+        BOOST_TEST(arg->isPositive());
+        BOOST_TEST(!arg->isNegative());
     }
 
     void checkNeg(const BasePtr& arg)
     {
-        CHECK(arg->isNegative());
-        CHECK_FALSE(arg->isPositive());
+        BOOST_TEST(arg->isNegative());
+        BOOST_TEST(!arg->isPositive());
     }
 
     void checkUnclear(const BasePtr& arg)
     {
-        CHECK_FALSE(arg->isNegative());
-        CHECK_FALSE(arg->isPositive());
+        BOOST_TEST(!arg->isNegative());
+        BOOST_TEST(!arg->isPositive());
     }
-};
+}
 
-TEST(Sign, undefined)
+BOOST_FIXTURE_TEST_SUITE(TestSign, SignFixture)
+
+BOOST_AUTO_TEST_CASE(undefined)
 {
     const BasePtr undefined = Undefined::create();
 
     checkUnclear(undefined);
 }
 
-TEST(Sign, constant)
+BOOST_AUTO_TEST_CASE(constant)
 {
     const BasePtr e = Constant::createE();
 
     checkPos(e);
 }
 
-TEST(Sign, unclearSymbol)
+BOOST_AUTO_TEST_CASE(unclearSymbol)
 {
     checkUnclear(a);
 }
 
-TEST(Sign, positiveSimpleSymbol)
+BOOST_AUTO_TEST_CASE(positiveSimpleSymbol)
 {
     checkPos(aPos);
 }
 
-TEST(Sign, positiveSymbolWithLongName)
+BOOST_AUTO_TEST_CASE(positiveSymbolWithLongName)
 {
     const Name name("Abcde", "1234", "f");
     const BasePtr positive = Symbol::createPositive(name);
@@ -73,59 +76,59 @@ TEST(Sign, positiveSymbolWithLongName)
     checkPos(positive);
 }
 
-TEST(Sign, zero)
+BOOST_AUTO_TEST_CASE(zeroIsNeitherPosNorNeg)
 {
     checkUnclear(zero);
 }
 
-TEST(Sign, posInteger)
+BOOST_AUTO_TEST_CASE(posInteger)
 {
     checkPos(five);
 }
 
-TEST(Sign, negInteger)
+BOOST_AUTO_TEST_CASE(negInteger)
 {
     const BasePtr neg = Numeric::create(-1234);
 
     checkNeg(neg);
 }
 
-TEST(Sign, posFraction)
+BOOST_AUTO_TEST_CASE(posFraction)
 {
     const BasePtr pos = Numeric::create(4, 17);
 
     checkPos(pos);
 }
 
-TEST(Sign, negFraction)
+BOOST_AUTO_TEST_CASE(negFraction)
 {
     const BasePtr neg = Numeric::create(-12, 13);
 
     checkNeg(neg);
 }
 
-TEST(Sign, posDouble)
+BOOST_AUTO_TEST_CASE(posDouble)
 {
     const BasePtr pos = Numeric::create(123.456789);
 
     checkPos(pos);
 }
 
-TEST(Sign, negDouble)
+BOOST_AUTO_TEST_CASE(negDouble)
 {
     const BasePtr neg = Numeric::create(-987.654321);
 
     checkNeg(neg);
 }
 
-TEST(Sign, simpleNegProduct)
+BOOST_AUTO_TEST_CASE(simpleNegProduct)
 {
     const BasePtr neg = Product::minus(aPos);
 
     checkNeg(neg);
 }
 
-TEST(Sign, simplePosProduct)
+BOOST_AUTO_TEST_CASE(simplePosProduct)
     /* (-a)*(-2*b - 3*c) is positive, if a, b and c are positive. */
 {
     const BasePtr sum = Sum::create(Product::minus(two, bPos), Product::minus(three, cPos));
@@ -134,7 +137,7 @@ TEST(Sign, simplePosProduct)
     checkPos(pos);
 }
 
-TEST(Sign, simpleUnclearProduct)
+BOOST_AUTO_TEST_CASE(simpleUnclearProduct)
     /* Same as before, but with b not being specified as positive. */
 {
     const BasePtr sum = Sum::create(Product::minus(two, b), Product::minus(three, cPos));
@@ -143,7 +146,7 @@ TEST(Sign, simpleUnclearProduct)
     checkUnclear(result);
 }
 
-TEST(Sign, sumNumericallyEvaluableToZero)
+BOOST_AUTO_TEST_CASE(sumNumericallyEvaluableToZero)
 {
     const BasePtr sum = Sum::create(Product::create(sqrtTwo, pi),
             Numeric::create(-4.442882938158366));
@@ -151,28 +154,28 @@ TEST(Sign, sumNumericallyEvaluableToZero)
     checkUnclear(sum);
 }
 
-TEST(Sign, simplePosSum01)
+BOOST_AUTO_TEST_CASE(simplePosSum01)
 {
     const BasePtr sum = Sum::create(aPos, bPos, sqrtTwo, cPos);
 
     checkPos(sum);
 }
 
-TEST(Sign, simplePosSum02)
+BOOST_AUTO_TEST_CASE(simplePosSum02)
 {
     const BasePtr sum = Sum::create(two, pi, Product::minus(Constant::createE()));
 
     checkPos(sum);
 }
 
-TEST(Sign, simpleNegativeSum01)
+BOOST_AUTO_TEST_CASE(simpleNegativeSum01)
 {
     const BasePtr sum = Sum::create(Product::minus(two, bPos), Product::minus(three, cPos));
 
     checkNeg(sum);
 }
 
-TEST(Sign, simpleNegativeSum02)
+BOOST_AUTO_TEST_CASE(simpleNegativeSum02)
 {
     const BasePtr sum = Sum::create(Product::minus(aPos), Numeric::create(-2, 3),
             Product::minus(two, pi));
@@ -180,21 +183,21 @@ TEST(Sign, simpleNegativeSum02)
     checkNeg(sum);
 }
 
-TEST(Sign, simpleNegativeSum03)
+BOOST_AUTO_TEST_CASE(simpleNegativeSum03)
 {
     const BasePtr sum = Sum::create(two, Product::minus(pi));
 
     checkNeg(sum);
 }
 
-TEST(Sign, simpleUnclearSumByDifferentSigns)
+BOOST_AUTO_TEST_CASE(simpleUnclearSumByDifferentSigns)
 {
     const BasePtr sum = Sum::create(Product::minus(aPos, bPos), pi, Numeric::create(-1, 3), cPos);
 
     checkUnclear(sum);
 }
 
-TEST(Sign, simpleUnclearSumByNonPositiveSymbol)
+BOOST_AUTO_TEST_CASE(simpleUnclearSumByNonPositiveSymbol)
 {
     const BasePtr sum = Sum::create(Product::minus(aPos), Numeric::create(-2, 3),
             Product::minus(two, pi), Product::minus(six, b));
@@ -202,7 +205,7 @@ TEST(Sign, simpleUnclearSumByNonPositiveSymbol)
     checkUnclear(sum);
 }
 
-TEST(Sign, logarithmArgGreaterThanOne)
+BOOST_AUTO_TEST_CASE(logarithmArgGreaterThanOne)
 {
     const BasePtr arg = Sum::create(Product::create(pi, nine, sqrtTwo),
             five, Constant::createE());
@@ -211,7 +214,7 @@ TEST(Sign, logarithmArgGreaterThanOne)
     checkPos(log);
 }
 
-TEST(Sign, logarithmArgLessThanOne)
+BOOST_AUTO_TEST_CASE(logarithmArgLessThanOne)
 {
     const BasePtr arg = Sum::create(pi, Numeric::create(-3));
     const BasePtr log = Logarithm::create(arg);
@@ -219,7 +222,7 @@ TEST(Sign, logarithmArgLessThanOne)
     checkNeg(log);
 }
 
-TEST(Sign, posButNumericallyNonEvaluableLogArgGreaterOne)
+BOOST_AUTO_TEST_CASE(posButNumericallyNonEvaluableLogArgGreaterOne)
 {
     const BasePtr arg = Sum::create(Product::create(Constant::createE(), nine, sqrtTwo), aPos);
     const BasePtr log = Logarithm::create(arg);
@@ -227,7 +230,7 @@ TEST(Sign, posButNumericallyNonEvaluableLogArgGreaterOne)
     checkPos(log);
 }
 
-TEST(Sign, posButNumericallyNonEvaluableLogArgSmallerOne)
+BOOST_AUTO_TEST_CASE(posButNumericallyNonEvaluableLogArgSmallerOne)
 {
     const BasePtr arg = Sum::create(Numeric::create(0.987654321), Product::minus(aPos));
     const BasePtr log = Logarithm::create(arg);
@@ -235,7 +238,7 @@ TEST(Sign, posButNumericallyNonEvaluableLogArgSmallerOne)
     checkNeg(log);
 }
 
-TEST(Sign, unclearLogArg)
+BOOST_AUTO_TEST_CASE(unclearLogArg)
 {
     const BasePtr arg = Sum::create(Numeric::create(0.987654321), aPos);
     const BasePtr log = Logarithm::create(arg);
@@ -243,7 +246,7 @@ TEST(Sign, unclearLogArg)
     checkUnclear(log);
 }
 
-TEST(Sign, tan)
+BOOST_AUTO_TEST_CASE(tan)
 {
     const BasePtr tanPosArg = Trigonometric::createTan(aPos);
     const BasePtr tanNegArg = Trigonometric::createTan(Product::minus(aPos));
@@ -254,7 +257,7 @@ TEST(Sign, tan)
     checkUnclear(tanUnclearArg);
 }
 
-TEST(Sign, atan)
+BOOST_AUTO_TEST_CASE(atan)
 {
     const BasePtr atanPosArg = Trigonometric::createAtan(aPos);
     const BasePtr atanNegArg = Trigonometric::createAtan(Product::minus(aPos));
@@ -265,7 +268,7 @@ TEST(Sign, atan)
     checkUnclear(atanUnclearArg);
 }
 
-TEST(Sign, atan2)
+BOOST_AUTO_TEST_CASE(atan2)
 {
     const BasePtr atan2Pos = Trigonometric::createAtan2(aPos, bPos);
     const BasePtr atan2Neg = Trigonometric::createAtan2(Product::minus(aPos), bPos);
@@ -276,7 +279,7 @@ TEST(Sign, atan2)
     checkUnclear(atan2Unclear);
 }
 
-TEST(Sign, sinSymbolic)
+BOOST_AUTO_TEST_CASE(sinSymbolic)
 {
     const BasePtr sinPosArg = Trigonometric::createSin(aPos);
     const BasePtr sinNegArg = Trigonometric::createSin(Product::minus(aPos));
@@ -287,7 +290,7 @@ TEST(Sign, sinSymbolic)
     checkUnclear(sinUnclearArg);
 }
 
-TEST(Sign, sinNumericallyEvaluable)
+BOOST_AUTO_TEST_CASE(sinNumericallyEvaluable)
 {
     const BasePtr posSin = Trigonometric::createSin(two);
     const BasePtr negSin = Trigonometric::createSin(four);
@@ -296,7 +299,7 @@ TEST(Sign, sinNumericallyEvaluable)
     checkNeg(negSin);
 }
 
-TEST(Sign, posPowerWithPositiveBase)
+BOOST_AUTO_TEST_CASE(posPowerWithPositiveBase)
 {
     const BasePtr pow = Power::create(Sum::create(aPos, Product::create(two, bPos)),
             Sum::create(a, b, c, ten));
@@ -304,7 +307,7 @@ TEST(Sign, posPowerWithPositiveBase)
     checkPos(pow);
 }
 
-TEST(Sign, posPowerWithNegativeBase)
+BOOST_AUTO_TEST_CASE(posPowerWithNegativeBase)
     /* (-pi)^2 = (-1)^2*pi^2 = pi^2 > 0. */
 {
     const BasePtr pow = Power::create(Product::minus(pi), two);
@@ -312,21 +315,21 @@ TEST(Sign, posPowerWithNegativeBase)
     checkPos(pow);
 }
 
-TEST(Sign, unclearPower)
+BOOST_AUTO_TEST_CASE(unclearPower)
 {
     const BasePtr pow = Power::create(a, bPos);
 
     checkUnclear(pow);
 }
 
-TEST(Sign, posPowerWithUnclearBase)
+BOOST_AUTO_TEST_CASE(posPowerWithUnclearBase)
 {
     const BasePtr pow = Power::create(a, two);
 
     checkPos(pow);
 }
 
-TEST(Sign, mixedPositive)
+BOOST_AUTO_TEST_CASE(mixedPositive)
     /* 2*a + b*c + b^(2*c + pi) + 0.12345*c^2 is positive. */
 {
     BasePtrList summands;
@@ -342,7 +345,7 @@ TEST(Sign, mixedPositive)
     checkPos(res);
 }
 
-TEST(Sign, mixedUnclear)
+BOOST_AUTO_TEST_CASE(mixedUnclear)
     /* Same as above but with b being not specified as positive. */
 {
     BasePtrList summands;
@@ -358,7 +361,7 @@ TEST(Sign, mixedUnclear)
     checkUnclear(res);
 }
 
-TEST(Sign, mixedNegativeAndUnclear)
+BOOST_AUTO_TEST_CASE(mixedNegativeAndUnclear)
     /* -10*a^6 -2*a*b*c - pi/3 - a*b is negative. */
 {
     const BasePtr s1 = Product::minus(ten, Power::create(a, six));
@@ -371,7 +374,7 @@ TEST(Sign, mixedNegativeAndUnclear)
     checkUnclear(res->subst(bPos, b));
 }
 
-TEST(Sign, mixedPosAndUnclear)
+BOOST_AUTO_TEST_CASE(mixedPosAndUnclear)
     /* (5/13*c^(18/19))*(a^2 - 2*pi + 10*b + sqrt(101)) is positive. */
 {
     const BasePtr fac1 = Product::create(Numeric::create(5, 13),
@@ -384,3 +387,5 @@ TEST(Sign, mixedPosAndUnclear)
 
     checkUnclear(res->subst(bPos, b));
 }
+
+BOOST_AUTO_TEST_SUITE_END()

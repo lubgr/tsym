@@ -14,9 +14,12 @@ typedef tsym::plu::detail::VectorAccessProxy<BoostVector, BoostSizeType> BoostVe
 
 BoostVector createBoostVector(std::initializer_list<tsym::Var> values);
 BoostMatrix createBoostMatrix(std::initializer_list<std::initializer_list<tsym::Var>> values);
-bool operator == (const BoostVector& lhs, const BoostVector& rhs);
-bool operator != (const BoostVector& lhs, const BoostVector& rhs);
-bool operator == (const BoostMatrix& lhs, const BoostMatrix& rhs);
-bool operator != (const BoostMatrix& lhs, const BoostMatrix& rhs);
+
+namespace tsym {
+    bool operator == (const BoostVector& lhs, const BoostVector& rhs);
+    bool operator != (const BoostVector& lhs, const BoostVector& rhs);
+    bool operator == (const BoostMatrix& lhs, const BoostMatrix& rhs);
+    bool operator != (const BoostMatrix& lhs, const BoostMatrix& rhs);
+}
 
 #endif

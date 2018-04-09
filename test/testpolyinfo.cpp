@@ -12,121 +12,119 @@
 
 using namespace tsym;
 
-TEST_GROUP(PolyInfo)
-{
+struct PolyInfoFixture {
     const BasePtr undefined = Undefined::create();
     const BasePtr abSum = Sum::create(a, b);
     PolyInfo info {};
 
     bool contains(const BasePtrList& symbolList, const BasePtr& symbol)
     {
-        for (const auto& symbolFromList : symbolList)
-            if (symbolFromList->isEqual(symbol))
-                return true;
-
-        return false;
+        return std::any_of(cbegin(symbolList), cend(symbolList),
+                [&symbol](const auto& item){ return item->isEqual(symbol);  });
     }
 };
 
-TEST(PolyInfo, bothZero)
+BOOST_FIXTURE_TEST_SUITE(TestPolyInfo, PolyInfoFixture)
+
+BOOST_AUTO_TEST_CASE(bothZero)
 {
     info.set(zero, zero);
 
-    CHECK_FALSE(info.isInputValid());
+    BOOST_TEST(!info.isInputValid());
 }
 
-TEST(PolyInfo, invalidInputFirstArgUndefined)
+BOOST_AUTO_TEST_CASE(invalidInputFirstArgUndefined)
 {
     info.set(undefined, a);
 
-    CHECK_FALSE(info.isInputValid());
+    BOOST_TEST(!info.isInputValid());
 }
 
-TEST(PolyInfo, invalidInputSecondArgUndefined)
+BOOST_AUTO_TEST_CASE(invalidInputSecondArgUndefined)
 {
     info.set(a, undefined);
 
-    CHECK_FALSE(info.isInputValid());
+    BOOST_TEST(!info.isInputValid());
 }
 
-TEST(PolyInfo, validInputFraction)
+BOOST_AUTO_TEST_CASE(validInputFraction)
 {
     info.set(a, Numeric::create(1, 7));
 
-    CHECK(info.isInputValid());
+    BOOST_TEST(info.isInputValid());
 }
 
-TEST(PolyInfo, invalidInputSumWithNumericPower)
+BOOST_AUTO_TEST_CASE(invalidInputSumWithNumericPower)
 {
     const BasePtr numPow = Power::create(three, Numeric::create(1, 17));
     const BasePtr sum = Sum::create(a, numPow);
 
     info.set(sum, b);
 
-    CHECK_FALSE(info.isInputValid());
+    BOOST_TEST(!info.isInputValid());
 }
 
-TEST(PolyInfo, invalidInputPowerWithSymbolExp)
+BOOST_AUTO_TEST_CASE(invalidInputPowerWithSymbolExp)
 {
     info.set(a, Power::create(b, c));
 
-    CHECK_FALSE(info.isInputValid());
+    BOOST_TEST(!info.isInputValid());
 }
 
-TEST(PolyInfo, invalidInputPowerWithValidSumExp)
+BOOST_AUTO_TEST_CASE(invalidInputPowerWithValidSumExp)
 {
     const BasePtr exp = Sum::create(two, a);
 
     info.set(a, Power::create(b, exp));
 
-    CHECK_FALSE(info.isInputValid());
+    BOOST_TEST(!info.isInputValid());
 }
 
-TEST(PolyInfo, validInputTwoInteger)
+BOOST_AUTO_TEST_CASE(validInputTwoInteger)
 {
     info.set(two, eight);
 
-    CHECK(info.isInputValid());
+    BOOST_TEST(info.isInputValid());
 }
 
-TEST(PolyInfo, validInputSumAndProduct)
+BOOST_AUTO_TEST_CASE(validInputSumAndProduct)
 {
     const BasePtr sum = Sum::create(two, a);
     const BasePtr product = Product::create(b, c);
 
     info.set(sum, product);
 
-    CHECK(info.isInputValid());
+    BOOST_TEST(info.isInputValid());
 }
 
-TEST(PolyInfo, emptySymbolList)
+BOOST_AUTO_TEST_CASE(emptySymbolList)
 {
     info.set(three, four);
 
-    CHECK(info.listOfSymbols().empty());
+    BOOST_TEST(info.listOfSymbols().empty());
 }
 
-TEST(PolyInfo, symbolListForOneSymbol)
+BOOST_AUTO_TEST_CASE(symbolListForOneSymbol)
 {
     info.set(a, a);
 
-    CHECK_EQUAL(1, info.listOfSymbols().size());
-    CHECK(contains(info.listOfSymbols(), a));
+    BOOST_CHECK_EQUAL(1, info.listOfSymbols().size());
+    BOOST_TEST(contains(info.listOfSymbols(), a));
 }
 
-TEST(PolyInfo, symbolListTwoSymbols)
+BOOST_AUTO_TEST_CASE(symbolListTwoSymbols)
 {
     BasePtrList list;
 
     info.set(a, b);
     list = info.listOfSymbols();
 
-    CHECK_EQUAL(2, list.size());
-    CHECK(contains(list, a));
-    CHECK(contains(list, b));
+    BOOST_CHECK_EQUAL(2, list.size());
+    BOOST_TEST(contains(list, a));
+    BOOST_TEST(contains(list, b));
 }
 
-TEST(PolyInfo, symbolListMultipleSymbols)
+BOOST_AUTO_TEST_CASE(symbolListMultipleSymbols)
 {
     const BasePtr expected[] = { a, b, c, d, e };
     const size_t nSymbols = sizeof(expected)/sizeof(expected[0]);
@@ -141,41 +139,41 @@ TEST(PolyInfo, symbolListMultipleSymbols)
 
     list = info.listOfSymbols();
 
-    CHECK_EQUAL(nSymbols, list.size());
+    BOOST_CHECK_EQUAL(nSymbols, list.size());
 
     for (size_t i = 0; i < nSymbols; ++i)
-        CHECK(contains(list, expected[i]));
+        BOOST_TEST(contains(list, expected[i]));
 }
 
-TEST(PolyInfo, simpleMainSymbol01)
+BOOST_AUTO_TEST_CASE(simpleMainSymbol01)
 {
     const BasePtr pow = Power::create(a, nine);
 
     info.set(abSum, pow);
 
-    CHECK_EQUAL(a, info.mainSymbol());
+    BOOST_CHECK_EQUAL(a, info.mainSymbol());
 }
 
-TEST(PolyInfo, simpleMainSymbol02)
+BOOST_AUTO_TEST_CASE(simpleMainSymbol02)
 {
     const BasePtr power = Power::create(Sum::create(two, a), four);
 
     info.set(abSum, power);
 
-    CHECK_EQUAL(a, info.mainSymbol());
+    BOOST_CHECK_EQUAL(a, info.mainSymbol());
 }
 
-TEST(PolyInfo, failingMainSymbolRequest)
+BOOST_AUTO_TEST_CASE(failingMainSymbolRequest)
 {
     const BasePtr product = Product::create(a, Power::create(b, two));
     const BasePtr sum = Sum::create(c, four);
 
     info.set(product, sum);
 
-    CHECK(info.mainSymbol()->isUndefined());
+    BOOST_TEST(info.mainSymbol()->isUndefined());
 }
 
-TEST(PolyInfo, mainSymbolOnlyOneCommon)
+BOOST_AUTO_TEST_CASE(mainSymbolOnlyOneCommon)
     /* Main symbol of a*(b + c) and c*d^2: c. */
 {
     const BasePtr arg1 = Product::create(a, Sum::create(b, c));
@@ -183,10 +181,10 @@ TEST(PolyInfo, mainSymbolOnlyOneCommon)
 
     info.set(arg1, arg2);
 
-    CHECK_EQUAL(c, info.mainSymbol());
+    BOOST_CHECK_EQUAL(c, info.mainSymbol());
 }
 
-TEST(PolyInfo, mainSymbolBothZeroMinDegree)
+BOOST_AUTO_TEST_CASE(mainSymbolBothZeroMinDegree)
     /* Main symbol of 2 + a and 3 + a + b: a. */
 {
     const BasePtr arg1 = Sum::create(two, a);
@@ -194,10 +192,10 @@ TEST(PolyInfo, mainSymbolBothZeroMinDegree)
 
     info.set(arg1, arg2);
 
-    CHECK_EQUAL(a, info.mainSymbol());
+    BOOST_CHECK_EQUAL(a, info.mainSymbol());
 }
 
-TEST(PolyInfo, mainSymbol)
+BOOST_AUTO_TEST_CASE(mainSymbol)
     /* Main symbol of a^3 + b^2 + c*d^4 and a^2*b*c^2: b. */
 {
     const BasePtr arg1 = Sum::create({ Power::create(a, three), Power::create(b, two),
@@ -206,10 +204,10 @@ TEST(PolyInfo, mainSymbol)
 
     info.set(arg1, arg2);
 
-    CHECK_EQUAL(b, info.mainSymbol());
+    BOOST_CHECK_EQUAL(b, info.mainSymbol());
 }
 
-TEST(PolyInfo, mainSymbolLargeExpressions)
+BOOST_AUTO_TEST_CASE(mainSymbolLargeExpressions)
     /* Main symbol of a^2*b^2*c^3 + b^3*c^4*d + d^3*e*f and a^4*b^5*d + e^3*f^3: d. */
 {
     const BasePtr s1 = Product::create(Power::create(a, two), b, b, Power::create(c, three));
@@ -222,5 +220,7 @@ TEST(PolyInfo, mainSymbolLargeExpressions)
 
     info.set(arg1, arg2);
 
-    CHECK_EQUAL(d, info.mainSymbol());
+    BOOST_CHECK_EQUAL(d, info.mainSymbol());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

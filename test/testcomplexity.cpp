@@ -12,85 +12,86 @@
 
 using namespace tsym;
 
-TEST_GROUP(Complexity)
-{
-    const BasePtr pi = Constant::createPi();
+struct ComplexityFixture {
+    const BasePtr& pi = Constant::createPi();
 };
 
-TEST(Complexity, undefined)
+BOOST_FIXTURE_TEST_SUITE(TestComplexity, ComplexityFixture)
+
+BOOST_AUTO_TEST_CASE(undefined)
 {
     const BasePtr undefined = Undefined::create();
 
-    CHECK_EQUAL(0, undefined->complexity());
+    BOOST_CHECK_EQUAL(0, undefined->complexity());
 }
 
-TEST(Complexity, three)
+BOOST_AUTO_TEST_CASE(integer)
 {
     unsigned res = three->complexity();
 
-    CHECK_EQUAL(1, res);
+    BOOST_CHECK_EQUAL(1, res);
 }
 
-TEST(Complexity, fraction)
+BOOST_AUTO_TEST_CASE(fraction)
 {
     const BasePtr fraction = Numeric::create(2, 3);
 
-    CHECK_EQUAL(2, fraction->complexity());
+    BOOST_CHECK_EQUAL(2, fraction->complexity());
 }
 
-TEST(Complexity, floatingPoint)
+BOOST_AUTO_TEST_CASE(floatingPoint)
 {
     const BasePtr n = Numeric::create(2.7665454894445454);
 
-    CHECK_EQUAL(3, n->complexity());
+    BOOST_CHECK_EQUAL(3, n->complexity());
 }
 
-TEST(Complexity, constant)
+BOOST_AUTO_TEST_CASE(constant)
 {
-    CHECK_EQUAL(4, pi->complexity());
+    BOOST_CHECK_EQUAL(4, pi->complexity());
 }
 
-TEST(Complexity, symbol)
+BOOST_AUTO_TEST_CASE(symbol)
 {
-    CHECK_EQUAL(5, a->complexity());
+    BOOST_CHECK_EQUAL(5, a->complexity());
 }
 
-TEST(Complexity, sum)
+BOOST_AUTO_TEST_CASE(sum)
 {
     const BasePtr sum = Sum::create(three, a);
 
-    CHECK_EQUAL(5 + 1 + 5, sum->complexity());
+    BOOST_CHECK_EQUAL(5 + 1 + 5, sum->complexity());
 }
 
-TEST(Complexity, product)
+BOOST_AUTO_TEST_CASE(product)
 {
     const BasePtr product = Product::create(three, a, pi);
 
-    CHECK_EQUAL(5 + 1 + 5 + 4, product->complexity());
+    BOOST_CHECK_EQUAL(5 + 1 + 5 + 4, product->complexity());
 }
 
-TEST(Complexity, power)
+BOOST_AUTO_TEST_CASE(power)
 {
     const BasePtr pow = Power::create(three, a);
 
-    CHECK_EQUAL(5 + 1 + 2*5, pow->complexity());
+    BOOST_CHECK_EQUAL(5 + 1 + 2*5, pow->complexity());
 }
 
-TEST(Complexity, sinA)
+BOOST_AUTO_TEST_CASE(sinA)
 {
     const BasePtr sinA = Trigonometric::createSin(a);
 
-    CHECK_EQUAL(6 + 5, sinA->complexity());
+    BOOST_CHECK_EQUAL(6 + 5, sinA->complexity());
 }
 
-TEST(Complexity, logarithmOfSymbol)
+BOOST_AUTO_TEST_CASE(logarithmOfSymbol)
 {
     const unsigned res = Logarithm::create(a)->complexity();
 
-    CHECK_EQUAL(6 + 5, res);
+    BOOST_CHECK_EQUAL(6 + 5, res);
 }
 
-TEST(Complexity, largerSum)
+BOOST_AUTO_TEST_CASE(largerSum)
 {
     const BasePtr sinA = Trigonometric::createSin(a);
     const BasePtr product = Product::create(three, b, pi);
@@ -98,5 +99,7 @@ TEST(Complexity, largerSum)
     const BasePtr pow = Power::create(three, a);
     const BasePtr sum = Sum::create({ product, a, doubleNum, sinA, pow, Logarithm::create(a), pi});
 
-    CHECK_EQUAL(5 + 15 + 5 + 3 + 11 + 16 + 11 + 4, sum->complexity());
+    BOOST_CHECK_EQUAL(5 + 15 + 5 + 3 + 11 + 16 + 11 + 4, sum->complexity());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

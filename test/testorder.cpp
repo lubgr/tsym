@@ -13,405 +13,408 @@
 
 using namespace tsym;
 
-TEST_GROUP(Order)
-{
+struct OrderFixture {
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr sqrtThree = Power::sqrt(three);
-    const BasePtr pi = Constant::createPi();
+    const BasePtr& pi = Constant::createPi();
 };
 
-TEST(Order, twoUndefined)
+BOOST_FIXTURE_TEST_SUITE(TestOrder, OrderFixture)
+
+BOOST_AUTO_TEST_CASE(twoUndefined)
 {
     const BasePtr u1 = Undefined::create();
     const BasePtr u2 = Undefined::create();
 
     disableLog();
     /* This should normally not be requested. Just check, that no swap is indicated. */
-    CHECK(order::isCorrect(u1, u2));
+    BOOST_TEST(order::isCorrect(u1, u2));
     enableLog();
 }
 
-TEST(Order, oneUndefined)
+BOOST_AUTO_TEST_CASE(oneUndefined)
 {
     const BasePtr u1 = Undefined::create();
 
     disableLog();
     /* See above. */
-    CHECK(order::isCorrect(u1, a));
-    CHECK(order::isCorrect(a, u1));
+    BOOST_TEST(order::isCorrect(u1, a));
+    BOOST_TEST(order::isCorrect(a, u1));
     enableLog();
 }
 
-TEST(Order, twoConstants)
+BOOST_AUTO_TEST_CASE(twoConstants)
 {
     const BasePtr e = Constant::createE();
 
-    CHECK(order::isCorrect(pi, pi));
-    CHECK(order::doPermute(pi, e));
+    BOOST_TEST(order::isCorrect(pi, pi));
+    BOOST_TEST(order::doPermute(pi, e));
 }
 
-TEST(Order, twoSymbolsAlphanumericNames)
+BOOST_AUTO_TEST_CASE(twoSymbolsAlphanumericNames)
 {
     const BasePtr x1 = Symbol::create("x1");
     const BasePtr x2 = Symbol::create("x2");
 
-    CHECK(order::isCorrect(x1, x2));
-    CHECK(order::doPermute(x2, x1));
+    BOOST_TEST(order::isCorrect(x1, x2));
+    BOOST_TEST(order::doPermute(x2, x1));
 }
 
-TEST(Order, twoEqualSymbols)
+BOOST_AUTO_TEST_CASE(twoEqualSymbols)
 {
-    CHECK(order::isCorrect(a, a));
+    BOOST_TEST(order::isCorrect(a, a));
 }
 
-TEST(Order, twoSymbolsOnePositive)
+BOOST_AUTO_TEST_CASE(twoSymbolsOnePositive)
 {
     const BasePtr aPos = Symbol::createPositive("a");
 
-    CHECK(order::isCorrect(aPos, a));
-    CHECK(order::doPermute(a, aPos));
+    BOOST_TEST(order::isCorrect(aPos, a));
+    BOOST_TEST(order::doPermute(a, aPos));
 }
 
-TEST(Order, twoSymbolsCapitalSmall)
+BOOST_AUTO_TEST_CASE(twoSymbolsCapitalSmall)
 {
     const BasePtr A = Symbol::create("A");
 
-    CHECK(order::doPermute(a, A));
+    BOOST_TEST(order::doPermute(a, A));
 }
 
-TEST(Order, twoSymbolsNumericNames)
+BOOST_AUTO_TEST_CASE(twoSymbolsNumericNames)
 {
     const BasePtr eleven = Symbol::create("11");
 
-    CHECK(order::doPermute(eleven, ten));
+    BOOST_TEST(order::doPermute(eleven, ten));
 }
 
-TEST(Order, twoSymbolsNumericNameAndLetter)
+BOOST_AUTO_TEST_CASE(twoSymbolsNumericNameAndLetter)
 {
-    CHECK(order::doPermute(a, ten));
+    BOOST_TEST(order::doPermute(a, ten));
 }
 
-TEST(Order, twoNumericsFrac)
+BOOST_AUTO_TEST_CASE(twoNumericsFrac)
 {
     const BasePtr twoThird = Numeric::create(2, 3);
 
-    CHECK(order::doPermute(twoThird, Numeric::half()));
+    BOOST_TEST(order::doPermute(twoThird, Numeric::half()));
 }
 
-TEST(Order, twoNumericsDouble)
+BOOST_AUTO_TEST_CASE(twoNumericsDouble)
 {
     const BasePtr n1 = Numeric::create(1.234556789);
     const BasePtr n2 = Numeric::create(12.3456789);
 
-    CHECK(order::doPermute(n2, n1));
+    BOOST_TEST(order::doPermute(n2, n1));
 }
 
-TEST(Order, twoNumericsInteger)
+BOOST_AUTO_TEST_CASE(twoNumericsInteger)
 {
-    CHECK(order::doPermute(four, three));
+    BOOST_TEST(order::doPermute(four, three));
 }
 
-TEST(Order, twoNumericsMixedTypes)
+BOOST_AUTO_TEST_CASE(twoNumericsMixedTypes)
 {
     const BasePtr n1 = Numeric::create(3, 4);
     const BasePtr n2 = Numeric::create(1.23456789);
 
-    CHECK(order::doPermute(n2, n1));
+    BOOST_TEST(order::doPermute(n2, n1));
 }
 
-TEST(Order, twoPowersDifferentBase)
+BOOST_AUTO_TEST_CASE(twoPowersDifferentBase)
 {
     const BasePtr pow1 = Power::sqrt(a);
     const BasePtr pow2 = Power::sqrt(b);
 
-    CHECK(order::doPermute(pow2, pow1));
+    BOOST_TEST(order::doPermute(pow2, pow1));
 }
 
-TEST(Order, twoPowersDifferentExp)
+BOOST_AUTO_TEST_CASE(twoPowersDifferentExp)
 {
     const BasePtr pow1 = Power::sqrt(a);
     const BasePtr pow2 = Power::create(a, five);
 
-    CHECK(order::doPermute(pow2, pow1));
+    BOOST_TEST(order::doPermute(pow2, pow1));
 }
 
-TEST(Order, twoPowersDifferentBaseAndExp)
+BOOST_AUTO_TEST_CASE(twoPowersDifferentBaseAndExp)
 {
     const BasePtr pow1 = Power::create(a, five);
     const BasePtr pow2 = Power::sqrt(b);
 
-    CHECK(order::doPermute(pow2, pow1));
+    BOOST_TEST(order::doPermute(pow2, pow1));
 }
 
-TEST(Order, sumsWithTwoSummands)
+BOOST_AUTO_TEST_CASE(sumsWithTwoSummands)
 {
     const BasePtr sum1 = Sum::create(a, b);
     const BasePtr sum2 = Sum::create(a, c);
 
-    CHECK(order::doPermute(sum2, sum1));
+    BOOST_TEST(order::doPermute(sum2, sum1));
 }
 
-TEST(Order, sumsWithThreeSummands)
+BOOST_AUTO_TEST_CASE(sumsWithThreeSummands)
 {
     BasePtrList summands;
     const BasePtr sum1 = Sum::create(a, c, d);
     const BasePtr sum2 = Sum::create(b, c, d);
 
-    CHECK(order::doPermute(sum2, sum1));
+    BOOST_TEST(order::doPermute(sum2, sum1));
 }
 
-TEST(Order, sumsWithTwoAndThreeSummands)
+BOOST_AUTO_TEST_CASE(sumsWithTwoAndThreeSummands)
 {
     const BasePtr sum1 = Sum::create(c, d);
     const BasePtr sum2 = Sum::create(b, c, d);;
 
-    CHECK(order::doPermute(sum2, sum1));
-    CHECK(order::isCorrect(sum1, sum2));
+    BOOST_TEST(order::doPermute(sum2, sum1));
+    BOOST_TEST(order::isCorrect(sum1, sum2));
 }
 
-TEST(Order, equalSumsWithFourSummands)
+BOOST_AUTO_TEST_CASE(equalSumsWithFourSummands)
 {
     BasePtr sum = Sum::create(a, b, c, d);
 
-    CHECK(order::isCorrect(sum, sum));
+    BOOST_TEST(order::isCorrect(sum, sum));
 }
 
-TEST(Order, productsWithTwoFactors)
+BOOST_AUTO_TEST_CASE(productsWithTwoFactors)
     /* This causes the same functions to be called as the sum tests do, so one test is enough. */
 {
     const BasePtr product1 = Product::create(a, b);
     const BasePtr product2 = Product::create(a, c);
 
-    CHECK(order::doPermute(product2, product1));
+    BOOST_TEST(order::doPermute(product2, product1));
 }
 
-TEST(Order, productAndPower)
+BOOST_AUTO_TEST_CASE(productAndPower)
 {
     const BasePtr bSquare = Power::create(b, two);
     const BasePtr bToTheThree = Power::create(b, three);
     const BasePtr product = Product::create(a, bSquare);
 
-    CHECK(order::isCorrect(product, bToTheThree));
-    CHECK(order::doPermute(bToTheThree, product));
+    BOOST_TEST(order::isCorrect(product, bToTheThree));
+    BOOST_TEST(order::doPermute(bToTheThree, product));
 }
 
-TEST(Order, productAndSymbol)
+BOOST_AUTO_TEST_CASE(productAndSymbol)
 {
     const BasePtr product = Product::create(a, b);
 
-    CHECK(order::doPermute(product, b));
-    CHECK(order::isCorrect(b, product));
+    BOOST_TEST(order::doPermute(product, b));
+    BOOST_TEST(order::isCorrect(b, product));
 }
 
-TEST(Order, powerAndNumber)
+BOOST_AUTO_TEST_CASE(powerAndNumber)
 {
     const BasePtr sqrtA = Power::sqrt(a);
 
-    CHECK(order::isCorrect(five, sqrtA));
-    CHECK(order::doPermute(sqrtA, five));
+    BOOST_TEST(order::isCorrect(five, sqrtA));
+    BOOST_TEST(order::doPermute(sqrtA, five));
 }
 
-TEST(Order, sumAndSymbol)
+BOOST_AUTO_TEST_CASE(sumAndSymbol)
 {
     const BasePtr sum = Sum::create(a, c);
 
-    CHECK(order::isCorrect(b, sum));
-    CHECK(order::isCorrect(c, sum));
-    CHECK(order::doPermute(d, sum));
+    BOOST_TEST(order::isCorrect(b, sum));
+    BOOST_TEST(order::isCorrect(c, sum));
+    BOOST_TEST(order::doPermute(d, sum));
 }
 
-TEST(Order, powerAndSum)
+BOOST_AUTO_TEST_CASE(powerAndSum)
     /* Switch (1/2 + b) and (1/2 + a)^2. */
 {
     const BasePtr sum1 = Sum::create(Numeric::half(), a);
     const BasePtr sum2 = Sum::create(Numeric::half(), b);
     const BasePtr pow = Power::create(sum1, two);
 
-    CHECK(order::doPermute(sum2, pow));
-    CHECK(order::isCorrect(pow, sum2));
+    BOOST_TEST(order::doPermute(sum2, pow));
+    BOOST_TEST(order::isCorrect(pow, sum2));
 }
 
-TEST(Order, powerAndSumSameBase)
+BOOST_AUTO_TEST_CASE(powerAndSumSameBase)
 {
     const BasePtr sum = Sum::create(a, d);
     const BasePtr pow = Power::sqrt(sum);
 
-    CHECK(order::isCorrect(pow, sum));
-    CHECK(order::doPermute(sum, pow));
+    BOOST_TEST(order::isCorrect(pow, sum));
+    BOOST_TEST(order::doPermute(sum, pow));
 }
 
-TEST(Order, powerAndSymbol)
+BOOST_AUTO_TEST_CASE(powerAndSymbol)
 {
     const BasePtr sqrtA = Power::sqrt(a);
 
-    CHECK(order::doPermute(b, sqrtA));
+    BOOST_TEST(order::doPermute(b, sqrtA));
 }
 
-TEST(Order, numericAndConstPower)
+BOOST_AUTO_TEST_CASE(numericAndConstPower)
 {
-    CHECK(order::doPermute(sqrtTwo, two));
+    BOOST_TEST(order::doPermute(sqrtTwo, two));
 }
 
-TEST(Order, constSumAndNumeric)
+BOOST_AUTO_TEST_CASE(constSumAndNumeric)
 {
     const BasePtr sum = Sum::create(three, sqrtTwo);
 
-    CHECK(order::doPermute(sum, two));
+    BOOST_TEST(order::doPermute(sum, two));
 }
 
-TEST(Order, constSumAndConstPower)
+BOOST_AUTO_TEST_CASE(constSumAndConstPower)
 {
     const BasePtr sum = Sum::create(one, sqrtTwo);
 
-    CHECK(order::doPermute(sum, sqrtThree));
-    CHECK(order::isCorrect(sqrtThree, sum));
+    BOOST_TEST(order::doPermute(sum, sqrtThree));
+    BOOST_TEST(order::isCorrect(sqrtThree, sum));
 }
 
-TEST(Order, constantAndSmallerNumeric)
+BOOST_AUTO_TEST_CASE(constantAndSmallerNumeric)
 {
-    CHECK(order::doPermute(pi, Numeric::half()));
+    BOOST_TEST(order::doPermute(pi, Numeric::half()));
 }
 
-TEST(Order, constantAndGreaterNumeric)
+BOOST_AUTO_TEST_CASE(constantAndGreaterNumeric)
 {
-    CHECK(order::doPermute(pi, Numeric::create(100)));
+    BOOST_TEST(order::doPermute(pi, Numeric::create(100)));
 }
 
-TEST(Order, constantAndSymbol)
+BOOST_AUTO_TEST_CASE(constantAndSymbol)
 {
-    CHECK(order::isCorrect(pi, a));
+    BOOST_TEST(order::isCorrect(pi, a));
 }
 
-TEST(Order, constantAndPower)
+BOOST_AUTO_TEST_CASE(constantAndPower)
 {
-    CHECK(order::isCorrect(pi, sqrtTwo));
+    BOOST_TEST(order::isCorrect(pi, sqrtTwo));
 }
 
-TEST(Order, constantAndSum)
+BOOST_AUTO_TEST_CASE(constantAndSum)
 {
     const BasePtr sum = Sum::create(a, two);
 
-    CHECK(order::isCorrect(Constant::createE(), sum));
+    BOOST_TEST(order::isCorrect(Constant::createE(), sum));
 }
 
-TEST(Order, constantAndProduct)
+BOOST_AUTO_TEST_CASE(constantAndProduct)
 {
     const BasePtr product = Product::create(sqrtTwo, a);
 
-    CHECK(order::doPermute(product, pi));
+    BOOST_TEST(order::doPermute(product, pi));
 }
 
-TEST(Order, twoDifferentFunctionsSameArgument)
+BOOST_AUTO_TEST_CASE(twoDifferentFunctionsSameArgument)
 {
     const BasePtr sin = Trigonometric::createSin(a);
     const BasePtr cos = Trigonometric::createCos(a);
 
-    CHECK(order::doPermute(sin, cos));
+    BOOST_TEST(order::doPermute(sin, cos));
 }
 
-TEST(Order, twoDifferentFunctionsDifferentArguments)
+BOOST_AUTO_TEST_CASE(twoDifferentFunctionsDifferentArguments)
 {
     const BasePtr tan = Trigonometric::createTan(a);
     const BasePtr sin = Trigonometric::createSin(b);
 
-    CHECK(order::doPermute(tan, sin));
+    BOOST_TEST(order::doPermute(tan, sin));
 }
 
-TEST(Order, sameFunctionDifferentSymbolArguments)
+BOOST_AUTO_TEST_CASE(sameFunctionDifferentSymbolArguments)
 {
     const BasePtr asin1 = Trigonometric::createAsin(a);
     const BasePtr asin2 = Trigonometric::createAsin(b);
 
-    CHECK(order::doPermute(asin2, asin1));
+    BOOST_TEST(order::doPermute(asin2, asin1));
 }
 
-TEST(Order, sameFunctionDifferentNumericArguments)
+BOOST_AUTO_TEST_CASE(sameFunctionDifferentNumericArguments)
 {
     const BasePtr sin1 = Trigonometric::createSin(one);
     const BasePtr sin2 = Trigonometric::createSin(two);
 
-    CHECK(order::doPermute(sin2, sin1));
+    BOOST_TEST(order::doPermute(sin2, sin1));
 }
 
-TEST(Order, sameFunctionDifferentProductArgument)
+BOOST_AUTO_TEST_CASE(sameFunctionDifferentProductArgument)
 {
     const BasePtr arg1 = Product::create(a, b);
     const BasePtr arg2 = Product::create(a, d);
     const BasePtr sin1 = Trigonometric::createSin(arg1);
     const BasePtr sin2 = Trigonometric::createSin(arg2);
 
-    CHECK(order::doPermute(sin2, sin1));
+    BOOST_TEST(order::doPermute(sin2, sin1));
 }
 
-TEST(Order, functionAndSymbolSameName)
+BOOST_AUTO_TEST_CASE(functionAndSymbolSameName)
 {
     const BasePtr sinSymbol = Symbol::create("sin");
     const BasePtr sin = Trigonometric::createSin(a);
 
-    CHECK(order::doPermute(sinSymbol, sin));
+    BOOST_TEST(order::doPermute(sinSymbol, sin));
 }
 
-TEST(Order, functionAndSymbolDifferentNames)
+BOOST_AUTO_TEST_CASE(functionAndSymbolDifferentNames)
 {
     const BasePtr cos = Trigonometric::createCos(a);
 
-    CHECK(order::doPermute(cos, a));
-    CHECK_FALSE(order::doPermute(a, cos));
+    BOOST_TEST(order::doPermute(cos, a));
+    BOOST_TEST(!order::doPermute(a, cos));
 }
 
-TEST(Order, functionAndProduct)
+BOOST_AUTO_TEST_CASE(functionAndProduct)
 {
     const BasePtr fct = Trigonometric::createSin(a);
     const BasePtr product = Product::create(a, b);
 
-    CHECK(order::doPermute(fct, product));
+    BOOST_TEST(order::doPermute(fct, product));
 }
 
-TEST(Order, functionAndProductEqualLastFactor)
+BOOST_AUTO_TEST_CASE(functionAndProductEqualLastFactor)
 {
     const BasePtr fct = Trigonometric::createSin(d);
     const BasePtr product = Product::create(a, b, c, fct);
 
-    CHECK(order::doPermute(product, fct));
-    CHECK(order::isCorrect(fct, product));
+    BOOST_TEST(order::doPermute(product, fct));
+    BOOST_TEST(order::isCorrect(fct, product));
 }
 
-TEST(Order, functionAndPower)
+BOOST_AUTO_TEST_CASE(functionAndPower)
 {
     const BasePtr pow = Power::create(a, two);
     const BasePtr sin = Trigonometric::createSin(a);
 
-    CHECK(order::doPermute(sin, pow));
-    CHECK(order::isCorrect(pow, sin));
+    BOOST_TEST(order::doPermute(sin, pow));
+    BOOST_TEST(order::isCorrect(pow, sin));
 }
 
-TEST(Order, functionAndSum)
+BOOST_AUTO_TEST_CASE(functionAndSum)
 {
     const BasePtr sin = Trigonometric::createSin(c);
     const BasePtr sum = Sum::create(b, Trigonometric::createSin(a));
 
-    CHECK(order::doPermute(sin, sum));
-    CHECK(order::isCorrect(sum, sin));
+    BOOST_TEST(order::doPermute(sin, sum));
+    BOOST_TEST(order::isCorrect(sum, sin));
 }
 
-TEST(Order, numericFraction)
+BOOST_AUTO_TEST_CASE(numericFraction)
 {
     const BasePtr n = Numeric::third();
 
-    CHECK(order::isCorrect(n, n));
+    BOOST_TEST(order::isCorrect(n, n));
 }
 
-TEST(Order, numericPower)
+BOOST_AUTO_TEST_CASE(numericPower)
 {
     const BasePtr pow = Power::create(two, Numeric::third());
 
-    CHECK(order::isCorrect(pow, pow));
+    BOOST_TEST(order::isCorrect(pow, pow));
 }
 
-TEST(Order, equalTrigonometricFunction)
+BOOST_AUTO_TEST_CASE(equalTrigonometricFunction)
 {
     const BasePtr arg = Power::create(seven, Numeric::create(2, 3));
     const BasePtr cos = Trigonometric::createCos(arg);
 
-    CHECK(order::isCorrect(cos, cos));
+    BOOST_TEST(order::isCorrect(cos, cos));
 }
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -10,47 +10,47 @@
 
 using namespace tsym;
 
-TEST_GROUP(PolyDivide) {};
+BOOST_AUTO_TEST_SUITE(TestPolyDivide)
 
-TEST(PolyDivide, zeroDividend)
+BOOST_AUTO_TEST_CASE(zeroDividend)
 {
     const BasePtrList result = poly::divide(zero, two, { a, b });
 
-    CHECK_EQUAL(zero, result.front());
-    CHECK_EQUAL(zero, result.back());
+    BOOST_CHECK_EQUAL(zero, result.front());
+    BOOST_CHECK_EQUAL(zero, result.back());
 }
 
-TEST(PolyDivide, emptyContainer)
+BOOST_AUTO_TEST_CASE(emptyContainer)
 {
     const BasePtr u = Sum::create(a, b);
     const BasePtr v = Product::create(c, Sum::create(d, e));
     const BasePtrList result = poly::divide(u, v, {});
 
-    CHECK_EQUAL(zero, result.front());
-    CHECK_EQUAL(u, result.back());
+    BOOST_CHECK_EQUAL(zero, result.front());
+    BOOST_CHECK_EQUAL(u, result.back());
 }
 
-TEST(PolyDivide, wrongSymbolsInContainer)
+BOOST_AUTO_TEST_CASE(wrongSymbolsInContainer)
 {
     const BasePtr u = Power::create(Sum::create(a, b), two);
     const BasePtr v = Sum::create(Product::create(two, c), Power::create(d, three));
     const BasePtrList result = poly::divide(u, v, { e, f });
 
-    CHECK_EQUAL(zero, result.front());
-    CHECK_EQUAL(u, result.back());
+    BOOST_CHECK_EQUAL(zero, result.front());
+    BOOST_CHECK_EQUAL(u, result.back());
 }
 
-TEST(PolyDivide, twoFractionsEmptyContainer)
+BOOST_AUTO_TEST_CASE(twoFractionsEmptyContainer)
     /* (1/3)/(4/5) = 5/12. */
 {
     const BasePtr expected = Numeric::create(5, 12);
     const BasePtrList result = poly::divide(Numeric::third(), Numeric::create(4, 5), {});
 
-    CHECK_EQUAL(expected, result.front());
-    CHECK(result.back()->isZero());
+    BOOST_CHECK_EQUAL(expected, result.front());
+    BOOST_TEST(result.back()->isZero());
 }
 
-TEST(PolyDivide, fractionCoeff)
+BOOST_AUTO_TEST_CASE(fractionCoeff)
 {
     const BasePtr expected = Product::create(Numeric::create(-14, 9), Power::create(a, two));
     const BasePtr u = Product::create(Numeric::create(2, 3), Power::create(a, three), b);
@@ -59,11 +59,11 @@ TEST(PolyDivide, fractionCoeff)
 
     result = poly::divide(u, v, { a, b });
 
-    CHECK_EQUAL(expected, result.front());
-    CHECK_EQUAL(zero, result.back());
+    BOOST_CHECK_EQUAL(expected, result.front());
+    BOOST_CHECK_EQUAL(zero, result.back());
 }
 
-TEST(PolyDivide, invalidInputBothZero)
+BOOST_AUTO_TEST_CASE(invalidInputBothZero)
 {
     BasePtrList result;
 
@@ -71,11 +71,11 @@ TEST(PolyDivide, invalidInputBothZero)
     result = poly::divide(zero, zero);
     enableLog();
 
-    CHECK(result.front()->isUndefined());
-    CHECK(result.back()->isUndefined());
+    BOOST_TEST(result.front()->isUndefined());
+    BOOST_TEST(result.back()->isUndefined());
 }
 
-TEST(PolyDivide, invalidInputWithFunction)
+BOOST_AUTO_TEST_CASE(invalidInputWithFunction)
 {
     const BasePtr u = Trigonometric::createAcos(a);
     const BasePtr v = Sum::create(two, a);
@@ -85,11 +85,11 @@ TEST(PolyDivide, invalidInputWithFunction)
     result = poly::divide(u, v, { a });
     enableLog();
 
-    CHECK(result.front()->isUndefined());
-    CHECK(result.back()->isUndefined());
+    BOOST_TEST(result.front()->isUndefined());
+    BOOST_TEST(result.back()->isUndefined());
 }
 
-TEST(PolyDivide, intRemainder)
+BOOST_AUTO_TEST_CASE(intRemainder)
     /* (3*a^3 - 5*a^2 + 10*a - 3)/(3a + 1) in a: quotient a^2 - 2a + 4, remainder -7. */
 {
     const BasePtr divisor = Sum::create(Product::create(three, a), one);
@@ -106,11 +106,11 @@ TEST(PolyDivide, intRemainder)
 
     expectedQuotient = Sum::create({ Power::create(a, two), Product::minus(two, a), four });
 
-    CHECK_EQUAL(expectedQuotient, res.front());
-    CHECK_EQUAL(expectedRemainder, res.back());
+    BOOST_CHECK_EQUAL(expectedQuotient, res.front());
+    BOOST_CHECK_EQUAL(expectedRemainder, res.back());
 }
 
-TEST(PolyDivide, noQuotient)
+BOOST_AUTO_TEST_CASE(noQuotient)
     /* (a^2 - 2*a - b)/(a*b - 1) in a and b: no quotient. */
 {
     const BasePtr divisor = Sum::create(Product::create(a, b), Numeric::create(-1));
@@ -120,11 +120,11 @@ TEST(PolyDivide, noQuotient)
 
     res = poly::divide(dividend, divisor, { a, b });
 
-    CHECK(res.front()->isZero());
-    CHECK_EQUAL(dividend, res.back());
+    BOOST_TEST(res.front()->isZero());
+    BOOST_CHECK_EQUAL(dividend, res.back());
 }
 
-TEST(PolyDivide, quotientWithRationalCoeff)
+BOOST_AUTO_TEST_CASE(quotientWithRationalCoeff)
     /* (-a^2*b + b^3)/(-2*b) = 1/2*a^2 - 1/2*b^2. */
 {
     const BasePtr& half = Numeric::half();
@@ -135,11 +135,11 @@ TEST(PolyDivide, quotientWithRationalCoeff)
 
     res = poly::divide(u, v, { a, b });
 
-    CHECK_EQUAL(expected, res.front());
-    CHECK(res.back()->isZero());
+    BOOST_CHECK_EQUAL(expected, res.front());
+    BOOST_TEST(res.back()->isZero());
 }
 
-TEST(PolyDivide, multipleVarsNoRemainder)
+BOOST_AUTO_TEST_CASE(multipleVarsNoRemainder)
 {
     const BasePtr p1 = Sum::create(Product::create(a, Power::create(b, two)),
             Product::create(a, c));
@@ -148,11 +148,11 @@ TEST(PolyDivide, multipleVarsNoRemainder)
     const BasePtrList vars { a, b, c, d, e };
     const BasePtrList res = poly::divide(dividend, p2, vars);
 
-    CHECK_EQUAL(p1, res.front());
-    CHECK(res.back()->isZero());
+    BOOST_CHECK_EQUAL(p1, res.front());
+    BOOST_TEST(res.back()->isZero());
 }
 
-TEST(PolyDivide, hugeExpandedPolynomials)
+BOOST_AUTO_TEST_CASE(hugeExpandedPolynomials)
 {
     const BasePtr p1 = Sum::create(Product::create(two, a), Product::create(b, c));
     const BasePtr p2 = Sum::create(Power::create(d, five), Power::create(e, four));
@@ -168,28 +168,29 @@ TEST(PolyDivide, hugeExpandedPolynomials)
 
     res = poly::divide(p1234, p12, vars);
 
-    CHECK_EQUAL(p34, res.front());
-    CHECK_EQUAL(zero, res.back());
+    BOOST_CHECK_EQUAL(p34, res.front());
+    BOOST_CHECK_EQUAL(zero, res.back());
 
     res = poly::divide(p1234, p34, vars);
 
-    CHECK_EQUAL(p12, res.front());
-    CHECK_EQUAL(zero, res.back());
+    BOOST_CHECK_EQUAL(p12, res.front());
+    BOOST_CHECK_EQUAL(zero, res.back());
 }
 
-TEST_GROUP(PolyPseudoDivide) {};
+BOOST_AUTO_TEST_SUITE_END()
+BOOST_AUTO_TEST_SUITE(TestPolyPseudoDivide)
 
-TEST(PolyPseudoDivide, cohenExample01)
+BOOST_AUTO_TEST_CASE(cohenExample01)
 {
     const BasePtr u = a;
     const BasePtr v = Sum::create(Product::create(a, b), b);
     const BasePtrList result = poly::pseudoDivide(u, v, a);
 
-    CHECK_EQUAL(one, result.front());
-    CHECK_EQUAL(Product::minus(b), result.back());
+    BOOST_CHECK_EQUAL(one, result.front());
+    BOOST_CHECK_EQUAL(Product::minus(b), result.back());
 }
 
-TEST(PolyPseudoDivide, cohenExample02)
+BOOST_AUTO_TEST_CASE(cohenExample02)
 {
     const BasePtr expectedQuotient = Product::create(ten, a, Power::create(b, four));
     const BasePtr expectedRemainder = Sum::create(
@@ -204,11 +205,11 @@ TEST(PolyPseudoDivide, cohenExample02)
             Product::create(two, a), three);
     const BasePtrList result = poly::pseudoDivide(u, v, a);
 
-    CHECK_EQUAL(expectedQuotient, result.front());
-    CHECK_EQUAL(expectedRemainder, result.back());
+    BOOST_CHECK_EQUAL(expectedQuotient, result.front());
+    BOOST_CHECK_EQUAL(expectedRemainder, result.back());
 }
 
-TEST(PolyPseudoDivide, illegalInput)
+BOOST_AUTO_TEST_CASE(illegalInput)
 {
     const BasePtr u = Power::create(a, Numeric::create(1.23456789));
     const BasePtr v = Trigonometric::createSin(a);
@@ -218,6 +219,8 @@ TEST(PolyPseudoDivide, illegalInput)
     result = poly::pseudoDivide(u, v, a);
     enableLog();
 
-    CHECK(result.front()->isUndefined());
-    CHECK(result.back()->isUndefined());
+    BOOST_TEST(result.front()->isUndefined());
+    BOOST_TEST(result.back()->isUndefined());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

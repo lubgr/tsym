@@ -7,63 +7,63 @@
 
 using namespace tsym;
 
-TEST_GROUP(Fraction)
-{
-    const Fraction aOverB = Fraction(a, b);
-};
+BOOST_AUTO_TEST_SUITE(TestFraction)
 
-TEST(Fraction, constructionWithoutParameter)
+BOOST_AUTO_TEST_CASE(constructionWithoutParameter)
 {
     const Fraction frac;
 
-    CHECK(frac.num()->isUndefined());
-    CHECK_EQUAL(one, frac.denom());
+    BOOST_TEST(frac.num()->isUndefined());
+    BOOST_CHECK_EQUAL(one, frac.denom());
 }
 
-TEST(Fraction, constructWithoutDenom)
+BOOST_AUTO_TEST_CASE(constructWithoutDenom)
 {
     const Fraction frac(a);
 
-    CHECK_EQUAL(a, frac.num());
-    CHECK_EQUAL(one, frac.denom());
+    BOOST_CHECK_EQUAL(a, frac.num());
+    BOOST_CHECK_EQUAL(one, frac.denom());
 }
 
-TEST(Fraction, constructWithNumAndDenom)
+BOOST_AUTO_TEST_CASE(constructWithNumAndDenom)
 {
-    CHECK_EQUAL(a, aOverB.num());
-    CHECK_EQUAL(b, aOverB.denom());
+    const Fraction aOverB = Fraction(a, b);
+    BOOST_CHECK_EQUAL(a, aOverB.num());
+    BOOST_CHECK_EQUAL(b, aOverB.denom());
 }
 
-TEST(Fraction, inversion)
+BOOST_AUTO_TEST_CASE(inversion)
 {
+    const Fraction aOverB = Fraction(a, b);
     Fraction result;
 
     result = aOverB.invert();
 
-    CHECK_EQUAL(b, result.num());
-    CHECK_EQUAL(a, result.denom());
+    BOOST_CHECK_EQUAL(b, result.num());
+    BOOST_CHECK_EQUAL(a, result.denom());
 }
 
-TEST(Fraction, evaluation)
+BOOST_AUTO_TEST_CASE(evaluation)
 {
+    const Fraction aOverB = Fraction(a, b);
     const BasePtr expected = Product::create(a, Power::oneOver(b));
     const BasePtr result = aOverB.eval();
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Fraction, cancelZeroNumerator)
+BOOST_AUTO_TEST_CASE(cancelZeroNumerator)
 {
     const Fraction frac(zero, b);
     Fraction result;
 
     result = frac.cancel();
 
-    CHECK_EQUAL(zero, result.num());
-    CHECK_EQUAL(one, result.denom());
+    BOOST_CHECK_EQUAL(zero, result.num());
+    BOOST_CHECK_EQUAL(one, result.denom());
 }
 
-TEST(Fraction, cancelZeroDenominator)
+BOOST_AUTO_TEST_CASE(cancelZeroDenominator)
 {
     const Fraction frac(a, zero);
     Fraction result;
@@ -72,11 +72,11 @@ TEST(Fraction, cancelZeroDenominator)
     result = frac.cancel();
     enableLog();
 
-    CHECK(result.num()->isUndefined());
-    CHECK_EQUAL(one, result.denom());
+    BOOST_TEST(result.num()->isUndefined());
+    BOOST_CHECK_EQUAL(one, result.denom());
 }
 
-TEST(Fraction, evalZeroDenominator)
+BOOST_AUTO_TEST_CASE(evalZeroDenominator)
 {
     const Fraction frac(a, zero);
     BasePtr result;
@@ -85,5 +85,7 @@ TEST(Fraction, evalZeroDenominator)
     result = frac.eval();
     enableLog();
 
-    CHECK(result->isUndefined());
+    BOOST_TEST(result->isUndefined());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

@@ -13,8 +13,7 @@
 
 using namespace tsym;
 
-TEST_GROUP(Gcd)
-{
+struct GcdFixture {
     const BasePtr zeroAfterExpansion = Sum::create({ Product::create(a, b), Product::minus(b, c),
             Product::create(b, Sum::create(c, Product::minus(a))) });
     const BasePtr undefined = Undefined::create();
@@ -44,14 +43,16 @@ TEST_GROUP(Gcd)
         const BasePtr result = poly::gcd(u, v, gcd);
 
         if (expected->isUndefined()) {
-            CHECK(result->isUndefined());
+            BOOST_TEST(result->isUndefined());
         } else {
-            CHECK_EQUAL(expected, result);
+            BOOST_CHECK_EQUAL(expected, result);
         }
     }
 };
 
-TEST(Gcd, invalidInput)
+BOOST_FIXTURE_TEST_SUITE(TestGcd, GcdFixture)
+
+BOOST_AUTO_TEST_CASE(invalidInput)
     /* Only integer Numerics or Symblics or composition of these types are allowed. */
 {
     disableLog();
@@ -59,12 +60,12 @@ TEST(Gcd, invalidInput)
     enableLog();
 }
 
-TEST(Gcd, twoIntegerNumerics)
+BOOST_AUTO_TEST_CASE(twoIntegerNumerics)
 {
     check(three, three, nine);
 }
 
-TEST(Gcd, twoRationalNumerics)
+BOOST_AUTO_TEST_CASE(twoRationalNumerics)
     /* Gcd(1/3, 1/15) = 1. */
 {
     const BasePtr oneOverFifteen = Numeric::create(1, 15);
@@ -72,12 +73,12 @@ TEST(Gcd, twoRationalNumerics)
     check(one, Numeric::third(), oneOverFifteen);
 }
 
-TEST(Gcd, twoIntegerNumericsWithGcdOne)
+BOOST_AUTO_TEST_CASE(twoIntegerNumericsWithGcdOne)
 {
     check(one, three, seven);
 }
 
-TEST(Gcd, equalSums)
+BOOST_AUTO_TEST_CASE(equalSums)
     /* The gcd of two equal arguments is obviously the same expression. */
 {
     const BasePtr sum = Sum::create(a, b);
@@ -85,7 +86,7 @@ TEST(Gcd, equalSums)
     check(sum, sum, sum);
 }
 
-TEST(Gcd, bothZero)
+BOOST_AUTO_TEST_CASE(bothZero)
     /* Shall return an Undefined, because the request doesn't make any sense. */
 {
     disableLog();
@@ -93,37 +94,37 @@ TEST(Gcd, bothZero)
     enableLog();
 }
 
-TEST(Gcd, bothZeroAfterExpansion)
+BOOST_AUTO_TEST_CASE(bothZeroAfterExpansion)
     /* Same as above. */
 {
     check(undefined, zeroAfterExpansion, zeroAfterExpansion);
 }
 
-TEST(Gcd, firstArgZeroAfterExpansion)
+BOOST_AUTO_TEST_CASE(firstArgZeroAfterExpansion)
 {
     check(a, zeroAfterExpansion, a);
 }
 
-TEST(Gcd, secondArgZeroAfterExpansion)
+BOOST_AUTO_TEST_CASE(secondArgZeroAfterExpansion)
 {
     check(a, zeroAfterExpansion, a);
 }
 
-TEST(Gcd, firstArgOneAfterExpansion)
+BOOST_AUTO_TEST_CASE(firstArgOneAfterExpansion)
 {
     const BasePtr u = Sum::create(one, zeroAfterExpansion);
 
     check(one, u, Sum::create(a, b));
 }
 
-TEST(Gcd, secondArgOneAfterExpansion)
+BOOST_AUTO_TEST_CASE(secondArgOneAfterExpansion)
 {
     const BasePtr v = Sum::create(one, zeroAfterExpansion);
 
     check(one, Sum::create(two, b), v);
 }
 
-TEST(Gcd, noCommonSymbol)
+BOOST_AUTO_TEST_CASE(noCommonSymbol)
 {
     const BasePtr u = Sum::create(a, Power::create(b, two));
     const BasePtr v = Sum::create(Product::create(c, d), Product::create(four, e));
@@ -131,7 +132,7 @@ TEST(Gcd, noCommonSymbol)
     check(one, u, v);
 }
 
-TEST(Gcd, numericsAfterExpansion)
+BOOST_AUTO_TEST_CASE(numericsAfterExpansion)
 {
     const BasePtr u = Sum::create(four, Product::create(a, Sum::create(b, two)),
             Product::minus(a, b), Product::minus(two, a));
@@ -141,7 +142,7 @@ TEST(Gcd, numericsAfterExpansion)
     check(four, v, u);
 }
 
-TEST(Gcd, equalAfterExpansion)
+BOOST_AUTO_TEST_CASE(equalAfterExpansion)
 {
     const BasePtr unExpanded = Product::create(a, Sum::create(b, c));
     const BasePtr expanded = Sum::create(Product::create(a, b), Product::create(a, c));
@@ -150,31 +151,31 @@ TEST(Gcd, equalAfterExpansion)
     check(expanded, expanded, unExpanded);
 }
 
-TEST(Gcd, negAndPosSymbol)
+BOOST_AUTO_TEST_CASE(negAndPosSymbol)
     /* Gcd(-a, a) = a. */
 {
     check(a, Product::minus(a), a);
 }
 
-TEST(Gcd, posPowerAndNegNumFactor)
+BOOST_AUTO_TEST_CASE(posPowerAndNegNumFactor)
     /* Gcd(a^2, -2*a) = a. */
 {
     check(a, Power::create(a, two), Product::minus(two, a));
 }
 
-TEST(Gcd, negNumFactorAndPosPower)
+BOOST_AUTO_TEST_CASE(negNumFactorAndPosPower)
     /* Gcd(a^2, -2*a) = a. */
 {
     check(a, Product::minus(two, a), Power::create(a, two));
 }
 
-TEST(Gcd, negSymbolAndSimplePower)
+BOOST_AUTO_TEST_CASE(negSymbolAndSimplePower)
     /* Gcd(-a, a^3) = a. */
 {
     check(a, Product::minus(a), Power::create(a, three));
 }
 
-TEST(Gcd, simpleUnivarMonomial)
+BOOST_AUTO_TEST_CASE(simpleUnivarMonomial)
     /* Gcd(b^2, -2*b) = b. */
 {
     const BasePtr u = Power::create(b, two);
@@ -183,7 +184,7 @@ TEST(Gcd, simpleUnivarMonomial)
     check(b, u, v);
 }
 
-TEST(Gcd, numericAndSimpleMonomial)
+BOOST_AUTO_TEST_CASE(numericAndSimpleMonomial)
     /* Gcd(2, 2*a) = 2. */
 {
     const BasePtr v = Product::create(two, a);
@@ -191,7 +192,7 @@ TEST(Gcd, numericAndSimpleMonomial)
     check(two, two, v);
 }
 
-TEST(Gcd, simpleMultivarPoly)
+BOOST_AUTO_TEST_CASE(simpleMultivarPoly)
     /* Gcd(-a^2*b + b^3, a^2*b + 2*a*b^2) = b. */
 {
     const BasePtr aSquare = Power::create(a, two);
@@ -202,7 +203,7 @@ TEST(Gcd, simpleMultivarPoly)
     check(b, u, v);
 }
 
-TEST(Gcd, simpleMultivarPolyCohenExample)
+BOOST_AUTO_TEST_CASE(simpleMultivarPolyCohenExample)
     /* Example 6.62 in Cohen [2003]. */
 {
     const BasePtr aSquare = Power::create(a, two);
@@ -216,7 +217,7 @@ TEST(Gcd, simpleMultivarPolyCohenExample)
     check(expected, u, v);
 }
 
-TEST(Gcd, rationalCoefficients)
+BOOST_AUTO_TEST_CASE(rationalCoefficients)
     /* Gcd(1/3*a, a) = a/3. */
 {
     const BasePtr aThird = Product::create(a, Numeric::third());
@@ -224,7 +225,7 @@ TEST(Gcd, rationalCoefficients)
     check(a, aThird, a);
 }
 
-TEST(Gcd, simpleFractionCoefficients)
+BOOST_AUTO_TEST_CASE(simpleFractionCoefficients)
     /* Gcd(1/2*a^2*b*d - 1/3*a*c*d + 1/2*a^3*d^2, a*c*d - 2*a^3*d^2 + 2*a*b^7*d) = a*d. The results
      * given by GiNaC, Maxima or Mathematic differ in that they all give a*d/6. Thus, the division
      * of u or v by the gcd gives a polynomial with rational coefficients in our case, and one with
@@ -245,7 +246,7 @@ TEST(Gcd, simpleFractionCoefficients)
     check(expected, u, v);
 }
 
-TEST(Gcd, simpleIntegerCoefficientsAllExpOne)
+BOOST_AUTO_TEST_CASE(simpleIntegerCoefficientsAllExpOne)
     /* Gcd(168*a*b, 322*c*b) = 14*b. */
 {
     const BasePtr u = Product::create(Numeric::create(168), a, b);
@@ -255,7 +256,7 @@ TEST(Gcd, simpleIntegerCoefficientsAllExpOne)
     check(expected, u, v);
 }
 
-TEST(Gcd, simpleIntegerCoefficientsExpGreaterOne)
+BOOST_AUTO_TEST_CASE(simpleIntegerCoefficientsExpGreaterOne)
     /* Gcd(3*a^3*b + 3*a^2*b*c^5, 14*a^2 + 14*a*c^5) = a^2 + a*c^5). */
 {
     const BasePtr u = Sum::create(Product::create(three, Power::create(a, three), b),
@@ -268,7 +269,7 @@ TEST(Gcd, simpleIntegerCoefficientsExpGreaterOne)
     check(expected, u, v);
 }
 
-TEST(Gcd, integerCoefficientsLargerIntExp)
+BOOST_AUTO_TEST_CASE(integerCoefficientsLargerIntExp)
     /* Gcd(56*c^5*e + 12*a*b*c^6*e, 14 + 3*a*b*c) = 3*a*b*c + 14. */
 {
     const BasePtr u = Sum::create(Product::create(Numeric::create(56), Power::create(c, five), e),
@@ -279,7 +280,7 @@ TEST(Gcd, integerCoefficientsLargerIntExp)
     check(expected, u, v);
 }
 
-TEST(Gcd, simpleIntegerCoefficients)
+BOOST_AUTO_TEST_CASE(simpleIntegerCoefficients)
 {
     const BasePtr u = Product::create(three, a, Power::create(b, four));
     const BasePtr v = Product::create(three, a, Power::create(b, four), Power::create(c, five));
@@ -288,7 +289,7 @@ TEST(Gcd, simpleIntegerCoefficients)
     check(expected, u, v);
 }
 
-TEST(Gcd, integerCoefficients)
+BOOST_AUTO_TEST_CASE(integerCoefficients)
 {
     const BasePtr cefg = Product::create(c, e, f, g);
     const BasePtr u1 = Product::create(Numeric::create(-464), a, b, e);
@@ -303,7 +304,7 @@ TEST(Gcd, integerCoefficients)
     check(expected, u, v);
 }
 
-TEST(Gcd, largeMultivarPolyCohenExample)
+BOOST_AUTO_TEST_CASE(largeMultivarPolyCohenExample)
     /* Example 6.63 in Cohen [2003]. */
 {
     const BasePtr aCubic = Power::create(a, three);
@@ -349,7 +350,7 @@ TEST(Gcd, largeMultivarPolyCohenExample)
     check(expected, u, v);
 }
 
-TEST(Gcd, largeMultivarPoly)
+BOOST_AUTO_TEST_CASE(largeMultivarPoly)
 {
     const BasePtr gcd = Sum::create(Numeric::create(14), Product::create(three, a, b, c));
     BasePtr aux[4];
@@ -377,3 +378,5 @@ TEST(Gcd, largeMultivarPoly)
 
     check(gcd, u, v);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

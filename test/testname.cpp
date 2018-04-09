@@ -4,129 +4,131 @@
 
 using namespace tsym;
 
-TEST_GROUP(Name) {};
+BOOST_AUTO_TEST_SUITE(TestName)
 
-TEST(Name, emptyName)
+BOOST_AUTO_TEST_CASE(emptyName)
 {
     const Name empty("");
 
-    CHECK(empty.plain().empty());
-    CHECK(empty.unicode().empty());
-    CHECK(empty.tex().empty());
+    BOOST_TEST(empty.plain().empty());
+    BOOST_TEST(empty.unicode().empty());
+    BOOST_TEST(empty.tex().empty());
 }
 
-TEST(Name, simpleString)
+BOOST_AUTO_TEST_CASE(simpleString)
 {
     const std::string varName("abc");
     const Name a(varName);
 
-    CHECK_EQUAL(varName, a.plain());
-    CHECK_EQUAL(varName, a.tex());
+    BOOST_CHECK_EQUAL(varName, a.plain());
+    BOOST_CHECK_EQUAL(varName, a.tex());
 }
 
-TEST(Name, varWithSubscriptChar)
+BOOST_AUTO_TEST_CASE(varWithSubscriptChar)
 {
     const std::string expected("U_x");
     const Name n("U", "x");
 
-    CHECK_EQUAL(expected, n.plain());
-    CHECK_EQUAL(expected, n.tex());
+    BOOST_CHECK_EQUAL(expected, n.plain());
+    BOOST_CHECK_EQUAL(expected, n.tex());
 }
 
-TEST(Name, varWithSubscriptString)
+BOOST_AUTO_TEST_CASE(varWithSubscriptString)
 {
     const std::string expectedPlain("U_xyz");
     const std::string expectedTex("U_{xyz}");
     const Name n("U", "xyz");
 
-    CHECK_EQUAL(expectedPlain, n.plain());
-    CHECK_EQUAL(expectedTex, n.tex());
+    BOOST_CHECK_EQUAL(expectedPlain, n.plain());
+    BOOST_CHECK_EQUAL(expectedTex, n.tex());
 }
 
-TEST(Name, varWithSubAndSuperscriptChar)
+BOOST_AUTO_TEST_CASE(varWithSubAndSuperscriptChar)
 {
     const std::string expectedPlain("ABC_d_e");
     const std::string expectedTex("ABC_d^e");
     const Name n("ABC", "d", "e");
 
-    CHECK_EQUAL(expectedPlain, n.plain());
-    CHECK_EQUAL(expectedTex, n.tex());
+    BOOST_CHECK_EQUAL(expectedPlain, n.plain());
+    BOOST_CHECK_EQUAL(expectedTex, n.tex());
 }
 
-TEST(Name, varWithSubCharAndSuperString)
+BOOST_AUTO_TEST_CASE(varWithSubCharAndSuperString)
 {
     const std::string expectedPlain("ABC_d_efg");
     const std::string expectedTex("ABC_d^{efg}");
     const Name n("ABC", "d", "efg");
 
-    CHECK_EQUAL(expectedPlain, n.plain());
-    CHECK_EQUAL(expectedTex, n.tex());
+    BOOST_CHECK_EQUAL(expectedPlain, n.plain());
+    BOOST_CHECK_EQUAL(expectedTex, n.tex());
 }
 
-TEST(Name, greekLowerCaseLetter)
+BOOST_AUTO_TEST_CASE(greekLowerCaseLetter)
 {
     const Name gamma("gamma");
 
-    CHECK_EQUAL("gamma", gamma.plain());
-    CHECK_EQUAL("\\gamma", gamma.tex());
+    BOOST_CHECK_EQUAL("gamma", gamma.plain());
+    BOOST_CHECK_EQUAL("\\gamma", gamma.tex());
 }
 
-TEST(Name, greekUpperCaseLetter)
+BOOST_AUTO_TEST_CASE(greekUpperCaseLetter)
 {
     const Name xi("Xi");
 
-    CHECK_EQUAL("Xi", xi.plain());
-    CHECK_EQUAL("\\Xi", xi.tex());
+    BOOST_CHECK_EQUAL("Xi", xi.plain());
+    BOOST_CHECK_EQUAL("\\Xi", xi.tex());
 }
 
-TEST(Name, texRepresentationOfPhi)
+BOOST_AUTO_TEST_CASE(texRepresentationOfPhi)
 {
     const std::string expected("\\varphi");
     const Name phi("phi");
 
-    CHECK_EQUAL(expected, phi.tex());
+    BOOST_CHECK_EQUAL(expected, phi.tex());
 }
 
-TEST(Name, comparisonOperators)
+BOOST_AUTO_TEST_CASE(comparisonOperators)
 {
     const Name ab2("A", "b", "2");
     const Name ab3("A", "b", "3");
     const Name ac1("A", "c", "1");
 
-    CHECK(ac1 == ac1);
-    CHECK(ab2 != ab3);
+    BOOST_TEST(ac1 == ac1);
+    BOOST_TEST(ab2 != ab3);
 
-    CHECK(ab2 < ac1);
-    CHECK(ab2 <= ab3);
-    CHECK(ab2 <= ab2);
+    BOOST_TEST(ab2 < ac1);
+    BOOST_TEST(ab2 <= ab3);
+    BOOST_TEST(ab2 <= ab2);
 
-    CHECK(ab3 > ab2);
-    CHECK(ac1 >= ab3);
+    BOOST_TEST(ab3 > ab2);
+    BOOST_TEST(ac1 >= ab3);
 }
 
-TEST(Name, twoNumeric)
+BOOST_AUTO_TEST_CASE(twoNumeric)
 {
     const Name n1("1");
     const Name n2("2");
 
-    CHECK_EQUAL(n1, n1);
-    CHECK(n1 < n2);
-    CHECK_FALSE((n2 < n1));
+    BOOST_CHECK_EQUAL(n1, n1);
+    BOOST_TEST(n1 < n2);
+    BOOST_TEST(!(n2 < n1));
 }
 
-TEST(Name, accessNumericName)
+BOOST_AUTO_TEST_CASE(accessNumericName)
 {
     const Name name("123");
 
-    CHECK_EQUAL("123", name.plain());
+    BOOST_CHECK_EQUAL("123", name.plain());
 }
 
-TEST(Name, streamOperator)
+BOOST_AUTO_TEST_CASE(streamOperator)
 {
     const Name name("abc", "d");
     std::ostringstream stream;
 
     stream << name;
 
-    CHECK_EQUAL("abc_d", stream.str());
+    BOOST_CHECK_EQUAL("abc_d", stream.str());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

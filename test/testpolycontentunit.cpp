@@ -10,58 +10,58 @@
 
 using namespace tsym;
 
-TEST_GROUP(PolyUnit) {};
+BOOST_AUTO_TEST_SUITE(TestPolyUnit)
 
-TEST(PolyUnit, zero)
+BOOST_AUTO_TEST_CASE(unitOfZero)
 {
-    CHECK_EQUAL(1, poly::unit(zero, a));
-    CHECK_EQUAL(1, poly::unit(zero, zero));
+    BOOST_CHECK_EQUAL(1, poly::unit(zero, a));
+    BOOST_CHECK_EQUAL(1, poly::unit(zero, zero));
 }
 
-TEST(PolyUnit, undefined)
+BOOST_AUTO_TEST_CASE(undefined)
     /* Illegal input is supposed to return 1. */
 {
     disableLog();
-    CHECK_EQUAL(1, poly::unit(Undefined::create(), a));
+    BOOST_CHECK_EQUAL(1, poly::unit(Undefined::create(), a));
     enableLog();
 }
 
-TEST(PolyUnit, illegalNumPowerInput)
+BOOST_AUTO_TEST_CASE(illegalNumPowerInput)
 {
     const BasePtr illegal = Product::create(two,
             Sum::create(Power::create(five, Numeric::third()), b));
     const BasePtr sum = Sum::create(a, illegal);
 
     disableLog();
-    CHECK_EQUAL(1, poly::unit(sum, b));
+    BOOST_CHECK_EQUAL(1, poly::unit(sum, b));
     enableLog();
 }
 
-TEST(PolyUnit, posSymbol)
+BOOST_AUTO_TEST_CASE(posSymbol)
 {
-    CHECK_EQUAL(1, poly::unit(a, a));
+    BOOST_CHECK_EQUAL(1, poly::unit(a, a));
 }
 
-TEST(PolyUnit, negSymbol)
+BOOST_AUTO_TEST_CASE(negSymbol)
 {
-    CHECK_EQUAL(-1, poly::unit(Product::minus(a), a));
+    BOOST_CHECK_EQUAL(-1, poly::unit(Product::minus(a), a));
 }
 
-TEST(PolyUnit, negMonomial)
+BOOST_AUTO_TEST_CASE(negMonomial)
 {
     const BasePtr monomial = Product::minus(a, b, Power::create(c, two));
 
-    CHECK_EQUAL(-1, poly::unit(monomial, c));
+    BOOST_CHECK_EQUAL(-1, poly::unit(monomial, c));
 }
 
-TEST(PolyUnit, posMonomial)
+BOOST_AUTO_TEST_CASE(posMonomial)
 {
     const BasePtr monomial = Product::create(a, b, Power::create(c, three));
 
-    CHECK_EQUAL(1, poly::unit(monomial, b));
+    BOOST_CHECK_EQUAL(1, poly::unit(monomial, b));
 }
 
-TEST(PolyUnit, longNegativeMonomial)
+BOOST_AUTO_TEST_CASE(longNegativeMonomial)
 {
     BasePtrList factors;
     BasePtr monomial;
@@ -73,96 +73,97 @@ TEST(PolyUnit, longNegativeMonomial)
 
     monomial = Product::create(factors);
 
-    CHECK_EQUAL(-1, poly::unit(monomial, a));
-    CHECK_EQUAL(-1, poly::unit(monomial, b));
-    CHECK_EQUAL(-1, poly::unit(monomial, c));
-    CHECK_EQUAL(-1, poly::unit(monomial, d));
-    CHECK_EQUAL(-1, poly::unit(monomial, e));
-    CHECK_EQUAL(-1, poly::unit(monomial, g));
+    BOOST_CHECK_EQUAL(-1, poly::unit(monomial, a));
+    BOOST_CHECK_EQUAL(-1, poly::unit(monomial, b));
+    BOOST_CHECK_EQUAL(-1, poly::unit(monomial, c));
+    BOOST_CHECK_EQUAL(-1, poly::unit(monomial, d));
+    BOOST_CHECK_EQUAL(-1, poly::unit(monomial, e));
+    BOOST_CHECK_EQUAL(-1, poly::unit(monomial, g));
 }
 
-TEST(PolyUnit, mixedSignPolynomial)
+BOOST_AUTO_TEST_CASE(mixedSignPolynomial)
     /* Unit(a*b^2 - a*c^3, a) = 1. */
 {
     const BasePtr polynomial = Sum::create(Product::create(a, b, b),
             Product::minus(a, Power::create(c, three)));
 
-    CHECK_EQUAL(1, poly::unit(polynomial, a));
+    BOOST_CHECK_EQUAL(1, poly::unit(polynomial, a));
 }
 
-TEST(PolyUnit, mixedInverseSignPolynomial)
+BOOST_AUTO_TEST_CASE(mixedInverseSignPolynomial)
     /* Same as before, but multiplied with -1. */
 {
     const BasePtr polynomial = Sum::create(Product::minus(a, b, b), Product::create(a, c, c, c));
 
-    CHECK_EQUAL(-1, poly::unit(polynomial, a));
+    BOOST_CHECK_EQUAL(-1, poly::unit(polynomial, a));
 }
 
-TEST(PolyUnit, positiveSignPolynomial)
+BOOST_AUTO_TEST_CASE(positiveSignPolynomial)
     /* Unit(1/2*a*b^2 + a^2*b^3 + a^3*b^5, a) = 1. */
 {
     const BasePtr polynomial = Sum::create(Product::create(Numeric::half(), a, b, b),
             Product::create(a, a, Power::create(b, three)),
             Product::create(Power::create(a, three), Power::create(b, five)));
 
-    CHECK_EQUAL(1, poly::unit(polynomial, a));
+    BOOST_CHECK_EQUAL(1, poly::unit(polynomial, a));
 }
 
-TEST(PolyUnit, negativeSignPolynomial)
+BOOST_AUTO_TEST_CASE(negativeSignPolynomial)
     /* Unit(-1/5*a*b - 2/7*c*d, d) = -1. */
 {
     const BasePtr polynomial = Sum::create(Product::create(Numeric::create(-1, 5), a, b),
             Product::create(Numeric::create(-2, 7), c, d));
 
-    CHECK_EQUAL(-1, poly::unit(polynomial, d));
+    BOOST_CHECK_EQUAL(-1, poly::unit(polynomial, d));
 }
 
-TEST_GROUP(PolyContent) {};
+BOOST_AUTO_TEST_SUITE_END()
+BOOST_AUTO_TEST_SUITE(TestPolyContent)
 
-TEST(PolyContent, zero)
+BOOST_AUTO_TEST_CASE(contentOfZero)
 {
-    CHECK_EQUAL(zero, poly::content(zero, a));
+    BOOST_CHECK_EQUAL(zero, poly::content(zero, a));
 }
 
-TEST(PolyContent, posSymbol)
+BOOST_AUTO_TEST_CASE(posSymbol)
 {
-    CHECK_EQUAL(one, poly::content(a, a));
+    BOOST_CHECK_EQUAL(one, poly::content(a, a));
 }
 
-TEST(PolyContent, negSymbol)
+BOOST_AUTO_TEST_CASE(negSymbol)
 {
-    CHECK_EQUAL(one, poly::content(Product::minus(a), a));
+    BOOST_CHECK_EQUAL(one, poly::content(Product::minus(a), a));
 }
 
-TEST(PolyContent, positiveNumeric)
+BOOST_AUTO_TEST_CASE(positiveNumeric)
 {
-    CHECK_EQUAL(five, poly::content(five, a));
+    BOOST_CHECK_EQUAL(five, poly::content(five, a));
 }
 
-TEST(PolyContent, negativeNumeric)
+BOOST_AUTO_TEST_CASE(negativeNumeric)
 {
     const BasePtr n = Numeric::create(-1, 10);
 
-    CHECK_EQUAL(Numeric::create(1, 10), poly::content(n, a));
+    BOOST_CHECK_EQUAL(Numeric::create(1, 10), poly::content(n, a));
 }
 
-TEST(PolyContent, simpleMultiVarPolyWithIntCoeff)
+BOOST_AUTO_TEST_CASE(simpleMultiVarPolyWithIntCoeff)
     /* Content(-2*a*b - b^2, a) = b. */
 {
     const BasePtr poly = Sum::create(Product::minus(two, a, b), Product::minus(b, b));
 
-    CHECK_EQUAL(b, poly::content(poly, a));
+    BOOST_CHECK_EQUAL(b, poly::content(poly, a));
 }
 
-TEST(PolyContent, simpleMultivarPoly)
+BOOST_AUTO_TEST_CASE(simpleMultivarPoly)
     /* Content(-a^2*b + b^3, a) = b. */
 {
     const BasePtr arg = Sum::create(Product::minus(a, a, b), Power::create(b, three));
 
-    CHECK_EQUAL(b, poly::content(arg, a));
+    BOOST_CHECK_EQUAL(b, poly::content(arg, a));
 }
 
-TEST(PolyContent, multivarPoly)
+BOOST_AUTO_TEST_CASE(multivarPoly)
     /* Content(14*a^2 + 14*a*c^5, a) = 14. */
 {
     const BasePtr fourteen = Numeric::create(14);
@@ -170,5 +171,7 @@ TEST(PolyContent, multivarPoly)
             Product::create(fourteen, a, Power::create(c, five)));
     const BasePtr result = poly::content(arg, a);
 
-    CHECK_EQUAL(fourteen, result);
+    BOOST_CHECK_EQUAL(fourteen, result);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

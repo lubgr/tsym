@@ -15,115 +15,111 @@
 
 using namespace tsym;
 
-TEST_GROUP(Normal)
-{
+struct NormalFixture {
     const BasePtr undefined = Undefined::create();
     const BasePtr denom = Power::oneOver(Sum::create(b, c));
     const BasePtr argToZero = Sum::create(a, Product::create(Numeric::mOne(), a, b, denom),
             Product::create(Numeric::mOne(), a, c, denom));
     const BasePtr pi = Constant::createPi();
-    std::unique_ptr<SymbolMap> map {};
-
-    void setup()
-    {
-        map = std::make_unique<SymbolMap>();
-    }
+    std::unique_ptr<SymbolMap> map{std::make_unique<SymbolMap>()};
 };
 
-TEST(Normal, numericInteger)
+BOOST_FIXTURE_TEST_SUITE(TestNormal, NormalFixture)
+
+BOOST_AUTO_TEST_CASE(numericInteger)
 {
-    CHECK_EQUAL(two, two->normal());
+    BOOST_CHECK_EQUAL(two, two->normal());
 }
 
-TEST(Normal, numericDouble)
+BOOST_AUTO_TEST_CASE(numericDouble)
 {
     const BasePtr d = Numeric::create(1.234567);
 
-    CHECK_EQUAL(d, d->normal());
+    BOOST_CHECK_EQUAL(d, d->normal());
 }
 
-TEST(Normal, numericFraction)
+BOOST_AUTO_TEST_CASE(numericFraction)
 {
     const BasePtr frac = Numeric::third();
 
-    CHECK_EQUAL(frac, frac->normal());
+    BOOST_CHECK_EQUAL(frac, frac->normal());
 }
 
-TEST(Normal, symbol)
+BOOST_AUTO_TEST_CASE(symbol)
 {
-    CHECK_EQUAL(a, a->normal());
+    BOOST_CHECK_EQUAL(a, a->normal());
 }
 
-TEST(Normal, constantPi)
+BOOST_AUTO_TEST_CASE(constantPi)
 {
-    CHECK_EQUAL(pi, pi->normal());
+    BOOST_CHECK_EQUAL(pi, pi->normal());
 }
 
-TEST(Normal, constantE)
+BOOST_AUTO_TEST_CASE(constantE)
 {
     const BasePtr e = Constant::createE();
 
-    CHECK_EQUAL(e, e->normal());
+    BOOST_CHECK_EQUAL(e, e->normal());
 }
 
-TEST(Normal, undefined)
+BOOST_AUTO_TEST_CASE(undefinedToUndefined)
 {
-    CHECK(undefined->normal()->isUndefined());
+    BOOST_TEST(undefined->normal()->isUndefined());
 }
 
-TEST(Normal, powerWithPosIntExp)
+BOOST_AUTO_TEST_CASE(powerWithPosIntExp)
 {
     const BasePtr orig = Power::create(a, two);
 
-    CHECK_EQUAL(orig, orig->normal());
+    BOOST_CHECK_EQUAL(orig, orig->normal());
 }
 
-TEST(Normal, powerWithPosNegExp)
+BOOST_AUTO_TEST_CASE(powerWithPosNegExp)
 {
     const BasePtr orig = Power::create(a, Numeric::create(-2));
 
-    CHECK_EQUAL(orig, orig->normal());
+    BOOST_CHECK_EQUAL(orig, orig->normal());
 }
 
-TEST(Normal, powerWithSymbolExp)
+BOOST_AUTO_TEST_CASE(powerWithSymbolExp)
 {
     const BasePtr orig = Power::create(Sum::create(a, b), c);
 
-    CHECK_EQUAL(orig, orig->normal());
+    BOOST_CHECK_EQUAL(orig, orig->normal());
 }
 
-TEST(Normal, powerWithMinusSymbolExp)
+BOOST_AUTO_TEST_CASE(powerWithMinusSymbolExp)
 {
     const BasePtr orig = Power::create(Sum::create(a, b), Product::minus(c));
 
-    CHECK_EQUAL(orig, orig->normal());
+    BOOST_CHECK_EQUAL(orig, orig->normal());
 }
 
-TEST(Normal, powerWithPiExp)
+BOOST_AUTO_TEST_CASE(powerWithPiExp)
 {
     const BasePtr orig = Power::create(a, pi);
 
-    CHECK_EQUAL(orig, orig->normal());
+    BOOST_CHECK_EQUAL(orig, orig->normal());
 }
 
-TEST(Normal, powerWithNegNumEvalExp)
+BOOST_AUTO_TEST_CASE(powerWithNegNumEvalExp)
 {
     const BasePtr pos = Product::create(three, pi, Power::sqrt(two));
     const BasePtr orig = Power::create(a, Product::minus(pos));
 
-    CHECK_EQUAL(orig, orig->normal());
+    BOOST_CHECK_EQUAL(orig, orig->normal());
 }
 
-TEST(Normal, simpleProduct)
+BOOST_AUTO_TEST_CASE(simpleProduct)
 {
     const BasePtr orig = Product::create(a, Power::oneOver(b));
     const Fraction frac = orig->normal(*map);
 
-    CHECK_EQUAL(a, frac.num());
-    CHECK_EQUAL(b, frac.denom());
+    BOOST_CHECK_EQUAL(a, frac.num());
+    BOOST_CHECK_EQUAL(b, frac.denom());
 }
 
-TEST(Normal, product)
+BOOST_AUTO_TEST_CASE(product)
     /* (1/4)*(2*c + 2*b^2 + a*b^2 + a*c)(2*a + a^2)^(-1) becomes 1/4*a^(-1)*(b^2 + c). */
 {
     const BasePtr num = Sum::create(Product::create(two, c), Product::create(two, b, b),
@@ -138,12 +134,12 @@ TEST(Normal, product)
 
     frac = orig->normal(*map);
 
-    CHECK_EQUAL(expectedNum, frac.num());
-    CHECK_EQUAL(expectedDenom, frac.denom());
-    CHECK_EQUAL(expected, orig->normal());
+    BOOST_CHECK_EQUAL(expectedNum, frac.num());
+    BOOST_CHECK_EQUAL(expectedDenom, frac.denom());
+    BOOST_CHECK_EQUAL(expected, orig->normal());
 }
 
-TEST(Normal, simpleSum)
+BOOST_AUTO_TEST_CASE(simpleSum)
     /* a/b + 2/b becomes (2 + a)/b. */
 {
     const BasePtr oneOverB = Power::oneOver(b);
@@ -151,17 +147,17 @@ TEST(Normal, simpleSum)
     const BasePtr orig = Sum::create(Product::create(a, oneOverB), Product::create(two, oneOverB));
     const BasePtr result = orig->normal();
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Normal, simpleSumToZero)
+BOOST_AUTO_TEST_CASE(simpleSumToZero)
 {
     const BasePtr result = argToZero->normal();
 
-    CHECK(result->isZero());
+    BOOST_TEST(result->isZero());
 }
 
-TEST(Normal, simpleSumWithFractionCoeff)
+BOOST_AUTO_TEST_CASE(simpleSumWithFractionCoeff)
     /* a/b + 1/(5*b) becomes 1/5*(1 + 5*a)/b. */
 {
     const BasePtr oneOverB = Power::oneOver(b);
@@ -174,10 +170,10 @@ TEST(Normal, simpleSumWithFractionCoeff)
 
     result = orig->normal();
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Normal, sum)
+BOOST_AUTO_TEST_CASE(sum)
     /* sqrt(2)*a/b + c/(sqrt(2)*d) - sin(a)/b becomes
      * (2*a*d + b*c - sqrt(2)*d*sin(a))/(sqrt(2)*b*d). */
 {
@@ -194,10 +190,10 @@ TEST(Normal, sum)
 
     result = orig->normal();
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Normal, longSimpleSum)
+BOOST_AUTO_TEST_CASE(longSimpleSum)
     /* (1/a)* (a + b - b*(c - (a + b)*c/a + d)/(-b*c/a + d)) becomes 1. */
 {
     const BasePtr oneOverA = Power::oneOver(a);
@@ -209,10 +205,10 @@ TEST(Normal, longSimpleSum)
 
     result = orig->normal();
 
-    CHECK_EQUAL(one, result);
+    BOOST_CHECK_EQUAL(one, result);
 }
 
-TEST(Normal, replacementOfFunctionWithNumPowerArg)
+BOOST_AUTO_TEST_CASE(replacementOfFunctionWithNumPowerArg)
     /* sin(sqrt(3))^(-1) is rationalized to 1/tmp with tmp = sin(sqrt(3)). */
 {
     const BasePtr sqrtThree = Power::sqrt(three);
@@ -221,15 +217,15 @@ TEST(Normal, replacementOfFunctionWithNumPowerArg)
     const Fraction frac = orig->normal(*map);
     BasePtr denom;
 
-    CHECK_EQUAL(one, frac.num());
-    CHECK(frac.denom()->isSymbol());
+    BOOST_CHECK_EQUAL(one, frac.num());
+    BOOST_TEST(frac.denom()->isSymbol());
 
     denom = map->replaceTmpSymbolsBackFrom(frac.denom());
 
-    CHECK_EQUAL(sin, denom);
+    BOOST_CHECK_EQUAL(sin, denom);
 }
 
-TEST(Normal, fractionsOfNumPowersAndFunctions01)
+BOOST_AUTO_TEST_CASE(fractionsOfNumPowersAndFunctions01)
     /* sqrt(2)/sin(sqrt(3)) + asin(a)/cos(b) becomes
      * (sqrt(2)*cos(b) + sin(sqrt(3))*asin(a))/(sin(sqrt3)*cos(b)). */
 {
@@ -247,10 +243,10 @@ TEST(Normal, fractionsOfNumPowersAndFunctions01)
 
     result = orig->normal();
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Normal, fractionsOfNumPowersAndFunctions02)
+BOOST_AUTO_TEST_CASE(fractionsOfNumPowersAndFunctions02)
 {
     const BasePtr sinA = Trigonometric::createSin(a);
     const BasePtr sqrtTwo = Power::sqrt(two);
@@ -269,10 +265,10 @@ TEST(Normal, fractionsOfNumPowersAndFunctions02)
 
     result = orig->normal();
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Normal, fractionSumWithPiExp)
+BOOST_AUTO_TEST_CASE(fractionSumWithPiExp)
     /* (a/b)^(-Pi) + 1/(a^Pi) becomes (1 + b^Pi)/a^Pi.*/
 {
     const BasePtr pi = Constant::createPi();
@@ -285,10 +281,10 @@ TEST(Normal, fractionSumWithPiExp)
 
     result = orig->normal();
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Normal, sumWithNumPowerOfFractions)
+BOOST_AUTO_TEST_CASE(sumWithNumPowerOfFractions)
     /* (3/4)^(-1/5) + 3^(1/5) becomes 2^(2/5)/3^(1/5) + 3^(1/5).*/
 {
     const BasePtr oneFifth = Numeric::create(1, 5);
@@ -302,31 +298,31 @@ TEST(Normal, sumWithNumPowerOfFractions)
 
     result = orig->normal();
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Normal, atan2NormalizeFunctionArgs)
+BOOST_AUTO_TEST_CASE(atan2NormalizeFunctionArgs)
 {
     const BasePtr orig = Trigonometric::createAtan2(Sum::create(b, argToZero), a);
     const BasePtr result = orig->normal();
     const Name expectedFctName("atan2");
 
-    CHECK(result->isFunction());
-    CHECK_EQUAL(expectedFctName, result->name());
+    BOOST_TEST(result->isFunction());
+    BOOST_CHECK_EQUAL(expectedFctName, result->name());
 
-    CHECK_EQUAL(b, result->operands().front());
-    CHECK_EQUAL(a, result->operands().back());
+    BOOST_CHECK_EQUAL(b, result->operands().front());
+    BOOST_CHECK_EQUAL(a, result->operands().back());
 }
 
-TEST(Normal, trigonometricFunctionArgToZero)
+BOOST_AUTO_TEST_CASE(trigonometricFunctionArgToZero)
 {
     const BasePtr orig = Trigonometric::createSin(argToZero);
     const BasePtr result = orig->normal();
 
-    CHECK(result->isZero());
+    BOOST_TEST(result->isZero());
 }
 
-TEST(Normal, logarithmicFunctionArgToZero)
+BOOST_AUTO_TEST_CASE(logarithmicFunctionArgToZero)
 {
     const BasePtr orig = Logarithm::create(argToZero);
     BasePtr result;
@@ -335,18 +331,18 @@ TEST(Normal, logarithmicFunctionArgToZero)
     result = orig->normal();
     enableLog();
 
-    CHECK(result->isUndefined());
+    BOOST_TEST(result->isUndefined());
 }
 
-TEST(Normal, logarithmicFunction)
+BOOST_AUTO_TEST_CASE(logarithmicFunction)
 {
     const BasePtr orig = Logarithm::create(Product::create(two, a));
     const BasePtr result = orig->normal();
 
-    CHECK_EQUAL(orig, result);
+    BOOST_CHECK_EQUAL(orig, result);
 }
 
-TEST(Normal, trigoPowerSumComposite)
+BOOST_AUTO_TEST_CASE(trigoPowerSumComposite)
     /* -2*a*sin(a^2)/sqrt(1 - cos(a^2)^2) doesn't change. */
 {
     const BasePtr aSquare = Power::create(a, two);
@@ -356,10 +352,10 @@ TEST(Normal, trigoPowerSumComposite)
                 Numeric::create(-1, 2)));
     const BasePtr result = orig->normal();
 
-    CHECK_EQUAL(orig, result);
+    BOOST_CHECK_EQUAL(orig, result);
 }
 
-TEST(Normal, tanToSinOverCos)
+BOOST_AUTO_TEST_CASE(tanToSinOverCos)
     /* 1/cos(a) + tan(a) becomes (1 + sin(a))/cos(a). */
 {
     const BasePtr cosA = Trigonometric::createCos(a);
@@ -368,10 +364,10 @@ TEST(Normal, tanToSinOverCos)
     const BasePtr expected = Product::create(Sum::create(one, Trigonometric::createSin(a)),
             Power::oneOver(cosA));
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Normal, tanInDenominator)
+BOOST_AUTO_TEST_CASE(tanInDenominator)
     /* cos(a)/(12*b) + a*b/tan(a) becomes (12*a*b^2 + sin(a))/(12*b*tan(a)). */
 {
     const BasePtr twelveB = Product::create(Numeric::create(12), b);
@@ -384,5 +380,7 @@ TEST(Normal, tanInDenominator)
             Power::oneOver(Product::create(twelveB, tanA)));
     const BasePtr result = orig->normal();
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
+
+BOOST_AUTO_TEST_SUITE_END()

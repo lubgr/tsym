@@ -1,5 +1,5 @@
 
-#define BOOST_TEST_MODULE tsym_unit_tests
+#define BOOST_TEST_MODULE tsym unit tests
 #include <boost/test/unit_test.hpp>
 #include "logger.h"
 #include "testsuitelogger.h"

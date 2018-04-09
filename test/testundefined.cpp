@@ -6,64 +6,67 @@
 
 using namespace tsym;
 
-TEST_GROUP(Undefined)
-{
-    const BasePtr undefined = Undefined::create();
+struct UndefinedFixture {
+    const BasePtr& undefined = Undefined::create();
 };
 
-TEST(Undefined, numericalEvaluation)
+BOOST_FIXTURE_TEST_SUITE(TestUndefined, UndefinedFixture)
+
+BOOST_AUTO_TEST_CASE(numericalEvaluation)
 {
-    CHECK_FALSE(undefined->isNumericallyEvaluable());
+    BOOST_TEST(!undefined->isNumericallyEvaluable());
 }
 
-TEST(Undefined, typeString)
+BOOST_AUTO_TEST_CASE(typeString)
 {
     const std::string expected("Undefined");
 
-    CHECK_EQUAL(expected, undefined->typeStr());
+    BOOST_CHECK_EQUAL(expected, undefined->typeStr());
 }
 
-TEST(Undefined, numericTerm)
+BOOST_AUTO_TEST_CASE(numericTerm)
 {
-    CHECK_EQUAL(one, undefined->numericTerm());
+    BOOST_CHECK_EQUAL(one, undefined->numericTerm());
 }
 
-TEST(Undefined, nonNumericTerm)
+BOOST_AUTO_TEST_CASE(nonNumericTerm)
 {
-    CHECK(undefined->nonNumericTerm()->isUndefined());
+    BOOST_TEST(undefined->nonNumericTerm()->isUndefined());
 }
 
-TEST(Undefined, constTerm)
+BOOST_AUTO_TEST_CASE(constTerm)
 {
-    CHECK_EQUAL(one, undefined->constTerm());
+    BOOST_CHECK_EQUAL(one, undefined->constTerm());
 }
 
-TEST(Undefined, nonConstTerm)
+BOOST_AUTO_TEST_CASE(nonConstTerm)
 {
-    CHECK(undefined->nonConstTerm()->isUndefined());
+    BOOST_TEST(undefined->nonConstTerm()->isUndefined());
 }
 
-TEST(Undefined, numericEvaluability)
+BOOST_AUTO_TEST_CASE(numericEvaluability)
 {
-    CHECK_FALSE(undefined->isNumericallyEvaluable());
+    BOOST_TEST(!undefined->isNumericallyEvaluable());
 }
 
-TEST(Undefined, numericEvaluation)
+BOOST_AUTO_TEST_CASE(numericEvaluation)
 {
-    CHECK_THROWS(std::logic_error, undefined->numericEval());
+    BOOST_CHECK_THROW(undefined->numericEval(), std::logic_error);
 }
 
-TEST(Undefined, equalityOtherUndefined)
+BOOST_AUTO_TEST_CASE(equalityOtherUndefined)
 {
     const BasePtr otherUndefined = Undefined::create();
 
     disableLog();
 
-    CHECK_FALSE(undefined->isEqual(undefined));
-    CHECK_FALSE(undefined->isEqual(otherUndefined));
+    BOOST_TEST(!undefined->isEqual(undefined));
+    BOOST_TEST(!undefined->isEqual(otherUndefined));
 
-    CHECK(undefined->isDifferent(undefined));
-    CHECK(undefined->isDifferent(otherUndefined));
+    BOOST_TEST(undefined->isDifferent(undefined));
+    BOOST_TEST(undefined->isDifferent(otherUndefined));
 
     enableLog();
 }
+
+BOOST_AUTO_TEST_SUITE_END()

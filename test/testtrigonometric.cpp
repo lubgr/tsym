@@ -14,120 +14,121 @@
 
 using namespace tsym;
 
-TEST_GROUP(Trigonometric)
-{
-    const BasePtr undefined = Undefined::create();
+struct TrigonometricFixture {
+    const BasePtr& undefined = Undefined::create();
     const BasePtr minusHalf = Numeric::create(-1, 2);
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr sqrtThree = Power::sqrt(three);
     const BasePtr aSquare = Power::create(a, two);
-    const BasePtr pi = Constant::createPi();
+    const BasePtr& pi = Constant::createPi();
     const BasePtr sinA = Trigonometric::createSin(a);
 };
 
-TEST(Trigonometric, typeRequest)
+BOOST_FIXTURE_TEST_SUITE(TestTrigonometric, TrigonometricFixture)
+
+BOOST_AUTO_TEST_CASE(typeRequest)
 {
-    CHECK(sinA->isFunction());
+    BOOST_TEST(sinA->isFunction());
 }
 
-TEST(Trigonometric, constRequest)
+BOOST_AUTO_TEST_CASE(constRequest)
 {
     const BasePtr symbolArg = Trigonometric::createCos(a);
     const BasePtr numericArg = Trigonometric::createCos(two);
 
-    CHECK_FALSE(symbolArg->isConst());
-    CHECK_FALSE(numericArg->isConst());
+    BOOST_TEST(!symbolArg->isConst());
+    BOOST_TEST(!numericArg->isConst());
 }
 
-TEST(Trigonometric, sinFunctionName)
+BOOST_AUTO_TEST_CASE(sinFunctionName)
 {
     const Name expected("sin");
 
-    CHECK_EQUAL(expected, sinA->name());
+    BOOST_CHECK_EQUAL(expected, sinA->name());
 }
 
-TEST(Trigonometric, typeString)
+BOOST_AUTO_TEST_CASE(typeString)
 {
     const std::string expected("Function");
 
-    CHECK_EQUAL(expected, sinA->typeStr());
+    BOOST_CHECK_EQUAL(expected, sinA->typeStr());
 }
 
-TEST(Trigonometric, cosFunctionName)
+BOOST_AUTO_TEST_CASE(cosFunctionName)
 {
     const BasePtr cos = Trigonometric::createCos(a);
     const Name expected("cos");
 
-    CHECK_EQUAL(expected, cos->name());
+    BOOST_CHECK_EQUAL(expected, cos->name());
 }
 
-TEST(Trigonometric, tanFunctionName)
+BOOST_AUTO_TEST_CASE(tanFunctionName)
 {
     const BasePtr tan = Trigonometric::createTan(a);
     const Name expected("tan");
 
-    CHECK_EQUAL(expected, tan->name());
+    BOOST_CHECK_EQUAL(expected, tan->name());
 }
 
-TEST(Trigonometric, asinFunctionName)
+BOOST_AUTO_TEST_CASE(asinFunctionName)
 {
     const BasePtr asin = Trigonometric::createAsin(a);
     const Name expected("asin");
 
-    CHECK_EQUAL(expected, asin->name());
+    BOOST_CHECK_EQUAL(expected, asin->name());
 }
 
-TEST(Trigonometric, acosFunctionName)
+BOOST_AUTO_TEST_CASE(acosFunctionName)
 {
     const BasePtr acos = Trigonometric::createAcos(a);
     const Name expected("acos");
 
-    CHECK_EQUAL(expected, acos->name());
+    BOOST_CHECK_EQUAL(expected, acos->name());
 }
 
-TEST(Trigonometric, atanFunctionName)
+BOOST_AUTO_TEST_CASE(atanFunctionName)
 {
     const BasePtr atan = Trigonometric::createAtan(a);
     const Name expected("atan");
 
-    CHECK_EQUAL(expected, atan->name());
+    BOOST_CHECK_EQUAL(expected, atan->name());
 }
 
-TEST(Trigonometric, atan2FunctionName)
+BOOST_AUTO_TEST_CASE(atan2FunctionName)
 {
     const BasePtr atan = Trigonometric::createAtan2(b, a);
     const Name expected("atan2");
 
-    CHECK_EQUAL(expected, atan->name());
+    BOOST_CHECK_EQUAL(expected, atan->name());
 }
 
-TEST(Trigonometric, trivialEquality)
+BOOST_AUTO_TEST_CASE(trivialEquality)
 {
-    CHECK(sinA->isEqual(sinA));
+    BOOST_TEST(sinA->isEqual(sinA));
 }
 
-TEST(Trigonometric, inequalityDifferentArg)
+BOOST_AUTO_TEST_CASE(inequalityDifferentArg)
 {
     const BasePtr sinB = Trigonometric::createSin(b);
 
-    CHECK(sinA->isDifferent(sinB));
+    BOOST_TEST(sinA->isDifferent(sinB));
 }
 
-TEST(Trigonometric, inequalityDifferentTrigonometric)
+BOOST_AUTO_TEST_CASE(inequalityDifferentTrigonometric)
 {
     const BasePtr cosA = Trigonometric::createCos(a);
 
-    CHECK(sinA->isDifferent(cosA));
+    BOOST_TEST(sinA->isDifferent(cosA));
 }
 
-TEST(Trigonometric, sinZero)
+BOOST_AUTO_TEST_CASE(sinZero)
 {
     const BasePtr res = Trigonometric::createSin(zero);
 
-    CHECK_EQUAL(zero, res);
+    BOOST_CHECK_EQUAL(zero, res);
 }
 
-TEST(Trigonometric, cos345Degree)
+BOOST_AUTO_TEST_CASE(cos345Degree)
     /* Cos(23/12*pi) = (sqrt(6) + sqrt(2))/4. */
 {
     const BasePtr arg = Product::create(Numeric::create(23, 12), pi);
@@ -137,92 +138,92 @@ TEST(Trigonometric, cos345Degree)
 
     res = Trigonometric::createCos(arg);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, tan240Degree)
+BOOST_AUTO_TEST_CASE(tan240Degree)
     /* Tan(4/3*Pi) = sqrt(3). */
 {
     const BasePtr arg = Product::create(Numeric::create(4, 3), pi);
     const BasePtr res = Trigonometric::createTan(arg);
 
-    CHECK_EQUAL(sqrtThree, res);
+    BOOST_CHECK_EQUAL(sqrtThree, res);
 }
 
-TEST(Trigonometric, atan2Order)
+BOOST_AUTO_TEST_CASE(atan2Order)
 {
     const BasePtr atan2Ab = Trigonometric::createAtan2(a, b);
     const BasePtr atan2Ba = Trigonometric::createAtan2(b, a);
 
-    CHECK_EQUAL(a, atan2Ab->operands().front());
-    CHECK_EQUAL(a, atan2Ba->operands().back());
+    BOOST_CHECK_EQUAL(a, atan2Ab->operands().front());
+    BOOST_CHECK_EQUAL(a, atan2Ba->operands().back());
 
-    CHECK_EQUAL(b, atan2Ab->operands().back());
-    CHECK_EQUAL(b, atan2Ba->operands().front());
+    BOOST_CHECK_EQUAL(b, atan2Ab->operands().back());
+    BOOST_CHECK_EQUAL(b, atan2Ba->operands().front());
 }
 
-TEST(Trigonometric, atan2XZeroNonEvaluable)
+BOOST_AUTO_TEST_CASE(atan2XZeroNonEvaluable)
 {
     const BasePtr res = Trigonometric::createAtan2(a, zero);
 
-    CHECK(res->isFunction());
-    CHECK_EQUAL(a, res->operands().front());
-    CHECK_EQUAL(zero, res->operands().back());
+    BOOST_TEST(res->isFunction());
+    BOOST_CHECK_EQUAL(a, res->operands().front());
+    BOOST_CHECK_EQUAL(zero, res->operands().back());
 }
 
-TEST(Trigonometric, atan2FirstQuadrantResolvable)
+BOOST_AUTO_TEST_CASE(atan2FirstQuadrantResolvable)
 {
     const BasePtr arg = Product::create(Numeric::create(25, 180), pi);
     const BasePtr result = Trigonometric::createAtan2(Trigonometric::createSin(arg),
             Trigonometric::createCos(arg));
 
-    CHECK_EQUAL(arg, result);
+    BOOST_CHECK_EQUAL(arg, result);
 }
 
-TEST(Trigonometric, atan2SecondQuadrantResolvable)
+BOOST_AUTO_TEST_CASE(atan2SecondQuadrantResolvable)
 {
     const BasePtr result = Trigonometric::createAtan2(one, Numeric::mOne());
     const BasePtr expected = Product::create(pi, Numeric::create(3, 4));
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Trigonometric, atan2ThirdQuadrantResolvable)
+BOOST_AUTO_TEST_CASE(atan2ThirdQuadrantResolvable)
 {
     const BasePtr y = Product::create(Numeric::create(-3), Sum::create(one, sqrtTwo));
     const BasePtr result = Trigonometric::createAtan2(y, Numeric::create(-3));
     const BasePtr expected = Product::create(Numeric::create(11, 8), pi);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Trigonometric, atan2FourthQuadrantNonResolvable)
+BOOST_AUTO_TEST_CASE(atan2FourthQuadrantNonResolvable)
 {
     const BasePtr expected = Product::minus(Trigonometric::createAtan(Numeric::half()));
     const BasePtr result = Trigonometric::createAtan2(one, Numeric::create(-2));
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Trigonometric, atan2FourthQuadrantResolvable)
+BOOST_AUTO_TEST_CASE(atan2FourthQuadrantResolvable)
 {
     const BasePtr sqrtFive = Power::sqrt(five);
     const BasePtr result = Trigonometric::createAtan2(Product::minus(sqrtFive), sqrtFive);
     const BasePtr expected = Product::create(pi, Numeric::create(7, 4));
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Trigonometric, atan2XZeroEvaluable)
+BOOST_AUTO_TEST_CASE(atan2XZeroEvaluable)
 {
     const BasePtr negativeX = Trigonometric::createAtan2(Product::minus(two, sqrtTwo), zero);
     const BasePtr positiveX = Trigonometric::createAtan2(sqrtTwo, zero);
 
-    CHECK_EQUAL(Product::create(Numeric::half(), pi), positiveX);
-    CHECK_EQUAL(Product::create(Numeric::create(3, 2), pi), negativeX);
+    BOOST_CHECK_EQUAL(Product::create(Numeric::half(), pi), positiveX);
+    BOOST_CHECK_EQUAL(Product::create(Numeric::create(3, 2), pi), negativeX);
 }
 
-TEST(Trigonometric, pureNumericAtan2WithRangeCorretion)
+BOOST_AUTO_TEST_CASE(pureNumericAtan2WithRangeCorretion)
 {
     const double numX = -1.2345678;
     const double numY = -12.987654;
@@ -231,10 +232,10 @@ TEST(Trigonometric, pureNumericAtan2WithRangeCorretion)
     const BasePtr result = Trigonometric::createAtan2(y, x);
     const BasePtr expected = Numeric::create(std::atan2(numY, numX) + 2.0*M_PI);
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Trigonometric, pureNumericAtan2NoRangeCorretion)
+BOOST_AUTO_TEST_CASE(pureNumericAtan2NoRangeCorretion)
 {
     const double numX = 1.2345678;
     const double numY = 7.6543456;
@@ -243,10 +244,10 @@ TEST(Trigonometric, pureNumericAtan2NoRangeCorretion)
     const BasePtr result = Trigonometric::createAtan2(y, x);
     const BasePtr expected = Numeric::create(std::atan2(numY, numX));
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Trigonometric, illegalAtan2)
+BOOST_AUTO_TEST_CASE(illegalAtan2)
 {
     BasePtr res;
 
@@ -254,36 +255,36 @@ TEST(Trigonometric, illegalAtan2)
     res = Trigonometric::createAtan2(zero, zero);
     enableLog();
 
-    CHECK(res->isUndefined());
+    BOOST_TEST(res->isUndefined());
 }
 
-TEST(Trigonometric, undefinedArg)
+BOOST_AUTO_TEST_CASE(undefinedArg)
 {
     const BasePtr sin = Trigonometric::createSin(undefined);
 
-    CHECK(sin->isUndefined());
+    BOOST_TEST(sin->isUndefined());
 }
 
-TEST(Trigonometric, undefinedArgAtan)
+BOOST_AUTO_TEST_CASE(undefinedArgAtan)
 {
     BasePtr res = Trigonometric::createAtan2(undefined, a);
 
-    CHECK(res->isUndefined());
+    BOOST_TEST(res->isUndefined());
 
     res = Trigonometric::createAtan2(a, undefined);
 
-    CHECK(res->isUndefined());
+    BOOST_TEST(res->isUndefined());
 }
 
-TEST(Trigonometric, sinOfAsin)
+BOOST_AUTO_TEST_CASE(sinOfAsin)
 {
     const BasePtr asin = Trigonometric::createAsin(a);
     const BasePtr res = Trigonometric::createSin(asin);
 
-    CHECK_EQUAL(a, res);
+    BOOST_CHECK_EQUAL(a, res);
 }
 
-TEST(Trigonometric, sinOfNegativeSum)
+BOOST_AUTO_TEST_CASE(sinOfNegativeSum)
 {
     const BasePtr arg = Sum::create(Product::minus(a, b, c),
             Product::create(Numeric::create(-7, 8), a),
@@ -291,87 +292,87 @@ TEST(Trigonometric, sinOfNegativeSum)
     const BasePtr expected = Product::minus(Trigonometric::createSin(Product::minus(arg)));
     const BasePtr res = Trigonometric::createSin(arg);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, sinOfNegativeProduct)
+BOOST_AUTO_TEST_CASE(sinOfNegativeProduct)
 {
     const BasePtr arg = Product::create(Numeric::create(-1, 5),
             Power::create(two, Numeric::third()), a);
     const BasePtr res = Trigonometric::createSin(arg);
     const BasePtr expected = Product::minus(Trigonometric::createSin(Product::minus(arg)));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, sinOfMinusAsin)
+BOOST_AUTO_TEST_CASE(sinOfMinusAsin)
 {
     const BasePtr mAsin = Product::minus(Trigonometric::createAsin(a));
     const BasePtr res = Trigonometric::createSin(mAsin);
 
-    CHECK_EQUAL(Product::minus(a), res);
+    BOOST_CHECK_EQUAL(Product::minus(a), res);
 }
 
-TEST(Trigonometric, cosOfAcos)
+BOOST_AUTO_TEST_CASE(cosOfAcos)
 {
     const BasePtr acos = Trigonometric::createAcos(a);
     const BasePtr res = Trigonometric::createCos(acos);
 
-    CHECK_EQUAL(a, res);
+    BOOST_CHECK_EQUAL(a, res);
 }
 
-TEST(Trigonometric, cosOfNegativeNumericArg)
+BOOST_AUTO_TEST_CASE(cosOfNegativeNumericArg)
 {
     const BasePtr res = Trigonometric::createCos(Numeric::create(-2));
     const BasePtr expected = Trigonometric::createCos(two);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, cosOfNegativeProduct)
+BOOST_AUTO_TEST_CASE(cosOfNegativeProduct)
 {
     const BasePtr arg = Product::minus(a, b, Trigonometric::createAtan(Sum::create(a, b)));
     const BasePtr res = Trigonometric::createCos(arg);
     const BasePtr expected = Trigonometric::createCos(Product::minus(arg));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, cosOfMinusAcos)
+BOOST_AUTO_TEST_CASE(cosOfMinusAcos)
 {
     const BasePtr arg = Sum::create(a, Product::create(two, b));
     const BasePtr mAcos = Product::minus(Trigonometric::createAcos(arg));
     const BasePtr res = Trigonometric::createCos(mAcos);
 
-    CHECK_EQUAL(arg, res);
+    BOOST_CHECK_EQUAL(arg, res);
 }
 
-TEST(Trigonometric, tanOfAtan)
+BOOST_AUTO_TEST_CASE(tanOfAtan)
 {
     const BasePtr atan = Trigonometric::createAtan(a);
     const BasePtr res = Trigonometric::createTan(atan);
 
-    CHECK_EQUAL(a, res);
+    BOOST_CHECK_EQUAL(a, res);
 }
 
-TEST(Trigonometric, tanOfSimpleNegativeProduct)
+BOOST_AUTO_TEST_CASE(tanOfSimpleNegativeProduct)
 {
     const BasePtr expected = Product::minus(Trigonometric::createTan(a));
     const BasePtr arg = Product::minus(a);
     const BasePtr res = Trigonometric::createTan(arg);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, atanOfNegSimpleProduct)
+BOOST_AUTO_TEST_CASE(atanOfNegSimpleProduct)
 {
     const BasePtr expected = Product::minus(Trigonometric::createAtan(a));
     const BasePtr res = Trigonometric::createAtan(Product::minus(a));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, atanOfNegSum)
+BOOST_AUTO_TEST_CASE(atanOfNegSum)
 {
     const BasePtr arg = Sum::create(Product::minus(two, a, b, c),
             Product::create(Numeric::create(-7, 11), sqrtTwo),
@@ -379,18 +380,18 @@ TEST(Trigonometric, atanOfNegSum)
     const BasePtr expected = Product::minus(Trigonometric::createAtan(Product::minus(arg)));
     const BasePtr res = Trigonometric::createAtan(arg);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, tanOfMinusAtan)
+BOOST_AUTO_TEST_CASE(tanOfMinusAtan)
 {
     const BasePtr mAtan = Product::minus(Trigonometric::createAtan(a));
     const BasePtr res = Trigonometric::createTan(mAtan);
 
-    CHECK_EQUAL(Product::minus(a), res);
+    BOOST_CHECK_EQUAL(Product::minus(a), res);
 }
 
-TEST(Trigonometric, tanOfMinusAsin)
+BOOST_AUTO_TEST_CASE(tanOfMinusAsin)
     /* Tan(-asin(a)) = -a/sqrt(1 - a^2). */
 {
     const BasePtr expected = Product::minus(a,
@@ -398,70 +399,70 @@ TEST(Trigonometric, tanOfMinusAsin)
     const BasePtr mAsin = Product::minus(Trigonometric::createAsin(a));
     const BasePtr res = Trigonometric::createTan(mAsin);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, atanOfTan)
+BOOST_AUTO_TEST_CASE(atanOfTan)
 {
     const BasePtr tan = Trigonometric::createTan(a);
     const BasePtr atan = Trigonometric::createAtan(tan);
     const Name expected("atan");
 
-    CHECK(atan->isFunction());
-    CHECK_EQUAL(expected, atan->name());
-    CHECK_EQUAL(tan, atan->operands().front());
+    BOOST_TEST(atan->isFunction());
+    BOOST_CHECK_EQUAL(expected, atan->name());
+    BOOST_CHECK_EQUAL(tan, atan->operands().front());
 }
 
-TEST(Trigonometric, sinOfCos)
+BOOST_AUTO_TEST_CASE(sinOfCos)
 {
     const BasePtr sin = Trigonometric::createSin(a);
     const BasePtr res = Trigonometric::createCos(sin);
     BasePtr arg;
 
-    CHECK(res->isFunction());
+    BOOST_TEST(res->isFunction());
 
     arg = res->operands().front();
 
-    CHECK(arg->isFunction());
-    CHECK_EQUAL(a, arg->operands().front());
+    BOOST_TEST(arg->isFunction());
+    BOOST_CHECK_EQUAL(a, arg->operands().front());
 }
 
-TEST(Trigonometric, asinOfSin)
+BOOST_AUTO_TEST_CASE(asinOfSin)
     /* Asin(sin(a)) isn't simplified. */
 {
     const BasePtr sin = Trigonometric::createSin(a);
     const BasePtr res = Trigonometric::createAsin(sin);
     BasePtr arg;
 
-    CHECK(res->isFunction());
+    BOOST_TEST(res->isFunction());
 
     arg = res->operands().front();
 
-    CHECK(arg->isFunction());
-    CHECK_EQUAL(a, arg->operands().front());
+    BOOST_TEST(arg->isFunction());
+    BOOST_CHECK_EQUAL(a, arg->operands().front());
 }
 
-TEST(Trigonometric, asinOfMinusSin)
+BOOST_AUTO_TEST_CASE(asinOfMinusSin)
     /* Asin(-sin(a)) = -asin(sin(a)). */
 {
     const BasePtr expected = Product::minus(Trigonometric::createAsin(Trigonometric::createSin(a)));
     const BasePtr minusSin = Product::minus(Trigonometric::createSin(a));
     const BasePtr res = Trigonometric::createAsin(minusSin);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, acosOfCos)
+BOOST_AUTO_TEST_CASE(acosOfCos)
     /* Acos(cos(a)) isn't simplified. */
 {
     const BasePtr res = Trigonometric::createAcos(Trigonometric::createCos(a));
 
-    CHECK(res->isFunction());
-    CHECK_EQUAL(1, res->operands().size());
-    CHECK_EQUAL(Trigonometric::createCos(a), res->operands().front());
+    BOOST_TEST(res->isFunction());
+    BOOST_CHECK_EQUAL(1, res->operands().size());
+    BOOST_CHECK_EQUAL(Trigonometric::createCos(a), res->operands().front());
 }
 
-TEST(Trigonometric, acosOfMinusCos)
+BOOST_AUTO_TEST_CASE(acosOfMinusCos)
     /* Acos(-cos(a)) = pi - acos(cos(a)). */
 {
     const BasePtr expected = Sum::create(pi,
@@ -470,39 +471,39 @@ TEST(Trigonometric, acosOfMinusCos)
     const BasePtr res = Trigonometric::createAcos(minusCos);
     BasePtr arg;
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, asinOfSinOfNumEvalNoShift)
+BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalNoShift)
     /* Asin(sin(-1/sqrt(5))) = -1/sqrt(5). */
 {
     const BasePtr arg = Power::oneOver(Product::minus(Power::create(five, Numeric::half())));
     const BasePtr res = Trigonometric::createAsin(Trigonometric::createSin(arg));
 
-    CHECK_EQUAL(arg, res);
+    BOOST_CHECK_EQUAL(arg, res);
 }
 
-TEST(Trigonometric, asinOfSinOfNumEvalNoShift2)
+BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalNoShift2)
     /* Asin(sin(2/17)) = 2/17. */
 {
     const BasePtr arg = Numeric::create(2, 17);
     const BasePtr sin = Trigonometric::createSin(arg);
     const BasePtr res = Trigonometric::createAsin(sin);
 
-    CHECK_EQUAL(arg, res);
+    BOOST_CHECK_EQUAL(arg, res);
 }
 
-TEST(Trigonometric, asinOfSinOfNumEvalNegShift)
+BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalNegShift)
     /*  Asin(sin(13/4*pi)) = -pi/4. */
 {
     const BasePtr arg = Product::create(Numeric::create(13, 4), pi);
     const BasePtr res = Trigonometric::createAsin(Trigonometric::createSin(arg));
     const BasePtr expected = Product::create(Numeric::create(-1, 4), pi);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, asinOfSinOfNumEvalNegShift2)
+BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalNegShift2)
     /* Asin(sin(12*sqrt(pi))) = 7*pi - 12*sqrt(pi). */
 {
     const BasePtr arg = Product::create(Numeric::create(12), Power::sqrt(Constant::createPi()));
@@ -510,10 +511,10 @@ TEST(Trigonometric, asinOfSinOfNumEvalNegShift2)
     const BasePtr res = Trigonometric::createAsin(sin);
     const BasePtr expected = Sum::create(Product::create(seven, pi), Product::minus(arg));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, asinOfSinOfNumEvalPosShift)
+BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalPosShift)
     /* Asin(sin(-79/7*pi + 2/15)) = 2/7*pi - 2/15. */
 {
     const BasePtr arg = Sum::create(Numeric::create(2, 15),
@@ -522,39 +523,39 @@ TEST(Trigonometric, asinOfSinOfNumEvalPosShift)
     const BasePtr expected = Sum::create(Product::create(Numeric::create(2, 7), pi),
             Numeric::create(-2, 15));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, asinOfSinOfNumEvalPosShift2)
+BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalPosShift2)
     /* Asin(sin(-6/7*pi)) = -pi/7. */
 {
     const BasePtr arg = Product::create(Numeric::create(-6, 7), pi);
     const BasePtr res = Trigonometric::createAsin(Trigonometric::createSin(arg));
     const BasePtr expected = Product::create(Numeric::create(-1, 7), pi);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, asinOfMinusAsinNumEval)
+BOOST_AUTO_TEST_CASE(asinOfMinusAsinNumEval)
     /* Asin(-sin(1/2)) = -1/2. */
 {
     const BasePtr mSin = Product::minus(Trigonometric::createSin(Numeric::half()));
     const BasePtr res = Trigonometric::createAsin(mSin);
 
-    CHECK_EQUAL(Numeric::create(-1, 2), res);
+    BOOST_CHECK_EQUAL(Numeric::create(-1, 2), res);
 }
 
-TEST(Trigonometric, atanOfTanNumEvalNoShift)
+BOOST_AUTO_TEST_CASE(atanOfTanNumEvalNoShift)
     /* Atan(tan(1/2)) = 1/2. */
 {
     const BasePtr& half = Numeric::half();
     const BasePtr tan = Trigonometric::createTan(half);
     const BasePtr res = Trigonometric::createAtan(tan);
 
-    CHECK_EQUAL(half, res);
+    BOOST_CHECK_EQUAL(half, res);
 }
 
-TEST(Trigonometric, atanOfTanNumEvalWithNegShift)
+BOOST_AUTO_TEST_CASE(atanOfTanNumEvalWithNegShift)
     /* Atan(tan(2)) = 2 - pi, after substitution. */
 {
     const BasePtr expected = Sum::create(two, Product::minus(pi));
@@ -562,15 +563,15 @@ TEST(Trigonometric, atanOfTanNumEvalWithNegShift)
     const BasePtr res = Trigonometric::createAtan(tan);
     BasePtr replaced;
 
-    CHECK(res->isFunction());
-    CHECK(res->operands().front()->isFunction());
+    BOOST_TEST(res->isFunction());
+    BOOST_TEST(res->operands().front()->isFunction());
 
     replaced = res->subst(a, two);
 
-    CHECK_EQUAL(expected, replaced);
+    BOOST_CHECK_EQUAL(expected, replaced);
 }
 
-TEST(Trigonometric, atanOfTanNumEvalWithPosShift)
+BOOST_AUTO_TEST_CASE(atanOfTanNumEvalWithPosShift)
     /* Atan(tan(-23/21*pi - sqrt(3))) = 19/21*pi - sqrt(3). */
 {
     const BasePtr sqrt = Product::minus(Power::sqrt(three));
@@ -578,29 +579,29 @@ TEST(Trigonometric, atanOfTanNumEvalWithPosShift)
     const BasePtr res = Trigonometric::createAtan(Trigonometric::createTan(arg));
     const BasePtr expected = Sum::create(Product::create(Numeric::create(19, 21), pi), sqrt);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, atanOfMinusTanNumEval)
+BOOST_AUTO_TEST_CASE(atanOfMinusTanNumEval)
     /* Atan(-tan(-1/2)) = 1/2. */
 {
     const BasePtr mTan = Product::minus(Trigonometric::createTan(Numeric::create(-1, 2)));
     const BasePtr res = Trigonometric::createAtan(mTan);
 
-    CHECK_EQUAL(Numeric::half(), res);
+    BOOST_CHECK_EQUAL(Numeric::half(), res);
 }
 
-TEST(Trigonometric, acosOfCosNumEvalNoShift)
+BOOST_AUTO_TEST_CASE(acosOfCosNumEvalNoShift)
     /* Acos(cos(1/2)) = 1/2. */
 {
     const BasePtr& half = Numeric::half();
     const BasePtr cos = Trigonometric::createCos(half);
     const BasePtr res = Trigonometric::createAcos(cos);
 
-    CHECK_EQUAL(half, res);
+    BOOST_CHECK_EQUAL(half, res);
 }
 
-TEST(Trigonometric, acosOfCosNumEvalPosShift)
+BOOST_AUTO_TEST_CASE(acosOfCosNumEvalPosShift)
     /* Acos(cos(-sqrt(21) - 3/8*pi)) = 13/8*pi - sqrt(21). */
 {
     const BasePtr sqrt = Power::sqrt(Numeric::create(21));
@@ -611,10 +612,10 @@ TEST(Trigonometric, acosOfCosNumEvalPosShift)
     const BasePtr expected = Sum::create(Product::create(Numeric::create(13, 8), pi),
             Product::minus(sqrt));
 
-    CHECK_EQUAL(expected, acos);
+    BOOST_CHECK_EQUAL(expected, acos);
 }
 
-TEST(Trigonometric, acosOfCosNumEvalNegShift)
+BOOST_AUTO_TEST_CASE(acosOfCosNumEvalNegShift)
     /* Acos(cos(11/7*pi + 2^(1/3) + 0.123456)) = 2^(1/3) + 0.123456 - 3/7*pi. */
 {
     const BasePtr pow = Power::create(two, Numeric::third());
@@ -623,20 +624,20 @@ TEST(Trigonometric, acosOfCosNumEvalNegShift)
     const BasePtr res = Trigonometric::createAcos(Trigonometric::createCos(arg));
     const BasePtr expected = Sum::create(sum, Product::create(Numeric::create(-3, 7), pi));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, acosOfCosNumEvalNegShiftAndCorrection)
+BOOST_AUTO_TEST_CASE(acosOfCosNumEvalNegShiftAndCorrection)
     /* Acos(cos(37/11*pi)) = 7/11*pi. */
 {
     const BasePtr arg = Product::create(Numeric::create(37, 11), pi);
     const BasePtr res = Trigonometric::createAcos(Trigonometric::createCos(arg));
     const BasePtr expected = Product::create(Numeric::create(7, 11), pi);
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, acosOfCosNumEvalPosShiftAndCorrection)
+BOOST_AUTO_TEST_CASE(acosOfCosNumEvalPosShiftAndCorrection)
     /* Acos(cos(-sqrt(21) - pi)) = sqrt(21) - pi. */
 {
     const BasePtr sqrt = Power::sqrt(Numeric::create(21));
@@ -644,96 +645,96 @@ TEST(Trigonometric, acosOfCosNumEvalPosShiftAndCorrection)
     const BasePtr res = Trigonometric::createAcos(Trigonometric::createCos(arg));
     const BasePtr expected = Sum::create(sqrt, Product::minus(pi));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, acosOfNegativeCosNumEvalWithShift)
+BOOST_AUTO_TEST_CASE(acosOfNegativeCosNumEvalWithShift)
     /* Acos(-cos(1/2)) = pi - 1/2. */
 {
     const BasePtr arg = Product::minus(Trigonometric::createCos(Numeric::half()));
     const BasePtr res = Trigonometric::createAcos(arg);
 
-    CHECK_EQUAL(Sum::create(pi, Numeric::create(-1, 2)), res);
+    BOOST_CHECK_EQUAL(Sum::create(pi, Numeric::create(-1, 2)), res);
 }
 
-TEST(Trigonometric, sinOfAcos)
+BOOST_AUTO_TEST_CASE(sinOfAcos)
     /* Sin(acos(a)) = sqrt(1 - a^2). */
 {
     const BasePtr expected = Power::sqrt(Sum::create(one, Product::minus(aSquare)));
     const BasePtr res = Trigonometric::createSin(Trigonometric::createAcos(a));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, cosOfAsin)
+BOOST_AUTO_TEST_CASE(cosOfAsin)
     /* Cos(asin(a)) = sqrt(1 - a^2). */
 {
     const BasePtr expected = Power::sqrt(Sum::create(one, Product::minus(aSquare)));
     const BasePtr res = Trigonometric::createCos(Trigonometric::createAsin(a));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, sinOfAtan)
+BOOST_AUTO_TEST_CASE(sinOfAtan)
     /* Sin(atan(a)) = a/sqrt(a^2 + 1). */
 {
     const BasePtr expected = Product::create(a,
             Power::create(Sum::create(aSquare, one), minusHalf));
     const BasePtr res = Trigonometric::createSin(Trigonometric::createAtan(a));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, cosOfAtan)
+BOOST_AUTO_TEST_CASE(cosOfAtan)
     /* Cos(atan(a)) = 1/sqrt(a^2 + 1). */
 {
     const BasePtr expected = Power::create(Sum::create(Power::create(a, two), one), minusHalf);
     const BasePtr res = Trigonometric::createCos(Trigonometric::createAtan(a));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, tanOfAsin)
+BOOST_AUTO_TEST_CASE(tanOfAsin)
     /* Tan(asin(a)) = a/sqrt(1 - a^2). */
 {
     const BasePtr expected = Product::create(a,
             Power::create(Sum::create(one, Product::minus(Power::create(a, two))), minusHalf));
     const BasePtr res = Trigonometric::createTan(Trigonometric::createAsin(a));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, tanOfAcos)
+BOOST_AUTO_TEST_CASE(tanOfAcos)
     /* Tan(asin(a)) = sqrt(1 - a^2)/a. */
 {
     const BasePtr expected = Product::create(Power::sqrt(Sum::create(one, Product::minus(aSquare))),
             Power::oneOver(a));
     const BasePtr res = Trigonometric::createTan(Trigonometric::createAcos(a));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, atan2OfSinCos)
+BOOST_AUTO_TEST_CASE(atan2OfSinCos)
     /* Atan2(sin(a), cos(a)) isn't simplified. */
 {
     const BasePtr cosA = Trigonometric::createCos(a);
     const BasePtr res = Trigonometric::createAtan2(sinA, cosA);
 
-    CHECK(res->isFunction());
-    CHECK_EQUAL(sinA, res->operands().front());
-    CHECK_EQUAL(cosA, res->operands().back());
+    BOOST_TEST(res->isFunction());
+    BOOST_CHECK_EQUAL(sinA, res->operands().front());
+    BOOST_CHECK_EQUAL(cosA, res->operands().back());
 }
 
-TEST(Trigonometric, atan2OfNumericsNotResolvableArg)
+BOOST_AUTO_TEST_CASE(atan2OfNumericsNotResolvableArg)
     /* Atan2(2/3, 7/11) = atan(22/21). */
 {
     const BasePtr res = Trigonometric::createAtan2(Numeric::create(2, 3), Numeric::create(7, 11));
     const BasePtr expected = Trigonometric::createAtan(Numeric::create(22, 21));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, atan2OfNumEvaluableNotResolvable)
+BOOST_AUTO_TEST_CASE(atan2OfNumEvaluableNotResolvable)
 {
     const BasePtr y = Logarithm::create(Trigonometric::createTan(Numeric::half()));
     const BasePtr x = Sum::create(Product::create(sqrtTwo, Constant::createE()), five,
@@ -741,39 +742,39 @@ TEST(Trigonometric, atan2OfNumEvaluableNotResolvable)
     const BasePtr res = Trigonometric::createAtan2(y, x);
     const BasePtr expected = Trigonometric::createAtan(Product::create(y, Power::oneOver(x)));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, atan2OfNegNumEvaluableArg)
+BOOST_AUTO_TEST_CASE(atan2OfNegNumEvaluableArg)
 {
     const BasePtr res = Trigonometric::createAtan2(Numeric::create(-2, 3), seven);
     const BasePtr expected = Product::minus(Trigonometric::createAtan(Numeric::create(2, 21)));
 
-    CHECK_EQUAL(expected, res);
+    BOOST_CHECK_EQUAL(expected, res);
 }
 
-TEST(Trigonometric, atan2OfNegSymbolicArg)
+BOOST_AUTO_TEST_CASE(atan2OfNegSymbolicArg)
     /* No symmetry simplification should apply, as the argument(s) aren't clearly positive or
      * negative. */
 {
     const BasePtr res = Trigonometric::createAtan2(Product::minus(a), b);
 
-    CHECK(res->isFunction());
-    CHECK_EQUAL(Product::minus(a), res->operands().front());
-    CHECK_EQUAL(b, res->operands().back());
+    BOOST_TEST(res->isFunction());
+    BOOST_CHECK_EQUAL(Product::minus(a), res->operands().front());
+    BOOST_CHECK_EQUAL(b, res->operands().back());
 }
 
-TEST(Trigonometric, tanOfAtan2)
+BOOST_AUTO_TEST_CASE(tanOfAtan2)
     /* Tan(atan2(b, a)) = b/a. */
 {
     const BasePtr atan2 = Trigonometric::createAtan2(b, a);
     const BasePtr result = Trigonometric::createTan(atan2);
     const BasePtr expected = Product::create(b, Power::oneOver(a));
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Trigonometric, cosOfAtan2)
+BOOST_AUTO_TEST_CASE(cosOfAtan2)
     /* Cos(atan2(b, a)) = a/sqrt(a^2 + b^2). */
 {
     const BasePtr atan2 = Trigonometric::createAtan2(b, a);
@@ -781,10 +782,10 @@ TEST(Trigonometric, cosOfAtan2)
     const BasePtr expected = Product::create(a, Power::create(Sum::create(aSquare,
                     Power::create(b, two)), Numeric::create(-1, 2)));
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Trigonometric, sinOfAtan2)
+BOOST_AUTO_TEST_CASE(sinOfAtan2)
     /* Sin(atan2(b, a)) = b/sqrt(a^2 + b^2). */
 {
     const BasePtr atan2 = Trigonometric::createAtan2(b, a);
@@ -792,19 +793,19 @@ TEST(Trigonometric, sinOfAtan2)
     const BasePtr expected = Product::create(b, Power::create(Sum::create(aSquare,
                     Power::create(b, two)), Numeric::create(-1, 2)));
 
-    CHECK_EQUAL(expected, result);
+    BOOST_CHECK_EQUAL(expected, result);
 }
 
-TEST(Trigonometric, sinOfAtan2NegDeltaYOnly)
+BOOST_AUTO_TEST_CASE(sinOfAtan2NegDeltaYOnly)
     /* Sin(atan2(-a, 0)) = -1 for positive a. */
 {
     const BasePtr minusA = Product::minus(Symbol::createPositive("a"));
     const BasePtr res = Trigonometric::createSin(Trigonometric::createAtan2(minusA, zero));
 
-    CHECK_EQUAL(Numeric::mOne(), res);
+    BOOST_CHECK_EQUAL(Numeric::mOne(), res);
 }
 
-TEST(Trigonometric, sinOfAtan2NegDeltaYSumOnly)
+BOOST_AUTO_TEST_CASE(sinOfAtan2NegDeltaYSumOnly)
     /* Sin(atan2(-a - b, 0)) = -1 for positive a and b. */
 {
     const BasePtr minusA = Product::minus(Symbol::createPositive("a"));
@@ -812,41 +813,41 @@ TEST(Trigonometric, sinOfAtan2NegDeltaYSumOnly)
     const BasePtr arg = Sum::create(minusA, minusB);
     const BasePtr res = Trigonometric::createSin(Trigonometric::createAtan2(arg, zero));
 
-    CHECK_EQUAL(Numeric::mOne(), res);
+    BOOST_CHECK_EQUAL(Numeric::mOne(), res);
 }
 
-TEST(Trigonometric, numEvalPossibilityRequest)
+BOOST_AUTO_TEST_CASE(numEvalPossibilityRequest)
 {
     const BasePtr sin = Trigonometric::createSin(eight);
 
-    CHECK(sin->isNumericallyEvaluable());
+    BOOST_TEST(sin->isNumericallyEvaluable());
 }
 
-TEST(Trigonometric, numericTerm)
+BOOST_AUTO_TEST_CASE(numericTerm)
 {
-    CHECK_EQUAL(one, sinA->numericTerm());
+    BOOST_CHECK_EQUAL(one, sinA->numericTerm());
 }
 
-TEST(Trigonometric, nonNumericTerm)
+BOOST_AUTO_TEST_CASE(nonNumericTerm)
 {
-    CHECK_EQUAL(sinA, sinA->nonNumericTerm());
+    BOOST_CHECK_EQUAL(sinA, sinA->nonNumericTerm());
 }
 
-TEST(Trigonometric, constTerm)
-{
-    const BasePtr sinTwo = Trigonometric::createSin(two);
-
-    CHECK_EQUAL(one, sinTwo->constTerm());
-}
-
-TEST(Trigonometric, nonConstTerm)
+BOOST_AUTO_TEST_CASE(constTerm)
 {
     const BasePtr sinTwo = Trigonometric::createSin(two);
 
-    CHECK_EQUAL(sinTwo, sinTwo->nonConstTerm());
+    BOOST_CHECK_EQUAL(one, sinTwo->constTerm());
 }
 
-TEST(Trigonometric, numericEvaluation)
+BOOST_AUTO_TEST_CASE(nonConstTerm)
+{
+    const BasePtr sinTwo = Trigonometric::createSin(two);
+
+    BOOST_CHECK_EQUAL(sinTwo, sinTwo->nonConstTerm());
+}
+
+BOOST_AUTO_TEST_CASE(numericEvaluation)
     /* Sin/cos/tan/asin/acos/atan(sqrt(2)/10) can be evaluated to a double. */
 {
     const double dArg = 0.1*std::sqrt(2.0);
@@ -854,43 +855,45 @@ TEST(Trigonometric, numericEvaluation)
     BasePtr fct;
 
     fct = Trigonometric::createSin(arg);
-    CHECK_EQUAL(std::sin(dArg), fct->numericEval());
+    BOOST_CHECK_EQUAL(std::sin(dArg), fct->numericEval());
 
     fct = Trigonometric::createCos(arg);
-    CHECK_EQUAL(std::cos(dArg), fct->numericEval());
+    BOOST_CHECK_EQUAL(std::cos(dArg), fct->numericEval());
 
     fct = Trigonometric::createTan(arg);
-    CHECK_EQUAL(std::tan(dArg), fct->numericEval());
+    BOOST_CHECK_EQUAL(std::tan(dArg), fct->numericEval());
 
     fct = Trigonometric::createAsin(arg);
-    CHECK_EQUAL(std::asin(dArg), fct->numericEval());
+    BOOST_CHECK_EQUAL(std::asin(dArg), fct->numericEval());
 
     fct = Trigonometric::createAcos(arg);
-    CHECK_EQUAL(std::acos(dArg), fct->numericEval());
+    BOOST_CHECK_EQUAL(std::acos(dArg), fct->numericEval());
 
     fct = Trigonometric::createAtan(arg);
-    CHECK_EQUAL(std::atan(dArg), fct->numericEval());
+    BOOST_CHECK_EQUAL(std::atan(dArg), fct->numericEval());
 }
 
-TEST(Trigonometric, numericEvaluationAtan2)
+BOOST_AUTO_TEST_CASE(numericEvaluationAtan2)
 {
     const BasePtr atan2 = Trigonometric::createAtan2(sqrtTwo, five);
 
-    CHECK_EQUAL(std::atan2(std::sqrt(2.0), 5), atan2->numericEval());
+    BOOST_CHECK_EQUAL(std::atan2(std::sqrt(2.0), 5), atan2->numericEval());
 }
 
-TEST(Trigonometric, illegalNumericEvaluation)
+BOOST_AUTO_TEST_CASE(illegalNumericEvaluation)
 {
-    CHECK_THROWS(std::logic_error, sinA->numericEval());
+    BOOST_CHECK_THROW(sinA->numericEval(), std::logic_error);
 }
 
-TEST(Trigonometric, sinOfLogarithm)
+BOOST_AUTO_TEST_CASE(sinOfLogarithm)
 {
     const BasePtr log = Logarithm::create(a);
     const BasePtr result = Trigonometric::createSin(log);
     const Name expectedSinName("sin");
 
-    CHECK(result->isFunction());
-    CHECK_EQUAL(expectedSinName, result->name());
-    CHECK_EQUAL(log, result->operands().front());
+    BOOST_TEST(result->isFunction());
+    BOOST_CHECK_EQUAL(expectedSinName, result->name());
+    BOOST_CHECK_EQUAL(log, result->operands().front());
 }
+
+BOOST_AUTO_TEST_SUITE_END()

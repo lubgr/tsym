@@ -28,7 +28,7 @@ BoostMatrix createBoostMatrix(std::initializer_list<std::initializer_list<tsym::
     return m;
 }
 
-bool operator == (const BoostVector& lhs, const BoostVector& rhs)
+bool tsym::operator == (const BoostVector& lhs, const BoostVector& rhs)
 {
     if (lhs.size() != rhs.size())
         return false;
@@ -40,12 +40,12 @@ bool operator == (const BoostVector& lhs, const BoostVector& rhs)
     return true;
 }
 
-bool operator != (const BoostVector& lhs, const BoostVector& rhs)
+bool tsym::operator != (const BoostVector& lhs, const BoostVector& rhs)
 {
     return !(lhs == rhs);
 }
 
-bool operator == (const BoostMatrix& lhs, const BoostMatrix& rhs)
+bool tsym::operator == (const BoostMatrix& lhs, const BoostMatrix& rhs)
 {
     if (lhs.size1() != rhs.size1() || lhs.size2() != rhs.size2())
         return false;
@@ -58,7 +58,7 @@ bool operator == (const BoostMatrix& lhs, const BoostMatrix& rhs)
     return true;
 }
 
-bool operator != (const BoostMatrix& lhs, const BoostMatrix& rhs)
+bool tsym::operator != (const BoostMatrix& lhs, const BoostMatrix& rhs)
 {
     return !(lhs == rhs);
 }

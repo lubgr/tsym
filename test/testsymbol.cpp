@@ -4,42 +4,42 @@
 
 using namespace tsym;
 
-TEST_GROUP(Symbol) {};
+BOOST_AUTO_TEST_SUITE(TestSymbol)
 
-TEST(Symbol, creationByString)
+BOOST_AUTO_TEST_CASE(creationByString)
 {
     const BasePtr ptr = Symbol::create("abc");
     const Name expected("abc");
 
-    CHECK(ptr->isSymbol());
-    CHECK_EQUAL(expected, ptr->name());
+    BOOST_TEST(ptr->isSymbol());
+    BOOST_CHECK_EQUAL(expected, ptr->name());
 }
 
-TEST(Symbol, numericEvaluation)
+BOOST_AUTO_TEST_CASE(numericEvaluation)
 {
     const BasePtr ptr = Symbol::create("dummy");
 
-    CHECK_FALSE(ptr->isNumericallyEvaluable());
+    BOOST_TEST(!ptr->isNumericallyEvaluable());
 }
 
-TEST(Symbol, typeString)
+BOOST_AUTO_TEST_CASE(typeString)
 {
     const std::string expected("Symbol");
     const BasePtr basePtr = Symbol::create("dummy");
 
-    CHECK_EQUAL(expected, basePtr->typeStr());
+    BOOST_CHECK_EQUAL(expected, basePtr->typeStr());
 }
 
-TEST(Symbol, emptyName)
+BOOST_AUTO_TEST_CASE(emptyName)
 {
     disableLog();
     const BasePtr undefined = Symbol::create("");
     enableLog();
 
-    CHECK(undefined->isUndefined());
+    BOOST_TEST(undefined->isUndefined());
 }
 
-TEST(Symbol, nameReservedForTemporaries)
+BOOST_AUTO_TEST_CASE(nameReservedForTemporaries)
 {
     const Name name("tmp#99999999999");
 
@@ -47,6 +47,8 @@ TEST(Symbol, nameReservedForTemporaries)
     const BasePtr tmp = Symbol::create(name);
     enableLog();
 
-    CHECK(tmp->isSymbol());
-    CHECK_FALSE(tmp->name() == name);
+    BOOST_TEST(tmp->isSymbol());
+    BOOST_TEST(tmp->name() != name);
 }
+
+BOOST_AUTO_TEST_SUITE_END()
