@@ -12,12 +12,15 @@ git:
     depth: 3
 
 before_install:
+  - sudo apt-get remove -y libboost-all-dev
+  - sudo apt-get autoremove -y
   - sudo apt-get -qq update
-  - sudo apt-get remove -y '^libboost.*'
   - export BOOSTVER=1_66_0
+  - export BOOSTDIR="${PWD}/boost_${BOOSTVER}"
   - wget -qO- https://downloads.sourceforge.net/project/boost/boost/${BOOSTVER//_/.}/boost_${BOOSTVER}.tar.bz2 | tar xj
-  - cd boost_*
-  - ./bootstrap.sh && ./b2 --with-test --prefix=/usr/local link=static install
+  - cd ${BOOSTDIR}
+  - ./bootstrap.sh && ./b2 --with-test link=static
+  - find ./stage -name 'libboost_unit_test*.a' -exec cp '{}' . \;
   - cd ..
   - gem install coveralls-lcov
   - sudo pip install --upgrade cppclean

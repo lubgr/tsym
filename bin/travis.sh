@@ -3,7 +3,9 @@
 set -e
 
 TESTEXEC="./build/runtests"
+export CPPFLAGS="-isystem ${BOOSTDIR} -I src"
 export CPPFLAGS="-I src"
+export LDFLAGS="-L ${BOOSTDIR}"
 
 build() {
     CXX=$1
