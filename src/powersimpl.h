@@ -4,8 +4,6 @@
 #include "baseptr.h"
 #include "baseptrlist.h"
 
-namespace tsym { class Number; }
-
 namespace tsym {
     namespace powersimpl {
         /* Processes the simplification of power expressions. A BasePtrList with 2 items is

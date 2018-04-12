@@ -39,8 +39,6 @@ struct PrimeFacFixture {
 
     void check(const std::vector<Int>& expected, const std::vector<Int>& primes)
     {
-        std::vector<Int>::const_iterator it;
-
         BOOST_CHECK_EQUAL(expected.size(), primes.size());
 
         for (size_t i = 0; i < expected.size(); ++i)

@@ -6,8 +6,6 @@
 #include "baseptrlist.h"
 #include "trigonometric.h"
 
-namespace tsym { class Number; }
-
 namespace tsym {
     /* Automatic simplification of a product of a number of factors according to Cohen, Computer
      * Algebra and Symbolic Computation [2003], chapter 3.2.
