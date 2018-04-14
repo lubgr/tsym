@@ -42,11 +42,6 @@ bool tsym::bplist::areEqual(const BasePtrList& list1, const BasePtrList& list2)
     return true;
 }
 
-bool tsym::bplist::areDifferent(const BasePtrList& list1, const BasePtrList& list2)
-{
-    return !areEqual(list1, list2);
-}
-
 bool tsym::bplist::has(const BasePtrList& list, const BasePtr& element)
 {
     for (const auto& item : list)

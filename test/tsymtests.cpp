@@ -18,11 +18,6 @@ bool tsym::operator == (const BasePtrList& lhs, const BasePtrList& rhs)
     return bplist::areEqual(lhs, rhs);
 }
 
-bool tsym::operator != (const BasePtrList& lhs, const BasePtrList& rhs)
-{
-    return bplist::areDifferent(lhs, rhs);
-}
-
 void disableLog()
 {
     globalSuppressLogFlag() = true;

@@ -11,7 +11,6 @@ namespace tsym {
 
         /* Evaluates equality by comparing the dereferenced items: */
         bool areEqual(const BasePtrList& list1, const BasePtrList& list2);
-        bool areDifferent(const BasePtrList& list1, const BasePtrList& list2);
 
         /* Returns true if any item is equal to the given object or the item's has method evaluates
          * to true for the given object (hence, different from std::find): */
