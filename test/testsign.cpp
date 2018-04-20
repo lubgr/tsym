@@ -1,6 +1,5 @@
 
 #include <cmath>
-#include "abc.h"
 #include "product.h"
 #include "sum.h"
 #include "constant.h"
@@ -10,16 +9,16 @@
 #include "trigonometric.h"
 #include "logarithm.h"
 #include "undefined.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct SignFixture {
+struct SignFixture : public AbcFixture {
     const BasePtr aPos = Symbol::createPositive("a");
     const BasePtr bPos = Symbol::createPositive("b");
     const BasePtr cPos = Symbol::createPositive("c");
     const BasePtr sqrtTwo = Power::sqrt(two);
-    const BasePtr pi = Constant::createPi();
 };
 
 namespace {

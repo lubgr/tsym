@@ -1,5 +1,4 @@
 
-#include "abc.h"
 #include "sum.h"
 #include "product.h"
 #include "power.h"
@@ -8,12 +7,12 @@
 #include "undefined.h"
 #include "numeric.h"
 #include "poly.h"
-#include "logging.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct GcdFixture {
+struct GcdFixture : public AbcFixture {
     const BasePtr zeroAfterExpansion = Sum::create({ Product::create(a, b), Product::minus(b, c),
             Product::create(b, Sum::create(c, Product::minus(a))) });
     const BasePtr undefined = Undefined::create();
@@ -52,12 +51,10 @@ struct GcdFixture {
 
 BOOST_FIXTURE_TEST_SUITE(TestGcd, GcdFixture)
 
-BOOST_AUTO_TEST_CASE(invalidInput)
+BOOST_AUTO_TEST_CASE(invalidInput, noLogs())
     /* Only integer Numerics or Symblics or composition of these types are allowed. */
 {
-    disableLog();
     check(undefined, Numeric::create(1.23456789), undefined);
-    enableLog();
 }
 
 BOOST_AUTO_TEST_CASE(twoIntegerNumerics)
@@ -86,12 +83,10 @@ BOOST_AUTO_TEST_CASE(equalSums)
     check(sum, sum, sum);
 }
 
-BOOST_AUTO_TEST_CASE(bothZero)
+BOOST_AUTO_TEST_CASE(bothZero, noLogs())
     /* Shall return an Undefined, because the request doesn't make any sense. */
 {
-    disableLog();
     check(undefined, zero, zero);
-    enableLog();
 }
 
 BOOST_AUTO_TEST_CASE(bothZeroAfterExpansion)

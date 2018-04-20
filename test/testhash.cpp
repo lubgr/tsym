@@ -1,5 +1,4 @@
 
-#include "abc.h"
 #include "constant.h"
 #include "trigonometric.h"
 #include "sum.h"
@@ -8,12 +7,13 @@
 #include "symbol.h"
 #include "logarithm.h"
 #include "product.h"
-#include "tsymtests.h"
 #include "int.h"
+#include "fixtures.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 
-BOOST_AUTO_TEST_SUITE(TestHash)
+BOOST_FIXTURE_TEST_SUITE(TestHash, AbcFixture)
 
 namespace {
     size_t hash(const BasePtr& ptr)

@@ -1,15 +1,15 @@
 
-#include "abc.h"
 #include "symbolmap.h"
 #include "sum.h"
 #include "power.h"
 #include "product.h"
 #include "constant.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-BOOST_AUTO_TEST_SUITE(TestSymbolMap)
+BOOST_FIXTURE_TEST_SUITE(TestSymbolMap, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(simpleReplacement)
 {

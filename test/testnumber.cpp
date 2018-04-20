@@ -2,6 +2,7 @@
 #include <cmath>
 #include <limits>
 #include "number.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -307,13 +308,11 @@ BOOST_AUTO_TEST_CASE(invertNegativeFraction)
     BOOST_CHECK_EQUAL(-2, res);
 }
 
-BOOST_AUTO_TEST_CASE(illegalPower)
+BOOST_AUTO_TEST_CASE(illegalPower, noLogs())
 {
     const Number zero(0);
 
-    disableLog();
     BOOST_CHECK_THROW(zero.toThe(-1), std::overflow_error);
-    enableLog();
 }
 
 BOOST_AUTO_TEST_CASE(intExponent)
@@ -575,7 +574,7 @@ BOOST_AUTO_TEST_CASE(multiplication)
 BOOST_AUTO_TEST_SUITE_END()
 BOOST_AUTO_TEST_SUITE(TestDouble)
 
-BOOST_AUTO_TEST_CASE(setAndGet)
+BOOST_AUTO_TEST_CASE(setAndGet, noLogs())
 {
     const Number n(1.23456789);
 
@@ -583,9 +582,7 @@ BOOST_AUTO_TEST_CASE(setAndGet)
     BOOST_CHECK_CLOSE(1.23456789, n.toDouble(), TOL);
 
     /* The (incorrect) integer return value of a double number should be zero. */
-    disableLog();
     BOOST_CHECK_EQUAL(0, n.numerator());
-    enableLog();
 }
 
 BOOST_AUTO_TEST_CASE(isNotRational)

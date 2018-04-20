@@ -4,7 +4,7 @@
 #include "testsuitelogger.h"
 #include <boost/test/unit_test.hpp>
 
-TestSuiteLogger::TestSuiteLogger(bool& suppressLogs) :
+TestSuiteLogger::TestSuiteLogger(bool suppressLogs) :
     suppressLogs(suppressLogs)
 {}
 

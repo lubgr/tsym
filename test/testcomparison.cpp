@@ -1,5 +1,4 @@
 
-#include "abc.h"
 #include "constant.h"
 #include "symbol.h"
 #include "numeric.h"
@@ -10,10 +9,11 @@
 #include "trigonometric.h"
 #include "undefined.h"
 #include "tsymtests.h"
+#include "fixtures.h"
 
 using namespace tsym;
 
-struct ComparisonFixture {
+struct ComparisonFixture : public AbcFixture {
     const BasePtr& undefined = Undefined::create();
 };
 
@@ -60,12 +60,10 @@ BOOST_AUTO_TEST_CASE(differentNumerics)
     BOOST_TEST(two->isDifferent(Numeric::half()));
 }
 
-BOOST_AUTO_TEST_CASE(twoUndefined)
+BOOST_AUTO_TEST_CASE(twoUndefined, noLogs())
     /* Comparing undefined  doesn't make sense, this shall always return false. */
 {
-    disableLog();
     BOOST_TEST(!undefined->isEqual(undefined));
-    enableLog();
 }
 
 BOOST_AUTO_TEST_CASE(equalPowers)

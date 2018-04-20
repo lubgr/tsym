@@ -1,6 +1,5 @@
 
 #include <cmath>
-#include "abc.h"
 #include "power.h"
 #include "sum.h"
 #include "undefined.h"
@@ -10,17 +9,17 @@
 #include "product.h"
 #include "logarithm.h"
 #include "trigonometric.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct TrigonometricFixture {
+struct TrigonometricFixture : public AbcFixture {
     const BasePtr& undefined = Undefined::create();
     const BasePtr minusHalf = Numeric::create(-1, 2);
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr sqrtThree = Power::sqrt(three);
     const BasePtr aSquare = Power::create(a, two);
-    const BasePtr& pi = Constant::createPi();
     const BasePtr sinA = Trigonometric::createSin(a);
 };
 
@@ -247,13 +246,11 @@ BOOST_AUTO_TEST_CASE(pureNumericAtan2NoRangeCorretion)
     BOOST_CHECK_EQUAL(expected, result);
 }
 
-BOOST_AUTO_TEST_CASE(illegalAtan2)
+BOOST_AUTO_TEST_CASE(illegalAtan2, noLogs())
 {
     BasePtr res;
 
-    disableLog();
     res = Trigonometric::createAtan2(zero, zero);
-    enableLog();
 
     BOOST_TEST(res->isUndefined());
 }

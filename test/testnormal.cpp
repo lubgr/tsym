@@ -1,6 +1,6 @@
 
 #include <memory>
-#include "abc.h"
+#include "fixtures.h"
 #include "constant.h"
 #include "sum.h"
 #include "undefined.h"
@@ -15,7 +15,7 @@
 
 using namespace tsym;
 
-struct NormalFixture {
+struct NormalFixture : public AbcFixture {
     const BasePtr undefined = Undefined::create();
     const BasePtr denom = Power::oneOver(Sum::create(b, c));
     const BasePtr argToZero = Sum::create(a, Product::create(Numeric::mOne(), a, b, denom),
@@ -322,14 +322,12 @@ BOOST_AUTO_TEST_CASE(trigonometricFunctionArgToZero)
     BOOST_TEST(result->isZero());
 }
 
-BOOST_AUTO_TEST_CASE(logarithmicFunctionArgToZero)
+BOOST_AUTO_TEST_CASE(logarithmicFunctionArgToZero, noLogs())
 {
     const BasePtr orig = Logarithm::create(argToZero);
     BasePtr result;
 
-    disableLog();
     result = orig->normal();
-    enableLog();
 
     BOOST_TEST(result->isUndefined());
 }

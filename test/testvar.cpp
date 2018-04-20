@@ -11,6 +11,7 @@
 #include "baseptr.h"
 #include "numeric.h"
 #include "base.h"
+#include "fixtures.h"
 #include "name.h"
 
 using namespace tsym;
@@ -32,13 +33,11 @@ struct VarFixture {
 
 BOOST_FIXTURE_TEST_SUITE(TestVar, VarFixture)
 
-BOOST_AUTO_TEST_CASE(undefinedType)
+BOOST_AUTO_TEST_CASE(undefinedType, noLogs())
 {
     Var u = 1/a;
 
-    disableLog();
     u = subst(u, a, 0);
-    enableLog();
 
     BOOST_CHECK_EQUAL(Var::Type::UNDEFINED, u.type());
 }
@@ -49,11 +48,9 @@ BOOST_AUTO_TEST_CASE(symbolType)
     BOOST_CHECK_EQUAL("a", name(a));
 }
 
-BOOST_AUTO_TEST_CASE(emptyStringCreation)
+BOOST_AUTO_TEST_CASE(emptyStringCreation, noLogs())
 {
-    disableLog();
     const Var undefined("");
-    enableLog();
 
     BOOST_CHECK_EQUAL(Var::Type::UNDEFINED, undefined.type());
 }
@@ -104,40 +101,32 @@ BOOST_AUTO_TEST_CASE(posIntWithPosSign)
     BOOST_CHECK_EQUAL(Var(1234567), var);
 }
 
-BOOST_AUTO_TEST_CASE(negIntWithPosSign)
+BOOST_AUTO_TEST_CASE(negIntWithPosSign, noLogs())
 {
-    disableLog();
     const Var var("-1234567", Var::Sign::POSITIVE);
-    enableLog();
 
     /* The inconsistent sign is ignored: */
     BOOST_CHECK_EQUAL(Var(-1234567), var);
 }
 
-BOOST_AUTO_TEST_CASE(parsingError)
+BOOST_AUTO_TEST_CASE(parsingError, noLogs())
 {
-    disableLog();
     const Var var("Pi*2");
-    enableLog();
 
     BOOST_CHECK_EQUAL(Var::Type::UNDEFINED, var.type());
 }
 
-BOOST_AUTO_TEST_CASE(illegalCharacter)
+BOOST_AUTO_TEST_CASE(illegalCharacter, noLogs())
 {
-    disableLog();
     const Var illegal("Ä");
-    enableLog();
 
     BOOST_CHECK_EQUAL(Var::Type::UNDEFINED, illegal.type());
     BOOST_CHECK_EQUAL("", name(illegal));
 }
 
-BOOST_AUTO_TEST_CASE(illegalSymbolName)
+BOOST_AUTO_TEST_CASE(illegalSymbolName, noLogs())
 {
-    disableLog();
     const Var illegal("12345.678");
-    enableLog();
 
     BOOST_CHECK_EQUAL(Var::Type::UNDEFINED, illegal.type());
     BOOST_CHECK_EQUAL("", name(illegal));
@@ -476,11 +465,9 @@ BOOST_AUTO_TEST_CASE(powerWithZeroBase)
     BOOST_CHECK_EQUAL(0, result);
 }
 
-BOOST_AUTO_TEST_CASE(powerWithZeroBaseNegExp)
+BOOST_AUTO_TEST_CASE(powerWithZeroBaseNegExp, noLogs())
 {
-    disableLog();
     const Var res = pow(zero, -2);
-    enableLog();
 
     BOOST_CHECK_EQUAL(Var::Type::UNDEFINED, res.type());
 }
@@ -975,14 +962,12 @@ BOOST_AUTO_TEST_CASE(simplifyExpandLessComplex)
     BOOST_TEST(complexity(simplified) < complexity(numerator(orig)));
 }
 
-BOOST_AUTO_TEST_CASE(simplifyWithUndefinedIntermediateResult)
+BOOST_AUTO_TEST_CASE(simplifyWithUndefinedIntermediateResult, noLogs())
 {
     const Var denom = a - a*b/(b + c) - a*c/(b + c);
     const Var orig = d/denom;
 
-    disableLog();
     const Var result = simplify(orig);
-    enableLog();
 
     BOOST_CHECK_EQUAL(Var::Type::UNDEFINED, result.type());
 }
@@ -1112,14 +1097,12 @@ BOOST_AUTO_TEST_CASE(printerOperatorTypeEnumConstantFunctionSymbol)
     BOOST_CHECK_EQUAL(expected, stream.str());
 }
 
-BOOST_AUTO_TEST_CASE(printerOperatorTypeEnumUndefined)
+BOOST_AUTO_TEST_CASE(printerOperatorTypeEnumUndefined, noLogs())
 {
     const std::string expected("Undefined");
     std::stringstream stream;
 
-    disableLog();
     const Var u = tsym::tan(pi()/2);
-    enableLog();
 
     stream << u;
 

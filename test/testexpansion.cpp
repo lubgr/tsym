@@ -1,5 +1,4 @@
 
-#include "abc.h"
 #include "symbol.h"
 #include "undefined.h"
 #include "sum.h"
@@ -8,11 +7,12 @@
 #include "numeric.h"
 #include "constant.h"
 #include "trigonometric.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct ExpansionFixture {
+struct ExpansionFixture : public AbcFixture {
     const BasePtr abSum = Sum::create(a, b);
     const BasePtr cdSum = Sum::create(c, d);
     const BasePtr abProduct = Product::create(a, b);

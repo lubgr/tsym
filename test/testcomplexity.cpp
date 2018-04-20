@@ -1,22 +1,18 @@
 
-#include "abc.h"
 #include "constant.h"
 #include "power.h"
 #include "sum.h"
 #include "numeric.h"
 #include "product.h"
 #include "trigonometric.h"
-#include "tsymtests.h"
 #include "undefined.h"
 #include "logarithm.h"
+#include "fixtures.h"
+#include "tsymtests.h"
 
 using namespace tsym;
 
-struct ComplexityFixture {
-    const BasePtr& pi = Constant::createPi();
-};
-
-BOOST_FIXTURE_TEST_SUITE(TestComplexity, ComplexityFixture)
+BOOST_FIXTURE_TEST_SUITE(TestComplexity, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(undefined)
 {

@@ -2,6 +2,7 @@
 #include <cmath>
 #include "number.h"
 #include "globals.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -83,14 +84,12 @@ BOOST_AUTO_TEST_CASE(logOfPower)
     BOOST_CHECK_EQUAL(expected, result);
 }
 
-BOOST_AUTO_TEST_CASE(logOfZero)
+BOOST_AUTO_TEST_CASE(logOfZero, noLogs())
 {
     const Var zero(0);
     Var result;
 
-    disableLog();
     result = tsym::log(zero);
-    enableLog();
 
     BOOST_CHECK_EQUAL(Var::Type::UNDEFINED, result.type());
 }
@@ -203,22 +202,18 @@ BOOST_AUTO_TEST_CASE(successfulParsingWithoutFlag)
     BOOST_CHECK_EQUAL(expected, result);
 }
 
-BOOST_AUTO_TEST_CASE(parsingWithError)
+BOOST_AUTO_TEST_CASE(parsingWithError, noLogs())
 {
     bool success;
-    disableLog();
     parse("a*b*sqrt(2)*[[[tan(a)", &success);
-    enableLog();
 
     BOOST_TEST(!success);
 }
 
-BOOST_AUTO_TEST_CASE(parsingEmptyString)
+BOOST_AUTO_TEST_CASE(parsingEmptyString, noLogs())
 {
     bool success;
-    disableLog();
     const Var result = parse("", &success);
-    enableLog();
 
     BOOST_TEST(!success);
     BOOST_CHECK_EQUAL(Var::Type::UNDEFINED, result.type());

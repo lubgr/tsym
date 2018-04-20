@@ -1,6 +1,5 @@
 
 #include <cmath>
-#include "abc.h"
 #include "numtrigosimpl.h"
 #include "undefined.h"
 #include "power.h"
@@ -8,11 +7,12 @@
 #include "numeric.h"
 #include "sum.h"
 #include "product.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct NumTrigoSimplFixture {
+struct NumTrigoSimplFixture : public AbcFixture {
     const BasePtr& minusOne = Numeric::mOne();
     const BasePtr& half = Numeric::half();
     const BasePtr sqrtTwo = Power::sqrt(two);
@@ -62,10 +62,8 @@ struct NumTrigoSimplFixture {
         nts.compute();
         BOOST_TEST(!nts.hasSimplifiedResult());
 
-        disableLog();
         /* Requesting the result should give an Undefined. */
         BOOST_TEST(nts.get()->isUndefined());
-        enableLog();
     }
 };
 
@@ -170,7 +168,7 @@ BOOST_AUTO_TEST_CASE(cosLeadsToNewAdjustment)
     check(expectedSin, half, expectedTan);
 }
 
-BOOST_AUTO_TEST_CASE(unresolvableNumeric)
+BOOST_AUTO_TEST_CASE(unresolvableNumeric, noLogs())
     /* Sin/cos/tan(1/4) shouldn't be simplified. */
 {
     nts.setArg(Numeric::fourth());
@@ -178,7 +176,7 @@ BOOST_AUTO_TEST_CASE(unresolvableNumeric)
     checkUnsimplified();
 }
 
-BOOST_AUTO_TEST_CASE(unresolvableNumericPower)
+BOOST_AUTO_TEST_CASE(unresolvableNumericPower, noLogs())
     /* Sin/cos/tan(sqrt(2)) shouldn't be simplified. */
 {
     nts.setArg(sqrtTwo);
@@ -257,7 +255,7 @@ BOOST_AUTO_TEST_CASE(inverseZero)
     checkInverse(zero, Product::create(half, pi), zero);
 }
 
-BOOST_AUTO_TEST_CASE(inverseOneOverSqrtTwo)
+BOOST_AUTO_TEST_CASE(inverseOneOverSqrtTwo, noLogs())
     /* Asin/acos/atan(1/sqrt(2)) = Pi/4, Pi/4, unsimplified. */
 {
     const BasePtr piFourth = Product::create(pi, Numeric::fourth());
@@ -269,7 +267,7 @@ BOOST_AUTO_TEST_CASE(inverseOneOverSqrtTwo)
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-BOOST_AUTO_TEST_CASE(inverseNegativeArg)
+BOOST_AUTO_TEST_CASE(inverseNegativeArg, noLogs())
     /* Asin/acos/atan(-1/sqrt(2)) = -Pi/4, 3*Pi/4, unsimplified. */
 {
     const BasePtr arg = Product::minus(Power::oneOver(sqrtTwo));
@@ -283,7 +281,7 @@ BOOST_AUTO_TEST_CASE(inverseNegativeArg)
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-BOOST_AUTO_TEST_CASE(inverseFromSum)
+BOOST_AUTO_TEST_CASE(inverseFromSum, noLogs())
     /* Asin/acos/atan((sqrt(6) - sqrt(2))/4  = Pi/12, 5*Pi/12, unsimplified. */
 {
     const BasePtr arg = Product::create(Numeric::fourth(), Sum::create(sqrtSix,
@@ -298,7 +296,7 @@ BOOST_AUTO_TEST_CASE(inverseFromSum)
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-BOOST_AUTO_TEST_CASE(inverseNegativeSum)
+BOOST_AUTO_TEST_CASE(inverseNegativeSum, noLogs())
     /* Asin/acos/atan(-(sqrt(6) + sqrt(2))/4) = -5/12*pi, 11/12*pi, unsimplified. */
 {
     const BasePtr arg = Product::create(Numeric::create(-1, 4), Sum::create(sqrtSix, sqrtTwo));
@@ -372,7 +370,7 @@ BOOST_AUTO_TEST_CASE(inverseExactFromDoubleAtan)
     checkInverse(expectedAsin, expectedAcos, expectedAtan);
 }
 
-BOOST_AUTO_TEST_CASE(noSimplification)
+BOOST_AUTO_TEST_CASE(noSimplification, noLogs())
     /* Sin/cos/tan aren't simplified for a numerically evaluable argument, that isn't in the
      * exact tables. */
 {
@@ -385,7 +383,7 @@ BOOST_AUTO_TEST_CASE(noSimplification)
     checkUnsimplified(Trigonometric::Type::TAN);
 }
 
-BOOST_AUTO_TEST_CASE(noSimplificationInverse)
+BOOST_AUTO_TEST_CASE(noSimplificationInverse, noLogs())
     /* The same for inverse functions. */
 {
     const BasePtr arg = Product::create(sqrtTwo, Numeric::create(1, 10), pi);
@@ -397,7 +395,7 @@ BOOST_AUTO_TEST_CASE(noSimplificationInverse)
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-BOOST_AUTO_TEST_CASE(noSimplificationLargeInput)
+BOOST_AUTO_TEST_CASE(noSimplificationLargeInput, noLogs())
 {
     BasePtrList fac;
     BasePtr arg;
@@ -420,7 +418,7 @@ BOOST_AUTO_TEST_CASE(noSimplificationLargeInput)
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-BOOST_AUTO_TEST_CASE(greaterThanRange)
+BOOST_AUTO_TEST_CASE(greaterThanRange, noLogs())
     /* Asin/acos aren't defined for arguments < -1. */
 {
     const BasePtr arg = Product::create(Numeric::create(-17), sqrtTwo);
@@ -455,7 +453,7 @@ BOOST_AUTO_TEST_CASE(largeNumericEvaluationToExact)
     check(Trigonometric::Type::ASIN, piFourth);
 }
 
-BOOST_AUTO_TEST_CASE(inverseUnresolvableNumeric)
+BOOST_AUTO_TEST_CASE(inverseUnresolvableNumeric, noLogs())
     /* Asin/acos/atan(-1/10) shouldn't be simplified. */
 {
     nts.setArg(Numeric::create(-1, 10));

@@ -1,5 +1,4 @@
 
-#include "abc.h"
 #include "baseptr.h"
 #include "sum.h"
 #include "undefined.h"
@@ -9,13 +8,13 @@
 #include "logarithm.h"
 #include "product.h"
 #include "power.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct SubstFixture {
+struct SubstFixture : public AbcFixture {
     const BasePtr& undefined = Undefined::create();
-    const BasePtr& pi = Constant::createPi();
 };
 
 BOOST_FIXTURE_TEST_SUITE(TestSubst, SubstFixture)
@@ -199,15 +198,13 @@ BOOST_AUTO_TEST_CASE(logEqualArg)
     BOOST_CHECK_EQUAL(a, res);
 }
 
-BOOST_AUTO_TEST_CASE(powerToUndefined)
+BOOST_AUTO_TEST_CASE(powerToUndefined, noLogs())
     /* a^(-2) = Undefined for a = 0. */
 {
     const BasePtr orig = Power::create(a, Numeric::create(-2));
     BasePtr res;
 
-    disableLog();
     res = orig->subst(a, zero);
-    enableLog();
 
     BOOST_TEST(res->isUndefined());
 }

@@ -1,7 +1,6 @@
 
 #include <cmath>
 #include <limits>
-#include "abc.h"
 #include "power.h"
 #include "symbol.h"
 #include "numeric.h"
@@ -13,11 +12,12 @@
 #include "options.h"
 #include "logarithm.h"
 #include "sum.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct PowerFixture {
+struct PowerFixture : public AbcFixture {
     const Int defaultPrimeFacLimit = options::getMaxPrimeResolution();
     const BasePtr aPos = Symbol::createPositive("a");
     const BasePtr bPos = Symbol::createPositive("b");
@@ -26,7 +26,6 @@ struct PowerFixture {
     const BasePtr minusHalf = Numeric::create(-1, 2);
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr& undefPtr = Undefined::create();
-    const BasePtr& pi = Constant::createPi();
     const double TOL = 1.e-10;
 
     ~PowerFixture()
@@ -52,11 +51,9 @@ BOOST_AUTO_TEST_CASE(undefinedExponent)
     BOOST_TEST(res->isUndefined());
 }
 
-BOOST_AUTO_TEST_CASE(illegalNumberExponent)
+BOOST_AUTO_TEST_CASE(illegalNumberExponent, noLogs())
 {
-    disableLog();
     const BasePtr res = Power::create(a, Numeric::create(10, 0));
-    enableLog();
 
     BOOST_TEST(res->isUndefined());
 }
@@ -594,15 +591,13 @@ BOOST_AUTO_TEST_CASE(zeroBaseToUnclearExponent)
     BOOST_TEST(res->isZero());
 }
 
-BOOST_AUTO_TEST_CASE(zeroBaseToNegExponent)
+BOOST_AUTO_TEST_CASE(zeroBaseToNegExponent, noLogs())
     /* 0^(-a) with a > 0 is Undefined. */
 {
     const BasePtr exp = Product::minus(aPos);
     BasePtr res;
 
-    disableLog();
     res = Power::create(zero, exp);
-    enableLog();
 
     BOOST_TEST(res->isUndefined());
 }

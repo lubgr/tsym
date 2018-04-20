@@ -1,12 +1,12 @@
 
-#include "abc.h"
 #include "undefined.h"
 #include "number.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct UndefinedFixture {
+struct UndefinedFixture : public AbcFixture {
     const BasePtr& undefined = Undefined::create();
 };
 
@@ -54,19 +54,16 @@ BOOST_AUTO_TEST_CASE(numericEvaluation)
     BOOST_CHECK_THROW(undefined->numericEval(), std::logic_error);
 }
 
-BOOST_AUTO_TEST_CASE(equalityOtherUndefined)
+BOOST_AUTO_TEST_CASE(equalityOtherUndefined, noLogs())
 {
     const BasePtr otherUndefined = Undefined::create();
 
-    disableLog();
 
     BOOST_TEST(!undefined->isEqual(undefined));
     BOOST_TEST(!undefined->isEqual(otherUndefined));
 
     BOOST_TEST(undefined->isDifferent(undefined));
     BOOST_TEST(undefined->isDifferent(otherUndefined));
-
-    enableLog();
 }
 
 BOOST_AUTO_TEST_SUITE_END()

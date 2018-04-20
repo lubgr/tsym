@@ -6,7 +6,7 @@
 
 class TestSuiteLogger : public tsym::Logger {
     public:
-        explicit TestSuiteLogger(bool& suppressLogs);
+        explicit TestSuiteLogger(bool suppressLogs);
 
         void warning(const Logger::Message& msg) const override;
         void error(const Logger::Message& msg) const override;
@@ -15,7 +15,7 @@ class TestSuiteLogger : public tsym::Logger {
     private:
         void log(std::string&& level, const Logger::Message& msg) const;
 
-        bool& suppressLogs;
+        bool suppressLogs;
 };
 
 #endif

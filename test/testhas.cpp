@@ -1,16 +1,16 @@
 
-#include "abc.h"
 #include "product.h"
 #include "sum.h"
 #include "undefined.h"
 #include "constant.h"
 #include "power.h"
 #include "trigonometric.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct HasFixture {
+struct HasFixture : public AbcFixture {
     const BasePtr undefined = Undefined::create();
     const BasePtr pi = Constant::createPi();
     const BasePtr twoPiAbProduct = Product::create(two, a, b, pi);

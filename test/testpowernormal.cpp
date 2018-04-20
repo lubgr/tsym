@@ -1,6 +1,5 @@
 
 #include <memory>
-#include "abc.h"
 #include "powernormal.h"
 #include "constant.h"
 #include "power.h"
@@ -8,14 +7,14 @@
 #include "sum.h"
 #include "product.h"
 #include "trigonometric.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct PowerNormalFixture {
+struct PowerNormalFixture : public AbcFixture {
     const BasePtr oneOverB = Power::oneOver(b);
     const BasePtr abSum = Sum::create(a, b);
-    const BasePtr& pi = Constant::createPi();
     /* a/b + (c - a)/b - c/b becomes 0 by normalization. */
     const BasePtr zeroByNormal = Sum::create(Product::create(a, oneOverB), Product::minus(c, oneOverB),
         Product::create(Sum::create(c, Product::minus(a)), oneOverB));

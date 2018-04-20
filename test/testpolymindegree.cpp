@@ -1,16 +1,16 @@
 
-#include "abc.h"
 #include "poly.h"
 #include "sum.h"
 #include "product.h"
 #include "numeric.h"
 #include "trigonometric.h"
 #include "power.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-BOOST_AUTO_TEST_SUITE(TestPolyMinDegree)
+BOOST_FIXTURE_TEST_SUITE(TestPolyMinDegree, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(minDegreeMatchingSymbol)
 {
@@ -22,13 +22,11 @@ BOOST_AUTO_TEST_CASE(minDegreeDifferentSymbol)
     BOOST_CHECK_EQUAL(0, poly::minDegree(a, b));
 }
 
-BOOST_AUTO_TEST_CASE(minDegreeInteger)
+BOOST_AUTO_TEST_CASE(minDegreeInteger, noLogs())
 {
     BOOST_CHECK_EQUAL(0, poly::minDegree(two, a));
 
-    disableLog();
     BOOST_CHECK_EQUAL(0, poly::minDegree(two, two));
-    enableLog();
 }
 
 BOOST_AUTO_TEST_CASE(minDegreePowerOneSymbolInBase)
@@ -109,15 +107,13 @@ BOOST_AUTO_TEST_CASE(minDegreeInvalidInput)
     BOOST_CHECK_EQUAL(0, result);
 }
 
-BOOST_AUTO_TEST_CASE(minDegreeLargeExp)
+BOOST_AUTO_TEST_CASE(minDegreeLargeExp, noLogs())
 {
     const Int largeExp("1000000000000000000000000000000000000000");
     const BasePtr arg = Power::create(a, Numeric::create(largeExp));
     int result;
 
-    disableLog();
     result = poly::minDegree(arg, a);
-    enableLog();
 
     BOOST_CHECK_EQUAL(0, result);
 }

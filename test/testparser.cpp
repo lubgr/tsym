@@ -3,18 +3,18 @@
 #include "parser.h"
 #include "numeric.h"
 #include "sum.h"
-#include "abc.h"
 #include "undefined.h"
 #include "trigonometric.h"
 #include "constant.h"
 #include "power.h"
 #include "product.h"
 #include "symbol.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct ParserFixture {
+struct ParserFixture : public AbcFixture {
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr& pi = Constant::createPi();
     const BasePtr& euler = Constant::createE();

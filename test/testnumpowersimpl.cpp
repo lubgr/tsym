@@ -17,7 +17,6 @@ struct NumPowerSimplFixture {
     void teardown()
     {
         nps = NumPowerSimpl{};
-        enableLog();
     }
 
     void check(const Number& preFac, const Number& base, const Number& exp)

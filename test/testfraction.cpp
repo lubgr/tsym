@@ -1,13 +1,13 @@
 
-#include "abc.h"
 #include "fraction.h"
 #include "power.h"
 #include "product.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-BOOST_AUTO_TEST_SUITE(TestFraction)
+BOOST_FIXTURE_TEST_SUITE(TestFraction, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(constructionWithoutParameter)
 {
@@ -63,27 +63,23 @@ BOOST_AUTO_TEST_CASE(cancelZeroNumerator)
     BOOST_CHECK_EQUAL(one, result.denom());
 }
 
-BOOST_AUTO_TEST_CASE(cancelZeroDenominator)
+BOOST_AUTO_TEST_CASE(cancelZeroDenominator, noLogs())
 {
     const Fraction frac(a, zero);
     Fraction result;
 
-    disableLog();
     result = frac.cancel();
-    enableLog();
 
     BOOST_TEST(result.num()->isUndefined());
     BOOST_CHECK_EQUAL(one, result.denom());
 }
 
-BOOST_AUTO_TEST_CASE(evalZeroDenominator)
+BOOST_AUTO_TEST_CASE(evalZeroDenominator, noLogs())
 {
     const Fraction frac(a, zero);
     BasePtr result;
 
-    disableLog();
     result = frac.eval();
-    enableLog();
 
     BOOST_TEST(result->isUndefined());
 }

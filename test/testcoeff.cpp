@@ -1,16 +1,16 @@
 
-#include "abc.h"
 #include "sum.h"
 #include "trigonometric.h"
 #include "product.h"
 #include "numeric.h"
 #include "constant.h"
 #include "power.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-BOOST_AUTO_TEST_SUITE(TestCoeff)
+BOOST_FIXTURE_TEST_SUITE(TestCoeff, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(equalSymbolsExpOne)
 {

@@ -1,6 +1,5 @@
 
 #include <limits>
-#include "abc.h"
 #include "sum.h"
 #include "trigonometric.h"
 #include "undefined.h"
@@ -8,11 +7,12 @@
 #include "constant.h"
 #include "numeric.h"
 #include "power.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct DegreeFixture {
+struct DegreeFixture : public AbcFixture {
     const BasePtr abSum = Sum::create(a, b);
     const BasePtr abProduct = Product::create(a, b);
 };
@@ -229,14 +229,12 @@ BOOST_AUTO_TEST_CASE(powerSumBase)
     BOOST_CHECK_EQUAL(-2, pow->degree(a));
 }
 
-BOOST_AUTO_TEST_CASE(powerTooLargeIntExp)
+BOOST_AUTO_TEST_CASE(powerTooLargeIntExp, noLogs())
 {
     const BasePtr pow = Power::create(a, Numeric::create(std::numeric_limits<int>::max()));
     int degree;
 
-    disableLog();
     degree = pow->degree(a);
-    enableLog();
 
     BOOST_CHECK_EQUAL(0, degree);
 }
@@ -249,15 +247,13 @@ BOOST_AUTO_TEST_CASE(powerWithNegIntExp)
     BOOST_CHECK_EQUAL(-2, degree);
 }
 
-BOOST_AUTO_TEST_CASE(powerTooSmallIntExp)
+BOOST_AUTO_TEST_CASE(powerTooSmallIntExp, noLogs())
 {
     const Int largeNeg("-230980928430982309482098409283094832");
     const BasePtr pow = Power::create(a, Numeric::create(largeNeg));
     int degree;
 
-    disableLog();
     degree = pow->degree(a);
-    enableLog();
 
     BOOST_TEST(!integer::fitsInto<int>(largeNeg));
     BOOST_CHECK_EQUAL(0, degree);

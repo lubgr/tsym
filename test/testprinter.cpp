@@ -1,5 +1,4 @@
 
-#include "abc.h"
 #include "printer.h"
 #include "symbol.h"
 #include "numeric.h"
@@ -9,12 +8,12 @@
 #include "product.h"
 #include "sum.h"
 #include "plaintextprintengine.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct PrinterFixture {
-    const BasePtr& pi = Constant::createPi();
+struct PrinterFixture : public AbcFixture {
     std::stringstream stream;
 
     template<class Engine, class T> std::string print(Engine& engine, const T& toBePrinted)

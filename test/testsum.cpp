@@ -1,7 +1,6 @@
 
 #include <cmath>
 #include <limits>
-#include "abc.h"
 #include "sum.h"
 #include "product.h"
 #include "symbol.h"
@@ -11,16 +10,16 @@
 #include "constant.h"
 #include "trigonometric.h"
 #include "logarithm.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct SumFixture {
+struct SumFixture : public AbcFixture {
     const BasePtr sinA = Trigonometric::createSin(a);
     const BasePtr cosA = Trigonometric::createCos(a);
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr sqrtThree = Power::sqrt(three);
-    const BasePtr& pi = Constant::createPi();
 };
 
 BOOST_FIXTURE_TEST_SUITE(TestSum, SumFixture)

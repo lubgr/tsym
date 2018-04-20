@@ -1,7 +1,7 @@
 
 #include <cmath>
 #include <limits>
-#include "abc.h"
+#include "fixtures.h"
 #include "product.h"
 #include "symbol.h"
 #include "undefined.h"
@@ -16,7 +16,7 @@
 
 using namespace tsym;
 
-struct ProductFixture {
+struct ProductFixture : public AbcFixture {
     const Int primeResolutionLimit = options::getMaxPrimeResolution();
     const BasePtr& half = Numeric::half();
     const BasePtr minusOneHalf = Numeric::create(-1, 2);

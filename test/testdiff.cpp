@@ -1,13 +1,13 @@
 
-#include "abc.h"
-#include "constant.h"
 #include "trigonometric.h"
 #include "undefined.h"
 #include "sum.h"
 #include "power.h"
 #include "numeric.h"
+#include "constant.h"
 #include "logarithm.h"
 #include "product.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -15,16 +15,12 @@ using namespace tsym;
 namespace {
     void checkWrongDiffToUndefined(const BasePtr& arg1, const BasePtr& arg2)
     {
-        disableLog();
-
         const BasePtr result = arg1->diff(arg2);
         BOOST_TEST(result->isUndefined());
-
-        enableLog();
     }
 }
 
-BOOST_AUTO_TEST_SUITE(TestDiff)
+BOOST_FIXTURE_TEST_SUITE(TestDiff, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(numeric)
 {
@@ -64,7 +60,7 @@ BOOST_AUTO_TEST_CASE(symbolWrtOtherSymbol)
     BOOST_TEST(result->isZero());
 }
 
-BOOST_AUTO_TEST_CASE(wrongArguments)
+BOOST_AUTO_TEST_CASE(wrongArguments, noLogs())
 {
     const BasePtr product = Product::create(seven, b);
     const BasePtr pi = Constant::createPi();

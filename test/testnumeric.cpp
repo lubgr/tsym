@@ -1,12 +1,12 @@
 
 #include "numeric.h"
-#include "abc.h"
 #include "name.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-BOOST_AUTO_TEST_SUITE(TestNumeric)
+BOOST_FIXTURE_TEST_SUITE(TestNumeric, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(creationByNumber)
 {
@@ -26,11 +26,9 @@ BOOST_AUTO_TEST_CASE(creationByIntegerClass)
     BOOST_CHECK_EQUAL(two, res);
 }
 
-BOOST_AUTO_TEST_CASE(creationWithZeroDenominator)
+BOOST_AUTO_TEST_CASE(creationWithZeroDenominator, noLogs())
 {
-    disableLog();
     const BasePtr ptr = Numeric::create(1, 0);
-    enableLog();
 
     BOOST_TEST(ptr->isUndefined());
 }

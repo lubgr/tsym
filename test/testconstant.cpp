@@ -1,15 +1,14 @@
 
 #include <cmath>
-#include "abc.h"
 #include "constant.h"
 #include "number.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct ConstantFixture {
-    const BasePtr pi = Constant::createPi();
-    const BasePtr e = Constant::createE();
+struct ConstantFixture : public AbcFixture {
+    const BasePtr& e = Constant::createE();
 };
 
 BOOST_FIXTURE_TEST_SUITE(TestConstant, ConstantFixture)

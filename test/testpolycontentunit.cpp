@@ -1,16 +1,16 @@
 
-#include "abc.h"
 #include "poly.h"
 #include "product.h"
 #include "undefined.h"
 #include "power.h"
 #include "numeric.h"
 #include "sum.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-BOOST_AUTO_TEST_SUITE(TestPolyUnit)
+BOOST_FIXTURE_TEST_SUITE(TestPolyUnit, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(unitOfZero)
 {
@@ -18,23 +18,19 @@ BOOST_AUTO_TEST_CASE(unitOfZero)
     BOOST_CHECK_EQUAL(1, poly::unit(zero, zero));
 }
 
-BOOST_AUTO_TEST_CASE(undefined)
+BOOST_AUTO_TEST_CASE(undefined, noLogs())
     /* Illegal input is supposed to return 1. */
 {
-    disableLog();
     BOOST_CHECK_EQUAL(1, poly::unit(Undefined::create(), a));
-    enableLog();
 }
 
-BOOST_AUTO_TEST_CASE(illegalNumPowerInput)
+BOOST_AUTO_TEST_CASE(illegalNumPowerInput, noLogs())
 {
     const BasePtr illegal = Product::create(two,
             Sum::create(Power::create(five, Numeric::third()), b));
     const BasePtr sum = Sum::create(a, illegal);
 
-    disableLog();
     BOOST_CHECK_EQUAL(1, poly::unit(sum, b));
-    enableLog();
 }
 
 BOOST_AUTO_TEST_CASE(posSymbol)
@@ -118,7 +114,7 @@ BOOST_AUTO_TEST_CASE(negativeSignPolynomial)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-BOOST_AUTO_TEST_SUITE(TestPolyContent)
+BOOST_FIXTURE_TEST_SUITE(TestPolyContent, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(contentOfZero)
 {

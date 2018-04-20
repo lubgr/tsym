@@ -8,24 +8,22 @@
 #include "numeric.h"
 #include "undefined.h"
 #include "symbol.h"
-#include "abc.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct LogarithmFixture {
-    const BasePtr e = Constant::createE();
+struct LogarithmFixture : public AbcFixture {
+    const BasePtr& e = Constant::createE();
 };
 
 BOOST_FIXTURE_TEST_SUITE(TestLogarithm, LogarithmFixture)
 
-BOOST_AUTO_TEST_CASE(logOfZero)
+BOOST_AUTO_TEST_CASE(logOfZero, noLogs())
 {
     BasePtr result;
 
-    disableLog();
     result = Logarithm::create(zero);
-    enableLog();
 
     BOOST_TEST(result->isUndefined());
 }
@@ -37,13 +35,11 @@ BOOST_AUTO_TEST_CASE(logOfOne)
     BOOST_TEST(result->isZero());
 }
 
-BOOST_AUTO_TEST_CASE(logOfUndefinedArg)
+BOOST_AUTO_TEST_CASE(logOfUndefinedArg, noLogs())
 {
     BasePtr result;
 
-    disableLog();
     result = Logarithm::create(Undefined::create());
-    enableLog();
 
     BOOST_TEST(result->isUndefined());
 }
@@ -92,38 +88,32 @@ BOOST_AUTO_TEST_CASE(logOfValidNumericallyEvaluable)
     BOOST_CHECK_EQUAL(arg, result->operands().front());
 }
 
-BOOST_AUTO_TEST_CASE(logOfNegativeArgument)
+BOOST_AUTO_TEST_CASE(logOfNegativeArgument, noLogs())
 {
     const BasePtr aPos = Symbol::createPositive("a");
     BasePtr log;
 
-    disableLog();
     log = Logarithm::create(Product::minus(aPos));
-    enableLog();
 
     BOOST_TEST(log->isUndefined());
 }
 
-BOOST_AUTO_TEST_CASE(logOfInvalidNumericallyEvaluableEqualZero)
+BOOST_AUTO_TEST_CASE(logOfInvalidNumericallyEvaluableEqualZero, noLogs())
 {
     const BasePtr arg = Sum::create(e, Numeric::create(-M_E));
     BasePtr result;
 
-    disableLog();
     result = Logarithm::create(arg);
-    enableLog();
 
     BOOST_TEST(result->isUndefined());
 }
 
-BOOST_AUTO_TEST_CASE(logOfInvalidNumericallyEvaluableLessThanZero)
+BOOST_AUTO_TEST_CASE(logOfInvalidNumericallyEvaluableLessThanZero, noLogs())
 {
     const BasePtr arg = Sum::create(Product::minus(Constant::createPi()), two);
     BasePtr result;
 
-    disableLog();
     result = Logarithm::create(arg);
-    enableLog();
 
     BOOST_TEST(result->isUndefined());
 }
@@ -145,15 +135,13 @@ BOOST_AUTO_TEST_CASE(logOfSymbolicSum)
     BOOST_CHECK_EQUAL(arg, result->operands().front());
 }
 
-BOOST_AUTO_TEST_CASE(logOfPowerWithNegEulerBasePosNumericExp)
+BOOST_AUTO_TEST_CASE(logOfPowerWithNegEulerBasePosNumericExp, noLogs())
 {
     const BasePtr exp = Numeric::create(-123);
     const BasePtr arg = Product::minus(Power::create(e, exp));
     BasePtr result;
 
-    disableLog();
     result = Logarithm::create(arg);
-    enableLog();
 
     BOOST_TEST(result->isUndefined());
 }

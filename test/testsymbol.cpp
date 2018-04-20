@@ -1,5 +1,6 @@
 
 #include "symbol.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -30,22 +31,18 @@ BOOST_AUTO_TEST_CASE(typeString)
     BOOST_CHECK_EQUAL(expected, basePtr->typeStr());
 }
 
-BOOST_AUTO_TEST_CASE(emptyName)
+BOOST_AUTO_TEST_CASE(emptyName, noLogs())
 {
-    disableLog();
     const BasePtr undefined = Symbol::create("");
-    enableLog();
 
     BOOST_TEST(undefined->isUndefined());
 }
 
-BOOST_AUTO_TEST_CASE(nameReservedForTemporaries)
+BOOST_AUTO_TEST_CASE(nameReservedForTemporaries, noLogs())
 {
     const Name name("tmp#99999999999");
 
-    disableLog();
     const BasePtr tmp = Symbol::create(name);
-    enableLog();
 
     BOOST_TEST(tmp->isSymbol());
     BOOST_TEST(tmp->name() != name);

@@ -1,20 +1,18 @@
 
 #include "baseptrlist.h"
 #include "bplist.h"
-#include "abc.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-BOOST_AUTO_TEST_SUITE(TestBpList)
+BOOST_FIXTURE_TEST_SUITE(TestBpList, AbcFixture)
 
-BOOST_AUTO_TEST_CASE(restOfEmptyList)
+BOOST_AUTO_TEST_CASE(restOfEmptyList, noLogs())
 {
     const BasePtrList empty{};
 
-    disableLog();
     auto result = bplist::rest(empty);
-    enableLog();
 
     BOOST_TEST(result.empty());
 }

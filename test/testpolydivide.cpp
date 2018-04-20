@@ -1,16 +1,16 @@
 
-#include "abc.h"
 #include "poly.h"
 #include "sum.h"
 #include "power.h"
 #include "numeric.h"
 #include "product.h"
 #include "trigonometric.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-BOOST_AUTO_TEST_SUITE(TestPolyDivide)
+BOOST_FIXTURE_TEST_SUITE(TestPolyDivide, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(zeroDividend)
 {
@@ -63,27 +63,23 @@ BOOST_AUTO_TEST_CASE(fractionCoeff)
     BOOST_CHECK_EQUAL(zero, result.back());
 }
 
-BOOST_AUTO_TEST_CASE(invalidInputBothZero)
+BOOST_AUTO_TEST_CASE(invalidInputBothZero, noLogs())
 {
     BasePtrList result;
 
-    disableLog();
     result = poly::divide(zero, zero);
-    enableLog();
 
     BOOST_TEST(result.front()->isUndefined());
     BOOST_TEST(result.back()->isUndefined());
 }
 
-BOOST_AUTO_TEST_CASE(invalidInputWithFunction)
+BOOST_AUTO_TEST_CASE(invalidInputWithFunction, noLogs())
 {
     const BasePtr u = Trigonometric::createAcos(a);
     const BasePtr v = Sum::create(two, a);
     BasePtrList result;
 
-    disableLog();
     result = poly::divide(u, v, { a });
-    enableLog();
 
     BOOST_TEST(result.front()->isUndefined());
     BOOST_TEST(result.back()->isUndefined());
@@ -178,7 +174,7 @@ BOOST_AUTO_TEST_CASE(hugeExpandedPolynomials)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-BOOST_AUTO_TEST_SUITE(TestPolyPseudoDivide)
+BOOST_FIXTURE_TEST_SUITE(TestPolyPseudoDivide, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(cohenExample01)
 {
@@ -209,15 +205,13 @@ BOOST_AUTO_TEST_CASE(cohenExample02)
     BOOST_CHECK_EQUAL(expectedRemainder, result.back());
 }
 
-BOOST_AUTO_TEST_CASE(illegalInput)
+BOOST_AUTO_TEST_CASE(illegalInput, noLogs())
 {
     const BasePtr u = Power::create(a, Numeric::create(1.23456789));
     const BasePtr v = Trigonometric::createSin(a);
     BasePtrList result;
 
-    disableLog();
     result = poly::pseudoDivide(u, v, a);
-    enableLog();
 
     BOOST_TEST(result.front()->isUndefined());
     BOOST_TEST(result.back()->isUndefined());

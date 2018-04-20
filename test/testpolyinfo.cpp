@@ -1,6 +1,5 @@
 
 #include <algorithm>
-#include "abc.h"
 #include "polyinfo.h"
 #include "sum.h"
 #include "undefined.h"
@@ -8,12 +7,13 @@
 #include "numeric.h"
 #include "power.h"
 #include "trigonometric.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct PolyInfoFixture {
-    const BasePtr undefined = Undefined::create();
+struct PolyInfoFixture : public AbcFixture {
+    const BasePtr& undefined = Undefined::create();
     const BasePtr abSum = Sum::create(a, b);
     PolyInfo info {};
 

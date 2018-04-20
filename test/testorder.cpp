@@ -1,5 +1,4 @@
 
-#include "abc.h"
 #include "order.h"
 #include "symbol.h"
 #include "numeric.h"
@@ -9,11 +8,12 @@
 #include "power.h"
 #include "product.h"
 #include "trigonometric.h"
+#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
 
-struct OrderFixture {
+struct OrderFixture : public AbcFixture {
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr sqrtThree = Power::sqrt(three);
     const BasePtr& pi = Constant::createPi();
@@ -21,26 +21,22 @@ struct OrderFixture {
 
 BOOST_FIXTURE_TEST_SUITE(TestOrder, OrderFixture)
 
-BOOST_AUTO_TEST_CASE(twoUndefined)
+BOOST_AUTO_TEST_CASE(twoUndefined, noLogs())
 {
     const BasePtr u1 = Undefined::create();
     const BasePtr u2 = Undefined::create();
 
-    disableLog();
     /* This should normally not be requested. Just check, that no swap is indicated. */
     BOOST_TEST(order::isCorrect(u1, u2));
-    enableLog();
 }
 
-BOOST_AUTO_TEST_CASE(oneUndefined)
+BOOST_AUTO_TEST_CASE(oneUndefined, noLogs())
 {
     const BasePtr u1 = Undefined::create();
 
-    disableLog();
     /* See above. */
     BOOST_TEST(order::isCorrect(u1, a));
     BOOST_TEST(order::isCorrect(a, u1));
-    enableLog();
 }
 
 BOOST_AUTO_TEST_CASE(twoConstants)

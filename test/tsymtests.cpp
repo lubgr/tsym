@@ -17,20 +17,3 @@ bool tsym::operator == (const BasePtrList& lhs, const BasePtrList& rhs)
 {
     return bplist::areEqual(lhs, rhs);
 }
-
-void disableLog()
-{
-    globalSuppressLogFlag() = true;
-}
-
-void enableLog()
-{
-    globalSuppressLogFlag() = false;
-}
-
-bool& globalSuppressLogFlag()
-{
-    static bool suppressLogs = false;
-
-    return suppressLogs;
-}
