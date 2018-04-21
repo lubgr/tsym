@@ -9,26 +9,26 @@
 #include "tsymtests.h"
 
 tsym::AbcFixture::AbcFixture() :
-    a{tsym::Symbol::create("a")},
-    b{tsym::Symbol::create("b")},
-    c{tsym::Symbol::create("c")},
-    d{tsym::Symbol::create("d")},
-    e{tsym::Symbol::create("e")},
-    f{tsym::Symbol::create("f")},
-    g{tsym::Symbol::create("g")},
-    h{tsym::Symbol::create("h")},
-    zero{tsym::Numeric::zero()},
-    one{tsym::Numeric::one()},
-    two{tsym::Numeric::two()},
-    three{tsym::Numeric::three()},
-    four{tsym::Numeric::four()},
-    five{tsym::Numeric::create(5)},
-    six{tsym::Numeric::create(6)},
-    seven{tsym::Numeric::create(7)},
-    eight{tsym::Numeric::create(8)},
-    nine{tsym::Numeric::create(9)},
-    ten{tsym::Numeric::create(10)},
-    pi{tsym::Constant::createPi()}
+    a{Symbol::create("a")},
+    b{Symbol::create("b")},
+    c{Symbol::create("c")},
+    d{Symbol::create("d")},
+    e{Symbol::create("e")},
+    f{Symbol::create("f")},
+    g{Symbol::create("g")},
+    h{Symbol::create("h")},
+    zero{Numeric::zero()},
+    one{Numeric::one()},
+    two{Numeric::two()},
+    three{Numeric::three()},
+    four{Numeric::four()},
+    five{Numeric::create(5)},
+    six{Numeric::create(6)},
+    seven{Numeric::create(7)},
+    eight{Numeric::create(8)},
+    nine{Numeric::create(9)},
+    ten{Numeric::create(10)},
+    pi{Constant::createPi()}
 {}
 
 tsym::TestSuiteLoggingFixture::TestSuiteLoggingFixture(bool suppressLogs)
