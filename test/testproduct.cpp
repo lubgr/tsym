@@ -674,7 +674,7 @@ BOOST_AUTO_TEST_CASE(rearrangeSymbolAndPi)
     const BasePtr res = Product::create(b, pi, a);
     const BasePtrList expected{pi, a, b};
 
-    BOOST_CHECK_EQUAL(expected, res->operands());
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(res->operands()), end(res->operands()));
 }
 
 BOOST_AUTO_TEST_CASE(contractNumericsAndPi)
@@ -709,7 +709,7 @@ BOOST_AUTO_TEST_CASE(orderingOfFunctionsNumbersAndSymbols)
     for (size_t i = 0; i < sizeof(factors)/sizeof(factors[0]); ++i)
         expected.push_back(factors[i]);
 
-    BOOST_CHECK_EQUAL(expected, product->operands());
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(product->operands()), end(product->operands()));
 }
 
 BOOST_AUTO_TEST_CASE(productOfEqualFunctionsEqualArguments)
@@ -720,7 +720,7 @@ BOOST_AUTO_TEST_CASE(productOfEqualFunctionsEqualArguments)
     const BasePtr res = Product::create(sin, two, sin, a);
     const BasePtrList expected{ two, a, pow };
 
-    BOOST_CHECK_EQUAL(expected, res->operands());
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(res->operands()), end(res->operands()));
 }
 
 BOOST_AUTO_TEST_CASE(numericEvaluation)

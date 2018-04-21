@@ -12,8 +12,3 @@ bool tsym::operator != (const BasePtr& lhs, const BasePtr& rhs)
 {
     return lhs->isDifferent(rhs);
 }
-
-bool tsym::operator == (const BasePtrList& lhs, const BasePtrList& rhs)
-{
-    return bplist::areEqual(lhs, rhs);
-}
