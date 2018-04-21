@@ -40,8 +40,6 @@ BOOST_AUTO_TEST_CASE(symbolsEqualNameOnePositive)
 
 BOOST_AUTO_TEST_CASE(equalConstants)
 {
-    const BasePtr pi = Constant::createPi();
-
     BOOST_TEST(pi->isEqual(pi));
 }
 

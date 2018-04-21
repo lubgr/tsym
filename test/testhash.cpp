@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(name)
 
 BOOST_AUTO_TEST_CASE(constant)
 {
-    const size_t hashPi = hash(Constant::createPi());
+    const size_t hashPi = hash(pi);
     const size_t hashE = hash(Constant::createE());
     const size_t hashPiSymbol = hash(Symbol::create("Pi"));
 

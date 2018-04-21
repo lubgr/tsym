@@ -232,8 +232,7 @@ BOOST_AUTO_TEST_CASE(powerOfPowerOfPowerOfPower)
 {
     const BasePtr pow1 = Power::create(a, b);
     const BasePtr pow2 = Power::create(pow1, c);
-    const BasePtr pow3 = Power::create(pow2, Product::create(Numeric::create(-1, 4),
-                Constant::createPi()));
+    const BasePtr pow3 = Power::create(pow2, Product::create(Numeric::create(-1, 4), pi));
     const BasePtr pow4 = Power::create(pow3, d);
 
     BOOST_CHECK_EQUAL("(((a^b)^c)^(-1/4*\u03c0))^d", print(pow4));

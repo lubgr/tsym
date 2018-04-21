@@ -32,7 +32,6 @@ BOOST_AUTO_TEST_CASE(numeric)
 
 BOOST_AUTO_TEST_CASE(constant)
 {
-    const BasePtr pi = Constant::createPi();
     const BasePtr result = pi->diff(a);
 
     BOOST_TEST(result->isZero());
@@ -63,7 +62,6 @@ BOOST_AUTO_TEST_CASE(symbolWrtOtherSymbol)
 BOOST_AUTO_TEST_CASE(wrongArguments, noLogs())
 {
     const BasePtr product = Product::create(seven, b);
-    const BasePtr pi = Constant::createPi();
     const BasePtr sum = Sum::create(a, b);
     const BasePtr power = Power::sqrt(a);
     BasePtr result;

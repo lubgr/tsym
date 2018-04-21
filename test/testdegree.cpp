@@ -35,8 +35,6 @@ BOOST_AUTO_TEST_CASE(equalFunction)
 
 BOOST_AUTO_TEST_CASE(equalConstant)
 {
-    const BasePtr pi = Constant::createPi();
-
     BOOST_CHECK_EQUAL(1, pi->degree(pi));
 }
 
@@ -96,8 +94,6 @@ BOOST_AUTO_TEST_CASE(numericSymbol)
 
 BOOST_AUTO_TEST_CASE(constantSymbol)
 {
-    const BasePtr pi = Constant::createPi();
-
     BOOST_CHECK_EQUAL(0, pi->degree(a));
 }
 

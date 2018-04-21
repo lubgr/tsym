@@ -54,11 +54,10 @@ BOOST_AUTO_TEST_CASE(logOfE)
 
 BOOST_AUTO_TEST_CASE(logOfPi)
 {
-    const BasePtr arg = Constant::createPi();
-    const BasePtr result = Logarithm::create(arg);
+    const BasePtr result = Logarithm::create(pi);
 
     BOOST_TEST(result->isFunction());
-    BOOST_CHECK_EQUAL(arg, result->operands().front());
+    BOOST_CHECK_EQUAL(pi, result->operands().front());
 }
 
 BOOST_AUTO_TEST_CASE(logOfRationalNumericArg)
@@ -110,7 +109,7 @@ BOOST_AUTO_TEST_CASE(logOfInvalidNumericallyEvaluableEqualZero, noLogs())
 
 BOOST_AUTO_TEST_CASE(logOfInvalidNumericallyEvaluableLessThanZero, noLogs())
 {
-    const BasePtr arg = Sum::create(Product::minus(Constant::createPi()), two);
+    const BasePtr arg = Sum::create(Product::minus(pi), two);
     BasePtr result;
 
     result = Logarithm::create(arg);

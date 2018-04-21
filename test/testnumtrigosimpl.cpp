@@ -18,7 +18,6 @@ struct NumTrigoSimplFixture : public AbcFixture {
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr sqrtThree = Power::sqrt(three);
     const BasePtr sqrtSix = Power::sqrt(six);
-    const BasePtr pi = Constant::createPi();
     NumTrigoSimpl nts {};
 
     void check(const BasePtr& expectedSin, const BasePtr& expectedCos, const BasePtr& expectedTan)

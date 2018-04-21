@@ -16,7 +16,6 @@ using namespace tsym;
 
 struct ParserFixture : public AbcFixture {
     const BasePtr sqrtTwo = Power::sqrt(two);
-    const BasePtr& pi = Constant::createPi();
     const BasePtr& euler = Constant::createE();
 };
 

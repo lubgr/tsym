@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(simpleReplacement)
 
 BOOST_AUTO_TEST_CASE(equalArguments)
 {
-    const BasePtr arg = Sum::create(a, Constant::createPi());
+    const BasePtr arg = Sum::create(a, pi);
     BasePtr replacement[2];
     SymbolMap map;
 

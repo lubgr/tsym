@@ -141,7 +141,6 @@ BOOST_AUTO_TEST_CASE(resolvableNumPowMixedWithSymbol)
 BOOST_AUTO_TEST_CASE(constantTimesNumeric)
     /* Pi*2 = 2*Pi. */
 {
-    const BasePtr pi = Constant::createPi();
     const BasePtr result = Product::create(pi, two);
 
     BOOST_TEST(result->isProduct());
@@ -670,7 +669,6 @@ BOOST_AUTO_TEST_CASE(productOfThreeProducts)
 BOOST_AUTO_TEST_CASE(rearrangeSymbolAndPi)
     /* b*Pi*a = Pi*a*b. */
 {
-    const BasePtr pi = Constant::createPi();
     const BasePtr res = Product::create(b, pi, a);
     const BasePtrList expected{pi, a, b};
 
@@ -680,7 +678,6 @@ BOOST_AUTO_TEST_CASE(rearrangeSymbolAndPi)
 BOOST_AUTO_TEST_CASE(contractNumericsAndPi)
     /* 2*Pi*3*Pi*4 = 24*Pi^2. */
 {
-    const BasePtr pi = Constant::createPi();
     const BasePtr res = Product::create({ two, pi, three, pi, four });
 
     BOOST_CHECK_EQUAL(Numeric::create(24), res->operands().front());
@@ -690,7 +687,6 @@ BOOST_AUTO_TEST_CASE(contractNumericsAndPi)
 BOOST_AUTO_TEST_CASE(piDividedByPi)
     /* Pi/Pi = 1. */
 {
-    const BasePtr pi = Constant::createPi();
     const BasePtr res = Product::create(pi, Power::oneOver(pi));
 
     BOOST_CHECK_EQUAL(one, res);
@@ -727,8 +723,7 @@ BOOST_AUTO_TEST_CASE(numericEvaluation)
     /* -2*sqrt(3)*4^(1/3)*Pi . */
 {
     const Number expected(-2.0*std::sqrt(3.0)*std::pow(4.0, 1.0/3.0)*M_PI);
-    const BasePtr res = Product::minus(two, sqrtThree, Power::create(four, oneThird),
-            Constant::createPi());
+    const BasePtr res = Product::minus(two, sqrtThree, Power::create(four, oneThird), pi);
 
     BOOST_TEST(res->isNumericallyEvaluable());
     BOOST_CHECK_EQUAL(expected, res->numericEval());

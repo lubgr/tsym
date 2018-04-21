@@ -16,7 +16,6 @@ using namespace tsym;
 struct OrderFixture : public AbcFixture {
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr sqrtThree = Power::sqrt(three);
-    const BasePtr& pi = Constant::createPi();
 };
 
 BOOST_FIXTURE_TEST_SUITE(TestOrder, OrderFixture)

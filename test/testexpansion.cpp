@@ -51,10 +51,9 @@ BOOST_AUTO_TEST_CASE(trivialUndefined)
 BOOST_AUTO_TEST_CASE(trivialConstant)
     /* The same as above for constants. */
 {
-    const BasePtr orig = Constant::createPi();
-    const BasePtr expanded = orig->expand();
+    const BasePtr expanded = pi->expand();
 
-    BOOST_CHECK_EQUAL(orig, expanded);
+    BOOST_CHECK_EQUAL(pi, expanded);
 }
 
 BOOST_AUTO_TEST_CASE(trivialSymbol)

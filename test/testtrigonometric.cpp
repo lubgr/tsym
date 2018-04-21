@@ -503,7 +503,7 @@ BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalNegShift)
 BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalNegShift2)
     /* Asin(sin(12*sqrt(pi))) = 7*pi - 12*sqrt(pi). */
 {
-    const BasePtr arg = Product::create(Numeric::create(12), Power::sqrt(Constant::createPi()));
+    const BasePtr arg = Product::create(Numeric::create(12), Power::sqrt(pi));
     const BasePtr sin = Trigonometric::createSin(arg);
     const BasePtr res = Trigonometric::createAsin(sin);
     const BasePtr expected = Sum::create(Product::create(seven, pi), Product::minus(arg));

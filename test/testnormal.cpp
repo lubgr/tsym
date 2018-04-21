@@ -20,7 +20,6 @@ struct NormalFixture : public AbcFixture {
     const BasePtr denom = Power::oneOver(Sum::create(b, c));
     const BasePtr argToZero = Sum::create(a, Product::create(Numeric::mOne(), a, b, denom),
             Product::create(Numeric::mOne(), a, c, denom));
-    const BasePtr pi = Constant::createPi();
     std::unique_ptr<SymbolMap> map{std::make_unique<SymbolMap>()};
 };
 
@@ -271,7 +270,6 @@ BOOST_AUTO_TEST_CASE(fractionsOfNumPowersAndFunctions02)
 BOOST_AUTO_TEST_CASE(fractionSumWithPiExp)
     /* (a/b)^(-Pi) + 1/(a^Pi) becomes (1 + b^Pi)/a^Pi.*/
 {
-    const BasePtr pi = Constant::createPi();
     const BasePtr f1 = Power::create(Product::create(a, Power::oneOver(b)), Product::minus(pi));
     const BasePtr f2 = Power::oneOver(Power::create(a, pi));
     const BasePtr orig = Sum::create(f1, f2);
