@@ -562,24 +562,11 @@ BOOST_AUTO_TEST_CASE(productOfThreeSymbols)
 BOOST_AUTO_TEST_CASE(twoProducts)
     /* (2*a*c*e)*(3*b*d*e) = 6*a*b*c*d*e^2. */
 {
-    BasePtrList::const_iterator it;
-    BasePtr expected[6];
-    BasePtr res;
-    int i;
-
-    res = Product::create(Product::create(two, a, c, e), Product::create(three, b, d, e));
+    const BasePtrList expected{six, a, b, c, d, Power::create(e, two)};
+    const BasePtr res = Product::create(Product::create(two, a, c, e), Product::create(three, b, d, e));
 
     BOOST_TEST(res->isProduct());
-
-    expected[0] = six;
-    expected[1] = a;
-    expected[2] = b;
-    expected[3] = c;
-    expected[4] = d;
-    expected[5] = Power::create(e, two);
-
-    for (i = 0, it = cbegin(res->operands()); it != cend(res->operands()); ++it, ++i)
-        BOOST_CHECK_EQUAL(expected[i], *it);
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(res->operands()), end(res->operands()));
 }
 
 BOOST_AUTO_TEST_CASE(equalProductBasesToPower)
@@ -617,16 +604,11 @@ BOOST_AUTO_TEST_CASE(productOfSymbolAndProduct)
 {
     const BasePtr product1 = Product::create(a, c);
     const BasePtr res = Product::create(product1, b);
-    const BasePtrList& fac(res->operands());
-    auto it = cbegin(fac);
+    const BasePtrList expected{ a, b, c };
 
     BOOST_TEST(res->isProduct());
 
-    BOOST_CHECK_EQUAL(3, fac.size());
-
-    BOOST_CHECK_EQUAL(a, *it);
-    BOOST_CHECK_EQUAL(b, *++it);
-    BOOST_CHECK_EQUAL(c, *++it);
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(res->operands()), end(res->operands()));
 }
 
 BOOST_AUTO_TEST_CASE(productOfProductAndSymbol)
@@ -634,15 +616,11 @@ BOOST_AUTO_TEST_CASE(productOfProductAndSymbol)
 {
     const BasePtr p2 = Product::create(e, b);
     const BasePtr res = Product::create(a, p2);
-    const BasePtrList& fac(res->operands());
-    auto it = cbegin(fac);
+    const BasePtrList expected{ a, b, e };
 
     BOOST_TEST(res->isProduct());
-    BOOST_CHECK_EQUAL(3, fac.size());
 
-    BOOST_CHECK_EQUAL(a, *it);
-    BOOST_CHECK_EQUAL(b, *++it);
-    BOOST_CHECK_EQUAL(e, *++it);
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(res->operands()), end(res->operands()));
 }
 
 BOOST_AUTO_TEST_CASE(productOfThreeProducts)
@@ -652,16 +630,11 @@ BOOST_AUTO_TEST_CASE(productOfThreeProducts)
     const BasePtr p2 = Product::create(b, e);
     const BasePtr p3 = Product::create(a, d);
     const BasePtr res = Product::create(p1, p2, p3);
-    auto it = cbegin(res->operands());
+    const BasePtrList expected{ Power::create(a, two), b, c, d, e };
 
     BOOST_TEST(res->isProduct());
 
-    BOOST_CHECK_EQUAL(two, (*it)->exp());
-    BOOST_CHECK_EQUAL(a, (*it)->base());
-    BOOST_CHECK_EQUAL(b, *++it);
-    BOOST_CHECK_EQUAL(c, *++it);
-    BOOST_CHECK_EQUAL(d, *++it);
-    BOOST_CHECK_EQUAL(e, *++it);
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(res->operands()), end(res->operands()));
 }
 
 BOOST_AUTO_TEST_CASE(rearrangeSymbolAndPi)

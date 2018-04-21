@@ -9,7 +9,7 @@ struct PrimeFacFixture {
     const Number half = Number(1, 2);
     const Number third = Number(1, 3);
     const Number twoThird = Number(2, 3);
-    PrimeFac pf;
+    PrimeFac pf{};
 
     void checkNum(int p1, int p2 = 0, int p3 = 0, int p4 = 0, int p5 = 0, int p6 = 0)
     {
@@ -39,10 +39,7 @@ struct PrimeFacFixture {
 
     void check(const std::vector<Int>& expected, const std::vector<Int>& primes)
     {
-        BOOST_CHECK_EQUAL(expected.size(), primes.size());
-
-        for (size_t i = 0; i < expected.size(); ++i)
-            BOOST_CHECK_EQUAL(expected[i], primes[i]);
+        BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(primes), end(primes));
     }
 };
 

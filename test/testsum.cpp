@@ -106,23 +106,12 @@ BOOST_AUTO_TEST_CASE(rearrangeFiveSymbols)
     /*  More complex ordering: e + c + a + b + d = a + b + c + d + e. */
 {
     const BasePtr res = Sum::create({ e, c, a, b, d });
-    BasePtrList summands;
+    const BasePtrList expected{ a, b, c, d, e };
+    const BasePtrList& summands = res->operands();
 
     BOOST_TEST(res->isSum());
 
-    summands = res->operands();
-
-    BOOST_CHECK_EQUAL(5, summands.size());
-
-    for (const auto& summand : summands)
-        BOOST_TEST(summand->isSymbol());
-
-    auto it = cbegin(summands);
-    BOOST_CHECK_EQUAL(a, *it);
-    BOOST_CHECK_EQUAL(b, *++it);
-    BOOST_CHECK_EQUAL(c, *++it);
-    BOOST_CHECK_EQUAL(d, *++it);
-    BOOST_CHECK_EQUAL(e, *++it);
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(summands), end(summands));
 }
 
 BOOST_AUTO_TEST_CASE(orderingOfMixedTerms)
@@ -155,14 +144,11 @@ BOOST_AUTO_TEST_CASE(collectProducts)
     const BasePtr twoAB = Product::create(two, ab);
     const BasePtr threeAB = Product::create(three, ab);
     const BasePtr res = Sum::create(twoAB, threeAB);
-    const BasePtrList& summands(res->operands());
+    const BasePtrList expected{five, a, b};
 
     BOOST_TEST(res->isProduct());
 
-    BOOST_CHECK_EQUAL(3, summands.size());
-    BOOST_CHECK_EQUAL(five, summands.front());
-    BOOST_CHECK_EQUAL(a, *++cbegin(summands));
-    BOOST_CHECK_EQUAL(b, summands.back());
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(res->operands()), end(res->operands()));
 }
 
 BOOST_AUTO_TEST_CASE(collectProductOfSymbols)
@@ -212,34 +198,24 @@ BOOST_AUTO_TEST_CASE(twoSums)
     const BasePtr sum1 = Sum::create(a, b);
     const BasePtr sum2 = Sum::create(a, c);
     const BasePtr res = Sum::create(sum1, sum2);
-    const BasePtrList& summands(res->operands());
+    const BasePtrList expected{Product::create(two, a), b, c};
 
     BOOST_TEST(res->isSum());
 
-    BOOST_CHECK_EQUAL(3, summands.size());
-    BOOST_CHECK_EQUAL(Product::create(two, a), summands.front());
-    BOOST_CHECK_EQUAL(b, *++cbegin(summands));
-    BOOST_CHECK_EQUAL(c, summands.back());
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(res->operands()), end(res->operands()));
 }
 
 BOOST_AUTO_TEST_CASE(sumOfSumAndSymbols)
     /* (a + d) + e + c = a + c + d + e. */
 {
     const BasePtr sum1 = Sum::create(a, d);
-    BasePtrList summands;
-    BasePtr res;
-
-    res = Sum::create({ sum1, e, c });
+    const BasePtrList expected{a, c, d, e};
+    const BasePtr res = Sum::create({ sum1, e, c });
+    const BasePtrList& summands{res->operands()};
 
     BOOST_TEST(res->isSum());
 
-    summands = res->operands();
-
-    BOOST_CHECK_EQUAL(4, summands.size());
-    BOOST_CHECK_EQUAL(a, summands.front());
-    BOOST_CHECK_EQUAL(c, *++cbegin(summands));
-    BOOST_CHECK_EQUAL(d, *++(++cbegin(summands)));
-    BOOST_CHECK_EQUAL(e, summands.back());
+    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(summands), end(summands));
 }
 
 BOOST_AUTO_TEST_CASE(cancellationOfNumbersInTwoSums)
