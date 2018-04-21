@@ -42,8 +42,7 @@ BOOST_AUTO_TEST_CASE(trivialSum)
 BOOST_AUTO_TEST_CASE(trivialUndefined)
     /* Undefined expressions aren't modified during expansion. */
 {
-    const BasePtr orig = Undefined::create();
-    const BasePtr expanded = orig->expand();
+    const BasePtr expanded = undefined->expand();
 
     BOOST_TEST(expanded->isUndefined());
 }

@@ -13,11 +13,7 @@
 
 using namespace tsym;
 
-struct SubstFixture : public AbcFixture {
-    const BasePtr& undefined = Undefined::create();
-};
-
-BOOST_FIXTURE_TEST_SUITE(TestSubst, SubstFixture)
+BOOST_FIXTURE_TEST_SUITE(TestSubst, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(undefinedToSymbol)
 {

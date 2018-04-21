@@ -13,11 +13,7 @@
 
 using namespace tsym;
 
-struct ComparisonFixture : public AbcFixture {
-    const BasePtr& undefined = Undefined::create();
-};
-
-BOOST_FIXTURE_TEST_SUITE(TestComparison, ComparisonFixture)
+BOOST_FIXTURE_TEST_SUITE(TestComparison, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(differentTypes)
 {

@@ -43,10 +43,8 @@ namespace {
 
 BOOST_FIXTURE_TEST_SUITE(TestSign, SignFixture)
 
-BOOST_AUTO_TEST_CASE(undefined)
+BOOST_AUTO_TEST_CASE(undefinedIsUnclear)
 {
-    const BasePtr undefined = Undefined::create();
-
     checkUnclear(undefined);
 }
 

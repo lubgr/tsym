@@ -11,7 +11,6 @@
 using namespace tsym;
 
 struct HasFixture : public AbcFixture {
-    const BasePtr undefined = Undefined::create();
     const BasePtr twoPiAbProduct = Product::create(two, a, b, pi);
     const BasePtr onePlusATimesB = Sum::create(one, Product::create(a, b));
     const BasePtr aPlusBSquare = Power::create(Sum::create(a, b), two);

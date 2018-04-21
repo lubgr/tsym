@@ -15,7 +15,6 @@ using namespace tsym;
 struct GcdFixture : public AbcFixture {
     const BasePtr zeroAfterExpansion = Sum::create({ Product::create(a, b), Product::minus(b, c),
             Product::create(b, Sum::create(c, Product::minus(a))) });
-    const BasePtr undefined = Undefined::create();
 
     void check(const BasePtr& expected, const BasePtr& u, const BasePtr& v)
     {

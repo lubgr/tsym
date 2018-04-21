@@ -32,6 +32,7 @@ namespace tsym {
             const BasePtr ten;
 
             const BasePtr& pi;
+            const BasePtr& undefined;
     };
 
     struct TestSuiteLoggingFixture {

@@ -39,7 +39,7 @@ BOOST_AUTO_TEST_CASE(logOfUndefinedArg, noLogs())
 {
     BasePtr result;
 
-    result = Logarithm::create(Undefined::create());
+    result = Logarithm::create(undefined);
 
     BOOST_TEST(result->isUndefined());
 }

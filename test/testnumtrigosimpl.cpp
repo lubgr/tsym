@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE(undefinedTan)
 {
     nts.setArg(Product::create(half, pi));
 
-    check(one, zero, Undefined::create());
+    check(one, zero, undefined);
 }
 
 BOOST_AUTO_TEST_CASE(inverseZero)
@@ -348,7 +348,6 @@ BOOST_AUTO_TEST_CASE(inverseFromSumAtan)
     /* Asin/acos/atan(sqrt(2) + 1) = undefined, undefined, 3/8*Pi. */
 {
     const BasePtr expectedAtan = Product::create(Numeric::create(3, 8), pi);
-    const BasePtr undefined = Undefined::create();
     const BasePtr arg = Sum::create(sqrtTwo, one);
 
     nts.setArg(arg);
@@ -424,8 +423,8 @@ BOOST_AUTO_TEST_CASE(greaterThanRange, noLogs())
 
     nts.setArg(arg);
 
-    check(Trigonometric::Type::ASIN, Undefined::create());
-    check(Trigonometric::Type::ACOS, Undefined::create());
+    check(Trigonometric::Type::ASIN, undefined);
+    check(Trigonometric::Type::ACOS, undefined);
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
@@ -436,7 +435,7 @@ BOOST_AUTO_TEST_CASE(lessThanRange)
 
     nts.setArg(arg);
 
-    checkInverse(Undefined::create(), Undefined::create(), Numeric::create(std::atan(arg)));
+    checkInverse(undefined, undefined, Numeric::create(std::atan(arg)));
 }
 
 BOOST_AUTO_TEST_CASE(largeNumericEvaluationToExact)

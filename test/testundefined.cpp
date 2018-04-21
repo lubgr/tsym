@@ -6,11 +6,7 @@
 
 using namespace tsym;
 
-struct UndefinedFixture : public AbcFixture {
-    const BasePtr& undefined = Undefined::create();
-};
-
-BOOST_FIXTURE_TEST_SUITE(TestUndefined, UndefinedFixture)
+BOOST_FIXTURE_TEST_SUITE(TestUndefined, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(numericalEvaluation)
 {

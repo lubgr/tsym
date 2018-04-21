@@ -18,10 +18,10 @@ BOOST_AUTO_TEST_CASE(unitOfZero)
     BOOST_CHECK_EQUAL(1, poly::unit(zero, zero));
 }
 
-BOOST_AUTO_TEST_CASE(undefined, noLogs())
+BOOST_AUTO_TEST_CASE(illegalUndefinedInput, noLogs())
     /* Illegal input is supposed to return 1. */
 {
-    BOOST_CHECK_EQUAL(1, poly::unit(Undefined::create(), a));
+    BOOST_CHECK_EQUAL(1, poly::unit(undefined, a));
 }
 
 BOOST_AUTO_TEST_CASE(illegalNumPowerInput, noLogs())

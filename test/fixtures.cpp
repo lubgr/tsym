@@ -3,6 +3,7 @@
 #include "fixtures.h"
 #include "numeric.h"
 #include "symbol.h"
+#include "undefined.h"
 #include "constant.h"
 #include "logger.h"
 #include "testsuitelogger.h"
@@ -28,7 +29,8 @@ tsym::AbcFixture::AbcFixture() :
     eight{Numeric::create(8)},
     nine{Numeric::create(9)},
     ten{Numeric::create(10)},
-    pi{Constant::createPi()}
+    pi{Constant::createPi()},
+    undefined{Undefined::create()}
 {}
 
 tsym::TestSuiteLoggingFixture::TestSuiteLoggingFixture(bool suppressLogs)

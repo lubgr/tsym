@@ -37,9 +37,8 @@ BOOST_AUTO_TEST_CASE(constant)
     BOOST_TEST(result->isZero());
 }
 
-BOOST_AUTO_TEST_CASE(undefined)
+BOOST_AUTO_TEST_CASE(undefinedWrtSymbol)
 {
-    const BasePtr undefined = Undefined::create();
     const BasePtr result = undefined->diff(a);
 
     BOOST_TEST(result->isUndefined());

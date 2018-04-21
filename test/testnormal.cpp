@@ -16,7 +16,6 @@
 using namespace tsym;
 
 struct NormalFixture : public AbcFixture {
-    const BasePtr undefined = Undefined::create();
     const BasePtr denom = Power::oneOver(Sum::create(b, c));
     const BasePtr argToZero = Sum::create(a, Product::create(Numeric::mOne(), a, b, denom),
             Product::create(Numeric::mOne(), a, c, denom));

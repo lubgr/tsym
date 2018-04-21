@@ -268,14 +268,14 @@ BOOST_AUTO_TEST_CASE(nonAsciiCharacterAtBeginning)
 {
     const parser::Result result = parser::parse("Aüßöabc");
 
-    check({ Undefined::create(), false, false }, result);
+    check({ undefined, false, false }, result);
 }
 
 BOOST_AUTO_TEST_CASE(nonAsciiCharacterAtEnd)
 {
     const parser::Result result = parser::parse("a_{1a[ü}");
 
-    check({ Undefined::create(), false, false }, result);
+    check({ undefined, false, false }, result);
 }
 
 BOOST_AUTO_TEST_CASE(symbolWithUnrecognizedCharactersInBetween)
@@ -738,14 +738,14 @@ BOOST_AUTO_TEST_CASE(unrecognizedTokensWithSyntaxError)
 {
     const parser::Result result = parser::parse("-{}*12*sin(b)");
 
-    check({ Undefined::create(), false, false }, result);
+    check({ undefined, false, false }, result);
 }
 
 BOOST_AUTO_TEST_CASE(unrecognizedToken)
 {
     const parser::Result result = parser::parse("{12*sin(b)");
 
-    check({ Undefined::create(), false, false }, result);
+    check({ undefined, false, false }, result);
 }
 
 BOOST_AUTO_TEST_CASE(unrecognizedTokensAfterValidExpression)
@@ -760,7 +760,7 @@ BOOST_AUTO_TEST_CASE(unrecognizedTokensInsideValidExpression)
 {
     const parser::Result result = parser::parse("[äüa*b*sqrt(12*c^2 - &c) - 40üä]\\");
 
-    check({ Undefined::create(), false, false }, result);
+    check({ undefined, false, false }, result);
 }
 
 BOOST_AUTO_TEST_CASE(unrecognizedTokensInsideParentheses)
@@ -781,17 +781,15 @@ BOOST_AUTO_TEST_CASE(symbolsAndComma)
 BOOST_AUTO_TEST_CASE(emptyString)
 {
     const parser::Result result = parser::parse("");
-    const BasePtr& expected = Undefined::create();
 
-    check({ expected, false, true }, result);
+    check({ undefined, false, true }, result);
 }
 
 BOOST_AUTO_TEST_CASE(onlyCommaSigns)
 {
     const parser::Result result = parser::parse("(())");
-    const BasePtr& expected = Undefined::create();
 
-    check({ expected, false, false }, result);
+    check({ undefined, false, false }, result);
 }
 
 BOOST_AUTO_TEST_CASE(emptyParenthesesAfterValidExpressionInProduct)
@@ -813,9 +811,8 @@ BOOST_AUTO_TEST_CASE(syntaxErrorAfterValidExpressionInProduct)
 BOOST_AUTO_TEST_CASE(emptyParentheses)
 {
     const parser::Result result = parser::parse("(())");
-    const BasePtr& expected = Undefined::create();
 
-    check({ expected, false, false }, result);
+    check({ undefined, false, false }, result);
 }
 
 BOOST_AUTO_TEST_CASE(mixedOperatorsWithUnaryMinusNumber)
@@ -838,7 +835,7 @@ BOOST_AUTO_TEST_CASE(emptyParenthesesBeforeValidPart)
 {
     const parser::Result result = parser::parse("(())a*b + c");
 
-    check({ Undefined::create(), false, false }, result);
+    check({ undefined, false, false }, result);
 }
 
 BOOST_AUTO_TEST_CASE(mixedTerm01)
@@ -892,14 +889,14 @@ BOOST_AUTO_TEST_CASE(onlyPowerOperator)
 {
     const parser::Result result = parser::parse("^^^");
 
-    check({ Undefined::create(), false, false }, result);
+    check({ undefined, false, false }, result);
 }
 
 BOOST_AUTO_TEST_CASE(onlyPowerOperatorWithParentheses)
 {
     const parser::Result result = parser::parse("^(a + b)");
 
-    check({ Undefined::create(), false, false }, result);
+    check({ undefined, false, false }, result);
 }
 
 BOOST_AUTO_TEST_CASE(misspelledFunction)

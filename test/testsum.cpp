@@ -32,11 +32,9 @@ BOOST_AUTO_TEST_CASE(typeString)
     BOOST_CHECK_EQUAL(expected, ptr->typeStr());
 }
 
-BOOST_AUTO_TEST_CASE(undefined)
-    /* If one summand is undefined, the result is, too. */
+BOOST_AUTO_TEST_CASE(undefinedToUndefined)
 {
-    const BasePtr u = Undefined::create();
-    const BasePtr p = Sum::create(u, a);
+    const BasePtr p = Sum::create(undefined, a);
 
     BOOST_TEST(p->isUndefined());
 }

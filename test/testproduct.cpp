@@ -42,11 +42,9 @@ BOOST_AUTO_TEST_CASE(typeString)
     BOOST_CHECK_EQUAL(expected, ptr->typeStr());
 }
 
-BOOST_AUTO_TEST_CASE(undefined)
-    /* If one factor is undefined, a product is, too. */
+BOOST_AUTO_TEST_CASE(undefinedToUndefined)
 {
-    const BasePtr u = Undefined::create();
-    const BasePtr p = Product::create(u, a);
+    const BasePtr p = Product::create(undefined, a);
 
     BOOST_TEST(p->isUndefined());
 }

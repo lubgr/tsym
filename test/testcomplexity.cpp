@@ -14,10 +14,8 @@ using namespace tsym;
 
 BOOST_FIXTURE_TEST_SUITE(TestComplexity, AbcFixture)
 
-BOOST_AUTO_TEST_CASE(undefined)
+BOOST_AUTO_TEST_CASE(trivialUndefined)
 {
-    const BasePtr undefined = Undefined::create();
-
     BOOST_CHECK_EQUAL(0, undefined->complexity());
 }
 

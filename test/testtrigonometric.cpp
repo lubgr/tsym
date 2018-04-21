@@ -15,7 +15,6 @@
 using namespace tsym;
 
 struct TrigonometricFixture : public AbcFixture {
-    const BasePtr& undefined = Undefined::create();
     const BasePtr minusHalf = Numeric::create(-1, 2);
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr sqrtThree = Power::sqrt(three);

@@ -25,7 +25,6 @@ struct PowerFixture : public AbcFixture {
     const BasePtr& oneThird = Numeric::third();
     const BasePtr minusHalf = Numeric::create(-1, 2);
     const BasePtr sqrtTwo = Power::sqrt(two);
-    const BasePtr& undefPtr = Undefined::create();
     const double TOL = 1.e-10;
 
     ~PowerFixture()
@@ -46,7 +45,7 @@ BOOST_AUTO_TEST_CASE(typeStr)
 
 BOOST_AUTO_TEST_CASE(undefinedExponent)
 {
-    const BasePtr res = Power::create(a, undefPtr);
+    const BasePtr res = Power::create(a, undefined);
 
     BOOST_TEST(res->isUndefined());
 }
@@ -60,7 +59,7 @@ BOOST_AUTO_TEST_CASE(illegalNumberExponent, noLogs())
 
 BOOST_AUTO_TEST_CASE(undefinedBase)
 {
-    const BasePtr res = Power::create(undefPtr, two);
+    const BasePtr res = Power::create(undefined, two);
 
     BOOST_TEST(res->isUndefined());
 }

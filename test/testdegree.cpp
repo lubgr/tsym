@@ -65,8 +65,6 @@ BOOST_AUTO_TEST_CASE(equalNumeric)
 BOOST_AUTO_TEST_CASE(equalUndefined)
     /* Two Undefined are never equal, so querying the coefficient will return 0. */
 {
-    const BasePtr undefined = Undefined::create();
-
     BOOST_CHECK_EQUAL(0, undefined->degree(undefined));
 }
 
@@ -107,8 +105,6 @@ BOOST_AUTO_TEST_CASE(functionSum)
 
 BOOST_AUTO_TEST_CASE(undefinedSymbol)
 {
-    const BasePtr undefined = Undefined::create();
-
     BOOST_CHECK_EQUAL(0, undefined->degree(a));
 }
 

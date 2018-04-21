@@ -13,7 +13,6 @@
 using namespace tsym;
 
 struct PolyInfoFixture : public AbcFixture {
-    const BasePtr& undefined = Undefined::create();
     const BasePtr abSum = Sum::create(a, b);
     PolyInfo info {};
 
