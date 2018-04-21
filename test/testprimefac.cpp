@@ -1,4 +1,5 @@
 
+#include <initializer_list>
 #include "primefac.h"
 #include "tsymtests.h"
 #include "number.h"
@@ -11,30 +12,14 @@ struct PrimeFacFixture {
     const Number twoThird = Number(2, 3);
     PrimeFac pf{};
 
-    void checkNum(int p1, int p2 = 0, int p3 = 0, int p4 = 0, int p5 = 0, int p6 = 0)
+    void checkNum(std::initializer_list<Int> primes)
     {
-        const std::vector<Int> vec(getVec(p1, p2, p3, p4, p5, p6));
-
-        check(vec, pf.getNumPrimes());
+        check(primes, pf.getNumPrimes());
     }
 
-    void checkDenom(int p1, int p2 = 0, int p3 = 0, int p4 = 0, int p5 = 0, int p6 = 0)
+    void checkDenom(std::initializer_list<Int> primes)
     {
-        const std::vector<Int> vec(getVec(p1, p2, p3, p4, p5, p6));
-
-        check(vec, pf.getDenomPrimes());
-    }
-
-    std::vector<Int> getVec(int p1, int p2 = 0, int p3 = 0, int p4 = 0, int p5 = 0, int p6 = 0)
-    {
-        const int values[6] = { p1, p2, p3, p4, p5, p6 };
-        std::vector<Int> vec;
-
-        for (int i = 0; i < 6; ++i)
-            if (values[i] != 0)
-                vec.push_back(Int(values[i]));
-
-        return vec;
+        check(primes, pf.getDenomPrimes());
     }
 
     void check(const std::vector<Int>& expected, const std::vector<Int>& primes)
@@ -65,7 +50,7 @@ BOOST_AUTO_TEST_CASE(simpleInt)
 {
     pf = PrimeFac(13650);
 
-    checkNum(2, 3, 5, 5, 7, 13);
+    checkNum({2, 3, 5, 5, 7, 13});
     BOOST_TEST(pf.getDenomPrimes().empty());
 }
 
@@ -73,16 +58,16 @@ BOOST_AUTO_TEST_CASE(simpleFraction)
 {
     pf = PrimeFac(twoThird);
 
-    checkNum(2);
-    checkDenom(3);
+    checkNum({2});
+    checkDenom({3});
 }
 
 BOOST_AUTO_TEST_CASE(largeFraction)
 {
     pf = PrimeFac(Number(6578, 4515));
 
-    checkNum(2, 11, 13, 23);
-    checkDenom(3, 5, 7, 43);
+    checkNum({2, 11, 13, 23});
+    checkDenom({3, 5, 7, 43});
 }
 
 BOOST_AUTO_TEST_CASE(positivePower)
@@ -90,8 +75,8 @@ BOOST_AUTO_TEST_CASE(positivePower)
     pf = PrimeFac(Number(4, 3));
     pf.toThe(3);
 
-    checkNum(2, 2, 2, 2, 2, 2);
-    checkDenom(3, 3, 3);
+    checkNum({2, 2, 2, 2, 2, 2});
+    checkDenom({3, 3, 3});
 }
 
 BOOST_AUTO_TEST_CASE(negativePower)
@@ -99,8 +84,8 @@ BOOST_AUTO_TEST_CASE(negativePower)
     pf = PrimeFac(Number(9, 17));
     pf.toThe(-2);
 
-    checkNum(17, 17);
-    checkDenom(3, 3, 3, 3);
+    checkNum({17, 17});
+    checkDenom({3, 3, 3, 3});
 }
 
 BOOST_AUTO_TEST_CASE(powerWithZeroExponent)
@@ -117,8 +102,8 @@ BOOST_AUTO_TEST_CASE(simpleProduct)
     pf = PrimeFac(Number(7, 2));
     pf.multiply(Number(3, 2));
 
-    checkNum(3, 7);
-    checkDenom(2, 2);
+    checkNum({3, 7});
+    checkDenom({2, 2});
 }
 
 BOOST_AUTO_TEST_CASE(productWithEmptyPrimes)
@@ -126,7 +111,7 @@ BOOST_AUTO_TEST_CASE(productWithEmptyPrimes)
     pf = PrimeFac(36);
     pf.multiply(1);
 
-    checkNum(2, 2, 3, 3);
+    checkNum({2, 2, 3, 3});
     BOOST_TEST(pf.getDenomPrimes().empty());
 }
 
@@ -137,8 +122,8 @@ BOOST_AUTO_TEST_CASE(product)
     pf = PrimeFac(Number(154, 975));
     pf.multiply(other);
 
-    checkNum(7, 11);
-    checkDenom(3, 5, 23);
+    checkNum({7, 11});
+    checkDenom({3, 5, 23});
 }
 
 BOOST_AUTO_TEST_CASE(noExtractionFromInt)
@@ -150,7 +135,7 @@ BOOST_AUTO_TEST_CASE(noExtractionFromInt)
 
     extraction = pf.extract(twoThird);
 
-    checkNum(5);
+    checkNum({5});
     BOOST_TEST(pf.getDenomPrimes().empty());
 
     pf = extraction;
@@ -173,7 +158,7 @@ BOOST_AUTO_TEST_CASE(simpleExtraction)
 
     pf = extraction;
 
-    checkNum(2);
+    checkNum({2});
     BOOST_TEST(pf.getDenomPrimes().empty());
 }
 
@@ -186,12 +171,12 @@ BOOST_AUTO_TEST_CASE(extraction)
 
     extraction = pf.extract(Number(1, 2));
 
-    checkNum(3);
+    checkNum({3});
     BOOST_TEST(pf.getDenomPrimes().empty());
 
     pf = extraction;
 
-    checkNum(2);
+    checkNum({2});
     BOOST_TEST(pf.getDenomPrimes().empty());
 }
 
@@ -215,13 +200,13 @@ BOOST_AUTO_TEST_CASE(extractionFromFraction)
     pf = PrimeFac(Number(297, 65000));
     extraction = pf.extract(twoThird);
 
-    checkNum(11);
-    checkDenom(5, 13);
+    checkNum({11});
+    checkDenom({5, 13});
 
     pf = extraction;
 
-    checkNum(3, 3);
-    checkDenom(2, 2, 5, 5);
+    checkNum({3, 3});
+    checkDenom({2, 2, 5, 5});
 }
 
 BOOST_AUTO_TEST_CASE(extractionNegativeExponent)
@@ -237,8 +222,8 @@ BOOST_AUTO_TEST_CASE(extractionNegativeExponent)
 
     pf = extraction;
 
-    checkNum(3, 3, 3);
-    checkDenom(2, 2, 2);
+    checkNum({3, 3, 3});
+    checkDenom({2, 2, 2});
 }
 
 BOOST_AUTO_TEST_CASE(emptyCount)
@@ -315,7 +300,7 @@ BOOST_AUTO_TEST_CASE(intCollection)
     pf = PrimeFac(25);
     newExp = pf.collectToNewExp(third);
 
-    checkNum(5);
+    checkNum({5});
     BOOST_TEST(pf.getDenomPrimes().empty());
 
     BOOST_CHECK_EQUAL(twoThird, newExp);
@@ -329,7 +314,7 @@ BOOST_AUTO_TEST_CASE(intNoCollection)
     pf = PrimeFac(18);
     newExp = pf.collectToNewExp(third);
 
-    checkNum(2, 3, 3);
+    checkNum({2, 3, 3});
     BOOST_TEST(pf.getDenomPrimes().empty());
 
     BOOST_CHECK_EQUAL(third, newExp);
@@ -343,7 +328,7 @@ BOOST_AUTO_TEST_CASE(simpleFractionCollection)
     pf = PrimeFac(4);
     newExp = pf.collectToNewExp(twoThird);
 
-    checkNum(2);
+    checkNum({2});
     BOOST_TEST(pf.getDenomPrimes().empty());
 
     BOOST_CHECK_EQUAL(Number(4, 3), newExp);
@@ -357,8 +342,8 @@ BOOST_AUTO_TEST_CASE(fractionCollection)
     pf = PrimeFac(Number(8, 27));
     newExp = pf.collectToNewExp(Number(5, 6));
 
-    checkNum(2);
-    checkDenom(3);
+    checkNum({2});
+    checkDenom({3});
 
     BOOST_CHECK_EQUAL(Number(15, 6), newExp);
 }
