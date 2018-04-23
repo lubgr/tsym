@@ -4,15 +4,16 @@ set -e
 
 if [ "${MODE}" != "ANALYSIS" ]; then
     cd ${BOOSTDIR}
-    ./bootstrap.sh && ./b2 --with-test link=static
+    ./bootstrap.sh debug-symbols=off \
+        cflags="${CPPFLAGS} ${CFLAGS} -Wno-variadic-macros -O2" \
+        cxxflags="${CPPFLAGS} ${CXXFLAGS} -std=c++14 -Wno-variadic-macros -O2"
+    ./b2 --with-test link=static
     find ./stage -name 'libboost_unit_test*.a' -exec ln -s '{}' . \;
     cd ..
 fi
 
-if [ "${MODE}" = "RELEASE" ]; then
-elif [ "${MODE}" = "PROFILING" ]; then
+if [ "${MODE}" = "PROFILING" ]; then
     gem install coveralls-lcov
-elif [ "${MODE}" = "DEBUG" ]; then
 elif [ "${MODE}" = "ANALYSIS" ]; then
     sudo pip install --upgrade cppclean
 
