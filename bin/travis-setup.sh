@@ -4,9 +4,7 @@ set -e
 
 if [ "${MODE}" != "ANALYSIS" ]; then
     cd ${BOOSTDIR}
-    ./bootstrap.sh debug-symbols=off \
-        cflags="${CPPFLAGS} ${CFLAGS} -Wno-variadic-macros -O2" \
-        cxxflags="${CPPFLAGS} ${CXXFLAGS} -std=c++14 -Wno-variadic-macros -O2"
+    ./bootstrap.sh debug-symbols=off cflags="${CPPFLAGS} ${CFLAGS} -std=c99 -O2" cxxflags="${CPPFLAGS} ${CXXFLAGS} -std=c++14 -O2"
     ./b2 --with-test link=static
     find ./stage -name 'libboost_unit_test*.a' -exec ln -s '{}' . \;
     cd ..

@@ -23,13 +23,12 @@ complex numbers into account. Absent features that are usually implemented in co
 arbitrary precision arithmetics for floating point numbers, collecting parts of an expression or
 series expansion.
 
-
 Installation
 ------------
 To compile tsym, you need [boost](https://boost.org) and a C++ compiler recent enough to support
-C++14 and (GNU-)[make](https://www.gnu.org/software/make/). For unit tests,
-[CppUTest](https://github.com/cpputest/cpputest) is required. tsym should build on all major Linux
-distributions by e.g.
+C++14 and (GNU-)[make](https://www.gnu.org/software/make/). For unit tests, the boost test framework
+is used, which must be available to the linker as a static library. tsym should build on all major
+Linux distributions by e.g.
 ```bash
 make CXXFLAGS="-march=native -O2" lib
 ```
@@ -159,7 +158,6 @@ argument can be passed to `solve`, specifying the vector access function. When t
 matrix is singular, all functions will throw an instance of `std::invalid_argument`. To keep the
 requirements on vector/matrix types low, no sanity checks are made (client code is hence responsible
 for correct dimensions)
-
 
 Compiling the example code
 --------------------------
