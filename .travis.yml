@@ -11,26 +11,17 @@ branches:
 git:
     depth: 3
 
-before_install:
+install:
   - sudo apt-get remove -y libboost-all-dev
   - sudo apt-get autoremove -y
   - sudo apt-get -qq update
   - export BOOSTVER=1_67_0
   - export BOOSTDIR="${PWD}/boost_${BOOSTVER}"
   - wget -qO- https://downloads.sourceforge.net/project/boost/boost/${BOOSTVER//_/.}/boost_${BOOSTVER}.tar.bz2 | tar xj
-  - cd ${BOOSTDIR}
-  - ./bootstrap.sh && ./b2 --with-test link=static
-  - find ./stage -name 'libboost_unit_test*.a' -exec cp '{}' . \;
-  - cd ..
-  - gem install coveralls-lcov
-  - sudo pip install --upgrade cppclean
-  - export CPPCHECKVER=1.82
-  - wget -qO- https://github.com/danmar/cppcheck/archive/${CPPCHECKVER}.tar.gz | tar xz
-  - sudo make -C ./cppcheck-${CPPCHECKVER} SRCDIR=build CFGDIR=/usr/share/cppcheck/cfg HAVE_RULES=yes install
   - export OCLINTVER=0.13
-  - wget -qO- https://github.com/oclint/oclint/releases/download/v${OCLINTVER}/oclint-${OCLINTVER}-x86_64-linux-3.13.0-125-generic.tar.gz | tar xz
   - export OCLINT_HOME="$HOME/oclint-${OCLINTVER}"
   - export PATH="${PATH}:${PWD}/oclint-${OCLINTVER}/bin"
+  - ./bin/travis-setup.sh
   - echo | g++ -E -v -
   - echo | clang++ -E -v -
 
