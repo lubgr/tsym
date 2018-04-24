@@ -36,7 +36,7 @@ namespace tsym {
     };
 
     struct TestSuiteLoggingFixture {
-        TestSuiteLoggingFixture(bool suppressLogs);
+        explicit TestSuiteLoggingFixture(bool suppressLogs);
         virtual ~TestSuiteLoggingFixture();
     };
 

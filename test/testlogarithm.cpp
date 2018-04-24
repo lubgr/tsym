@@ -14,7 +14,7 @@
 using namespace tsym;
 
 struct LogarithmFixture : public AbcFixture {
-    const BasePtr& e = Constant::createE();
+    const BasePtr& euler = Constant::createE();
 };
 
 BOOST_FIXTURE_TEST_SUITE(TestLogarithm, LogarithmFixture)
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(logOfUndefinedArg, noLogs())
 
 BOOST_AUTO_TEST_CASE(logOfE)
 {
-    const BasePtr arg = e;
+    const BasePtr arg = euler;
     const BasePtr result = Logarithm::create(arg);
 
     BOOST_TEST(result->isOne());
@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_CASE(logOfNegativeArgument, noLogs())
 
 BOOST_AUTO_TEST_CASE(logOfInvalidNumericallyEvaluableEqualZero, noLogs())
 {
-    const BasePtr arg = Sum::create(e, Numeric::create(-M_E));
+    const BasePtr arg = Sum::create(euler, Numeric::create(-M_E));
     BasePtr result;
 
     result = Logarithm::create(arg);
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(logOfSymbolicSum)
 BOOST_AUTO_TEST_CASE(logOfPowerWithNegEulerBasePosNumericExp, noLogs())
 {
     const BasePtr exp = Numeric::create(-123);
-    const BasePtr arg = Product::minus(Power::create(e, exp));
+    const BasePtr arg = Product::minus(Power::create(euler, exp));
     BasePtr result;
 
     result = Logarithm::create(arg);
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(logOfPowerWithNegEulerBasePosNumericExp, noLogs())
 BOOST_AUTO_TEST_CASE(logOfPowerWithEulerBaseNegNumericExp)
 {
     const BasePtr exp = Numeric::create(-123);
-    const BasePtr arg = Power::create(e, exp);
+    const BasePtr arg = Power::create(euler, exp);
     const BasePtr result = Logarithm::create(arg);
 
     BOOST_CHECK_EQUAL(exp, result);
@@ -157,7 +157,7 @@ BOOST_AUTO_TEST_CASE(logOfPowerWithEulerBaseNegNumericExp)
 BOOST_AUTO_TEST_CASE(logOfPowerWithEulerBasePosNumericExp)
 {
     const BasePtr exp = Numeric::create(3, 10);
-    const BasePtr arg = Power::create(e, exp);
+    const BasePtr arg = Power::create(euler, exp);
     const BasePtr result = Logarithm::create(arg);
 
     BOOST_CHECK_EQUAL(exp, result);
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(logOfPowerWithEulerBasePosNumericExp)
 BOOST_AUTO_TEST_CASE(logOfPowerWithEulerBaseArbitraryExp)
 {
     const BasePtr exp = Sum::create(a, b, Product::create(seven, c, d));
-    const BasePtr arg = Power::create(e, exp);
+    const BasePtr arg = Power::create(euler, exp);
     const BasePtr result = Logarithm::create(arg);
 
     BOOST_CHECK_EQUAL(exp, result);
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(logOfSymbolicPower)
 
 BOOST_AUTO_TEST_CASE(numericEval)
 {
-    const BasePtr arg = Sum::create(two, e);
+    const BasePtr arg = Sum::create(two, euler);
     const BasePtr log = Logarithm::create(arg);
     const double expected = std::log(2.0 + M_E);
 
