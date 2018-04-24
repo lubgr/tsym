@@ -40,14 +40,15 @@ elif [ "${MODE}" = "PROFILING" ]; then
     gprof "${TESTEXEC}" gmon.out | head -n 100
     clean
 elif [ "${MODE}" = "DEBUG" ]; then
-    export CXXFLAGS="-fsanitize=address -fno-omit-frame-pointer -O0 -g -std=c++14 -fPIC"
-    export CFLAGS="-fsanitize=address -fno-omit-frame-pointer -O0 -g -fPIC"
-    export LIBS=-lasan
+    commonCxxFLags="-O0 -g -std=c++14 -fPIC"
+
+    sanitizerFlags="-fsanitize=address,undefined,integer-divide-by-zero,float-divide-by-zero,float-cast-overflow,return"
+    export CXXFLAGS="${sanitizerFlags} -fno-omit-frame-pointer ${commonCxxFLags}"
+    export LIBS="-lasan -lubsan"
     buildAndTest "${COMPILER}"
     clean
 
-    export CXXFLAGS="-O0 -g -std=c++14 -fPIC"
-    export CFLAGS="-O0 -g -fPIC"
+    export CXXFLAGS="${commonCxxFLags}"
     unset LIBS
     build "${COMPILER}"
     valgrind --error-exitcode=1 --leak-check=full "${TESTEXEC}"
