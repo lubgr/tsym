@@ -51,13 +51,12 @@ elif [ "${MODE}" = "DEBUG" ]; then
     commonCxxFLags="-O0 -g -std=c++14 -fPIC"
 
     sanitizerFlags="-fsanitize=address,undefined,integer-divide-by-zero,float-divide-by-zero,float-cast-overflow,return"
-    logFile=sanitizerLog
     export CXXFLAGS="${sanitizerFlags} -fno-omit-frame-pointer ${commonCxxFLags}"
     export LIBS="-lasan -lubsan"
     build "${COMPILER}"
+    logFile=sanitizerLog
     ${TESTEXEC} -l all --color=no > ${logFile} || EXIT=1
-    grep -i error ${logFile} || EXIT=1
-    cat ${logFile}
+    grep -i -C 20 error ${logFile} && EXIT=1
     clean
 
     export CXXFLAGS="${commonCxxFLags}"

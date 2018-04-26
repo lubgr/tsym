@@ -46,4 +46,4 @@ else
     EXIT=1
 fi
 
-return ${EXIT}
+exit ${EXIT}
