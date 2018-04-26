@@ -17,7 +17,12 @@ build() {
 }
 
 buildAndTest() {
-    return build $1 && "${TESTEXEC}"
+    build $1
+    SUCCESS=$?
+
+    "${TESTEXEC}" || SUCCESS=1
+
+    return ${SUCCESS}
 }
 
 clean() {
