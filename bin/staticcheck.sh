@@ -7,6 +7,9 @@ CONFIGDIR=misc
 
 INCLUDE="-I src -I test"
 SRC="src/ test/"
+
+EXIT=0
+
 if env | grep BOOSTDIR; then
     SYSTEM_INCLUDE="-isystem ${BOOSTDIR}"
 fi
@@ -18,6 +21,7 @@ if which $CPPCHECK &> /dev/null; then
     -q $INCLUDE --suppress=missingIncludeSystem --std=c++14 --language=c++ $SRC
 else
     echo "$CPPCHECK not found"
+    EXIT=1
 fi
 
 echo ''
@@ -28,6 +32,7 @@ if which $CPPCLEAN &> /dev/null; then
     | grep -v 'unable to find'
 else
     echo "$CPPCLEAN not found"
+    EXIT=1
 fi
 
 echo ''
@@ -38,4 +43,7 @@ if which $OCLINT &> /dev/null; then
     | grep -v '|P3\]'
 else
     echo "$OCLINT not found"
+    EXIT=1
 fi
+
+return ${EXIT}
