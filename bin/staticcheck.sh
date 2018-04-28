@@ -3,6 +3,7 @@
 CPPCHECK=cppcheck
 CPPCLEAN=cppclean
 OCLINT=oclint
+FMTSCRIPT=./bin/format.sh
 CONFIGDIR=misc
 
 INCLUDE="-I src -I test"
@@ -45,5 +46,12 @@ else
     echo "$OCLINT not found"
     EXIT=1
 fi
+
+echo ''
+
+fmtDiff=`mktemp`
+${FMTSCRIPT} 2>&1 | tee ${fmtDiff}
+test -s ${fmtDiff} && EXIT=1
+rm -f ${fmtDiff}
 
 exit ${EXIT}
