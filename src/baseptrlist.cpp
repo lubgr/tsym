@@ -1,12 +1,12 @@
 
-#include <numeric>
+#include "baseptrlist.h"
 #include <boost/functional/hash.hpp>
+#include <numeric>
+#include "bplist.h"
 #include "plaintextprintengine.h"
 #include "printer.h"
-#include "baseptrlist.h"
-#include "bplist.h"
 
-std::ostream& tsym::operator << (std::ostream& stream, const BasePtrList& items)
+std::ostream& tsym::operator<<(std::ostream& stream, const BasePtrList& items)
 {
     PlaintextPrintEngine engine(stream);
 
@@ -24,13 +24,12 @@ std::ostream& tsym::operator << (std::ostream& stream, const BasePtrList& items)
     return stream;
 }
 
-size_t std::hash<tsym::BasePtrList>::operator () (const tsym::BasePtrList& list) const
+size_t std::hash<tsym::BasePtrList>::operator()(const tsym::BasePtrList& list) const
 {
     return boost::hash<tsym::BasePtrList>{}(list);
 }
 
-bool std::equal_to<tsym::BasePtrList>::operator () (const tsym::BasePtrList& lhs,
-        const tsym::BasePtrList& rhs) const
+bool std::equal_to<tsym::BasePtrList>::operator()(const tsym::BasePtrList& lhs, const tsym::BasePtrList& rhs) const
 {
     return tsym::bplist::areEqual(lhs, rhs);
 }

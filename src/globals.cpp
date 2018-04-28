@@ -1,15 +1,15 @@
 
+#include "globals.h"
 #include <algorithm>
 #include <chrono>
-#include "globals.h"
-#include "symbolmap.h"
-#include "fraction.h"
-#include "trigonometric.h"
-#include "logarithm.h"
 #include "constant.h"
+#include "fraction.h"
+#include "logarithm.h"
+#include "logging.h"
 #include "parser.h"
 #include "power.h"
-#include "logging.h"
+#include "symbolmap.h"
+#include "trigonometric.h"
 
 namespace tsym {
     namespace {
@@ -124,7 +124,7 @@ tsym::Var tsym::expand(const Var& arg)
 }
 
 tsym::Var tsym::simplify(const Var& arg)
-    /* Currently, only normalization and expansion is tested for the simplest representation. */
+/* Currently, only normalization and expansion is tested for the simplest representation. */
 {
     using clock = std::chrono::high_resolution_clock;
     auto before = clock::now();
@@ -149,7 +149,7 @@ tsym::Var tsym::simplify(const Var& arg)
     if (result->isDifferent(rep)) {
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(clock::now() - before);
 
-        TSYM_DEBUG("Simplified %S to %S in %.2f ms.", rep, result, static_cast<float>(duration.count())/1000.0);
+        TSYM_DEBUG("Simplified %S to %S in %.2f ms.", rep, result, static_cast<float>(duration.count()) / 1000.0);
     }
 
     return Var(result);
@@ -214,7 +214,7 @@ std::vector<tsym::Var> tsym::collectSymbols(const Var& arg)
     return symbols;
 }
 
-tsym::Var tsym::parse(const std::string& str, bool *success)
+tsym::Var tsym::parse(const std::string& str, bool* success)
 {
     parser::Result result = parser::parse(str);
 

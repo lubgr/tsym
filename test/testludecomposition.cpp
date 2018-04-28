@@ -1,8 +1,8 @@
 
-#include "plu.h"
-#include "var.h"
 #include "boostmatrixvector.h"
+#include "plu.h"
 #include "tsymtests.h"
+#include "var.h"
 
 using namespace tsym;
 
@@ -17,8 +17,12 @@ BOOST_FIXTURE_TEST_SUITE(TestLUDecomposition, LUDecompositionFixture)
 
 BOOST_AUTO_TEST_CASE(dimTwoWithDefaults)
 {
-    const auto expected = createBoostMatrix({{ a, b }, { c/a, -b*c/a + d }});
-    auto m = createBoostMatrix({{ a, b, }, { c, d }});
+    const auto expected = createBoostMatrix({{a, b}, {c / a, -b * c / a + d}});
+    auto m = createBoostMatrix({{
+                                  a,
+                                  b,
+                                },
+      {c, d}});
     auto mProxy = BoostMatrixProxy(m);
     plu::detail::LUDecomposition<BoostMatrixProxy, BoostSizeType> lu(mProxy, 2);
 
@@ -29,9 +33,13 @@ BOOST_AUTO_TEST_CASE(dimTwoWithDefaults)
 
 BOOST_AUTO_TEST_CASE(dimTwoWithLambdaAccess)
 {
-    const auto expected = createBoostMatrix({{ a, b }, { c/a, -b*c/a + d }});
+    const auto expected = createBoostMatrix({{a, b}, {c / a, -b * c / a + d}});
     auto accessMatrix = [](BoostMatrix& m, BoostSizeType i, BoostSizeType j) -> Var& { return m(i, j); };
-    auto m = createBoostMatrix({{ a, b, }, { c, d }});
+    auto m = createBoostMatrix({{
+                                  a,
+                                  b,
+                                },
+      {c, d}});
     auto mProxy = BoostMatrixProxy(m, accessMatrix);
     plu::detail::LUDecomposition<BoostMatrixProxy, BoostSizeType> lu(mProxy, 2);
 
@@ -42,14 +50,14 @@ BOOST_AUTO_TEST_CASE(dimTwoWithLambdaAccess)
 
 BOOST_AUTO_TEST_CASE(applyToRightHandSide)
 {
-    auto m = createBoostMatrix({{ a, b }, { c/a, -b*c/a + d }});
+    auto m = createBoostMatrix({{a, b}, {c / a, -b * c / a + d}});
     auto mProxy = BoostMatrixProxy(m);
-    auto rhs = createBoostVector({ a - 2*b, c - 2*d });
+    auto rhs = createBoostVector({a - 2 * b, c - 2 * d});
     auto rhsProxy = BoostVectorProxy(rhs);
     auto x = BoostVector(2);
     auto xProxy = BoostVectorProxy(x);
     plu::detail::LUDecomposition<BoostMatrixProxy, BoostSizeType> lu(mProxy, 2);
-    
+
     lu.computeSolution(rhsProxy, xProxy);
 
     BOOST_CHECK_EQUAL(1, x(0));

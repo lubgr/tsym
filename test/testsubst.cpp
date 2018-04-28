@@ -1,15 +1,15 @@
 
 #include "baseptr.h"
-#include "sum.h"
-#include "undefined.h"
-#include "numeric.h"
 #include "constant.h"
-#include "trigonometric.h"
-#include "logarithm.h"
-#include "product.h"
-#include "power.h"
 #include "fixtures.h"
+#include "logarithm.h"
+#include "numeric.h"
+#include "power.h"
+#include "product.h"
+#include "sum.h"
+#include "trigonometric.h"
 #include "tsymtests.h"
+#include "undefined.h"
 
 using namespace tsym;
 
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(atanArgToConstant)
 }
 
 BOOST_AUTO_TEST_CASE(sinToZero)
-    /* Sin(a) = 0 for a = Pi. */
+/* Sin(a) = 0 for a = Pi. */
 {
     const BasePtr orig = Trigonometric::createSin(a);
     BasePtr res;
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(sinToZero)
 }
 
 BOOST_AUTO_TEST_CASE(asinToUndefined)
-    /* Asin(a) = Undefined for |a| > 1. */
+/* Asin(a) = Undefined for |a| > 1. */
 {
     const BasePtr orig = Trigonometric::createAsin(a);
     const BasePtr tmp = Numeric::create(1.23456789);
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE(asinToUndefined)
 }
 
 BOOST_AUTO_TEST_CASE(atan2ToPiFourth)
-    /* Atan(b, a) = Pi/4 for b = 2 and a = 2. */
+/* Atan(b, a) = Pi/4 for b = 2 and a = 2. */
 {
     const BasePtr orig = Trigonometric::createAtan2(b, a);
     const BasePtr firstSubst = orig->subst(b, two);
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(atan2ToPiFourth)
 }
 
 BOOST_AUTO_TEST_CASE(logToLog)
-    /* Log(a) = log(b) for a = b. */
+/* Log(a) = log(b) for a = b. */
 {
     const BasePtr expected = Logarithm::create(b);
     const BasePtr orig = Logarithm::create(a);
@@ -174,7 +174,7 @@ BOOST_AUTO_TEST_CASE(logToLog)
 }
 
 BOOST_AUTO_TEST_CASE(logToZero)
-    /* Log(a) = 0 for a = 1. */
+/* Log(a) = 0 for a = 1. */
 {
     const BasePtr orig = Logarithm::create(a);
     BasePtr res;
@@ -195,7 +195,7 @@ BOOST_AUTO_TEST_CASE(logEqualArg)
 }
 
 BOOST_AUTO_TEST_CASE(powerToUndefined, noLogs())
-    /* a^(-2) = Undefined for a = 0. */
+/* a^(-2) = Undefined for a = 0. */
 {
     const BasePtr orig = Power::create(a, Numeric::create(-2));
     BasePtr res;
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(powerToUndefined, noLogs())
 }
 
 BOOST_AUTO_TEST_CASE(sumToUndefined)
-    /* a + b + c + d = Undefined for c = Undefined. */
+/* a + b + c + d = Undefined for c = Undefined. */
 {
     const BasePtr orig = Sum::create(a, b, c, d);
     const BasePtr res = orig->subst(c, undefined);
@@ -215,7 +215,7 @@ BOOST_AUTO_TEST_CASE(sumToUndefined)
 }
 
 BOOST_AUTO_TEST_CASE(sumToOne)
-    /* a + b^a + a*(b + c) = 1 for a = 0. */
+/* a + b^a + a*(b + c) = 1 for a = 0. */
 {
     const BasePtr orig = Sum::create(a, Power::create(b, a), Product::create(a, Sum::create(b, c)));
     BasePtr res;
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(sumToOne)
 }
 
 BOOST_AUTO_TEST_CASE(noSubExpressionInSum)
-    /* a + b + c stays constant for a + b = 2. */
+/* a + b + c stays constant for a + b = 2. */
 {
     const BasePtr abSum = Sum::create(a, b);
     const BasePtr orig = Sum::create(abSum, c);
@@ -238,7 +238,7 @@ BOOST_AUTO_TEST_CASE(noSubExpressionInSum)
 }
 
 BOOST_AUTO_TEST_CASE(noSubExpressionInProduct)
-    /* 2*a*b stays constant for a*b = 3. */
+/* 2*a*b stays constant for a*b = 3. */
 {
     const BasePtr abProduct = Product::create(a, b);
     const BasePtr orig = Product::create(two, abProduct);
@@ -250,7 +250,7 @@ BOOST_AUTO_TEST_CASE(noSubExpressionInProduct)
 }
 
 BOOST_AUTO_TEST_CASE(powerExpanedBySubst)
-    /* (a*b + c + d)^2= a^2*b^2 for c = d = 0. */
+/* (a*b + c + d)^2= a^2*b^2 for c = d = 0. */
 {
     const BasePtr expected = Product::create(Power::create(a, two), Power::create(b, two));
     const BasePtr abProduct = Product::create(a, b);
@@ -273,13 +273,12 @@ BOOST_AUTO_TEST_CASE(numPowerSimplInSubstitution)
 }
 
 BOOST_AUTO_TEST_CASE(mixedTerm)
-    /* 2*sqrt(3)*(a + b + sqrt(3))*(c + d)/a = 4*17^(1/3)*a + 2*17^(1/3)*b
-     * for sqrt(3) = a and c + d = 17^(1/3). */
+/* 2*sqrt(3)*(a + b + sqrt(3))*(c + d)/a = 4*17^(1/3)*a + 2*17^(1/3)*b
+ * for sqrt(3) = a and c + d = 17^(1/3). */
 {
     const BasePtr sqrtThree = Power::sqrt(three);
     const BasePtr numPow = Power::create(Numeric::create(17), Numeric::third());
-    const BasePtr expected = Sum::create(Product::create(four, numPow, a),
-            Product::create(two, numPow, b));
+    const BasePtr expected = Sum::create(Product::create(four, numPow, a), Product::create(two, numPow, b));
     BasePtrList fac;
     BasePtr orig;
     BasePtr res;

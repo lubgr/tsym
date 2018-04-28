@@ -1,6 +1,6 @@
 
-#include <limits>
 #include <exception>
+#include <limits>
 #include <sstream>
 #include "int.h"
 #include "tsymtests.h"
@@ -241,23 +241,23 @@ BOOST_AUTO_TEST_CASE(addition)
 
 BOOST_AUTO_TEST_CASE(multiplication)
 {
-    const Int expected(123*654);
+    const Int expected(123 * 654);
     const Int n1(123);
     const Int n2(654);
     Int result;
 
-    result = n1*n2;
+    result = n1 * n2;
 
     BOOST_CHECK_EQUAL(expected, result);
 }
 
 BOOST_AUTO_TEST_CASE(exactDivision)
 {
-    const Int numerator(45*123);
+    const Int numerator(45 * 123);
     const Int denominator(45);
     Int result;
 
-    result = numerator/denominator;
+    result = numerator / denominator;
 
     BOOST_CHECK_EQUAL(123, result);
 }
@@ -268,7 +268,7 @@ BOOST_AUTO_TEST_CASE(divisionWithRemainder)
     const Int denominator(321);
     Int result;
 
-    result = numerator/denominator;
+    result = numerator / denominator;
 
     BOOST_CHECK_EQUAL(38, result);
 }
@@ -313,8 +313,8 @@ BOOST_AUTO_TEST_CASE(streamOperator)
 BOOST_AUTO_TEST_CASE(streamOperatorVeryLongNumber)
 {
     const std::string expected("-1230029380928409280920984098230948099812038209340942385930859034"
-            "203984092384092843092809483209482093840928430928309482093480923840928340928309402394"
-            "029348092384092834092830942803482039482039482039482093840293840293840293840928430928");
+                               "203984092384092843092809483209482093840928430928309482093480923840928340928309402394"
+                               "029348092384092834092830942803482039482039482039482093840293840293840293840928430928");
     const Int n(expected.c_str());
     std::stringstream stream;
 

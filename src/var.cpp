@@ -1,29 +1,27 @@
 
+#include "var.h"
 #include <map>
 #include <stdexcept>
-#include "var.h"
 #include "base.h"
+#include "logging.h"
 #include "numeric.h"
-#include "symbol.h"
-#include "sum.h"
-#include "undefined.h"
-#include "product.h"
+#include "parser.h"
+#include "plaintextprintengine.h"
 #include "power.h"
 #include "printer.h"
-#include "plaintextprintengine.h"
-#include "parser.h"
-#include "logging.h"
+#include "product.h"
+#include "sum.h"
+#include "symbol.h"
+#include "undefined.h"
 
 namespace tsym {
     namespace {
         const std::map<std::string, Var::Type>& typeStringMap()
         {
-            static const std::map<std::string, Var::Type> map {{ "Sum", Var::Type::SUM },
-                { "Product", Var::Type::PRODUCT }, { "Symbol", Var::Type::SYMBOL },
-                { "Power", Var::Type::POWER }, { "Constant", Var::Type::CONSTANT },
-                { "Undefined", Var::Type::UNDEFINED}, { "Function", Var::Type::FUNCTION },
-                { "Integer", Var::Type::INT }, { "Fraction", Var::Type::FRACTION },
-                { "Double", Var::Type::DOUBLE }};
+            static const std::map<std::string, Var::Type> map{{"Sum", Var::Type::SUM}, {"Product", Var::Type::PRODUCT},
+              {"Symbol", Var::Type::SYMBOL}, {"Power", Var::Type::POWER}, {"Constant", Var::Type::CONSTANT},
+              {"Undefined", Var::Type::UNDEFINED}, {"Function", Var::Type::FUNCTION}, {"Integer", Var::Type::INT},
+              {"Fraction", Var::Type::FRACTION}, {"Double", Var::Type::DOUBLE}};
 
             return map;
         }
@@ -61,20 +59,20 @@ namespace tsym {
     }
 }
 
-tsym::Var::Var() :
-    rep(Numeric::zero())
+tsym::Var::Var()
+    : rep(Numeric::zero())
 {}
 
-tsym::Var::Var(int value) :
-    rep(Numeric::create(value))
+tsym::Var::Var(int value)
+    : rep(Numeric::create(value))
 {}
 
-tsym::Var::Var(double value) :
-    rep(Numeric::create(value))
+tsym::Var::Var(double value)
+    : rep(Numeric::create(value))
 {}
 
-tsym::Var::Var(int numerator, int denominator) :
-    /* Zero denominator is checked inside of the Numeric::create method. */
+tsym::Var::Var(int numerator, int denominator)
+    : /* Zero denominator is checked inside of the Numeric::create method. */
     rep(Numeric::create(numerator, denominator))
 {}
 
@@ -88,7 +86,8 @@ tsym::Var::Var(const std::string& str)
     }
 
     TSYM_ERROR("Parsing symbol or integer from '%s' failed, result: %S (%S). "
-            "Create undefined Var object.", str, parsed.value, Var(parsed.value).type());
+               "Create undefined Var object.",
+      str, parsed.value, Var(parsed.value).type());
 
     rep = Undefined::create();
 }
@@ -114,48 +113,48 @@ tsym::Var::Var(const std::string& str, Var::Sign sign)
     rep = withoutSign.rep;
 }
 
-tsym::Var::Var(const BasePtr& ptr) :
-    rep(ptr)
+tsym::Var::Var(const BasePtr& ptr)
+    : rep(ptr)
 {}
 
-tsym::Var::Var(BasePtr&& ptr) :
-    rep(std::move(ptr))
+tsym::Var::Var(BasePtr&& ptr)
+    : rep(std::move(ptr))
 {}
 
-tsym::Var& tsym::Var::operator += (const Var& rhs)
+tsym::Var& tsym::Var::operator+=(const Var& rhs)
 {
     rep = Sum::create(rep, rhs.rep);
 
     return *this;
 }
 
-tsym::Var& tsym::Var::operator -= (const Var& rhs)
+tsym::Var& tsym::Var::operator-=(const Var& rhs)
 {
     rep = Sum::create(rep, Product::minus(rhs.rep));
 
     return *this;
 }
 
-tsym::Var& tsym::Var::operator *= (const Var& rhs)
+tsym::Var& tsym::Var::operator*=(const Var& rhs)
 {
     rep = Product::create(rep, rhs.rep);
 
     return *this;
 }
 
-tsym::Var& tsym::Var::operator /= (const Var& rhs)
+tsym::Var& tsym::Var::operator/=(const Var& rhs)
 {
     rep = Product::create(rep, Power::oneOver(rhs.rep));
 
     return *this;
 }
 
-const tsym::Var& tsym::Var::operator + () const
+const tsym::Var& tsym::Var::operator+() const
 {
     return *this;
 }
 
-tsym::Var tsym::Var::operator - () const
+tsym::Var tsym::Var::operator-() const
 {
     return Var(Product::minus(rep));
 }
@@ -174,7 +173,7 @@ tsym::Var::Type tsym::Var::type() const
 
 tsym::Var::operator int() const
 {
-    static const char *errorMessage = "Illegal integer request";
+    static const char* errorMessage = "Illegal integer request";
     int result = 0;
 
     if (!isInteger(rep))
@@ -184,7 +183,7 @@ tsym::Var::operator int() const
 
     try {
         result = static_cast<int>(rep->numericEval().numerator());
-    } catch (const std::exception& e){
+    } catch (const std::exception& e) {
         TSYM_ERROR("Conversion from %S to int failed: %s", *this, e.what());
         throw std::domain_error(errorMessage);
     }
@@ -205,45 +204,45 @@ const tsym::BasePtr& tsym::Var::get() const
     return rep;
 }
 
-bool tsym::operator == (const Var& lhs, const Var& rhs)
+bool tsym::operator==(const Var& lhs, const Var& rhs)
 {
     return lhs.get()->isEqual(rhs.get());
 }
 
-bool tsym::operator != (const Var& lhs, const Var& rhs)
+bool tsym::operator!=(const Var& lhs, const Var& rhs)
 {
     return !(lhs == rhs);
 }
 
-tsym::Var tsym::operator + (Var lhs, const Var& rhs)
+tsym::Var tsym::operator+(Var lhs, const Var& rhs)
 {
     lhs += rhs;
 
     return lhs;
 }
 
-tsym::Var tsym::operator - (Var lhs, const Var& rhs)
+tsym::Var tsym::operator-(Var lhs, const Var& rhs)
 {
     lhs -= rhs;
 
     return lhs;
 }
 
-tsym::Var tsym::operator * (Var lhs, const Var& rhs)
+tsym::Var tsym::operator*(Var lhs, const Var& rhs)
 {
     lhs *= rhs;
 
     return lhs;
 }
 
-tsym::Var tsym::operator / (Var lhs, const Var& rhs)
+tsym::Var tsym::operator/(Var lhs, const Var& rhs)
 {
     lhs /= rhs;
 
     return lhs;
 }
 
-std::ostream& tsym::operator << (std::ostream& stream, const Var& var)
+std::ostream& tsym::operator<<(std::ostream& stream, const Var& var)
 {
     PlaintextPrintEngine engine(stream);
 
@@ -252,7 +251,7 @@ std::ostream& tsym::operator << (std::ostream& stream, const Var& var)
     return stream;
 }
 
-std::ostream& tsym::operator << (std::ostream& stream, const Var::Type& type)
+std::ostream& tsym::operator<<(std::ostream& stream, const Var::Type& type)
 {
     for (const auto& it : typeStringMap())
         if (it.second == type) {
@@ -265,7 +264,7 @@ std::ostream& tsym::operator << (std::ostream& stream, const Var::Type& type)
     return stream;
 }
 
-size_t std::hash<tsym::Var>::operator () (const tsym::Var& var) const
+size_t std::hash<tsym::Var>::operator()(const tsym::Var& var) const
 {
     return var.get()->hash();
 }

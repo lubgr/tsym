@@ -1,12 +1,12 @@
 
+#include "constant.h"
+#include "fixtures.h"
+#include "power.h"
 #include "product.h"
 #include "sum.h"
-#include "undefined.h"
-#include "constant.h"
-#include "power.h"
 #include "trigonometric.h"
-#include "fixtures.h"
 #include "tsymtests.h"
+#include "undefined.h"
 
 using namespace tsym;
 
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(equalConstant)
 }
 
 BOOST_AUTO_TEST_CASE(equalUndefined)
-    /* Two Undefined are never equal, thus this query shall return false. */
+/* Two Undefined are never equal, thus this query shall return false. */
 {
     BOOST_TEST(!undefined->has(undefined));
 }

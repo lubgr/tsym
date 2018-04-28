@@ -1,15 +1,14 @@
 
 #include "subresultantgcd.h"
-#include "product.h"
-#include "power.h"
-#include "numeric.h"
-#include "poly.h"
 #include "bplist.h"
 #include "logging.h"
+#include "numeric.h"
+#include "poly.h"
+#include "power.h"
+#include "product.h"
 
-tsym::BasePtr tsym::SubresultantGcd::gcdAlgo(const BasePtr& u, const BasePtr& v,
-        const BasePtrList& L) const
-    /* See Cohen [2003], pages 255 - 256. */
+tsym::BasePtr tsym::SubresultantGcd::gcdAlgo(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const
+/* See Cohen [2003], pages 255 - 256. */
 {
     const BasePtr& x(L.front());
 
@@ -19,8 +18,7 @@ tsym::BasePtr tsym::SubresultantGcd::gcdAlgo(const BasePtr& u, const BasePtr& v,
         return gcd(u, v, L);
 }
 
-tsym::BasePtr tsym::SubresultantGcd::gcd(const BasePtr& u, const BasePtr& v,
-        const BasePtrList& L) const
+tsym::BasePtr tsym::SubresultantGcd::gcd(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const
 {
     const BasePtr& x(L.front());
     const BasePtrList R(bplist::rest(L));
@@ -56,7 +54,8 @@ tsym::BasePtr tsym::SubresultantGcd::gcd(const BasePtr& u, const BasePtr& v,
             tmp = Product::minus(U->leadingCoeff(x));
 
             psi = poly::divide(Power::create(tmp, Numeric::create(deltaP - 1))->expand(),
-                    Power::create(psi, Numeric::create(deltaP - 2))->expand(), R).front();
+              Power::create(psi, Numeric::create(deltaP - 2))->expand(), R)
+                    .front();
 
             beta = Product::create(tmp, Power::create(psi, Numeric::create(delta - 1)))->expand();
         }

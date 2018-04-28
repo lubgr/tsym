@@ -5,12 +5,10 @@
 std::unique_ptr<const tsym::Logger> tsym::Logger::instance = std::make_unique<const tsym::Logger>();
 
 void tsym::Logger::debug(const Message&) const
-{
-}
+{}
 
 void tsym::Logger::info(const Message&) const
-{
-}
+{}
 
 void tsym::Logger::warning(const Message& msg) const
 {

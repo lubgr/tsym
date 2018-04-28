@@ -1,7 +1,7 @@
 
-#include "numeric.h"
-#include "name.h"
 #include "fixtures.h"
+#include "name.h"
+#include "numeric.h"
 #include "tsymtests.h"
 
 using namespace tsym;

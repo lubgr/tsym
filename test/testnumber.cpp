@@ -1,8 +1,8 @@
 
 #include <cmath>
 #include <limits>
-#include "number.h"
 #include "fixtures.h"
+#include "number.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -136,14 +136,14 @@ BOOST_AUTO_TEST_CASE(simpleProduct)
 {
     const Number minusTwo(-2);
     const Number half(1, 2);
-    const Number res = minusTwo*half;
+    const Number res = minusTwo * half;
 
     BOOST_CHECK_EQUAL(-1, res);
 }
 
 BOOST_AUTO_TEST_CASE(productWithOtherFraction)
 {
-    const Number res = a*b*c;
+    const Number res = a * b * c;
 
     BOOST_CHECK_EQUAL(430, res.numerator());
     BOOST_CHECK_EQUAL(15477, res.denominator());
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(productWithOtherFraction)
 BOOST_AUTO_TEST_CASE(productWithDouble)
 {
     const Number n(1.23456789);
-    const Number res = b*n;
+    const Number res = b * n;
 
     BOOST_TEST(n.isDouble());
     BOOST_CHECK_CLOSE(0.09213193208955223, res.toDouble(), TOL);
@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE(productWithDouble)
 
 BOOST_AUTO_TEST_CASE(divisionByOtherFraction)
 {
-    const Number res = a/b;
+    const Number res = a / b;
 
     BOOST_CHECK_EQUAL(134, res.numerator());
     BOOST_CHECK_EQUAL(165, res.denominator());
@@ -417,7 +417,7 @@ BOOST_AUTO_TEST_CASE(negativeBaseFractionExp)
 }
 
 BOOST_AUTO_TEST_CASE(negativeBaseIntExp)
-    /* (-2)^5 = -32. */
+/* (-2)^5 = -32. */
 {
     Number res(-2);
 
@@ -427,7 +427,7 @@ BOOST_AUTO_TEST_CASE(negativeBaseIntExp)
 }
 
 BOOST_AUTO_TEST_CASE(negativeBaseToPositive)
-    /* (-5/7)^4 = 635/2401. */
+/* (-5/7)^4 = 635/2401. */
 {
     Number res(-5, 7);
 
@@ -444,7 +444,7 @@ BOOST_AUTO_TEST_CASE(negativeBaseToUndefined)
 }
 
 BOOST_AUTO_TEST_CASE(positiveBaseToDouble)
-    /* 5^(-1/8) -> numeric evaluation. */
+/* 5^(-1/8) -> numeric evaluation. */
 {
     Number res(5);
 

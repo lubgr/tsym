@@ -1,25 +1,25 @@
 
-#include <unordered_map>
-#include <boost/functional/hash.hpp>
 #include "symbol.h"
-#include "undefined.h"
-#include "fraction.h"
+#include <boost/functional/hash.hpp>
+#include <unordered_map>
 #include "cache.h"
-#include "numeric.h"
+#include "fraction.h"
 #include "logging.h"
+#include "numeric.h"
+#include "undefined.h"
 
 unsigned tsym::Symbol::tmpCounter = 0;
 
-tsym::Symbol::Symbol(const Name& name, bool positive, Base::CtorKey&&) :
-    symbolName(name),
-    positive(positive)
+tsym::Symbol::Symbol(const Name& name, bool positive, Base::CtorKey&&)
+    : symbolName(name)
+    , positive(positive)
 {
     setDebugString();
 }
 
-tsym::Symbol::Symbol(unsigned tmpId, bool positive, Base::CtorKey&&) :
-    symbolName(std::string(tmpSymbolNamePrefix) + std::to_string(tmpId)),
-    positive(positive)
+tsym::Symbol::Symbol(unsigned tmpId, bool positive, Base::CtorKey&&)
+    : symbolName(std::string(tmpSymbolNamePrefix) + std::to_string(tmpId))
+    , positive(positive)
 {
     setDebugString();
 }
@@ -47,7 +47,8 @@ tsym::BasePtr tsym::Symbol::create(const Name& name, bool positive)
         return Undefined::create();
     } else if (name.getName().find(tmpSymbolNamePrefix) == 0) {
         TSYM_ERROR("Instantiation of a non-temporary Symbol containing the temporary name prefix %s,"
-                " return true temporary Symbol", name.getName());
+                   " return true temporary Symbol",
+          name.getName());
         return createTmpSymbol(positive);
     }
 
@@ -64,7 +65,7 @@ tsym::BasePtr tsym::Symbol::createNonEmptyName(const Name& name, bool positive)
     if (lookup != cend(pool))
         return lookup->second;
 
-    return pool.insert({ key, std::make_shared<const Symbol>(name, positive, Base::CtorKey{}) }).first->second;
+    return pool.insert({key, std::make_shared<const Symbol>(name, positive, Base::CtorKey{})}).first->second;
 }
 
 tsym::BasePtr tsym::Symbol::createPositive(const std::string& name)

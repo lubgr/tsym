@@ -1,8 +1,8 @@
 
+#include "fixtures.h"
 #include "fraction.h"
 #include "power.h"
 #include "product.h"
-#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;

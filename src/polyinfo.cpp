@@ -1,15 +1,15 @@
 
-#include <cassert>
 #include "polyinfo.h"
+#include <cassert>
+#include "logging.h"
+#include "name.h"
+#include "number.h"
+#include "order.h"
+#include "poly.h"
 #include "power.h"
 #include "product.h"
 #include "sum.h"
 #include "undefined.h"
-#include "order.h"
-#include "logging.h"
-#include "number.h"
-#include "name.h"
-#include "poly.h"
 
 namespace tsym {
     namespace {
@@ -19,34 +19,37 @@ namespace tsym {
          * here. The order is such that variables with least degree, but contained in both u and v
          * are first. Variables occuring only in one of u or v are placed at the end. */
         class ComparePolyVariables {
-            public:
-                ComparePolyVariables(const BasePtr& u, const BasePtr& v) : u(u), v(v) {}
+          public:
+            ComparePolyVariables(const BasePtr& u, const BasePtr& v)
+                : u(u)
+                , v(v)
+            {}
 
-                bool operator () (const BasePtr& lhs, const BasePtr& rhs) const
-                {
-                    const int lhsMinDegree = std::min(u->degree(lhs), v->degree(lhs));
-                    const int rhsMinDegree = std::min(u->degree(rhs), v->degree(rhs));
+            bool operator()(const BasePtr& lhs, const BasePtr& rhs) const
+            {
+                const int lhsMinDegree = std::min(u->degree(lhs), v->degree(lhs));
+                const int rhsMinDegree = std::min(u->degree(rhs), v->degree(rhs));
 
-                    if (lhsMinDegree != 0 && rhsMinDegree != 0)
-                        return lhsMinDegree < rhsMinDegree;
-                    else if (lhsMinDegree == 0 && rhsMinDegree == 0)
-                        return lhs->name() < rhs->name();
-                    else if (lhsMinDegree != 0)
-                        return true;
-                    else
-                        return false;
-                }
+                if (lhsMinDegree != 0 && rhsMinDegree != 0)
+                    return lhsMinDegree < rhsMinDegree;
+                else if (lhsMinDegree == 0 && rhsMinDegree == 0)
+                    return lhs->name() < rhs->name();
+                else if (lhsMinDegree != 0)
+                    return true;
+                else
+                    return false;
+            }
 
-            private:
-                const BasePtr& u;
-                const BasePtr& v;
+          private:
+            const BasePtr& u;
+            const BasePtr& v;
         };
     }
 }
 
-tsym::PolyInfo::PolyInfo(const BasePtr& u, const BasePtr& v) :
-    u(u),
-    v(v)
+tsym::PolyInfo::PolyInfo(const BasePtr& u, const BasePtr& v)
+    : u(u)
+    , v(v)
 {}
 
 void tsym::PolyInfo::set(const BasePtr& u, const BasePtr& v)
@@ -68,8 +71,8 @@ bool tsym::PolyInfo::isInputValid() const
 }
 
 bool tsym::PolyInfo::hasValidType(const BasePtr& ptr)
-    /* Only symbols, rational Numerics, sums, products or powers with primitive int exponents are
-     * allowed. */
+/* Only symbols, rational Numerics, sums, products or powers with primitive int exponents are
+ * allowed. */
 {
     if (ptr->isSymbol())
         return true;

@@ -1,18 +1,18 @@
 
+#include "trigonometric.h"
 #include <cassert>
 #include <cmath>
-#include "trigonometric.h"
-#include "product.h"
-#include "power.h"
-#include "undefined.h"
-#include "sum.h"
-#include "numeric.h"
-#include "logging.h"
+#include "bplist.h"
 #include "constant.h"
 #include "fraction.h"
-#include "bplist.h"
+#include "logging.h"
+#include "numeric.h"
 #include "numtrigosimpl.h"
+#include "power.h"
+#include "product.h"
+#include "sum.h"
 #include "symbolmap.h"
+#include "undefined.h"
 
 namespace tsym {
     namespace {
@@ -36,12 +36,13 @@ namespace tsym {
     }
 }
 
-tsym::Trigonometric::Trigonometric(const BasePtrList& args, Type type, Base::CtorKey&&) :
-    Function(args, getStr(type)),
-    arg1(ops.front()),
+tsym::Trigonometric::Trigonometric(const BasePtrList& args, Type type, Base::CtorKey&&)
+    : Function(args, getStr(type))
+    , arg1(ops.front())
+    ,
     /* Points to ops.front() except for atan2: */
-    arg2(ops.back()),
-    type(type)
+    arg2(ops.back())
+    , type(type)
 {
     setDebugString();
 }
@@ -77,14 +78,14 @@ tsym::BasePtr tsym::Trigonometric::createAtan(const BasePtr& arg)
 }
 
 tsym::BasePtr tsym::Trigonometric::createAtan2(const BasePtr& y, const BasePtr& x)
-    /* This method differs from those above because of a higher number of function arguments. */
+/* This method differs from those above because of a higher number of function arguments. */
 {
     if (x->isUndefined() || y->isUndefined())
         return Undefined::create();
     else if (x->isNumericallyEvaluable() && y->isNumericallyEvaluable())
         return createAtan2Numerically(y, x);
     else
-        return createInstance(Type::ATAN2, { y, x });
+        return createInstance(Type::ATAN2, {y, x});
 }
 
 tsym::BasePtr tsym::Trigonometric::create(Type type, const BasePtr& arg)
@@ -98,7 +99,7 @@ tsym::BasePtr tsym::Trigonometric::create(Type type, const BasePtr& arg)
     else if (arg->isNumericallyEvaluable())
         return createNumerically(type, arg);
     else
-        return createInstance(type, { arg });
+        return createInstance(type, {arg});
 }
 
 tsym::BasePtr tsym::Trigonometric::createInstance(Type type, const BasePtrList& args)
@@ -152,15 +153,15 @@ tsym::BasePtr tsym::Trigonometric::createNumerically(Type type, const BasePtr& a
     else if (arg->isNegative())
         return createNumericallyBySymmetry(type, arg);
     else
-        return createInstance(type, { arg });
+        return createInstance(type, {arg});
 }
 
 tsym::BasePtr tsym::Trigonometric::createNumericallyBySymmetry(Type type, const BasePtr& arg)
-    /* Here, the final BasePtr has to be created directly, i.e., not by entering the create(...)
-     * cycle again, as this can cause infinite loops. */
+/* Here, the final BasePtr has to be created directly, i.e., not by entering the create(...)
+ * cycle again, as this can cause infinite loops. */
 {
     const BasePtr positiveArg(Product::minus(arg));
-    const BasePtr shiftedResult(createInstance(type, { positiveArg }));
+    const BasePtr shiftedResult(createInstance(type, {positiveArg}));
 
     if (type == Type::COS)
         return shiftedResult;
@@ -172,17 +173,17 @@ tsym::BasePtr tsym::Trigonometric::createNumericallyBySymmetry(Type type, const 
 
 tsym::BasePtr tsym::Trigonometric::createFromFunction(Type type, const BasePtr& arg)
 {
-    const Trigonometric *trigo(tryCast(arg));
+    const Trigonometric* trigo(tryCast(arg));
 
     if (trigo == nullptr)
-        return createInstance(type, { arg });
+        return createInstance(type, {arg});
     else
         return createFromTrigo(type, arg);
 }
 
-const tsym::Trigonometric *tsym::Trigonometric::tryCast(const BasePtr& arg)
+const tsym::Trigonometric* tsym::Trigonometric::tryCast(const BasePtr& arg)
 {
-    const Trigonometric *cast;
+    const Trigonometric* cast;
 
     cast = dynamic_cast<const Trigonometric*>(&*arg);
 
@@ -193,7 +194,7 @@ const tsym::Trigonometric *tsym::Trigonometric::tryCast(const BasePtr& arg)
 
 tsym::BasePtr tsym::Trigonometric::createFromTrigo(Type type, const BasePtr& arg)
 {
-    const Trigonometric *other(tryCast(arg));
+    const Trigonometric* other(tryCast(arg));
     const Type otherType = other->type;
 
     if (isOtherTheInverse(type, otherType))
@@ -210,8 +211,8 @@ tsym::BasePtr tsym::Trigonometric::createFromTrigo(Type type, const BasePtr& arg
 }
 
 bool tsym::Trigonometric::isOtherTheInverse(Type type, Type otherType)
-    /* Doesn't return true for a general pair of e.g. asin - sin, the first type must be the
-     * non-inverse part. Atan2 isn't considered here. */
+/* Doesn't return true for a general pair of e.g. asin - sin, the first type must be the
+ * non-inverse part. Atan2 isn't considered here. */
 {
     if (type == Type::SIN)
         return otherType == Type::ASIN;
@@ -234,12 +235,12 @@ bool tsym::Trigonometric::isThisTheInverse(Type type, Type otherType)
 }
 
 tsym::BasePtr tsym::Trigonometric::shiftArgIntoRange(Type type, BasePtr arg)
-    /* Asin(sin(...)), acos(cos(...)) and atan(tan(...)) are handled here, where the argument is
-     * numerically evaluable. First, the argument is shifted into or closely above the range of
-     * definition of the non-inverse trigonometric function (which is [-pi/2, pi/2] for sine and
-     * tangent and [0, pi] for the cosine) by addition/subtraction of 2*pi. If the resulting
-     * argument lies within this range, it is returned. Otherwise, it is subtracted from the double
-     * of the interval and in case of atan(tan(...)) premultiplied by -1. */
+/* Asin(sin(...)), acos(cos(...)) and atan(tan(...)) are handled here, where the argument is
+ * numerically evaluable. First, the argument is shifted into or closely above the range of
+ * definition of the non-inverse trigonometric function (which is [-pi/2, pi/2] for sine and
+ * tangent and [0, pi] for the cosine) by addition/subtraction of 2*pi. If the resulting
+ * argument lies within this range, it is returned. Otherwise, it is subtracted from the double
+ * of the interval and in case of atan(tan(...)) premultiplied by -1. */
 {
     BasePtr interval[2];
     BasePtr endFactor;
@@ -253,13 +254,12 @@ tsym::BasePtr tsym::Trigonometric::shiftArgIntoRange(Type type, BasePtr arg)
         arg = Sum::create(arg, timesPi(2));
 
     if (arg->numericEval() >= interval[1]->numericEval())
-        arg = Sum::create(Product::create(endFactor, Numeric::two(), interval[1]),
-                Product::minus(endFactor, arg));
+        arg = Sum::create(Product::create(endFactor, Numeric::two(), interval[1]), Product::minus(endFactor, arg));
 
     return arg;
 }
 
-void tsym::Trigonometric::defineIntervalAndEndFactor(Type type, BasePtr *interval, BasePtr& factor)
+void tsym::Trigonometric::defineIntervalAndEndFactor(Type type, BasePtr* interval, BasePtr& factor)
 {
     if (type == Type::ASIN || type == Type::ATAN) {
         interval[0] = timesPi(-1, 2);
@@ -274,15 +274,14 @@ void tsym::Trigonometric::defineIntervalAndEndFactor(Type type, BasePtr *interva
 
 tsym::BasePtr tsym::Trigonometric::createFromTrigoNoInverse(Type type, const BasePtr& arg)
 {
-    const Trigonometric *other(tryCast(arg));
+    const Trigonometric* other(tryCast(arg));
     const Type otherType = other->type;
     const BasePtr one(Numeric::one());
     const BasePtr aux1(Power::sqrt(Sum::create(one, Product::minus(square(other->arg1)))));
     const BasePtr aux2(Power::sqrt(Sum::create(one, square(other->arg1))));
     const BasePtr aux3(Power::sqrt(Sum::create(square(other->arg1), square(other->arg2))));
 
-    if ((type == Type::SIN && otherType == Type::ACOS) ||
-            (type == Type::COS && otherType == Type::ASIN))
+    if ((type == Type::SIN && otherType == Type::ACOS) || (type == Type::COS && otherType == Type::ASIN))
         return aux1;
     else if (type == Type::SIN && otherType == Type::ATAN)
         return Fraction(other->arg1, aux2).eval()->normal();
@@ -297,7 +296,7 @@ tsym::BasePtr tsym::Trigonometric::createFromTrigoNoInverse(Type type, const Bas
     else if (type == Type::TAN && otherType == Type::ACOS)
         return Fraction(aux1, other->arg1).eval()->normal();
     else
-        return createInstance(type, { arg });
+        return createInstance(type, {arg});
 }
 
 tsym::BasePtr tsym::Trigonometric::createAtan2Numerically(const BasePtr& y, const BasePtr& x)
@@ -323,11 +322,10 @@ tsym::BasePtr tsym::Trigonometric::createAtan2Numerically(const BasePtr& y, cons
     return simplAtan2(y, x, increment);
 }
 
-tsym::BasePtr tsym::Trigonometric::simplAtan2(const BasePtr& y, const BasePtr& x,
-        const BasePtr& increment)
+tsym::BasePtr tsym::Trigonometric::simplAtan2(const BasePtr& y, const BasePtr& x, const BasePtr& increment)
 {
     const BasePtr atan2Arg(atan2ArgEval(y, x));
-    const Trigonometric *trigo(tryCast(atan2Arg));
+    const Trigonometric* trigo(tryCast(atan2Arg));
     NumTrigoSimpl numTrigo;
 
     if (trigo != nullptr && trigo->type == Type::TAN)
@@ -342,7 +340,7 @@ tsym::BasePtr tsym::Trigonometric::simplAtan2(const BasePtr& y, const BasePtr& x
     else if (atan2Arg->isNegative())
         return createBySymmetry(Type::ATAN, atan2Arg);
     else
-        return createInstance(Type::ATAN, { atan2Arg });
+        return createInstance(Type::ATAN, {atan2Arg});
 }
 
 tsym::BasePtr tsym::Trigonometric::shiftAtanResultIntoRange(BasePtr result, BasePtr summand)
@@ -432,7 +430,7 @@ tsym::Number tsym::Trigonometric::checkedNumericEval() const
 }
 
 tsym::Fraction tsym::Trigonometric::normal(SymbolMap& map) const
-    /* Normalizes the function argument and replaces itself with a temporary symbol afterwards. */
+/* Normalizes the function argument and replaces itself with a temporary symbol afterwards. */
 {
     if (type == Type::ATAN2)
         return normalAtan2(map);

@@ -6,33 +6,33 @@
 
 namespace tsym {
     class AbcFixture {
-        public:
-            AbcFixture();
-            virtual ~AbcFixture() = default;
+      public:
+        AbcFixture();
+        virtual ~AbcFixture() = default;
 
-            const BasePtr a;
-            const BasePtr b;
-            const BasePtr c;
-            const BasePtr d;
-            const BasePtr e;
-            const BasePtr f;
-            const BasePtr g;
-            const BasePtr h;
+        const BasePtr a;
+        const BasePtr b;
+        const BasePtr c;
+        const BasePtr d;
+        const BasePtr e;
+        const BasePtr f;
+        const BasePtr g;
+        const BasePtr h;
 
-            const BasePtr& zero;
-            const BasePtr& one;
-            const BasePtr& two;
-            const BasePtr& three;
-            const BasePtr& four;
-            const BasePtr five;
-            const BasePtr six;
-            const BasePtr seven;
-            const BasePtr eight;
-            const BasePtr nine;
-            const BasePtr ten;
+        const BasePtr& zero;
+        const BasePtr& one;
+        const BasePtr& two;
+        const BasePtr& three;
+        const BasePtr& four;
+        const BasePtr five;
+        const BasePtr six;
+        const BasePtr seven;
+        const BasePtr eight;
+        const BasePtr nine;
+        const BasePtr ten;
 
-            const BasePtr& pi;
-            const BasePtr& undefined;
+        const BasePtr& pi;
+        const BasePtr& undefined;
     };
 
     struct TestSuiteLoggingFixture {

@@ -4,7 +4,7 @@
 #include <boost/optional.hpp>
 
 namespace tsym {
-    template<class T> using optional = boost::optional<T>;
+    template <class T> using optional = boost::optional<T>;
 }
 
 #endif

@@ -1,16 +1,16 @@
 
 #include <cmath>
-#include "power.h"
-#include "sum.h"
-#include "undefined.h"
 #include "constant.h"
-#include "numeric.h"
-#include "symbol.h"
-#include "product.h"
-#include "logarithm.h"
-#include "trigonometric.h"
 #include "fixtures.h"
+#include "logarithm.h"
+#include "numeric.h"
+#include "power.h"
+#include "product.h"
+#include "sum.h"
+#include "symbol.h"
+#include "trigonometric.h"
 #include "tsymtests.h"
+#include "undefined.h"
 
 using namespace tsym;
 
@@ -127,12 +127,11 @@ BOOST_AUTO_TEST_CASE(sinZero)
 }
 
 BOOST_AUTO_TEST_CASE(cos345Degree)
-    /* Cos(23/12*pi) = (sqrt(6) + sqrt(2))/4. */
+/* Cos(23/12*pi) = (sqrt(6) + sqrt(2))/4. */
 {
     const BasePtr arg = Product::create(Numeric::create(23, 12), pi);
     BasePtr res;
-    const BasePtr expected = Product::create(Numeric::fourth(),
-            Sum::create(Power::sqrt(six), sqrtTwo));
+    const BasePtr expected = Product::create(Numeric::fourth(), Sum::create(Power::sqrt(six), sqrtTwo));
 
     res = Trigonometric::createCos(arg);
 
@@ -140,7 +139,7 @@ BOOST_AUTO_TEST_CASE(cos345Degree)
 }
 
 BOOST_AUTO_TEST_CASE(tan240Degree)
-    /* Tan(4/3*Pi) = sqrt(3). */
+/* Tan(4/3*Pi) = sqrt(3). */
 {
     const BasePtr arg = Product::create(Numeric::create(4, 3), pi);
     const BasePtr res = Trigonometric::createTan(arg);
@@ -172,8 +171,7 @@ BOOST_AUTO_TEST_CASE(atan2XZeroNonEvaluable)
 BOOST_AUTO_TEST_CASE(atan2FirstQuadrantResolvable)
 {
     const BasePtr arg = Product::create(Numeric::create(25, 180), pi);
-    const BasePtr result = Trigonometric::createAtan2(Trigonometric::createSin(arg),
-            Trigonometric::createCos(arg));
+    const BasePtr result = Trigonometric::createAtan2(Trigonometric::createSin(arg), Trigonometric::createCos(arg));
 
     BOOST_CHECK_EQUAL(arg, result);
 }
@@ -228,7 +226,7 @@ BOOST_AUTO_TEST_CASE(pureNumericAtan2WithRangeCorretion)
     const BasePtr x = Numeric::create(numX);
     const BasePtr y = Numeric::create(numY);
     const BasePtr result = Trigonometric::createAtan2(y, x);
-    const BasePtr expected = Numeric::create(std::atan2(numY, numX) + 2.0*M_PI);
+    const BasePtr expected = Numeric::create(std::atan2(numY, numX) + 2.0 * M_PI);
 
     BOOST_CHECK_EQUAL(expected, result);
 }
@@ -282,9 +280,8 @@ BOOST_AUTO_TEST_CASE(sinOfAsin)
 
 BOOST_AUTO_TEST_CASE(sinOfNegativeSum)
 {
-    const BasePtr arg = Sum::create(Product::minus(a, b, c),
-            Product::create(Numeric::create(-7, 8), a),
-            Product::minus(a, Trigonometric::createCos(b)));
+    const BasePtr arg = Sum::create(Product::minus(a, b, c), Product::create(Numeric::create(-7, 8), a),
+      Product::minus(a, Trigonometric::createCos(b)));
     const BasePtr expected = Product::minus(Trigonometric::createSin(Product::minus(arg)));
     const BasePtr res = Trigonometric::createSin(arg);
 
@@ -293,8 +290,7 @@ BOOST_AUTO_TEST_CASE(sinOfNegativeSum)
 
 BOOST_AUTO_TEST_CASE(sinOfNegativeProduct)
 {
-    const BasePtr arg = Product::create(Numeric::create(-1, 5),
-            Power::create(two, Numeric::third()), a);
+    const BasePtr arg = Product::create(Numeric::create(-1, 5), Power::create(two, Numeric::third()), a);
     const BasePtr res = Trigonometric::createSin(arg);
     const BasePtr expected = Product::minus(Trigonometric::createSin(Product::minus(arg)));
 
@@ -370,9 +366,8 @@ BOOST_AUTO_TEST_CASE(atanOfNegSimpleProduct)
 
 BOOST_AUTO_TEST_CASE(atanOfNegSum)
 {
-    const BasePtr arg = Sum::create(Product::minus(two, a, b, c),
-            Product::create(Numeric::create(-7, 11), sqrtTwo),
-            Product::minus(Logarithm::create(Sum::create(Numeric::create(-2, 3), a))));
+    const BasePtr arg = Sum::create(Product::minus(two, a, b, c), Product::create(Numeric::create(-7, 11), sqrtTwo),
+      Product::minus(Logarithm::create(Sum::create(Numeric::create(-2, 3), a))));
     const BasePtr expected = Product::minus(Trigonometric::createAtan(Product::minus(arg)));
     const BasePtr res = Trigonometric::createAtan(arg);
 
@@ -388,10 +383,9 @@ BOOST_AUTO_TEST_CASE(tanOfMinusAtan)
 }
 
 BOOST_AUTO_TEST_CASE(tanOfMinusAsin)
-    /* Tan(-asin(a)) = -a/sqrt(1 - a^2). */
+/* Tan(-asin(a)) = -a/sqrt(1 - a^2). */
 {
-    const BasePtr expected = Product::minus(a,
-            Power::create(Sum::create(one, Product::minus(a, a)), minusHalf));
+    const BasePtr expected = Product::minus(a, Power::create(Sum::create(one, Product::minus(a, a)), minusHalf));
     const BasePtr mAsin = Product::minus(Trigonometric::createAsin(a));
     const BasePtr res = Trigonometric::createTan(mAsin);
 
@@ -424,7 +418,7 @@ BOOST_AUTO_TEST_CASE(sinOfCos)
 }
 
 BOOST_AUTO_TEST_CASE(asinOfSin)
-    /* Asin(sin(a)) isn't simplified. */
+/* Asin(sin(a)) isn't simplified. */
 {
     const BasePtr sin = Trigonometric::createSin(a);
     const BasePtr res = Trigonometric::createAsin(sin);
@@ -439,7 +433,7 @@ BOOST_AUTO_TEST_CASE(asinOfSin)
 }
 
 BOOST_AUTO_TEST_CASE(asinOfMinusSin)
-    /* Asin(-sin(a)) = -asin(sin(a)). */
+/* Asin(-sin(a)) = -asin(sin(a)). */
 {
     const BasePtr expected = Product::minus(Trigonometric::createAsin(Trigonometric::createSin(a)));
     const BasePtr minusSin = Product::minus(Trigonometric::createSin(a));
@@ -449,7 +443,7 @@ BOOST_AUTO_TEST_CASE(asinOfMinusSin)
 }
 
 BOOST_AUTO_TEST_CASE(acosOfCos)
-    /* Acos(cos(a)) isn't simplified. */
+/* Acos(cos(a)) isn't simplified. */
 {
     const BasePtr res = Trigonometric::createAcos(Trigonometric::createCos(a));
 
@@ -459,10 +453,9 @@ BOOST_AUTO_TEST_CASE(acosOfCos)
 }
 
 BOOST_AUTO_TEST_CASE(acosOfMinusCos)
-    /* Acos(-cos(a)) = pi - acos(cos(a)). */
+/* Acos(-cos(a)) = pi - acos(cos(a)). */
 {
-    const BasePtr expected = Sum::create(pi,
-            Product::minus(Trigonometric::createAcos(Trigonometric::createCos(a))));
+    const BasePtr expected = Sum::create(pi, Product::minus(Trigonometric::createAcos(Trigonometric::createCos(a))));
     const BasePtr minusCos = Product::minus(Trigonometric::createCos(a));
     const BasePtr res = Trigonometric::createAcos(minusCos);
     BasePtr arg;
@@ -471,7 +464,7 @@ BOOST_AUTO_TEST_CASE(acosOfMinusCos)
 }
 
 BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalNoShift)
-    /* Asin(sin(-1/sqrt(5))) = -1/sqrt(5). */
+/* Asin(sin(-1/sqrt(5))) = -1/sqrt(5). */
 {
     const BasePtr arg = Power::oneOver(Product::minus(Power::create(five, Numeric::half())));
     const BasePtr res = Trigonometric::createAsin(Trigonometric::createSin(arg));
@@ -480,7 +473,7 @@ BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalNoShift)
 }
 
 BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalNoShift2)
-    /* Asin(sin(2/17)) = 2/17. */
+/* Asin(sin(2/17)) = 2/17. */
 {
     const BasePtr arg = Numeric::create(2, 17);
     const BasePtr sin = Trigonometric::createSin(arg);
@@ -490,7 +483,7 @@ BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalNoShift2)
 }
 
 BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalNegShift)
-    /*  Asin(sin(13/4*pi)) = -pi/4. */
+/*  Asin(sin(13/4*pi)) = -pi/4. */
 {
     const BasePtr arg = Product::create(Numeric::create(13, 4), pi);
     const BasePtr res = Trigonometric::createAsin(Trigonometric::createSin(arg));
@@ -500,7 +493,7 @@ BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalNegShift)
 }
 
 BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalNegShift2)
-    /* Asin(sin(12*sqrt(pi))) = 7*pi - 12*sqrt(pi). */
+/* Asin(sin(12*sqrt(pi))) = 7*pi - 12*sqrt(pi). */
 {
     const BasePtr arg = Product::create(Numeric::create(12), Power::sqrt(pi));
     const BasePtr sin = Trigonometric::createSin(arg);
@@ -511,19 +504,17 @@ BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalNegShift2)
 }
 
 BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalPosShift)
-    /* Asin(sin(-79/7*pi + 2/15)) = 2/7*pi - 2/15. */
+/* Asin(sin(-79/7*pi + 2/15)) = 2/7*pi - 2/15. */
 {
-    const BasePtr arg = Sum::create(Numeric::create(2, 15),
-            Product::create(Numeric::create(-79, 7), pi));
+    const BasePtr arg = Sum::create(Numeric::create(2, 15), Product::create(Numeric::create(-79, 7), pi));
     const BasePtr res = Trigonometric::createAsin(Trigonometric::createSin(arg));
-    const BasePtr expected = Sum::create(Product::create(Numeric::create(2, 7), pi),
-            Numeric::create(-2, 15));
+    const BasePtr expected = Sum::create(Product::create(Numeric::create(2, 7), pi), Numeric::create(-2, 15));
 
     BOOST_CHECK_EQUAL(expected, res);
 }
 
 BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalPosShift2)
-    /* Asin(sin(-6/7*pi)) = -pi/7. */
+/* Asin(sin(-6/7*pi)) = -pi/7. */
 {
     const BasePtr arg = Product::create(Numeric::create(-6, 7), pi);
     const BasePtr res = Trigonometric::createAsin(Trigonometric::createSin(arg));
@@ -533,7 +524,7 @@ BOOST_AUTO_TEST_CASE(asinOfSinOfNumEvalPosShift2)
 }
 
 BOOST_AUTO_TEST_CASE(asinOfMinusAsinNumEval)
-    /* Asin(-sin(1/2)) = -1/2. */
+/* Asin(-sin(1/2)) = -1/2. */
 {
     const BasePtr mSin = Product::minus(Trigonometric::createSin(Numeric::half()));
     const BasePtr res = Trigonometric::createAsin(mSin);
@@ -542,7 +533,7 @@ BOOST_AUTO_TEST_CASE(asinOfMinusAsinNumEval)
 }
 
 BOOST_AUTO_TEST_CASE(atanOfTanNumEvalNoShift)
-    /* Atan(tan(1/2)) = 1/2. */
+/* Atan(tan(1/2)) = 1/2. */
 {
     const BasePtr& half = Numeric::half();
     const BasePtr tan = Trigonometric::createTan(half);
@@ -552,7 +543,7 @@ BOOST_AUTO_TEST_CASE(atanOfTanNumEvalNoShift)
 }
 
 BOOST_AUTO_TEST_CASE(atanOfTanNumEvalWithNegShift)
-    /* Atan(tan(2)) = 2 - pi, after substitution. */
+/* Atan(tan(2)) = 2 - pi, after substitution. */
 {
     const BasePtr expected = Sum::create(two, Product::minus(pi));
     const BasePtr tan = Trigonometric::createTan(a);
@@ -568,7 +559,7 @@ BOOST_AUTO_TEST_CASE(atanOfTanNumEvalWithNegShift)
 }
 
 BOOST_AUTO_TEST_CASE(atanOfTanNumEvalWithPosShift)
-    /* Atan(tan(-23/21*pi - sqrt(3))) = 19/21*pi - sqrt(3). */
+/* Atan(tan(-23/21*pi - sqrt(3))) = 19/21*pi - sqrt(3). */
 {
     const BasePtr sqrt = Product::minus(Power::sqrt(three));
     const BasePtr arg = Sum::create(Product::create(Numeric::create(-23, 21), pi), sqrt);
@@ -579,7 +570,7 @@ BOOST_AUTO_TEST_CASE(atanOfTanNumEvalWithPosShift)
 }
 
 BOOST_AUTO_TEST_CASE(atanOfMinusTanNumEval)
-    /* Atan(-tan(-1/2)) = 1/2. */
+/* Atan(-tan(-1/2)) = 1/2. */
 {
     const BasePtr mTan = Product::minus(Trigonometric::createTan(Numeric::create(-1, 2)));
     const BasePtr res = Trigonometric::createAtan(mTan);
@@ -588,7 +579,7 @@ BOOST_AUTO_TEST_CASE(atanOfMinusTanNumEval)
 }
 
 BOOST_AUTO_TEST_CASE(acosOfCosNumEvalNoShift)
-    /* Acos(cos(1/2)) = 1/2. */
+/* Acos(cos(1/2)) = 1/2. */
 {
     const BasePtr& half = Numeric::half();
     const BasePtr cos = Trigonometric::createCos(half);
@@ -598,21 +589,19 @@ BOOST_AUTO_TEST_CASE(acosOfCosNumEvalNoShift)
 }
 
 BOOST_AUTO_TEST_CASE(acosOfCosNumEvalPosShift)
-    /* Acos(cos(-sqrt(21) - 3/8*pi)) = 13/8*pi - sqrt(21). */
+/* Acos(cos(-sqrt(21) - 3/8*pi)) = 13/8*pi - sqrt(21). */
 {
     const BasePtr sqrt = Power::sqrt(Numeric::create(21));
-    const BasePtr arg = Product::minus(Sum::create(sqrt,
-                Product::create(Numeric::create(3, 8), pi)));
+    const BasePtr arg = Product::minus(Sum::create(sqrt, Product::create(Numeric::create(3, 8), pi)));
     const BasePtr cos = Trigonometric::createCos(arg);
     const BasePtr acos = Trigonometric::createAcos(cos);
-    const BasePtr expected = Sum::create(Product::create(Numeric::create(13, 8), pi),
-            Product::minus(sqrt));
+    const BasePtr expected = Sum::create(Product::create(Numeric::create(13, 8), pi), Product::minus(sqrt));
 
     BOOST_CHECK_EQUAL(expected, acos);
 }
 
 BOOST_AUTO_TEST_CASE(acosOfCosNumEvalNegShift)
-    /* Acos(cos(11/7*pi + 2^(1/3) + 0.123456)) = 2^(1/3) + 0.123456 - 3/7*pi. */
+/* Acos(cos(11/7*pi + 2^(1/3) + 0.123456)) = 2^(1/3) + 0.123456 - 3/7*pi. */
 {
     const BasePtr pow = Power::create(two, Numeric::third());
     const BasePtr sum = Sum::create(Numeric::create(0.123456), pow);
@@ -624,7 +613,7 @@ BOOST_AUTO_TEST_CASE(acosOfCosNumEvalNegShift)
 }
 
 BOOST_AUTO_TEST_CASE(acosOfCosNumEvalNegShiftAndCorrection)
-    /* Acos(cos(37/11*pi)) = 7/11*pi. */
+/* Acos(cos(37/11*pi)) = 7/11*pi. */
 {
     const BasePtr arg = Product::create(Numeric::create(37, 11), pi);
     const BasePtr res = Trigonometric::createAcos(Trigonometric::createCos(arg));
@@ -634,7 +623,7 @@ BOOST_AUTO_TEST_CASE(acosOfCosNumEvalNegShiftAndCorrection)
 }
 
 BOOST_AUTO_TEST_CASE(acosOfCosNumEvalPosShiftAndCorrection)
-    /* Acos(cos(-sqrt(21) - pi)) = sqrt(21) - pi. */
+/* Acos(cos(-sqrt(21) - pi)) = sqrt(21) - pi. */
 {
     const BasePtr sqrt = Power::sqrt(Numeric::create(21));
     const BasePtr arg = Product::minus(Sum::create(sqrt, Product::minus(pi)));
@@ -645,7 +634,7 @@ BOOST_AUTO_TEST_CASE(acosOfCosNumEvalPosShiftAndCorrection)
 }
 
 BOOST_AUTO_TEST_CASE(acosOfNegativeCosNumEvalWithShift)
-    /* Acos(-cos(1/2)) = pi - 1/2. */
+/* Acos(-cos(1/2)) = pi - 1/2. */
 {
     const BasePtr arg = Product::minus(Trigonometric::createCos(Numeric::half()));
     const BasePtr res = Trigonometric::createAcos(arg);
@@ -654,7 +643,7 @@ BOOST_AUTO_TEST_CASE(acosOfNegativeCosNumEvalWithShift)
 }
 
 BOOST_AUTO_TEST_CASE(sinOfAcos)
-    /* Sin(acos(a)) = sqrt(1 - a^2). */
+/* Sin(acos(a)) = sqrt(1 - a^2). */
 {
     const BasePtr expected = Power::sqrt(Sum::create(one, Product::minus(aSquare)));
     const BasePtr res = Trigonometric::createSin(Trigonometric::createAcos(a));
@@ -663,7 +652,7 @@ BOOST_AUTO_TEST_CASE(sinOfAcos)
 }
 
 BOOST_AUTO_TEST_CASE(cosOfAsin)
-    /* Cos(asin(a)) = sqrt(1 - a^2). */
+/* Cos(asin(a)) = sqrt(1 - a^2). */
 {
     const BasePtr expected = Power::sqrt(Sum::create(one, Product::minus(aSquare)));
     const BasePtr res = Trigonometric::createCos(Trigonometric::createAsin(a));
@@ -672,17 +661,16 @@ BOOST_AUTO_TEST_CASE(cosOfAsin)
 }
 
 BOOST_AUTO_TEST_CASE(sinOfAtan)
-    /* Sin(atan(a)) = a/sqrt(a^2 + 1). */
+/* Sin(atan(a)) = a/sqrt(a^2 + 1). */
 {
-    const BasePtr expected = Product::create(a,
-            Power::create(Sum::create(aSquare, one), minusHalf));
+    const BasePtr expected = Product::create(a, Power::create(Sum::create(aSquare, one), minusHalf));
     const BasePtr res = Trigonometric::createSin(Trigonometric::createAtan(a));
 
     BOOST_CHECK_EQUAL(expected, res);
 }
 
 BOOST_AUTO_TEST_CASE(cosOfAtan)
-    /* Cos(atan(a)) = 1/sqrt(a^2 + 1). */
+/* Cos(atan(a)) = 1/sqrt(a^2 + 1). */
 {
     const BasePtr expected = Power::create(Sum::create(Power::create(a, two), one), minusHalf);
     const BasePtr res = Trigonometric::createCos(Trigonometric::createAtan(a));
@@ -691,27 +679,26 @@ BOOST_AUTO_TEST_CASE(cosOfAtan)
 }
 
 BOOST_AUTO_TEST_CASE(tanOfAsin)
-    /* Tan(asin(a)) = a/sqrt(1 - a^2). */
+/* Tan(asin(a)) = a/sqrt(1 - a^2). */
 {
-    const BasePtr expected = Product::create(a,
-            Power::create(Sum::create(one, Product::minus(Power::create(a, two))), minusHalf));
+    const BasePtr expected =
+      Product::create(a, Power::create(Sum::create(one, Product::minus(Power::create(a, two))), minusHalf));
     const BasePtr res = Trigonometric::createTan(Trigonometric::createAsin(a));
 
     BOOST_CHECK_EQUAL(expected, res);
 }
 
 BOOST_AUTO_TEST_CASE(tanOfAcos)
-    /* Tan(asin(a)) = sqrt(1 - a^2)/a. */
+/* Tan(asin(a)) = sqrt(1 - a^2)/a. */
 {
-    const BasePtr expected = Product::create(Power::sqrt(Sum::create(one, Product::minus(aSquare))),
-            Power::oneOver(a));
+    const BasePtr expected = Product::create(Power::sqrt(Sum::create(one, Product::minus(aSquare))), Power::oneOver(a));
     const BasePtr res = Trigonometric::createTan(Trigonometric::createAcos(a));
 
     BOOST_CHECK_EQUAL(expected, res);
 }
 
 BOOST_AUTO_TEST_CASE(atan2OfSinCos)
-    /* Atan2(sin(a), cos(a)) isn't simplified. */
+/* Atan2(sin(a), cos(a)) isn't simplified. */
 {
     const BasePtr cosA = Trigonometric::createCos(a);
     const BasePtr res = Trigonometric::createAtan2(sinA, cosA);
@@ -722,7 +709,7 @@ BOOST_AUTO_TEST_CASE(atan2OfSinCos)
 }
 
 BOOST_AUTO_TEST_CASE(atan2OfNumericsNotResolvableArg)
-    /* Atan2(2/3, 7/11) = atan(22/21). */
+/* Atan2(2/3, 7/11) = atan(22/21). */
 {
     const BasePtr res = Trigonometric::createAtan2(Numeric::create(2, 3), Numeric::create(7, 11));
     const BasePtr expected = Trigonometric::createAtan(Numeric::create(22, 21));
@@ -733,8 +720,7 @@ BOOST_AUTO_TEST_CASE(atan2OfNumericsNotResolvableArg)
 BOOST_AUTO_TEST_CASE(atan2OfNumEvaluableNotResolvable)
 {
     const BasePtr y = Logarithm::create(Trigonometric::createTan(Numeric::half()));
-    const BasePtr x = Sum::create(Product::create(sqrtTwo, Constant::createE()), five,
-            Trigonometric::createCos(two));
+    const BasePtr x = Sum::create(Product::create(sqrtTwo, Constant::createE()), five, Trigonometric::createCos(two));
     const BasePtr res = Trigonometric::createAtan2(y, x);
     const BasePtr expected = Trigonometric::createAtan(Product::create(y, Power::oneOver(x)));
 
@@ -750,8 +736,8 @@ BOOST_AUTO_TEST_CASE(atan2OfNegNumEvaluableArg)
 }
 
 BOOST_AUTO_TEST_CASE(atan2OfNegSymbolicArg)
-    /* No symmetry simplification should apply, as the argument(s) aren't clearly positive or
-     * negative. */
+/* No symmetry simplification should apply, as the argument(s) aren't clearly positive or
+ * negative. */
 {
     const BasePtr res = Trigonometric::createAtan2(Product::minus(a), b);
 
@@ -761,7 +747,7 @@ BOOST_AUTO_TEST_CASE(atan2OfNegSymbolicArg)
 }
 
 BOOST_AUTO_TEST_CASE(tanOfAtan2)
-    /* Tan(atan2(b, a)) = b/a. */
+/* Tan(atan2(b, a)) = b/a. */
 {
     const BasePtr atan2 = Trigonometric::createAtan2(b, a);
     const BasePtr result = Trigonometric::createTan(atan2);
@@ -771,29 +757,29 @@ BOOST_AUTO_TEST_CASE(tanOfAtan2)
 }
 
 BOOST_AUTO_TEST_CASE(cosOfAtan2)
-    /* Cos(atan2(b, a)) = a/sqrt(a^2 + b^2). */
+/* Cos(atan2(b, a)) = a/sqrt(a^2 + b^2). */
 {
     const BasePtr atan2 = Trigonometric::createAtan2(b, a);
     const BasePtr result = Trigonometric::createCos(atan2);
-    const BasePtr expected = Product::create(a, Power::create(Sum::create(aSquare,
-                    Power::create(b, two)), Numeric::create(-1, 2)));
+    const BasePtr expected =
+      Product::create(a, Power::create(Sum::create(aSquare, Power::create(b, two)), Numeric::create(-1, 2)));
 
     BOOST_CHECK_EQUAL(expected, result);
 }
 
 BOOST_AUTO_TEST_CASE(sinOfAtan2)
-    /* Sin(atan2(b, a)) = b/sqrt(a^2 + b^2). */
+/* Sin(atan2(b, a)) = b/sqrt(a^2 + b^2). */
 {
     const BasePtr atan2 = Trigonometric::createAtan2(b, a);
     const BasePtr result = Trigonometric::createSin(atan2);
-    const BasePtr expected = Product::create(b, Power::create(Sum::create(aSquare,
-                    Power::create(b, two)), Numeric::create(-1, 2)));
+    const BasePtr expected =
+      Product::create(b, Power::create(Sum::create(aSquare, Power::create(b, two)), Numeric::create(-1, 2)));
 
     BOOST_CHECK_EQUAL(expected, result);
 }
 
 BOOST_AUTO_TEST_CASE(sinOfAtan2NegDeltaYOnly)
-    /* Sin(atan2(-a, 0)) = -1 for positive a. */
+/* Sin(atan2(-a, 0)) = -1 for positive a. */
 {
     const BasePtr minusA = Product::minus(Symbol::createPositive("a"));
     const BasePtr res = Trigonometric::createSin(Trigonometric::createAtan2(minusA, zero));
@@ -802,7 +788,7 @@ BOOST_AUTO_TEST_CASE(sinOfAtan2NegDeltaYOnly)
 }
 
 BOOST_AUTO_TEST_CASE(sinOfAtan2NegDeltaYSumOnly)
-    /* Sin(atan2(-a - b, 0)) = -1 for positive a and b. */
+/* Sin(atan2(-a - b, 0)) = -1 for positive a and b. */
 {
     const BasePtr minusA = Product::minus(Symbol::createPositive("a"));
     const BasePtr minusB = Product::minus(Symbol::createPositive("b"));
@@ -844,9 +830,9 @@ BOOST_AUTO_TEST_CASE(nonConstTerm)
 }
 
 BOOST_AUTO_TEST_CASE(numericEvaluation)
-    /* Sin/cos/tan/asin/acos/atan(sqrt(2)/10) can be evaluated to a double. */
+/* Sin/cos/tan/asin/acos/atan(sqrt(2)/10) can be evaluated to a double. */
 {
-    const double dArg = 0.1*std::sqrt(2.0);
+    const double dArg = 0.1 * std::sqrt(2.0);
     const BasePtr arg = Product::create(Numeric::create(1, 10), sqrtTwo);
     BasePtr fct;
 

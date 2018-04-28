@@ -1,15 +1,15 @@
 
-#include "order.h"
-#include "symbol.h"
-#include "numeric.h"
 #include "constant.h"
-#include "sum.h"
-#include "undefined.h"
+#include "fixtures.h"
+#include "numeric.h"
+#include "order.h"
 #include "power.h"
 #include "product.h"
+#include "sum.h"
+#include "symbol.h"
 #include "trigonometric.h"
-#include "fixtures.h"
 #include "tsymtests.h"
+#include "undefined.h"
 
 using namespace tsym;
 
@@ -157,7 +157,8 @@ BOOST_AUTO_TEST_CASE(sumsWithThreeSummands)
 BOOST_AUTO_TEST_CASE(sumsWithTwoAndThreeSummands)
 {
     const BasePtr sum1 = Sum::create(c, d);
-    const BasePtr sum2 = Sum::create(b, c, d);;
+    const BasePtr sum2 = Sum::create(b, c, d);
+    ;
 
     BOOST_TEST(order::doPermute(sum2, sum1));
     BOOST_TEST(order::isCorrect(sum1, sum2));
@@ -171,7 +172,7 @@ BOOST_AUTO_TEST_CASE(equalSumsWithFourSummands)
 }
 
 BOOST_AUTO_TEST_CASE(productsWithTwoFactors)
-    /* This causes the same functions to be called as the sum tests do, so one test is enough. */
+/* This causes the same functions to be called as the sum tests do, so one test is enough. */
 {
     const BasePtr product1 = Product::create(a, b);
     const BasePtr product2 = Product::create(a, c);
@@ -215,7 +216,7 @@ BOOST_AUTO_TEST_CASE(sumAndSymbol)
 }
 
 BOOST_AUTO_TEST_CASE(powerAndSum)
-    /* Switch (1/2 + b) and (1/2 + a)^2. */
+/* Switch (1/2 + b) and (1/2 + a)^2. */
 {
     const BasePtr sum1 = Sum::create(Numeric::half(), a);
     const BasePtr sum2 = Sum::create(Numeric::half(), b);

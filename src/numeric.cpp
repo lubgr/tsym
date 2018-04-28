@@ -1,12 +1,12 @@
 
 #include "numeric.h"
-#include "undefined.h"
 #include "fraction.h"
-#include "symbolmap.h"
 #include "logging.h"
+#include "symbolmap.h"
+#include "undefined.h"
 
-tsym::Numeric::Numeric(const Number& number, Base::CtorKey&&) :
-    number(number)
+tsym::Numeric::Numeric(const Number& number, Base::CtorKey&&)
+    : number(number)
 {
     setDebugString();
 }
@@ -47,7 +47,7 @@ tsym::BasePtr tsym::Numeric::create(const Number& number)
 
 namespace tsym {
     namespace {
-        template<int num, int denom = 1> const tsym::BasePtr& refToLocalStatic()
+        template <int num, int denom = 1> const tsym::BasePtr& refToLocalStatic()
         {
             static const auto n = Numeric::create(num, denom);
 
@@ -156,7 +156,7 @@ unsigned tsym::Numeric::complexity() const
 {
     if (number.isInt())
         return 1;
-    else if(number.isFrac())
+    else if (number.isFrac())
         return 2;
     else
         return 3;

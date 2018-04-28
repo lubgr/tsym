@@ -1,11 +1,11 @@
 
 #include "plaintextprintengine.h"
-#include "name.h"
 #include "logging.h"
+#include "name.h"
 
-tsym::PlaintextPrintEngine::PlaintextPrintEngine(std::ostream& out, CharSet charset) :
-    PrintEngine<PlaintextPrintEngine>(out),
-    charset(charset)
+tsym::PlaintextPrintEngine::PlaintextPrintEngine(std::ostream& out, CharSet charset)
+    : PrintEngine<PlaintextPrintEngine>(out)
+    , charset(charset)
 {}
 
 tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::symbol(const Name& name)

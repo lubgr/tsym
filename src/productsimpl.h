@@ -1,9 +1,9 @@
 #ifndef TSYM_PRODUCTSIMPL_H
 #define TSYM_PRODUCTSIMPL_H
 
-#include "int.h"
 #include "baseptr.h"
 #include "baseptrlist.h"
+#include "int.h"
 #include "trigonometric.h"
 
 namespace tsym {

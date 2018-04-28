@@ -1,37 +1,37 @@
 
-#include <exception>
-#include <cmath>
-#include <cassert>
-#include <iostream>
-#include <sstream>
-#include <limits>
-#include <boost/functional/hash.hpp>
 #include "number.h"
-#include "printer.h"
-#include "plaintextprintengine.h"
+#include <boost/functional/hash.hpp>
+#include <cassert>
+#include <cmath>
+#include <exception>
+#include <iostream>
+#include <limits>
+#include <sstream>
 #include "logging.h"
+#include "plaintextprintengine.h"
+#include "printer.h"
 
-tsym::Number::Number(int value) :
-    Number(value, 1)
+tsym::Number::Number(int value)
+    : Number(value, 1)
 {}
 
-tsym::Number::Number(int numerator, int denominator) :
-    Number(Int(numerator), Int(denominator))
+tsym::Number::Number(int numerator, int denominator)
+    : Number(Int(numerator), Int(denominator))
 {}
 
-tsym::Number::Number(double value) :
-    dValue(value)
+tsym::Number::Number(double value)
+    : dValue(value)
 {
     tryDoubleToFraction();
     setDebugString();
 }
 
-tsym::Number::Number(Int value) :
-    Number(std::move(value), 1)
+tsym::Number::Number(Int value)
+    : Number(std::move(value), 1)
 {}
 
-tsym::Number::Number(Int numerator, Int denominator) :
-    rational(std::move(numerator), std::move(denominator))
+tsym::Number::Number(Int numerator, Int denominator)
+    : rational(std::move(numerator), std::move(denominator))
 {
     setDebugString();
 }
@@ -55,23 +55,22 @@ void tsym::Number::tryDoubleToFraction()
     static const int nFloatDigits = 10000;
     const double roundIncrement = dValue > 0.0 ? 0.5 : -0.5;
 
-    if (dValue > std::numeric_limits<double>::max()/nFloatDigits - roundIncrement/nFloatDigits)
+    if (dValue > std::numeric_limits<double>::max() / nFloatDigits - roundIncrement / nFloatDigits)
         /* The product for constructing a fraction doesn't fit into a double. */
         return;
-    else if (dValue
-            < std::numeric_limits<double>::lowest()/nFloatDigits - roundIncrement/nFloatDigits)
+    else if (dValue < std::numeric_limits<double>::lowest() / nFloatDigits - roundIncrement / nFloatDigits)
         return;
 
-    auto truncated = Int(dValue*nFloatDigits + roundIncrement);
+    auto truncated = Int(dValue * nFloatDigits + roundIncrement);
 
-    if (std::abs(static_cast<double>(truncated)/nFloatDigits - dValue) < ZERO_TOL) {
+    if (std::abs(static_cast<double>(truncated) / nFloatDigits - dValue) < ZERO_TOL) {
         /* This will also catch very low double values, which turns them into a rational zero. */
         rational.assign(std::move(truncated), Int(nFloatDigits));
         dValue = 0.0;
     }
 }
 
-tsym::Number& tsym::Number::operator += (const Number& rhs)
+tsym::Number& tsym::Number::operator+=(const Number& rhs)
 {
     if (isThisOrOtherDouble(rhs)) {
         dValue = toDouble() + rhs.toDouble();
@@ -90,9 +89,9 @@ bool tsym::Number::isThisOrOtherDouble(const Number& other) const
     return isDouble() || other.isDouble();
 }
 
-tsym::Number& tsym::Number::operator -= (const Number& rhs)
+tsym::Number& tsym::Number::operator-=(const Number& rhs)
 {
-    return operator += (rhs.flipSign());
+    return operator+=(rhs.flipSign());
 }
 
 tsym::Number tsym::Number::flipSign() const
@@ -109,10 +108,10 @@ tsym::Number tsym::Number::flipSign() const
     return copy;
 }
 
-tsym::Number& tsym::Number::operator *= (const Number& rhs)
+tsym::Number& tsym::Number::operator*=(const Number& rhs)
 {
     if (isThisOrOtherDouble(rhs)) {
-        dValue = toDouble()*rhs.toDouble();
+        dValue = toDouble() * rhs.toDouble();
         rational = 0;
         tryDoubleToFraction();
     } else
@@ -123,19 +122,19 @@ tsym::Number& tsym::Number::operator *= (const Number& rhs)
     return *this;
 }
 
-tsym::Number& tsym::Number::operator /= (const Number& rhs)
+tsym::Number& tsym::Number::operator/=(const Number& rhs)
 {
     static const Number minusOne(-1);
 
-    return operator *= (rhs.toThe(minusOne));
+    return operator*=(rhs.toThe(minusOne));
 }
 
-const tsym::Number& tsym::Number::operator + () const
+const tsym::Number& tsym::Number::operator+() const
 {
     return *this;
 }
 
-tsym::Number tsym::Number::operator - () const
+tsym::Number tsym::Number::operator-() const
 {
     return flipSign();
 }
@@ -157,8 +156,8 @@ tsym::Number tsym::Number::toThe(const Number& exponent) const
 }
 
 bool tsym::Number::processTrivialPowers(const Number& exponent, Number& result) const
-    /* If the power is evaluated within the block of trivial posssibilities, the second parameter is
-     * defined and true is returned, otherwise false. */
+/* If the power is evaluated within the block of trivial posssibilities, the second parameter is
+ * defined and true is returned, otherwise false. */
 {
     if (isZero() && exponent.numerator() < 0) {
         TSYM_ERROR("Number division by zero! Result is undefined.");
@@ -197,7 +196,7 @@ bool tsym::Number::processNegBase(const Number& exponent, Number& result) const
 
     preFac = preFac.toThe(exponent);
 
-    result = this->abs().toThe(exponent)*preFac;
+    result = this->abs().toThe(exponent) * preFac;
 
     return true;
 }
@@ -219,7 +218,7 @@ void tsym::Number::processRationalPowers(const Number& exponent, Number& result)
 }
 
 void tsym::Number::computeNumPower(const Int& numExponent, Number& result) const
-    /* For e.g. (1/2)^(2/3), this does the part (1/2)^2. */
+/* For e.g. (1/2)^(2/3), this does the part (1/2)^2. */
 {
     assert(integer::fitsInto<unsigned>(integer::abs(numExponent)));
     const unsigned exp = static_cast<unsigned>(integer::abs(numExponent));
@@ -234,9 +233,9 @@ void tsym::Number::computeNumPower(const Int& numExponent, Number& result) const
 }
 
 void tsym::Number::computeDenomPower(const Int& denomExponent, Number& result) const
-    /* For e.g. (1/2)^(2/3), this does the part (1/2)^(1/3), where an attempt is made to resolve the
-     * power exactly, i.e., check for simple bases matching the numerator/denominator with the given
-     * denominator exponent (e.g. 8^(1/3) = 2). */
+/* For e.g. (1/2)^(2/3), this does the part (1/2)^(1/3), where an attempt is made to resolve the
+ * power exactly, i.e., check for simple bases matching the numerator/denominator with the given
+ * denominator exponent (e.g. 8^(1/3) = 2). */
 {
     const Int numTest = tryGetBase(result.numerator(), denomExponent);
     const Int denomTest = tryGetBase(result.denominator(), denomExponent);
@@ -244,14 +243,14 @@ void tsym::Number::computeDenomPower(const Int& denomExponent, Number& result) c
     if (denomExponent == 1)
         return;
     else if (numTest == 0 || denomTest == 0)
-        result = Number(std::pow(result.toDouble(), 1.0/static_cast<double>(denomExponent)));
+        result = Number(std::pow(result.toDouble(), 1.0 / static_cast<double>(denomExponent)));
     else
         result = Number(numTest, denomTest);
 }
 
 tsym::Int tsym::Number::tryGetBase(const Int& n, const Int& denomExponent) const
-    /* Returns a in a^(1/denomExponent) = n, if that's an exact solution. Otherwise, returns 0. n
-     * and denomExponent are both positive. */
+/* Returns a in a^(1/denomExponent) = n, if that's an exact solution. Otherwise, returns 0. n
+ * and denomExponent are both positive. */
 {
     /* The following integer base can only be a solution, if the double resulting from the std::pow
      * call is more or less exactly an integer. That's why 0.1 is added instead of the usual 0.5 for
@@ -260,7 +259,7 @@ tsym::Int tsym::Number::tryGetBase(const Int& n, const Int& denomExponent) const
      * lead to an exact integer solution of the power. Thus, it is save to cast the double power
      * result to an integer after only adding 0.1 (which is somewhat arbitrary, could be any value
      * less than 0.5). */
-    const double exact = std::pow(static_cast<double>(n), 1.0/static_cast<double>(denomExponent));
+    const double exact = std::pow(static_cast<double>(n), 1.0 / static_cast<double>(denomExponent));
     const int base = static_cast<int>(exact + 0.1);
     Int res(base);
 
@@ -304,7 +303,7 @@ bool tsym::Number::equalViaDouble(const Number& rhs) const
     max = dLhs > max ? dLhs : max;
     max = dRhs > max ? dRhs : max;
 
-    return diff < TOL*max;
+    return diff < TOL * max;
 }
 
 bool tsym::Number::lessThan(const Number& rhs) const
@@ -373,17 +372,17 @@ int tsym::Number::sign() const
         return *this < 0 ? -1 : 1;
 }
 
-bool tsym::operator == (const Number& lhs, const Number& rhs)
+bool tsym::operator==(const Number& lhs, const Number& rhs)
 {
     return lhs.equal(rhs);
 }
 
-bool tsym::operator < (const Number& lhs, const Number& rhs)
+bool tsym::operator<(const Number& lhs, const Number& rhs)
 {
     return lhs.lessThan(rhs);
 }
 
-std::ostream& tsym::operator << (std::ostream& stream, const Number& rhs)
+std::ostream& tsym::operator<<(std::ostream& stream, const Number& rhs)
 {
     PlaintextPrintEngine engine(stream);
 
@@ -392,7 +391,7 @@ std::ostream& tsym::operator << (std::ostream& stream, const Number& rhs)
     return stream;
 }
 
-size_t std::hash<tsym::Number>::operator () (const tsym::Number& n) const
+size_t std::hash<tsym::Number>::operator()(const tsym::Number& n) const
 {
     size_t seed = 0;
 

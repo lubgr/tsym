@@ -1,9 +1,9 @@
 #ifndef TSYM_NUMPOWERSIMPL_H
 #define TSYM_NUMPOWERSIMPL_H
 
-#include "primefac.h"
-#include "options.h"
 #include "number.h"
+#include "options.h"
+#include "primefac.h"
 
 namespace tsym {
     class NumPowerSimpl {
@@ -28,56 +28,56 @@ namespace tsym {
          * The components can be obtained via getter methods, where the representation of a simple
          * resulting number n (in case the power could be resolved to a number, e.g. 4^(1/2) = 2) is
          * 1*n^1. */
-        public:
-            NumPowerSimpl() = default;
+      public:
+        NumPowerSimpl() = default;
 
-            void setPower(const Number& base, const Number& exp);
-            /* The prefactor is one when not specified: */
-            void setPreFac(const Number& fac);
-            /* Modify the default limit up to which prime factorization is performed for simplification: */
-            void setMaxPrimeResolution(Int limit);
+        void setPower(const Number& base, const Number& exp);
+        /* The prefactor is one when not specified: */
+        void setPreFac(const Number& fac);
+        /* Modify the default limit up to which prime factorization is performed for simplification: */
+        void setMaxPrimeResolution(Int limit);
 
-            bool isInputValid();
-            const Number& getNewBase();
-            const Number& getNewExp();
-            const Number& getPreFactor();
+        bool isInputValid();
+        const Number& getNewBase();
+        const Number& getNewExp();
+        const Number& getPreFactor();
 
-        private:
-            const Number& get(const Number& component);
-            void computeAndSetFlag();
-            void compute();
-            void initFromOrig();
-            void computeNonRational();
-            void computeRational();
-            void computeNegOrPosExp();
-            void computeNegExp();
-            void computePosExp();
-            void shiftNegBase();
-            void computePosExpPosBase();
-            void shiftNegPreFac();
-            void computeAllPos();
-            bool areValuesSmallEnough() const;
-            void cancel();
-            void defNewBasePrimes();
-            void defPreFacPrimesInPower();
-            void cancelAndExtract();
-            void collectPrimesInPower();
-            void primesToComponents();
-            void adjustExpGreaterThanOne();
-            void adjustExpSignAndBase();
-            void shiftPreFacSignBack();
+      private:
+        const Number& get(const Number& component);
+        void computeAndSetFlag();
+        void compute();
+        void initFromOrig();
+        void computeNonRational();
+        void computeRational();
+        void computeNegOrPosExp();
+        void computeNegExp();
+        void computePosExp();
+        void shiftNegBase();
+        void computePosExpPosBase();
+        void shiftNegPreFac();
+        void computeAllPos();
+        bool areValuesSmallEnough() const;
+        void cancel();
+        void defNewBasePrimes();
+        void defPreFacPrimesInPower();
+        void cancelAndExtract();
+        void collectPrimesInPower();
+        void primesToComponents();
+        void adjustExpGreaterThanOne();
+        void adjustExpSignAndBase();
+        void shiftPreFacSignBack();
 
-            Number origBase {0};
-            Number origExp {0};
-            Number origPreFac {1};
-            Number newBase {0};
-            Number newExp {0};
-            Number preFac {0};
-            bool needsComputation = true;
-            bool isPreFacNegative = false;
-            PrimeFac nbPrimes;
-            PrimeFac pfPrimes;
-            Int maxPrimeLimit = options::getMaxPrimeResolution();
+        Number origBase{0};
+        Number origExp{0};
+        Number origPreFac{1};
+        Number newBase{0};
+        Number newExp{0};
+        Number preFac{0};
+        bool needsComputation = true;
+        bool isPreFacNegative = false;
+        PrimeFac nbPrimes;
+        PrimeFac pfPrimes;
+        Int maxPrimeLimit = options::getMaxPrimeResolution();
     };
 }
 

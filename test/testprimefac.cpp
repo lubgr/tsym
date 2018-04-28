@@ -1,8 +1,8 @@
 
 #include <initializer_list>
+#include "number.h"
 #include "primefac.h"
 #include "tsymtests.h"
-#include "number.h"
 
 using namespace tsym;
 
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(product)
 }
 
 BOOST_AUTO_TEST_CASE(noExtractionFromInt)
-    /* Nothing is extracted from 5^(2/3). */
+/* Nothing is extracted from 5^(2/3). */
 {
     PrimeFac extraction;
 
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(noExtractionFromInt)
 }
 
 BOOST_AUTO_TEST_CASE(simpleExtraction)
-    /* Extraction from sqrt(4): 2. */
+/* Extraction from sqrt(4): 2. */
 {
     PrimeFac extraction;
 
@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE(simpleExtraction)
 }
 
 BOOST_AUTO_TEST_CASE(extraction)
-    /* Extraction from sqrt(12): 2. */
+/* Extraction from sqrt(12): 2. */
 {
     PrimeFac extraction;
 
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(extraction)
 }
 
 BOOST_AUTO_TEST_CASE(noExtractionFromFraction)
-    /* Extraction from (297/65000)^(2/5): 3/10.*/
+/* Extraction from (297/65000)^(2/5): 3/10.*/
 {
     PrimeFac extraction;
 
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(noExtractionFromFraction)
 }
 
 BOOST_AUTO_TEST_CASE(extractionFromFraction)
-    /* Extraction from (297/65000)^(2/3): 9/100.*/
+/* Extraction from (297/65000)^(2/3): 9/100.*/
 {
     PrimeFac extraction;
 
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(extractionFromFraction)
 }
 
 BOOST_AUTO_TEST_CASE(extractionNegativeExponent)
-    /* Extraction from (4/9)^(-3/2): 27/8. */
+/* Extraction from (4/9)^(-3/2): 27/8. */
 {
     PrimeFac extraction;
 
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE(extractionNegativeExponent)
 }
 
 BOOST_AUTO_TEST_CASE(emptyCount)
-    /* Count of 1: 0. */
+/* Count of 1: 0. */
 {
     int count;
 
@@ -238,7 +238,7 @@ BOOST_AUTO_TEST_CASE(emptyCount)
 }
 
 BOOST_AUTO_TEST_CASE(intCount)
-    /* Count of (2^5*3^5): 5. */
+/* Count of (2^5*3^5): 5. */
 {
     int count;
 
@@ -249,7 +249,7 @@ BOOST_AUTO_TEST_CASE(intCount)
 }
 
 BOOST_AUTO_TEST_CASE(intCountNonEqual)
-    /* Count of (2^3*3^3*7^2*11^3) : 0. */
+/* Count of (2^3*3^3*7^2*11^3) : 0. */
 {
     int count;
 
@@ -260,7 +260,7 @@ BOOST_AUTO_TEST_CASE(intCountNonEqual)
 }
 
 BOOST_AUTO_TEST_CASE(fractionCount)
-    /* Count of (2^4*3^4)/(7^4): 4. */
+/* Count of (2^4*3^4)/(7^4): 4. */
 {
     int count;
 
@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE(fractionCount)
 }
 
 BOOST_AUTO_TEST_CASE(fractionCountNumeratorOne)
-    /* 1/(2*2*3*3*5*5*7*7*11*11) : 2. */
+/* 1/(2*2*3*3*5*5*7*7*11*11) : 2. */
 {
     int count;
 
@@ -282,7 +282,7 @@ BOOST_AUTO_TEST_CASE(fractionCountNumeratorOne)
 }
 
 BOOST_AUTO_TEST_CASE(fractionCountNonEqual)
-    /* Count of (2*3*5*7)/(11*13*13) : 0. */
+/* Count of (2*3*5*7)/(11*13*13) : 0. */
 {
     int count;
 
@@ -293,7 +293,7 @@ BOOST_AUTO_TEST_CASE(fractionCountNonEqual)
 }
 
 BOOST_AUTO_TEST_CASE(intCollection)
-    /* 25^(1/3) = 5^(2/3). */
+/* 25^(1/3) = 5^(2/3). */
 {
     Number newExp;
 
@@ -307,7 +307,7 @@ BOOST_AUTO_TEST_CASE(intCollection)
 }
 
 BOOST_AUTO_TEST_CASE(intNoCollection)
-    /* 18^(1/3) isn't altered. */
+/* 18^(1/3) isn't altered. */
 {
     Number newExp;
 
@@ -321,7 +321,7 @@ BOOST_AUTO_TEST_CASE(intNoCollection)
 }
 
 BOOST_AUTO_TEST_CASE(simpleFractionCollection)
-    /* 4^(2/3) = 2^(4/3). Results in an exponent greater than one (no extraction performed). */
+/* 4^(2/3) = 2^(4/3). Results in an exponent greater than one (no extraction performed). */
 {
     Number newExp;
 
@@ -335,7 +335,7 @@ BOOST_AUTO_TEST_CASE(simpleFractionCollection)
 }
 
 BOOST_AUTO_TEST_CASE(fractionCollection)
-    /* (8/27)^(5/6) = (2/3)^(15/6), same as above but with a fraction base. */
+/* (8/27)^(5/6) = (2/3)^(15/6), same as above but with a fraction base. */
 {
     Number newExp;
 
@@ -349,7 +349,7 @@ BOOST_AUTO_TEST_CASE(fractionCollection)
 }
 
 BOOST_AUTO_TEST_CASE(emptyColletion)
-    /* 1^(2/3) = 1^1. */
+/* 1^(2/3) = 1^1. */
 {
     Number newExp;
 

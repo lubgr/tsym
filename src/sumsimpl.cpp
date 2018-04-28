@@ -1,14 +1,14 @@
 
-#include <cassert>
 #include "sumsimpl.h"
-#include "sum.h"
-#include "product.h"
-#include "order.h"
-#include "name.h"
-#include "numeric.h"
+#include <cassert>
 #include "bplist.h"
 #include "cache.h"
 #include "logging.h"
+#include "name.h"
+#include "numeric.h"
+#include "order.h"
+#include "product.h"
+#include "sum.h"
 
 namespace tsym {
     namespace {
@@ -55,8 +55,8 @@ namespace tsym {
 
         BasePtrList simplTwoSummandsWithSum(const BasePtr& s1, const BasePtr& s2)
         {
-            BasePtrList l1 = s1->isSum() ? s1->operands() : BasePtrList{ s1 };
-            BasePtrList l2 = s2->isSum() ? s2->operands() : BasePtrList{ s2 };
+            BasePtrList l1 = s1->isSum() ? s1->operands() : BasePtrList{s1};
+            BasePtrList l2 = s2->isSum() ? s2->operands() : BasePtrList{s2};
 
             return merge(l1, l2);
         }
@@ -75,8 +75,8 @@ namespace tsym {
         {
             BasePtr p1(p.front());
             BasePtr q1(q.front());
-            const BasePtrList p1q1{ p1, q1 };
-            const BasePtrList q1p1{ q1, p1 };
+            const BasePtrList p1q1{p1, q1};
+            const BasePtrList q1p1{q1, p1};
             BasePtrList pRest(bplist::rest(p));
             BasePtrList qRest(bplist::rest(q));
             BasePtrList res;
@@ -102,9 +102,9 @@ namespace tsym {
         BasePtrList simplTwoSummandsWithoutSum(const BasePtr& s1, const BasePtr& s2)
         {
             if (s1->isZero())
-                return { s2 };
+                return {s2};
             else if (s2->isZero())
-                return { s1 };
+                return {s1};
             else if (s1->isNumeric() && s2->isNumeric())
                 return simplTwoNumerics(s1, s2);
             else if (haveEqualNonConstTerms(s1, s2))
@@ -116,11 +116,11 @@ namespace tsym {
                  * still play the same role as symbols. */
                 return simplEqualNonNumericTerms(s1, s2);
             else if (haveContractableSinCos(s1, s2))
-                return { s1->constTerm() };
+                return {s1->constTerm()};
             else if (order::doPermute(s1, s2))
-                return { s2, s1 };
+                return {s2, s1};
             else
-                return { s1, s2 };
+                return {s1, s2};
         }
 
         BasePtrList simplTwoNumerics(const BasePtr& s1, const BasePtr& s2)
@@ -130,7 +130,7 @@ namespace tsym {
             if (sum.isZero())
                 return {};
             else
-                return { Numeric::create(sum) };
+                return {Numeric::create(sum)};
         }
 
         bool haveEqualNonConstTerms(const BasePtr& s1, const BasePtr& s2)
@@ -145,19 +145,19 @@ namespace tsym {
         }
 
         BasePtrList simplEqualNonConstTerms(const BasePtr& s1, const BasePtr& s2)
-            /* This will process e.g. 2*sqrt(2)*a + sqrt(2)*a = 3*sqrt(3)*a. This simplification will
-             * however only affect cases, where the sum of collected coefficients isn't a sum. Doing
-             * otherwise would lead to inifinite calls of Product simplification, as the result would be
-             * expaned afterwards. */
+        /* This will process e.g. 2*sqrt(2)*a + sqrt(2)*a = 3*sqrt(3)*a. This simplification will
+         * however only affect cases, where the sum of collected coefficients isn't a sum. Doing
+         * otherwise would lead to inifinite calls of Product simplification, as the result would be
+         * expaned afterwards. */
         {
             const BasePtr sum(Sum::create(s1->constTerm(), s2->constTerm()));
 
             if (!sum->isSum())
-                return { Product::create(sum, s1->nonConstTerm()) };
+                return {Product::create(sum, s1->nonConstTerm())};
             else if (order::doPermute(s1, s2))
-                return { s2, s1 };
+                return {s2, s1};
             else
-                return { s1, s2 };
+                return {s1, s2};
         }
 
         bool haveEqualNonNumericTerms(const BasePtr& s1, const BasePtr& s2)
@@ -178,7 +178,7 @@ namespace tsym {
             if (product->isZero())
                 return {};
             else
-                return { product };
+                return {product};
         }
 
         bool haveContractableSinCos(const BasePtr& s1, const BasePtr& s2)
@@ -236,7 +236,7 @@ namespace tsym {
             if (u1->isSum())
                 return merge(u1->operands(), simplRest);
             else
-                return merge({ u1 }, simplRest);
+                return merge({u1}, simplRest);
         }
     }
 }
@@ -252,5 +252,5 @@ tsym::BasePtrList tsym::sumsimpl::simplify(const BasePtrList& summands)
 
     const auto result = simplWithoutCache(summands);
 
-    return map.insert({ summands, result })->second;
+    return map.insert({summands, result})->second;
 }

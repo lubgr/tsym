@@ -1,17 +1,17 @@
 
+#include "bplist.h"
+#include <algorithm>
 #include <iterator>
 #include <numeric>
-#include <algorithm>
-#include "bplist.h"
 #include "cache.h"
-#include "numeric.h"
-#include "sum.h"
-#include "product.h"
 #include "logging.h"
+#include "numeric.h"
+#include "product.h"
+#include "sum.h"
 
 tsym::BasePtrList tsym::bplist::join(BasePtr&& first, BasePtrList&& second)
 {
-    BasePtrList result{ first };
+    BasePtrList result{first};
 
     result.insert(end(result), begin(second), end(second));
 
@@ -20,7 +20,7 @@ tsym::BasePtrList tsym::bplist::join(BasePtr&& first, BasePtrList&& second)
 
 tsym::BasePtrList tsym::bplist::join(BasePtrList&& first, BasePtrList&& second)
 {
-    BasePtrList result{ first };
+    BasePtrList result{first};
 
     result.insert(end(result), begin(second), end(second));
 
@@ -35,7 +35,7 @@ bool tsym::bplist::areEqual(const BasePtrList& list1, const BasePtrList& list2)
     if (list1.size() != list2.size())
         return false;
 
-    for(; it1 != cend(list1) && it2 != cend(list2); ++it1, ++it2)
+    for (; it1 != cend(list1) && it2 != cend(list2); ++it1, ++it2)
         if ((*it1)->isDifferent(*it2))
             return false;
 
@@ -98,15 +98,14 @@ bool tsym::bplist::areAllElementsConst(const BasePtrList& list)
 unsigned tsym::bplist::complexitySum(const BasePtrList& list)
 {
     return std::accumulate(cbegin(list), cend(list), 0u,
-            [](unsigned complexity, const auto& item){ return complexity + item->complexity(); });
+      [](unsigned complexity, const auto& item) { return complexity + item->complexity(); });
 }
 
 tsym::BasePtrList tsym::bplist::getConstElements(const BasePtrList& list)
 {
     BasePtrList items;
 
-    std::copy_if(cbegin(list), cend(list), std::back_inserter(items),
-            std::mem_fn(&Base::isConst));
+    std::copy_if(cbegin(list), cend(list), std::back_inserter(items), std::mem_fn(&Base::isConst));
 
     return items;
 }
@@ -115,8 +114,7 @@ tsym::BasePtrList tsym::bplist::getNonConstElements(const BasePtrList& list)
 {
     BasePtrList items;
 
-    std::copy_if(cbegin(list), cend(list), std::back_inserter(items), [](const BasePtr& bp) {
-            return !bp->isConst(); });
+    std::copy_if(cbegin(list), cend(list), std::back_inserter(items), [](const BasePtr& bp) { return !bp->isConst(); });
 
     return items;
 }
@@ -124,8 +122,8 @@ tsym::BasePtrList tsym::bplist::getNonConstElements(const BasePtrList& list)
 namespace tsym {
     namespace {
         void defScalarAndSums(const BasePtrList& list, BasePtr& scalar, BasePtrList& sums)
-            /* Splits the given product into a list of sums and everything else (termed 'scalar' here),
-             * while the latter is saved as a product. */
+        /* Splits the given product into a list of sums and everything else (termed 'scalar' here),
+         * while the latter is saved as a product. */
         {
             BasePtrList scalarFactors;
             BasePtr expanded;
@@ -143,8 +141,8 @@ namespace tsym {
         }
 
         BasePtr expandProductOf(BasePtrList& sums)
-            /* Recursively expands a the sum terms of a product, e.g. (a + b)*(c + d) = a*c + a*d + b*c +
-             * b*d. */
+        /* Recursively expands a the sum terms of a product, e.g. (a + b)*(c + d) = a*c + a*d + b*c +
+         * b*d. */
         {
             const BasePtr first(sums.front());
             BasePtrList summands;
@@ -200,7 +198,7 @@ tsym::BasePtr tsym::bplist::expandAsProduct(const BasePtrList& list)
     else
         expanded = expandProductOf(scalar, expandProductOf(sums));
 
-    return map.insert({ list, std::move(expanded) })->second;
+    return map.insert({list, std::move(expanded)})->second;
 }
 
 void tsym::bplist::subst(BasePtrList& list, const BasePtr& from, const BasePtr& to)

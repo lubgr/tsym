@@ -2,9 +2,9 @@
 #define TSYM_CACHE_H
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <unordered_map>
-#include <functional>
 
 namespace tsym {
     namespace cache {
@@ -15,22 +15,23 @@ namespace tsym {
             void deregisterCacheClearer(uintptr_t address);
         }
 
-        template<class Key, class Value, class Hash = std::hash<Key>, class EqualTo = std::equal_to<Key>>
-            struct RegisteredCache {
-                /* This wrapper stores exposes the cache container publicly and automatically
-                 * registers and unregisteres a member function reference to clear the cache. */
-                RegisteredCache()
-                {
-                    detail::registerCacheClearer(reinterpret_cast<uintptr_t>(&map), [this](){ decltype(map){}.swap(map); });
-                }
+        template <class Key, class Value, class Hash = std::hash<Key>, class EqualTo = std::equal_to<Key>>
+        struct RegisteredCache {
+            /* This wrapper stores exposes the cache container publicly and automatically
+             * registers and unregisteres a member function reference to clear the cache. */
+            RegisteredCache()
+            {
+                detail::registerCacheClearer(
+                  reinterpret_cast<uintptr_t>(&map), [this]() { decltype(map){}.swap(map); });
+            }
 
-                ~RegisteredCache()
-                {
-                    detail::deregisterCacheClearer(reinterpret_cast<uintptr_t>(&map));
-                }
+            ~RegisteredCache()
+            {
+                detail::deregisterCacheClearer(reinterpret_cast<uintptr_t>(&map));
+            }
 
-                std::unordered_multimap<Key, Value, Hash, EqualTo> map;
-            };
+            std::unordered_multimap<Key, Value, Hash, EqualTo> map;
+        };
     }
 }
 

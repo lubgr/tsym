@@ -1,12 +1,12 @@
 
-#include <boost/functional/hash.hpp>
-#include "numeric.h"
 #include "function.h"
+#include <boost/functional/hash.hpp>
 #include "bplist.h"
+#include "numeric.h"
 
-tsym::Function::Function(const BasePtrList& args, const std::string& name) :
-    Base(args),
-    functionName(name)
+tsym::Function::Function(const BasePtrList& args, const std::string& name)
+    : Base(args)
+    , functionName(name)
 {}
 
 bool tsym::Function::isEqualDifferentBase(const BasePtr& other) const

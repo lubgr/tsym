@@ -1,14 +1,14 @@
 
 #include "constant.h"
-#include "power.h"
-#include "sum.h"
-#include "numeric.h"
-#include "product.h"
-#include "trigonometric.h"
-#include "undefined.h"
-#include "logarithm.h"
 #include "fixtures.h"
+#include "logarithm.h"
+#include "numeric.h"
+#include "power.h"
+#include "product.h"
+#include "sum.h"
+#include "trigonometric.h"
 #include "tsymtests.h"
+#include "undefined.h"
 
 using namespace tsym;
 
@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(power)
 {
     const BasePtr pow = Power::create(three, a);
 
-    BOOST_CHECK_EQUAL(5 + 1 + 2*5, pow->complexity());
+    BOOST_CHECK_EQUAL(5 + 1 + 2 * 5, pow->complexity());
 }
 
 BOOST_AUTO_TEST_CASE(sinA)
@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(largerSum)
     const BasePtr product = Product::create(three, b, pi);
     const BasePtr doubleNum = Numeric::create(-10.20394820938409243);
     const BasePtr pow = Power::create(three, a);
-    const BasePtr sum = Sum::create({ product, a, doubleNum, sinA, pow, Logarithm::create(a), pi});
+    const BasePtr sum = Sum::create({product, a, doubleNum, sinA, pow, Logarithm::create(a), pi});
 
     BOOST_CHECK_EQUAL(5 + 15 + 5 + 3 + 11 + 16 + 11 + 4, sum->complexity());
 }

@@ -1,15 +1,15 @@
 
+#include "gcd.h"
 #include <cassert>
 #include <cmath>
-#include "gcd.h"
-#include "undefined.h"
-#include "numeric.h"
-#include "logging.h"
-#include "power.h"
-#include "sum.h"
-#include "polyinfo.h"
 #include "bplist.h"
+#include "logging.h"
+#include "numeric.h"
+#include "polyinfo.h"
+#include "power.h"
 #include "product.h"
+#include "sum.h"
+#include "undefined.h"
 
 tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v) const
 {
@@ -23,8 +23,7 @@ tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v) const
     return Undefined::create();
 }
 
-tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v,
-        const BasePtrList& L) const
+tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const
 {
     const BasePtr uExp(u->expand());
     const BasePtr vExp(v->expand());
@@ -74,8 +73,7 @@ tsym::Int tsym::Gcd::integerGcd(const Int& u, const Int& v) const
     return integerGcd(v, u % v);
 }
 
-bool tsym::Gcd::haveCommonSymbol(const BasePtr& u, const BasePtr& v,
-        const BasePtrList& L) const
+bool tsym::Gcd::haveCommonSymbol(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const
 {
     for (const auto& item : L)
         if (u->has(item) && v->has(item))
@@ -84,8 +82,7 @@ bool tsym::Gcd::haveCommonSymbol(const BasePtr& u, const BasePtr& v,
     return false;
 }
 
-tsym::BasePtr tsym::Gcd::gcdViaAlgo(const BasePtr& u, const BasePtr& v,
-        const BasePtrList& L) const
+tsym::BasePtr tsym::Gcd::gcdViaAlgo(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const
 {
     const BasePtr intContent(integerContent(u, v));
     const BasePtr factor(Power::oneOver(intContent));

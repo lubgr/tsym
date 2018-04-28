@@ -1,16 +1,16 @@
 
 #include <string>
-#include "parser.h"
-#include "numeric.h"
-#include "sum.h"
-#include "undefined.h"
-#include "trigonometric.h"
 #include "constant.h"
+#include "fixtures.h"
+#include "numeric.h"
+#include "parser.h"
 #include "power.h"
 #include "product.h"
+#include "sum.h"
 #include "symbol.h"
-#include "fixtures.h"
+#include "trigonometric.h"
 #include "tsymtests.h"
+#include "undefined.h"
 
 using namespace tsym;
 
@@ -34,7 +34,7 @@ namespace {
 
     void checkSuccess(const BasePtr& expected, const parser::Result& result)
     {
-        check({ expected, true, true }, result);
+        check({expected, true, true}, result);
     }
 }
 
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(posIntegerWithWhitespace)
     const parser::Result result = parser::parse("123 456");
     const BasePtr expected = Numeric::create(123);
 
-    check({ expected, true, false }, result);
+    check({expected, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(negInteger)
@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE(wrongSymbolWithNumberStart)
     const BasePtr& expected = Numeric::one();
     const parser::Result result = parser::parse("1a");
 
-    check({ expected, true, false }, result);
+    check({expected, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(symbolWithShortSupscript)
@@ -246,14 +246,14 @@ BOOST_AUTO_TEST_CASE(symbolWithEmptySubscript)
 {
     const parser::Result result = parser::parse("a_");
 
-    check({ a, true, false }, result);
+    check({a, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(symbolWithEmptySubscriptInBraces)
 {
     const parser::Result result = parser::parse("a_{}");
 
-    check({ a, true, false }, result);
+    check({a, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(symbolWithLongSubscriptWithoutBraces)
@@ -261,42 +261,42 @@ BOOST_AUTO_TEST_CASE(symbolWithLongSubscriptWithoutBraces)
     const parser::Result result = parser::parse("aBc123_abc");
     const BasePtr expected = Symbol::create(Name("aBc123", "a"));
 
-    check({ expected, true, false }, result);
+    check({expected, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(nonAsciiCharacterAtBeginning)
 {
     const parser::Result result = parser::parse("Aüßöabc");
 
-    check({ undefined, false, false }, result);
+    check({undefined, false, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(nonAsciiCharacterAtEnd)
 {
     const parser::Result result = parser::parse("a_{1a[ü}");
 
-    check({ undefined, false, false }, result);
+    check({undefined, false, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(symbolWithUnrecognizedCharactersInBetween)
 {
     const parser::Result result = parser::parse("a{7z_2");
 
-    check({ a, true, false }, result);
+    check({a, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(symbolWithUnrecognizedCharacterInSubscript)
 {
     const parser::Result result = parser::parse("a_[");
 
-    check({ a, true, false }, result);
+    check({a, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(symbolWithWhitespaceInside)
 {
     const parser::Result result = parser::parse("a   bc_2");
 
-    check({ a, true, false }, result);
+    check({a, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(sumOfInts)
@@ -388,7 +388,7 @@ BOOST_AUTO_TEST_CASE(simpleDifferenceTwoSummands)
 BOOST_AUTO_TEST_CASE(simpleSumFourSummands)
 {
     const parser::Result result = parser::parse("a + b + c + 10");
-    const BasePtr expected = Sum::create({ ten, a, b, c });
+    const BasePtr expected = Sum::create({ten, a, b, c});
 
     checkSuccess(expected, result);
 }
@@ -396,7 +396,7 @@ BOOST_AUTO_TEST_CASE(simpleSumFourSummands)
 BOOST_AUTO_TEST_CASE(simpleProductThreeSummands)
 {
     const parser::Result result = parser::parse("a*b*c");
-    const BasePtr expected = Product::create({ a, b, c });
+    const BasePtr expected = Product::create({a, b, c});
 
     checkSuccess(expected, result);
 }
@@ -464,7 +464,7 @@ BOOST_AUTO_TEST_CASE(sinWrongSpelling)
     const BasePtr expected = Product::create(two, sqrtTwo, Symbol::create("sinn"));
     const parser::Result result = parser::parse("2*sqrt(2)*sinn(a)*(a + b)");
 
-    check({ expected, true, false }, result);
+    check({expected, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(asinOfProduct)
@@ -557,7 +557,7 @@ BOOST_AUTO_TEST_CASE(unaryPlusWithNumberInSum)
 {
     const parser::Result result = parser::parse("a ++2");
 
-    check({ a, true, false }, result);
+    check({a, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(unaryPlusWithNumberAndParenthesesInSum)
@@ -572,21 +572,21 @@ BOOST_AUTO_TEST_CASE(unaryPlusWithSymbolInSum)
 {
     const parser::Result result = parser::parse("a +(+b) ++c");
 
-    check({ Sum::create(a, b), true, false }, result);
+    check({Sum::create(a, b), true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(unaryMinusWithPower)
 {
     const parser::Result result = parser::parse("a^-2");
 
-    check({ a, true, false }, result);
+    check({a, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(unaryPlusWithPower)
 {
     const parser::Result result = parser::parse("a^+2");
 
-    check({ a, true, false }, result);
+    check({a, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(unaryMinusWithPowerInParentheses)
@@ -632,8 +632,8 @@ BOOST_AUTO_TEST_CASE(unaryMinusBeforeProduct)
 BOOST_AUTO_TEST_CASE(unaryMinusInParentheses)
 {
     const parser::Result result = parser::parse("-23*a + b^(-2) + c + (-d) + 2 +(-4)");
-    const BasePtr expected = Sum::create({ Product::create(Numeric::create(-23), a),
-            Power::create(b, Numeric::create(-2)), c, Product::minus(d), Numeric::create(-2) });
+    const BasePtr expected = Sum::create({Product::create(Numeric::create(-23), a),
+      Power::create(b, Numeric::create(-2)), c, Product::minus(d), Numeric::create(-2)});
 
     checkSuccess(expected, result);
 }
@@ -661,7 +661,7 @@ BOOST_AUTO_TEST_CASE(posDoubleOutsideOfRange)
     const parser::Result result = parser::parse("123.e928377489274892798347982");
     const BasePtr expected = Numeric::create(123);
 
-    check({ expected, true, false }, result);
+    check({expected, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(negDoubleOutsideOfRange)
@@ -669,7 +669,7 @@ BOOST_AUTO_TEST_CASE(negDoubleOutsideOfRange)
     const parser::Result result = parser::parse("-123.e928377489274892798347982");
     const BasePtr expected = Numeric::create(-123);
 
-    check({ expected, true, false }, result);
+    check({expected, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(parenthesesAroundSymbol)
@@ -712,8 +712,8 @@ BOOST_AUTO_TEST_CASE(multipleParenthesesInSum)
 BOOST_AUTO_TEST_CASE(productWithSumsInParentheses)
 {
     const parser::Result result = parser::parse("a*(b + c) + 4*(a + d)");
-    const BasePtr expected = Sum::create(Product::create(four, a), Product::create(four, d),
-            Product::create(a, Sum::create(b, c)));
+    const BasePtr expected =
+      Sum::create(Product::create(four, a), Product::create(four, d), Product::create(a, Sum::create(b, c)));
 
     checkSuccess(expected, result);
 }
@@ -738,14 +738,14 @@ BOOST_AUTO_TEST_CASE(unrecognizedTokensWithSyntaxError)
 {
     const parser::Result result = parser::parse("-{}*12*sin(b)");
 
-    check({ undefined, false, false }, result);
+    check({undefined, false, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(unrecognizedToken)
 {
     const parser::Result result = parser::parse("{12*sin(b)");
 
-    check({ undefined, false, false }, result);
+    check({undefined, false, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(unrecognizedTokensAfterValidExpression)
@@ -753,14 +753,14 @@ BOOST_AUTO_TEST_CASE(unrecognizedTokensAfterValidExpression)
     const BasePtr expected = Product::create(Numeric::create(123), Trigonometric::createAtan(Sum::create(a, b)));
     const parser::Result result = parser::parse("123*atan(a + b){\a}[[");
 
-    check({ expected, true, false }, result);
+    check({expected, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(unrecognizedTokensInsideValidExpression)
 {
     const parser::Result result = parser::parse("[äüa*b*sqrt(12*c^2 - &c) - 40üä]\\");
 
-    check({ undefined, false, false }, result);
+    check({undefined, false, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(unrecognizedTokensInsideParentheses)
@@ -768,28 +768,28 @@ BOOST_AUTO_TEST_CASE(unrecognizedTokensInsideParentheses)
     const BasePtr expected = Product::create(Numeric::create(123), Trigonometric::createAtan(Sum::create(a, b)));
     const parser::Result result = parser::parse("123*atan(a + b))*({=}[[");
 
-    check({ expected, true, false }, result);
+    check({expected, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(symbolsAndComma)
 {
     const parser::Result result = parser::parse("a,b,c,,d");
 
-    check({ a, true, false }, result);
+    check({a, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(emptyString)
 {
     const parser::Result result = parser::parse("");
 
-    check({ undefined, false, true }, result);
+    check({undefined, false, true}, result);
 }
 
 BOOST_AUTO_TEST_CASE(onlyCommaSigns)
 {
     const parser::Result result = parser::parse("(())");
 
-    check({ undefined, false, false }, result);
+    check({undefined, false, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(emptyParenthesesAfterValidExpressionInProduct)
@@ -797,7 +797,7 @@ BOOST_AUTO_TEST_CASE(emptyParenthesesAfterValidExpressionInProduct)
     const BasePtr expected = Product::create(Numeric::create(123), Trigonometric::createAtan(Sum::create(a, b)));
     const parser::Result result = parser::parse("123*atan(a + b)*()");
 
-    check({ expected, true, false }, result);
+    check({expected, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(syntaxErrorAfterValidExpressionInProduct)
@@ -805,14 +805,14 @@ BOOST_AUTO_TEST_CASE(syntaxErrorAfterValidExpressionInProduct)
     const BasePtr expected = Product::create(Numeric::create(-1, 5), Trigonometric::createAtan(Sum::create(a, b)));
     const parser::Result result = parser::parse("-1/5*atan(a + b)*({)}[[");
 
-    check({ expected, true, false }, result);
+    check({expected, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(emptyParentheses)
 {
     const parser::Result result = parser::parse("(())");
 
-    check({ undefined, false, false }, result);
+    check({undefined, false, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(mixedOperatorsWithUnaryMinusNumber)
@@ -835,13 +835,14 @@ BOOST_AUTO_TEST_CASE(emptyParenthesesBeforeValidPart)
 {
     const parser::Result result = parser::parse("(())a*b + c");
 
-    check({ undefined, false, false }, result);
+    check({undefined, false, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(mixedTerm01)
 {
     const parser::Result result = parser::parse("-a*sin(b)*(c + d)*12*b");
-    const BasePtr expected = Product::create({ Numeric::create(-12), a, b, Trigonometric::createSin(b), Sum::create(c, d) });
+    const BasePtr expected =
+      Product::create({Numeric::create(-12), a, b, Trigonometric::createSin(b), Sum::create(c, d)});
 
     checkSuccess(expected, result);
 }
@@ -850,9 +851,10 @@ BOOST_AUTO_TEST_CASE(mixedTerm02)
 {
     const std::string inputWithFrac("a*atan(1/sqrt(17))*cos(c*d)*sin(a*b)^2*tan(a*b)");
     const std::string inputWithoutFrac("a*atan(17^(-1/2))*cos(c*d)*sin(a*b)^2*tan(a*b)");
-    const BasePtr expected = Product::create({ a, Trigonometric::createAtan(Power::sqrt(Numeric::create(1, 17))),
-            Trigonometric::createCos(Product::create(c, d)), Power::create(Trigonometric::createSin(Product::create(a, b)), two),
-            Trigonometric::createTan(Product::create(a, b)) });
+    const BasePtr expected = Product::create({a, Trigonometric::createAtan(Power::sqrt(Numeric::create(1, 17))),
+      Trigonometric::createCos(Product::create(c, d)),
+      Power::create(Trigonometric::createSin(Product::create(a, b)), two),
+      Trigonometric::createTan(Product::create(a, b))});
 
     checkSuccess(expected, parser::parse(inputWithFrac));
     checkSuccess(expected, parser::parse(inputWithoutFrac));
@@ -862,9 +864,9 @@ BOOST_AUTO_TEST_CASE(mixedTerm03)
 {
     const parser::Result result = parser::parse("-a^(2/3)*b^(2/3*c - d)*c^((a + b)^2)");
     const BasePtr twoThird = Numeric::create(2, 3);
-    const BasePtr expected = Product::create({ Numeric::mOne(), Power::create(a, twoThird),
-            Power::create(b, Sum::create(Product::create(twoThird, c), Product::minus(d))),
-            Power::create(c, Power::create(Sum::create(a, b), two)) });
+    const BasePtr expected = Product::create({Numeric::mOne(), Power::create(a, twoThird),
+      Power::create(b, Sum::create(Product::create(twoThird, c), Product::minus(d))),
+      Power::create(c, Power::create(Sum::create(a, b), two))});
 
     checkSuccess(expected, result);
 }
@@ -889,14 +891,14 @@ BOOST_AUTO_TEST_CASE(onlyPowerOperator)
 {
     const parser::Result result = parser::parse("^^^");
 
-    check({ undefined, false, false }, result);
+    check({undefined, false, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(onlyPowerOperatorWithParentheses)
 {
     const parser::Result result = parser::parse("^(a + b)");
 
-    check({ undefined, false, false }, result);
+    check({undefined, false, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(misspelledFunction)
@@ -904,7 +906,7 @@ BOOST_AUTO_TEST_CASE(misspelledFunction)
     const BasePtr expected = Symbol::create("alksdjflkasjf");
     const parser::Result result = parser::parse("alksdjflkasjf(a + b)");
 
-    check({ expected, true, false }, result);
+    check({expected, true, false}, result);
 }
 
 BOOST_AUTO_TEST_CASE(piVariations)
@@ -950,7 +952,8 @@ BOOST_AUTO_TEST_CASE(logOfEulerEvaluesToOne)
 BOOST_AUTO_TEST_CASE(eulerInMixedTerm)
 {
     const parser::Result result = parser::parse("10*Euler + EULER^2 - a*b*log(euler)");
-    const BasePtr expected = Sum::create(Product::create(ten, euler), Product::create(euler, euler), Product::minus(a, b));
+    const BasePtr expected =
+      Sum::create(Product::create(ten, euler), Product::create(euler, euler), Product::minus(a, b));
 
     checkSuccess(expected, result);
 }

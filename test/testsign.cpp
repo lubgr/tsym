@@ -1,16 +1,16 @@
 
 #include <cmath>
+#include "constant.h"
+#include "fixtures.h"
+#include "logarithm.h"
+#include "numeric.h"
+#include "power.h"
 #include "product.h"
 #include "sum.h"
-#include "constant.h"
-#include "numeric.h"
 #include "symbol.h"
-#include "power.h"
 #include "trigonometric.h"
-#include "logarithm.h"
-#include "undefined.h"
-#include "fixtures.h"
 #include "tsymtests.h"
+#include "undefined.h"
 
 using namespace tsym;
 
@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(simpleNegProduct)
 }
 
 BOOST_AUTO_TEST_CASE(simplePosProduct)
-    /* (-a)*(-2*b - 3*c) is positive, if a, b and c are positive. */
+/* (-a)*(-2*b - 3*c) is positive, if a, b and c are positive. */
 {
     const BasePtr sum = Sum::create(Product::minus(two, bPos), Product::minus(three, cPos));
     const BasePtr pos = Product::minus(aPos, sum);
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(simplePosProduct)
 }
 
 BOOST_AUTO_TEST_CASE(simpleUnclearProduct)
-    /* Same as before, but with b not being specified as positive. */
+/* Same as before, but with b not being specified as positive. */
 {
     const BasePtr sum = Sum::create(Product::minus(two, b), Product::minus(three, cPos));
     const BasePtr result = Product::minus(aPos, sum);
@@ -145,8 +145,7 @@ BOOST_AUTO_TEST_CASE(simpleUnclearProduct)
 
 BOOST_AUTO_TEST_CASE(sumNumericallyEvaluableToZero)
 {
-    const BasePtr sum = Sum::create(Product::create(sqrtTwo, pi),
-            Numeric::create(-4.442882938158366));
+    const BasePtr sum = Sum::create(Product::create(sqrtTwo, pi), Numeric::create(-4.442882938158366));
 
     checkUnclear(sum);
 }
@@ -174,8 +173,7 @@ BOOST_AUTO_TEST_CASE(simpleNegativeSum01)
 
 BOOST_AUTO_TEST_CASE(simpleNegativeSum02)
 {
-    const BasePtr sum = Sum::create(Product::minus(aPos), Numeric::create(-2, 3),
-            Product::minus(two, pi));
+    const BasePtr sum = Sum::create(Product::minus(aPos), Numeric::create(-2, 3), Product::minus(two, pi));
 
     checkNeg(sum);
 }
@@ -196,16 +194,15 @@ BOOST_AUTO_TEST_CASE(simpleUnclearSumByDifferentSigns)
 
 BOOST_AUTO_TEST_CASE(simpleUnclearSumByNonPositiveSymbol)
 {
-    const BasePtr sum = Sum::create(Product::minus(aPos), Numeric::create(-2, 3),
-            Product::minus(two, pi), Product::minus(six, b));
+    const BasePtr sum =
+      Sum::create(Product::minus(aPos), Numeric::create(-2, 3), Product::minus(two, pi), Product::minus(six, b));
 
     checkUnclear(sum);
 }
 
 BOOST_AUTO_TEST_CASE(logarithmArgGreaterThanOne)
 {
-    const BasePtr arg = Sum::create(Product::create(pi, nine, sqrtTwo),
-            five, Constant::createE());
+    const BasePtr arg = Sum::create(Product::create(pi, nine, sqrtTwo), five, Constant::createE());
     const BasePtr log = Logarithm::create(arg);
 
     checkPos(log);
@@ -298,14 +295,13 @@ BOOST_AUTO_TEST_CASE(sinNumericallyEvaluable)
 
 BOOST_AUTO_TEST_CASE(posPowerWithPositiveBase)
 {
-    const BasePtr pow = Power::create(Sum::create(aPos, Product::create(two, bPos)),
-            Sum::create(a, b, c, ten));
+    const BasePtr pow = Power::create(Sum::create(aPos, Product::create(two, bPos)), Sum::create(a, b, c, ten));
 
     checkPos(pow);
 }
 
 BOOST_AUTO_TEST_CASE(posPowerWithNegativeBase)
-    /* (-pi)^2 = (-1)^2*pi^2 = pi^2 > 0. */
+/* (-pi)^2 = (-1)^2*pi^2 = pi^2 > 0. */
 {
     const BasePtr pow = Power::create(Product::minus(pi), two);
 
@@ -327,7 +323,7 @@ BOOST_AUTO_TEST_CASE(posPowerWithUnclearBase)
 }
 
 BOOST_AUTO_TEST_CASE(mixedPositive)
-    /* 2*a + b*c + b^(2*c + pi) + 0.12345*c^2 is positive. */
+/* 2*a + b*c + b^(2*c + pi) + 0.12345*c^2 is positive. */
 {
     BasePtrList summands;
     BasePtr res;
@@ -343,7 +339,7 @@ BOOST_AUTO_TEST_CASE(mixedPositive)
 }
 
 BOOST_AUTO_TEST_CASE(mixedUnclear)
-    /* Same as above but with b being not specified as positive. */
+/* Same as above but with b being not specified as positive. */
 {
     BasePtrList summands;
     BasePtr res;
@@ -359,7 +355,7 @@ BOOST_AUTO_TEST_CASE(mixedUnclear)
 }
 
 BOOST_AUTO_TEST_CASE(mixedNegativeAndUnclear)
-    /* -10*a^6 -2*a*b*c - pi/3 - a*b is negative. */
+/* -10*a^6 -2*a*b*c - pi/3 - a*b is negative. */
 {
     const BasePtr s1 = Product::minus(ten, Power::create(a, six));
     const BasePtr s2 = Product::minus(two, aPos, bPos, cPos);
@@ -372,12 +368,11 @@ BOOST_AUTO_TEST_CASE(mixedNegativeAndUnclear)
 }
 
 BOOST_AUTO_TEST_CASE(mixedPosAndUnclear)
-    /* (5/13*c^(18/19))*(a^2 - 2*pi + 10*b + sqrt(101)) is positive. */
+/* (5/13*c^(18/19))*(a^2 - 2*pi + 10*b + sqrt(101)) is positive. */
 {
-    const BasePtr fac1 = Product::create(Numeric::create(5, 13),
-            Power::create(c, Numeric::create(18, 19)));
-    const BasePtr fac2 = Sum::create(Power::create(a, two), Product::minus(two, pi),
-            Product::create(ten, bPos), Power::sqrt(Numeric::create(101)));
+    const BasePtr fac1 = Product::create(Numeric::create(5, 13), Power::create(c, Numeric::create(18, 19)));
+    const BasePtr fac2 = Sum::create(
+      Power::create(a, two), Product::minus(two, pi), Product::create(ten, bPos), Power::sqrt(Numeric::create(101)));
     const BasePtr res = Product::create(fac1, fac2);
 
     checkPos(res);

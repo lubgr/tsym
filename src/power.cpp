@@ -1,22 +1,22 @@
 
+#include "power.h"
 #include <cassert>
 #include <cmath>
 #include <limits>
-#include "power.h"
-#include "undefined.h"
-#include "numeric.h"
-#include "powersimpl.h"
-#include "logging.h"
+#include "bplist.h"
 #include "logarithm.h"
+#include "logging.h"
+#include "numeric.h"
+#include "powernormal.h"
+#include "powersimpl.h"
 #include "product.h"
 #include "sum.h"
-#include "bplist.h"
-#include "powernormal.h"
+#include "undefined.h"
 
-tsym::Power::Power(const BasePtr& base, const BasePtr& exponent, Base::CtorKey&&) :
-    Base({ base, exponent }),
-    baseRef(ops.front()),
-    expRef(ops.back())
+tsym::Power::Power(const BasePtr& base, const BasePtr& exponent, Base::CtorKey&&)
+    : Base({base, exponent})
+    , baseRef(ops.front())
+    , expRef(ops.back())
 {
     assert(ops.size() == 2);
 
@@ -110,10 +110,8 @@ tsym::Fraction tsym::Power::normal(SymbolMap& map) const
 
 tsym::BasePtr tsym::Power::diffWrtSymbol(const BasePtr& symbol) const
 {
-    const BasePtrList summands {
-        Product::create(Logarithm::create(baseRef), expRef->diffWrtSymbol(symbol)),
-            Product::create(expRef, oneOver(baseRef), baseRef->diffWrtSymbol(symbol))
-    };
+    const BasePtrList summands{Product::create(Logarithm::create(baseRef), expRef->diffWrtSymbol(symbol)),
+      Product::create(expRef, oneOver(baseRef), baseRef->diffWrtSymbol(symbol))};
 
     return Product::create(clone(), Sum::create(summands));
 }
@@ -147,7 +145,7 @@ size_t tsym::Power::hash() const
 
 unsigned tsym::Power::complexity() const
 {
-    return 5 + baseRef->complexity() + 2*expRef->complexity();
+    return 5 + baseRef->complexity() + 2 * expRef->complexity();
 }
 
 bool tsym::Power::isExponentRationalNumeric() const
@@ -239,9 +237,9 @@ int tsym::Power::degree(const BasePtr& variable) const
     int baseDegree = baseRef->degree(variable);
 
     if (integer::fitsInto<int>(nExp)
-            && static_cast<double>(nExp) < std::numeric_limits<int>::max()/static_cast<double>(baseDegree)
-            && static_cast<double>(nExp) > std::numeric_limits<int>::min()/static_cast<double>(baseDegree))
-        return static_cast<int>(nExp)*baseDegree;
+      && static_cast<double>(nExp) < std::numeric_limits<int>::max() / static_cast<double>(baseDegree)
+      && static_cast<double>(nExp) > std::numeric_limits<int>::min() / static_cast<double>(baseDegree))
+        return static_cast<int>(nExp) * baseDegree;
 
     TSYM_ERROR("Degree of %S doens't fit into a primitive integer! Return 0 as degree.", clone());
 

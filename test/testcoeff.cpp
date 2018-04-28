@@ -1,11 +1,11 @@
 
+#include "constant.h"
+#include "fixtures.h"
+#include "numeric.h"
+#include "power.h"
+#include "product.h"
 #include "sum.h"
 #include "trigonometric.h"
-#include "product.h"
-#include "numeric.h"
-#include "constant.h"
-#include "power.h"
-#include "fixtures.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -201,10 +201,10 @@ BOOST_AUTO_TEST_CASE(summandMatchesExpOne)
 }
 
 BOOST_AUTO_TEST_CASE(sumBaseHasVariable)
-    /* Coeff((a + b)^2, a, 0) = (a + b)^2. The result is different from Mathematica, which evaluates
-     * the coefficient of the expanded power (resulting in b^2). In practice, this difference
-     * shouldn't cause problems, as in polynomial division/gcd/normalization, terms are always
-     * exapanded. */
+/* Coeff((a + b)^2, a, 0) = (a + b)^2. The result is different from Mathematica, which evaluates
+ * the coefficient of the expanded power (resulting in b^2). In practice, this difference
+ * shouldn't cause problems, as in polynomial division/gcd/normalization, terms are always
+ * exapanded. */
 {
     const BasePtr pow = Power::create(Sum::create(a, b), two);
 
@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE(sumBaseHasVariable)
 }
 
 BOOST_AUTO_TEST_CASE(simpleMonomial)
-    /* Coeff(-a^2*b, a, 0) = 0. */
+/* Coeff(-a^2*b, a, 0) = 0. */
 {
     const BasePtr monomial = Product::minus(a, a, b);
 
@@ -221,7 +221,7 @@ BOOST_AUTO_TEST_CASE(simpleMonomial)
 }
 
 BOOST_AUTO_TEST_CASE(simplePolynomial)
-    /* Coeff(-a^2*b + b^3, a, 0) = b^3. */
+/* Coeff(-a^2*b + b^3, a, 0) = b^3. */
 {
     const BasePtr expected = Power::create(b, three);
     const BasePtr poly = Sum::create(Product::minus(a, a, b), expected);
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(simplePolynomial)
 }
 
 BOOST_AUTO_TEST_CASE(summandMatchesArgsToPower)
-    /* Coeff(10 + asin(a)*c^(-3) + b*c^(-3)*d + e, c, -3) = asin(a) + b*d. */
+/* Coeff(10 + asin(a)*c^(-3) + b*c^(-3)*d + e, c, -3) = asin(a) + b*d. */
 {
     const BasePtr asinA = Trigonometric::createAsin(a);
     const BasePtr pow = Power::create(c, Numeric::create(-3));
@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE(summandMatchesArgsToPower)
 }
 
 BOOST_AUTO_TEST_CASE(summandIsSubexpressionExpOne)
-    /* Coeff(a + b*c*d, b*c, 1) = 0. */
+/* Coeff(a + b*c*d, b*c, 1) = 0. */
 {
     const BasePtr sub = Product::create(b, c);
     const BasePtr sum = Sum::create(a, Product::create(sub, d));
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE(summandIsSubexpressionExpOne)
 }
 
 BOOST_AUTO_TEST_CASE(summandArgsToSubexpression)
-    /* Coeff(a + a^3 + a^2*b*(d + e), a, 2) = b*(d + e). */
+/* Coeff(a + a^3 + a^2*b*(d + e), a, 2) = b*(d + e). */
 {
     const BasePtr expected = Product::create(b, Sum::create(d, e));
     const BasePtr aCubic = Power::create(a, three);
@@ -263,13 +263,12 @@ BOOST_AUTO_TEST_CASE(summandArgsToSubexpression)
 }
 
 BOOST_AUTO_TEST_CASE(sumIncludingFunctionTermsAndPowers)
-    /* Coeff((3*sin(a))*a^2 + (2*cos(a))*a + 4, a, 2) = 3*sin(a). */
+/* Coeff((3*sin(a))*a^2 + (2*cos(a))*a + 4, a, 2) = 3*sin(a). */
 {
     const BasePtr threeTimesSinA = Product::create(three, Trigonometric::createSin(a));
     const BasePtr twoTimesCosA = Product::create(two, Trigonometric::createCos(a));
     const BasePtr aSquare = Power::create(a, two);
-    const BasePtr sum = Sum::create({ Product::create(threeTimesSinA, aSquare),
-            Product::create(twoTimesCosA, a), four });
+    const BasePtr sum = Sum::create({Product::create(threeTimesSinA, aSquare), Product::create(twoTimesCosA, a), four});
 
     BOOST_CHECK_EQUAL(threeTimesSinA, sum->coeff(a, 2));
 }

@@ -1,11 +1,11 @@
 
+#include "baseptr.h"
 #include <boost/functional/hash.hpp>
 #include "base.h"
 #include "plaintextprintengine.h"
 #include "printer.h"
-#include "baseptr.h"
 
-std::ostream& tsym::operator << (std::ostream& stream, const BasePtr& ptr)
+std::ostream& tsym::operator<<(std::ostream& stream, const BasePtr& ptr)
 {
     auto engine = PlaintextPrintEngine{stream};
 
@@ -24,13 +24,12 @@ size_t tsym::hash_value(const BasePtr& ptr)
     return seed;
 }
 
-size_t std::hash<tsym::BasePtr>::operator () (const tsym::BasePtr& ptr) const
+size_t std::hash<tsym::BasePtr>::operator()(const tsym::BasePtr& ptr) const
 {
     return tsym::hash_value(ptr);
 }
 
-bool std::equal_to<tsym::BasePtr>::operator () (const tsym::BasePtr& lhs,
-        const tsym::BasePtr& rhs) const
+bool std::equal_to<tsym::BasePtr>::operator()(const tsym::BasePtr& lhs, const tsym::BasePtr& rhs) const
 {
     return lhs->isEqual(rhs);
 }

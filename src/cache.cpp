@@ -1,6 +1,6 @@
 
-#include <map>
 #include "cache.h"
+#include <map>
 
 namespace {
     auto& clearFunctions()

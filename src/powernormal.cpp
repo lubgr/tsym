@@ -1,12 +1,12 @@
 
 #include "powernormal.h"
-#include "undefined.h"
-#include "symbolmap.h"
 #include "power.h"
 #include "product.h"
+#include "symbolmap.h"
+#include "undefined.h"
 
-tsym::PowerNormal::PowerNormal(SymbolMap& map) :
-    map(map)
+tsym::PowerNormal::PowerNormal(SymbolMap& map)
+    : map(map)
 {}
 
 void tsym::PowerNormal::setBase(const BasePtr& base)
@@ -31,9 +31,8 @@ tsym::Fraction tsym::PowerNormal::normal()
 
 bool tsym::PowerNormal::isBaseOrExpUndefined() const
 {
-    return rationalBase.num()->isUndefined() || rationalBase.denom()->isUndefined() ||
-        rationalBase.denom()->isZero() || rationalBase.denom()->expand()->isZero() ||
-        rationalExp->isUndefined();
+    return rationalBase.num()->isUndefined() || rationalBase.denom()->isUndefined() || rationalBase.denom()->isZero()
+      || rationalBase.denom()->expand()->isZero() || rationalExp->isUndefined();
 }
 
 bool tsym::PowerNormal::isRationalExpInteger() const
@@ -42,7 +41,7 @@ bool tsym::PowerNormal::isRationalExpInteger() const
 }
 
 tsym::Fraction tsym::PowerNormal::normalIntegerExp() const
-    /* Does (a/b)^c = a^c/b^d or b^c/a^d, where c is an integer and d = abs(c). */
+/* Does (a/b)^c = a^c/b^d or b^c/a^d, where c is an integer and d = abs(c). */
 {
     const Number nExp(rationalExp->numericEval());
     const BasePtr absExp(Numeric::create(nExp.abs()));

@@ -19,8 +19,8 @@ BOOST_AUTO_TEST_CASE(restOfEmptyList, noLogs())
 
 BOOST_AUTO_TEST_CASE(restOfNonCVList)
 {
-    const BasePtrList expected{ b, c, d, ten };
-    BasePtrList list{ a, b, c, d, ten };
+    const BasePtrList expected{b, c, d, ten};
+    BasePtrList list{a, b, c, d, ten};
 
     bplist::rest(list);
 

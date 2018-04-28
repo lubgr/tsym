@@ -1,10 +1,10 @@
 
-#include "symbolmap.h"
-#include "sum.h"
-#include "power.h"
-#include "product.h"
 #include "constant.h"
 #include "fixtures.h"
+#include "power.h"
+#include "product.h"
+#include "sum.h"
+#include "symbolmap.h"
 #include "tsymtests.h"
 
 using namespace tsym;

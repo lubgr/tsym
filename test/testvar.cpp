@@ -1,18 +1,18 @@
 
-#include <unordered_map>
-#include <sstream>
-#include <limits>
 #include <algorithm>
+#include <limits>
+#include <sstream>
 #include <stdexcept>
-#include "number.h"
-#include "var.h"
-#include "globals.h"
-#include "tsymtests.h"
-#include "baseptr.h"
-#include "numeric.h"
+#include <unordered_map>
 #include "base.h"
+#include "baseptr.h"
 #include "fixtures.h"
+#include "globals.h"
 #include "name.h"
+#include "number.h"
+#include "numeric.h"
+#include "tsymtests.h"
+#include "var.h"
 
 using namespace tsym;
 
@@ -35,7 +35,7 @@ BOOST_FIXTURE_TEST_SUITE(TestVar, VarFixture)
 
 BOOST_AUTO_TEST_CASE(undefinedType, noLogs())
 {
-    Var u = 1/a;
+    Var u = 1 / a;
 
     u = subst(u, a, 0);
 
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(smallIntParsing)
 
 BOOST_AUTO_TEST_CASE(bigIntParsing)
 {
-    const char *intStr = "20394809284309283409820943820938409284309209438";
+    const char* intStr = "20394809284309283409820943820938409284309209438";
     const BasePtr numeric = Numeric::create(Int(intStr));
     const Var n(intStr);
 
@@ -170,7 +170,8 @@ BOOST_AUTO_TEST_CASE(failingCastOfTwiceMaxIntToPrimitiveInt)
 
 BOOST_AUTO_TEST_CASE(failingCastOfBigIntToPrimitiveInt)
 {
-    BOOST_CHECK_THROW(static_cast<int>(Var("2384729384609865192859238659823659287589273985723029348")), std::overflow_error);
+    BOOST_CHECK_THROW(
+      static_cast<int>(Var("2384729384609865192859238659823659287589273985723029348")), std::overflow_error);
 }
 
 BOOST_AUTO_TEST_CASE(illegalNumberRequestSymbol)
@@ -182,7 +183,7 @@ BOOST_AUTO_TEST_CASE(toDouble)
 {
     const Var frac(2, 3);
 
-    BOOST_CHECK_CLOSE(2.0/3.0, static_cast<double>(frac), 1.e-10);
+    BOOST_CHECK_CLOSE(2.0 / 3.0, static_cast<double>(frac), 1.e-10);
 }
 
 BOOST_AUTO_TEST_CASE(toDoubleNonNumeric)
@@ -199,7 +200,7 @@ BOOST_AUTO_TEST_CASE(powerType)
 
 BOOST_AUTO_TEST_CASE(productType)
 {
-    const Var p(a*b*c);
+    const Var p(a * b * c);
 
     BOOST_CHECK_EQUAL(Var::Type::PRODUCT, p.type());
 }
@@ -238,18 +239,18 @@ BOOST_AUTO_TEST_CASE(sumHasSymbol)
 
 BOOST_AUTO_TEST_CASE(substSymbolInProduct)
 {
-    const Var p(2*a*b*c);
+    const Var p(2 * a * b * c);
     Var result;
 
     result = subst(p, b, 4);
 
-    BOOST_CHECK_EQUAL(8*a*c, result);
+    BOOST_CHECK_EQUAL(8 * a * c, result);
 }
 
 BOOST_AUTO_TEST_CASE(substituteInSimpleSum)
 {
-    const Var orig = a/b + 1/(5*b);
-    const Var expected = 3*a + Var(3, 5);
+    const Var orig = a / b + 1 / (5 * b);
+    const Var expected = 3 * a + Var(3, 5);
 
     BOOST_CHECK_EQUAL(expected, subst(orig, b, Var(1, 3)));
 }
@@ -285,12 +286,12 @@ BOOST_AUTO_TEST_CASE(symbolsMinusSymbolsToZero)
 
 BOOST_AUTO_TEST_CASE(addSameSymbol)
 {
-    BOOST_CHECK_EQUAL(8*a, 6*a + 2*a);
+    BOOST_CHECK_EQUAL(8 * a, 6 * a + 2 * a);
 }
 
 BOOST_AUTO_TEST_CASE(addSameSymbolThreeTimes)
 {
-    BOOST_CHECK_EQUAL(3*a, a + a + a);
+    BOOST_CHECK_EQUAL(3 * a, a + a + a);
 }
 
 BOOST_AUTO_TEST_CASE(addDifferentSymbols)
@@ -328,7 +329,7 @@ BOOST_AUTO_TEST_CASE(multiplyDifferentSymbolsOperator)
 
     res *= b;
 
-    BOOST_CHECK_EQUAL(a*b, res);
+    BOOST_CHECK_EQUAL(a * b, res);
 }
 
 BOOST_AUTO_TEST_CASE(addSymbolAndNumbers)
@@ -338,27 +339,27 @@ BOOST_AUTO_TEST_CASE(addSymbolAndNumbers)
 
 BOOST_AUTO_TEST_CASE(addSameSymbolAndNumbers)
 {
-    BOOST_CHECK_EQUAL(14 + 3*a, a + 10 + 2*a + 4);
+    BOOST_CHECK_EQUAL(14 + 3 * a, a + 10 + 2 * a + 4);
 }
 
 BOOST_AUTO_TEST_CASE(addSameSymbolMultipledByFrac)
 {
-    BOOST_CHECK_EQUAL(a, Var(1, 4)*a + Var(3, 4)*a);
+    BOOST_CHECK_EQUAL(a, Var(1, 4) * a + Var(3, 4) * a);
 }
 
 BOOST_AUTO_TEST_CASE(addSameSymbolMultipledByDoubleAndInt)
 {
-    BOOST_CHECK_EQUAL(6.2*a, 3.5*a + 2.7*a);
+    BOOST_CHECK_EQUAL(6.2 * a, 3.5 * a + 2.7 * a);
 }
 
 BOOST_AUTO_TEST_CASE(productOfNumbersAndDifferentSymbols)
 {
-    BOOST_CHECK_EQUAL(1.0581942857142859*a*b, 1.23456*a*b*Var(6, 7));
+    BOOST_CHECK_EQUAL(1.0581942857142859 * a * b, 1.23456 * a * b * Var(6, 7));
 }
 
 BOOST_AUTO_TEST_CASE(collectMultipleSymbolsInSum)
 {
-    BOOST_CHECK_EQUAL(a + b + 2*c + 2*d, a + c + d + b + c + d);
+    BOOST_CHECK_EQUAL(a + b + 2 * c + 2 * d, a + c + d + b + c + d);
 }
 
 BOOST_AUTO_TEST_CASE(unaryPlusOperator)
@@ -368,25 +369,25 @@ BOOST_AUTO_TEST_CASE(unaryPlusOperator)
 
 BOOST_AUTO_TEST_CASE(unaryMinusOperator)
 {
-    BOOST_CHECK_EQUAL((-1)*a, -a);
+    BOOST_CHECK_EQUAL((-1) * a, -a);
 }
 
 BOOST_AUTO_TEST_CASE(divisionToPower)
-    /* (1/b)*a = a*b^(-1). */
+/* (1/b)*a = a*b^(-1). */
 {
-    const Var expected(a*tsym::pow(b, -1));
+    const Var expected(a * tsym::pow(b, -1));
 
-    BOOST_CHECK_EQUAL(expected, 1/b*a);
+    BOOST_CHECK_EQUAL(expected, 1 / b * a);
 }
 
 BOOST_AUTO_TEST_CASE(divisionToFrac)
 {
-    BOOST_CHECK_EQUAL(Var(1, 3)*a*b, a*b/3);
+    BOOST_CHECK_EQUAL(Var(1, 3) * a * b, a * b / 3);
 }
 
 BOOST_AUTO_TEST_CASE(productDividedByNumber)
 {
-    BOOST_CHECK_EQUAL(3*b*c, 12*c*b/4);
+    BOOST_CHECK_EQUAL(3 * b * c, 12 * c * b / 4);
 }
 
 BOOST_AUTO_TEST_CASE(multiplicationOfExpPosSymbol)
@@ -414,7 +415,7 @@ BOOST_AUTO_TEST_CASE(noMultiplicationOfExpUnclearSymbol)
 BOOST_AUTO_TEST_CASE(multiplicationOfExpUnclearSymbol)
 {
     const Var expected(tsym::pow(a, Var(-2, 3)));
-    Var res(1/a);
+    Var res(1 / a);
 
     res = pow(res, Var(2, 3));
 
@@ -423,10 +424,10 @@ BOOST_AUTO_TEST_CASE(multiplicationOfExpUnclearSymbol)
 
 BOOST_AUTO_TEST_CASE(expansionPowerOfProduct)
 {
-    const Var expected(a*a*b*b*c*c);
+    const Var expected(a * a * b * b * c * c);
     Var res;
 
-    res = a*b*c;
+    res = a * b * c;
     res = tsym::pow(res, 2);
 
     BOOST_CHECK_EQUAL(expected, res);
@@ -434,7 +435,7 @@ BOOST_AUTO_TEST_CASE(expansionPowerOfProduct)
 
 BOOST_AUTO_TEST_CASE(divisionByItself)
 {
-    Var res(a*b*c*d);
+    Var res(a * b * c * d);
 
     res /= res;
 
@@ -443,19 +444,19 @@ BOOST_AUTO_TEST_CASE(divisionByItself)
 
 BOOST_AUTO_TEST_CASE(fracOfSymbolsMultipliedByInverse)
 {
-    BOOST_CHECK_EQUAL(1, (a/b)*(b/a));
+    BOOST_CHECK_EQUAL(1, (a / b) * (b / a));
 }
 
 BOOST_AUTO_TEST_CASE(expAdditionEqualBase)
 {
-    const Var expected(tsym::pow(a*b, 23));
-    Var pow1(a*b);
-    Var pow2(b*a);
+    const Var expected(tsym::pow(a * b, 23));
+    Var pow1(a * b);
+    Var pow2(b * a);
 
     pow1 = pow(pow1, 15);
     pow2 = pow(pow2, 8);
 
-    BOOST_CHECK_EQUAL(expected, pow1*pow2);
+    BOOST_CHECK_EQUAL(expected, pow1 * pow2);
 }
 
 BOOST_AUTO_TEST_CASE(powerWithZeroBase)
@@ -476,7 +477,7 @@ BOOST_AUTO_TEST_CASE(powerWithBaseOne)
 {
     const Var res = pow(one, 123);
 
-    BOOST_CHECK_EQUAL(res,  one);
+    BOOST_CHECK_EQUAL(res, one);
 }
 
 BOOST_AUTO_TEST_CASE(powerWithZeroExp)
@@ -495,88 +496,88 @@ BOOST_AUTO_TEST_CASE(powerWithExpOne)
 
 BOOST_AUTO_TEST_CASE(productWithZero)
 {
-    BOOST_CHECK_EQUAL(0, a*b*d*0);
+    BOOST_CHECK_EQUAL(0, a * b * d * 0);
 }
 
 BOOST_AUTO_TEST_CASE(productOfNumberAndSum)
 {
     /* Is expanded because the factor 2 is of numeric type. */
-    BOOST_CHECK_EQUAL(2*a + 2*b, 2*(a + b));
+    BOOST_CHECK_EQUAL(2 * a + 2 * b, 2 * (a + b));
 }
 
 BOOST_AUTO_TEST_CASE(productOfSymbolAndSum)
-    /* No automatic expansion of a*(b + c). */
+/* No automatic expansion of a*(b + c). */
 {
     Var res;
 
-    res = a*(b + c);
+    res = a * (b + c);
 
     /* Is not expanded into a sum. */
     BOOST_CHECK_EQUAL(Var::Type::PRODUCT, res.type());
 }
 
 BOOST_AUTO_TEST_CASE(productOfConstantSumAndSum)
-    /* A sum of constants is treated as a constant when multiplied with a sum:
-     * (2 + sqrt(2))*(a + b) = (2 + sqrt(2))*a + (2 + sqrt(2))*b. */
+/* A sum of constants is treated as a constant when multiplied with a sum:
+ * (2 + sqrt(2))*(a + b) = (2 + sqrt(2))*a + (2 + sqrt(2))*b. */
 {
     Var res;
 
-    res = (two + sqrtTwo)*(a + b);
+    res = (two + sqrtTwo) * (a + b);
 
     BOOST_CHECK_EQUAL(Var::Type::SUM, res.type());
-    BOOST_CHECK_EQUAL((two + sqrtTwo)*a + (two + sqrtTwo)*b, res);
+    BOOST_CHECK_EQUAL((two + sqrtTwo) * a + (two + sqrtTwo) * b, res);
 }
 
 BOOST_AUTO_TEST_CASE(productOfConstAndConstSum)
-    /* sqrt(2)*(2 + sqrt(3)) = 2*sqrt(2) + sqrt(6). */
+/* sqrt(2)*(2 + sqrt(3)) = 2*sqrt(2) + sqrt(6). */
 {
-    BOOST_CHECK_EQUAL(2*sqrtTwo + sqrtSix, sqrtTwo*(2 + sqrtThree));
+    BOOST_CHECK_EQUAL(2 * sqrtTwo + sqrtSix, sqrtTwo * (2 + sqrtThree));
 }
 
 BOOST_AUTO_TEST_CASE(productOfConstPowerAndConstSum)
-    /* (1 + sqrt(2))*sqrt(3) = sqrt(3) + sqrt(6). */
+/* (1 + sqrt(2))*sqrt(3) = sqrt(3) + sqrt(6). */
 {
     Var res;
 
-    res = (1 + sqrtTwo)*sqrtThree;
+    res = (1 + sqrtTwo) * sqrtThree;
 
     BOOST_CHECK_EQUAL(sqrtThree + sqrtSix, res);
 }
 
 BOOST_AUTO_TEST_CASE(productOfNumberAndConstSum)
-    /* 3*(4 + sqrt(2)) = 12 + 4*sqrt(2). */
+/* 3*(4 + sqrt(2)) = 12 + 4*sqrt(2). */
 {
     Var res;
 
-    res = 3*(4 + sqrtTwo);
+    res = 3 * (4 + sqrtTwo);
 
-    BOOST_CHECK_EQUAL(12 + 3*sqrtTwo, res);
+    BOOST_CHECK_EQUAL(12 + 3 * sqrtTwo, res);
 }
 
 BOOST_AUTO_TEST_CASE(productOfNumberNumPowAndSum)
-    /* 2*sqrt(2)*(a + b) = 2*sqrt(2)*a + 2*sqrt(2)*b. */
+/* 2*sqrt(2)*(a + b) = 2*sqrt(2)*a + 2*sqrt(2)*b. */
 {
     Var res;
 
-    res = 2*sqrtTwo*(a + b);
+    res = 2 * sqrtTwo * (a + b);
 
-    BOOST_CHECK_EQUAL(2*sqrtTwo*a + 2*sqrtTwo*b, res);
+    BOOST_CHECK_EQUAL(2 * sqrtTwo * a + 2 * sqrtTwo * b, res);
 }
 
 BOOST_AUTO_TEST_CASE(productOfTwoConstantSums)
-    /* Products of constant sums are expanded. (2 + sqrt(2))*(3 + sqrt(3)) = 6 + 3*sqrt(2) +
-     * 2*sqrt(3) + sqrt(6). */
+/* Products of constant sums are expanded. (2 + sqrt(2))*(3 + sqrt(3)) = 6 + 3*sqrt(2) +
+ * 2*sqrt(3) + sqrt(6). */
 {
     Var res;
 
-    res = (two + sqrtTwo)*(three + sqrtThree);
+    res = (two + sqrtTwo) * (three + sqrtThree);
 
     BOOST_CHECK_EQUAL(Var::Type::SUM, res.type());
-    BOOST_CHECK_EQUAL(6 + 3*sqrtTwo + 2*sqrtThree + sqrtSix, res);
+    BOOST_CHECK_EQUAL(6 + 3 * sqrtTwo + 2 * sqrtThree + sqrtSix, res);
 }
 
 BOOST_AUTO_TEST_CASE(minusOneSquare)
-    /* (-1)^2 = 1. */
+/* (-1)^2 = 1. */
 {
     const Var res = tsym::pow(Var(-1), 2);
 
@@ -584,7 +585,7 @@ BOOST_AUTO_TEST_CASE(minusOneSquare)
 }
 
 BOOST_AUTO_TEST_CASE(minusOneCubic)
-    /* (-1)^3 = -1. */
+/* (-1)^3 = -1. */
 {
     const Var res = tsym::pow(Var(-1), 3);
 
@@ -592,7 +593,7 @@ BOOST_AUTO_TEST_CASE(minusOneCubic)
 }
 
 BOOST_AUTO_TEST_CASE(numPowerToUndefined)
-    /* (-1)^(1/3) is undefined. */
+/* (-1)^(1/3) is undefined. */
 {
     const Var res = tsym::pow(Var(-1), Var(1, 3));
 
@@ -600,7 +601,7 @@ BOOST_AUTO_TEST_CASE(numPowerToUndefined)
 }
 
 BOOST_AUTO_TEST_CASE(numPowerToUndefinedEvenDenomExp)
-    /* (-1)^(5/4) is undefined. */
+/* (-1)^(5/4) is undefined. */
 {
     const Var res = tsym::pow(Var(-1), Var(4, 5));
 
@@ -608,7 +609,7 @@ BOOST_AUTO_TEST_CASE(numPowerToUndefinedEvenDenomExp)
 }
 
 BOOST_AUTO_TEST_CASE(numPowerToUndefinedFractionBase)
-    /* (-1/2)^(1/2) is undefined. */
+/* (-1/2)^(1/2) is undefined. */
 {
     const Var res = tsym::sqrt(Var(-1, 2));
 
@@ -616,142 +617,140 @@ BOOST_AUTO_TEST_CASE(numPowerToUndefinedFractionBase)
 }
 
 BOOST_AUTO_TEST_CASE(simpleNumericPowerSimplification)
-    /* 2/3*sqrt(3) = 2*3^(-1/2). */
+/* 2/3*sqrt(3) = 2*3^(-1/2). */
 {
-    const Var expected(2*tsym::pow(3, Var(-1, 2)));
+    const Var expected(2 * tsym::pow(3, Var(-1, 2)));
     Var twoThird(2, 3);
 
-    BOOST_CHECK_EQUAL(expected, twoThird*sqrtThree);
+    BOOST_CHECK_EQUAL(expected, twoThird * sqrtThree);
 }
 
 BOOST_AUTO_TEST_CASE(numericPowerSimplification)
-    /* (9/11)^(-12/23)*2^(-12/23)*(1/7)^(12/23) = (126/11)^(-12/23). */
+/* (9/11)^(-12/23)*2^(-12/23)*(1/7)^(12/23) = (126/11)^(-12/23). */
 {
     const Var exp(12, 23);
     const Var expected(tsym::pow(Var(126, 11), -exp));
     Var res;
 
-    res = tsym::pow(Var(9, 11), -exp)*tsym::pow(2, -exp)*tsym::pow(Var(1, 7), exp);
+    res = tsym::pow(Var(9, 11), -exp) * tsym::pow(2, -exp) * tsym::pow(Var(1, 7), exp);
 
     BOOST_CHECK_EQUAL(expected, res);
 }
 
 BOOST_AUTO_TEST_CASE(simpleNumPowExtraction)
-    /* 3/2*(1/3)^(1/3) = 1/2*3^(2/3). */
+/* 3/2*(1/3)^(1/3) = 1/2*3^(2/3). */
 {
-    const Var expected(Var(1, 2)*tsym::pow(3, Var(2, 3)));
+    const Var expected(Var(1, 2) * tsym::pow(3, Var(2, 3)));
     Var res;
 
-    res = Var(3, 2)*tsym::pow(Var(1, 3), Var(1, 3));
+    res = Var(3, 2) * tsym::pow(Var(1, 3), Var(1, 3));
 
     BOOST_CHECK_EQUAL(expected, res);
 }
 
 BOOST_AUTO_TEST_CASE(orderingOfProductOfConstants)
-    /* 3*sqrt(3)*10*sqrt(2)*3*sqrt(2) = 180*sqrt(3). */
+/* 3*sqrt(3)*10*sqrt(2)*3*sqrt(2) = 180*sqrt(3). */
 {
     Var res;
 
-    res = 3*sqrtThree*10*sqrtTwo*3*sqrtTwo;
+    res = 3 * sqrtThree * 10 * sqrtTwo * 3 * sqrtTwo;
 
-    BOOST_CHECK_EQUAL(180*sqrtThree, res);
+    BOOST_CHECK_EQUAL(180 * sqrtThree, res);
 }
 
 BOOST_AUTO_TEST_CASE(constProductsEqualBaseAfterExtraction)
-    /* 17^(2/3)*sqrt(833) = 7*17^(1/6). */
+/* 17^(2/3)*sqrt(833) = 7*17^(1/6). */
 {
-    const Var expected(119*tsym::pow(17, Var(1, 6)));
+    const Var expected(119 * tsym::pow(17, Var(1, 6)));
     Var res;
 
-    res = tsym::pow(17, Var(2, 3))*tsym::sqrt(833);
+    res = tsym::pow(17, Var(2, 3)) * tsym::sqrt(833);
 
     BOOST_CHECK_EQUAL(expected, res);
 }
 
 BOOST_AUTO_TEST_CASE(orderingOfLargeProductOfConstants)
-    /* 5*(2/9)*sqrt(3)*2^(1/5)*sqrt(17)*(10/11)*sqrt(2)*sqrt(7)*4^(1/5)*17^(2/3)*(1/4)*sqrt(7) =
-     * 25/33*2^(3/5)*17^(2/3)*sqrt(1666/3). */
+/* 5*(2/9)*sqrt(3)*2^(1/5)*sqrt(17)*(10/11)*sqrt(2)*sqrt(7)*4^(1/5)*17^(2/3)*(1/4)*sqrt(7) =
+ * 25/33*2^(3/5)*17^(2/3)*sqrt(1666/3). */
 {
-    const Var expected(Var(25, 33)*tsym::pow(2, Var(3, 5))*tsym::pow(17, Var(2, 3))
-        *tsym::sqrt(Var(1666, 3)));
+    const Var expected(Var(25, 33) * tsym::pow(2, Var(3, 5)) * tsym::pow(17, Var(2, 3)) * tsym::sqrt(Var(1666, 3)));
     Var res;
 
-    res = 5*Var(2, 9)*tsym::sqrt(3)*tsym::pow(2, Var(1, 5))*tsym::sqrt(17)*Var(10, 11)
-        *tsym::sqrt(2)*tsym::sqrt(7)*tsym::pow(4, Var(1, 5))*tsym::pow(17, Var(2, 3))*Var(1, 4)
-        *tsym::sqrt(7);
+    res = 5 * Var(2, 9) * tsym::sqrt(3) * tsym::pow(2, Var(1, 5)) * tsym::sqrt(17) * Var(10, 11) * tsym::sqrt(2)
+      * tsym::sqrt(7) * tsym::pow(4, Var(1, 5)) * tsym::pow(17, Var(2, 3)) * Var(1, 4) * tsym::sqrt(7);
 
     BOOST_CHECK_EQUAL(expected, res);
 }
 
 BOOST_AUTO_TEST_CASE(constPowerfracExpGreaterThanOne)
-    /* 2^(3/2) = 2*sqrt(2). */
+/* 2^(3/2) = 2*sqrt(2). */
 {
     Var res;
 
     res = tsym::pow(2, Var(3, 2));
 
     BOOST_CHECK_EQUAL(Var::Type::PRODUCT, res.type());
-    BOOST_CHECK_EQUAL(2*sqrtTwo, res);
+    BOOST_CHECK_EQUAL(2 * sqrtTwo, res);
 }
 
 BOOST_AUTO_TEST_CASE(piInSum)
-    /* 2 + Pi + 3*sqrt(5)*Pi + 5 + Pi. */
+/* 2 + Pi + 3*sqrt(5)*Pi + 5 + Pi. */
 {
     Var res;
 
-    res = 2 + pi() + 3*tsym::sqrt(5)*pi() + 5 + pi();
+    res = 2 + pi() + 3 * tsym::sqrt(5) * pi() + 5 + pi();
 
-    BOOST_CHECK_EQUAL(7 + 2*pi() + 3*tsym::sqrt(5)*pi(), res);
+    BOOST_CHECK_EQUAL(7 + 2 * pi() + 3 * tsym::sqrt(5) * pi(), res);
 }
 
 BOOST_AUTO_TEST_CASE(simpleSumWithEqualNonConstTerms)
-    /* 2*a + sqrt(2)*a stays as it is. */
+/* 2*a + sqrt(2)*a stays as it is. */
 {
     Var res;
 
-    res = two*a + sqrtTwo*a;
+    res = two * a + sqrtTwo * a;
 
     BOOST_CHECK_EQUAL(Var::Type::SUM, res.type());
-    BOOST_CHECK_EQUAL((two + sqrtTwo)*a, res);
+    BOOST_CHECK_EQUAL((two + sqrtTwo) * a, res);
 }
 
 BOOST_AUTO_TEST_CASE(collectConstTerms)
-    /* 2*a + sqrt(2)*a + sqrt(3)*a + 5*a = (7 + sqrt(2)*a + sqrt(3))*a. */
+/* 2*a + sqrt(2)*a + sqrt(3)*a + 5*a = (7 + sqrt(2)*a + sqrt(3))*a. */
 {
     Var res;
 
-    res = 2*a + sqrtTwo*a + sqrtThree*a + 5*a;
+    res = 2 * a + sqrtTwo * a + sqrtThree * a + 5 * a;
 
-    BOOST_CHECK_EQUAL((7 + sqrtTwo + sqrtThree)*a, res);
+    BOOST_CHECK_EQUAL((7 + sqrtTwo + sqrtThree) * a, res);
 }
 
 BOOST_AUTO_TEST_CASE(collectConstTermsWithSum)
-    /* (1 + sqrt(2))*a + sqrt(3)*a = (1 + sqrt(2) + sqrt(3))*a. */
+/* (1 + sqrt(2))*a + sqrt(3)*a = (1 + sqrt(2) + sqrt(3))*a. */
 {
     Var res;
 
-    res = (1 + sqrtTwo)*a + sqrtThree*a;
+    res = (1 + sqrtTwo) * a + sqrtThree * a;
 
     BOOST_CHECK_EQUAL(Var::Type::SUM, res.type());
-    BOOST_CHECK_EQUAL(a + sqrtTwo*a + sqrtThree*a, res);
+    BOOST_CHECK_EQUAL(a + sqrtTwo * a + sqrtThree * a, res);
 }
 
 BOOST_AUTO_TEST_CASE(expandProductOfConstTerms)
-    /* No collection of (1 + 2*sqrt(2)*sqrt(3))*a + (2 + sqrt(2)*sqrt(3))*a. */
+/* No collection of (1 + 2*sqrt(2)*sqrt(3))*a + (2 + sqrt(2)*sqrt(3))*a. */
 {
     Var res;
 
-    res = (1 + 2*sqrtTwo*sqrtThree)*a + (2 + sqrtTwo*sqrtThree)*a;
+    res = (1 + 2 * sqrtTwo * sqrtThree) * a + (2 + sqrtTwo * sqrtThree) * a;
 
     BOOST_CHECK_EQUAL(Var::Type::SUM, res.type());
-    BOOST_CHECK_EQUAL(3*a + 3*tsym::sqrt(6)*a, res);
+    BOOST_CHECK_EQUAL(3 * a + 3 * tsym::sqrt(6) * a, res);
 }
 
 BOOST_AUTO_TEST_CASE(simpleExpansion)
-    /* a*(b + c)*d = a*b*d + a*c*d. */
+/* a*(b + c)*d = a*b*d + a*c*d. */
 {
-    const Var expected = a*b*d + a*c*d;
-    const Var orig = a*(b + c)*d;
+    const Var expected = a * b * d + a * c * d;
+    const Var orig = a * (b + c) * d;
     Var result;
 
     result = expand(orig);
@@ -760,43 +759,43 @@ BOOST_AUTO_TEST_CASE(simpleExpansion)
 }
 
 BOOST_AUTO_TEST_CASE(dontCollectProductOfConstTerms)
-    /* 2*sqrt(3)*sqrt(2) + 3*sqrt(3)*sqrt(5) = 2*sqrt(6) + 3*sqrt(15). */
+/* 2*sqrt(3)*sqrt(2) + 3*sqrt(3)*sqrt(5) = 2*sqrt(6) + 3*sqrt(15). */
 {
     const Var sqrtFive(tsym::sqrt(5));
     const Var sqrtFifteen(tsym::sqrt(15));
     Var res;
 
-    res = 2*sqrtThree*sqrtTwo + 3*sqrtThree*sqrtFive;
+    res = 2 * sqrtThree * sqrtTwo + 3 * sqrtThree * sqrtFive;
 
-    BOOST_CHECK_EQUAL(2*sqrtSix + 3*sqrtFifteen, res);
+    BOOST_CHECK_EQUAL(2 * sqrtSix + 3 * sqrtFifteen, res);
 }
 
 BOOST_AUTO_TEST_CASE(largerSumWithEqualNonConstTerms)
-    /* (2 + sqrt(2))*(a + b + c) + (1 + sqrt(3))*(a + b + c) = const*a + const*b + const*c, where
-     * const = 3 + sqrt(2) + sqrt(3). */
+/* (2 + sqrt(2))*(a + b + c) + (1 + sqrt(3))*(a + b + c) = const*a + const*b + const*c, where
+ * const = 3 + sqrt(2) + sqrt(3). */
 {
     const Var constVar(3 + sqrtTwo + sqrtThree);
     Var res;
 
-    res = (two + sqrtTwo)*(a + b + c) + (one + sqrtThree)*(a + b + c);
+    res = (two + sqrtTwo) * (a + b + c) + (one + sqrtThree) * (a + b + c);
 
     BOOST_CHECK_EQUAL(Var::Type::SUM, res.type());
-    BOOST_CHECK_EQUAL(constVar*a + constVar*b + constVar*c, res);
+    BOOST_CHECK_EQUAL(constVar * a + constVar * b + constVar * c, res);
 }
 
 BOOST_AUTO_TEST_CASE(sumWithNumericAndNumPowProducts)
-    /* 2*sqrt(2)*a - 3/5*sqrt(2)*a = 7/5*sqrt(2)*a. */
+/* 2*sqrt(2)*a - 3/5*sqrt(2)*a = 7/5*sqrt(2)*a. */
 {
-    const Var expected(Var(7, 5)*sqrtTwo*a);
+    const Var expected(Var(7, 5) * sqrtTwo * a);
     Var res;
 
-    res = 2*sqrtTwo*a - Var(3, 5)*sqrtTwo*a;
+    res = 2 * sqrtTwo * a - Var(3, 5) * sqrtTwo * a;
 
     BOOST_CHECK_EQUAL(expected, res);
 }
 
 BOOST_AUTO_TEST_CASE(expandNumericFactorResultingInZero)
-    /* a + b - (a + b) = 0. */
+/* a + b - (a + b) = 0. */
 {
     Var res(a + b);
 
@@ -806,106 +805,101 @@ BOOST_AUTO_TEST_CASE(expandNumericFactorResultingInZero)
 }
 
 BOOST_AUTO_TEST_CASE(simpleExpandNumPowFactorResultingInZero)
-    /* sqrt(2)*a - sqrt(2)*a = 0. */
+/* sqrt(2)*a - sqrt(2)*a = 0. */
 {
-    const Var res(sqrtTwo*a - sqrtTwo*a);
+    const Var res(sqrtTwo * a - sqrtTwo * a);
 
     BOOST_CHECK_EQUAL(zero, res);
 }
 
 BOOST_AUTO_TEST_CASE(expandNumPowFactorResultingInZero)
-    /* (sqrt(2)*a - sqrt(3)*b) - (-sqrt(3)*b + sqrt(2)*a) = 0. */
+/* (sqrt(2)*a - sqrt(3)*b) - (-sqrt(3)*b + sqrt(2)*a) = 0. */
 {
     Var res;
 
-    res = (sqrtTwo*a - sqrtThree*b) - (-sqrtThree*b + sqrtTwo*a);
+    res = (sqrtTwo * a - sqrtThree * b) - (-sqrtThree * b + sqrtTwo * a);
 
     BOOST_CHECK_EQUAL(zero, res);
 }
 
 BOOST_AUTO_TEST_CASE(expandPowerFactorResultingInZero)
-    /* d*a^(b + c) - d*a^(b + c) = 0. */
+/* d*a^(b + c) - d*a^(b + c) = 0. */
 {
-    Var res(d*tsym::pow(a, b + c));
+    Var res(d * tsym::pow(a, b + c));
 
-    res -= d*tsym::pow(a, b + c);
+    res -= d * tsym::pow(a, b + c);
 
     BOOST_CHECK_EQUAL(zero, res);
 }
 
 BOOST_AUTO_TEST_CASE(sumOfProduts)
-    /* 2*(a + b)*(c + d) - (a + b)*(c + d) = (a + b)*(c + d). */
+/* 2*(a + b)*(c + d) - (a + b)*(c + d) = (a + b)*(c + d). */
 {
-    const Var ex((a + b)*(c + d));
+    const Var ex((a + b) * (c + d));
     Var res;
 
-    res = 2*ex - ex;
+    res = 2 * ex - ex;
 
     BOOST_CHECK_EQUAL(ex, res);
 }
 
 BOOST_AUTO_TEST_CASE(largeMixedTerm01)
-    /* a + 2*sqrt(2)*b + 3*c - 7*a*sqrt(2)*sqrt(3)*5^(1/3) + 4*d^(2*b + 2*a) - b*2/sqrt(2) -
-     * b*sqrt(2) = (1 - 7*5^(1/3)*sqrt(6))*a + 3*c + 4*d^(2*a + 2*b). */
+/* a + 2*sqrt(2)*b + 3*c - 7*a*sqrt(2)*sqrt(3)*5^(1/3) + 4*d^(2*b + 2*a) - b*2/sqrt(2) -
+ * b*sqrt(2) = (1 - 7*5^(1/3)*sqrt(6))*a + 3*c + 4*d^(2*a + 2*b). */
 {
-    const Var expected((1 - 7*tsym::pow(5, Var(1, 3))*tsym::sqrt(6))*a + 3*c + 4*tsym::pow(d, 2*a +
-    2*b));
+    const Var expected((1 - 7 * tsym::pow(5, Var(1, 3)) * tsym::sqrt(6)) * a + 3 * c + 4 * tsym::pow(d, 2 * a + 2 * b));
     Var res;
 
-    res = a + 2*tsym::sqrt(2)*b + 3*c - 7*a*tsym::sqrt(2)*tsym::sqrt(3)*tsym::pow(5, Var(1, 3)) + 4
-    *tsym::pow(d, 2*b + 2*a) -
-        b*2/tsym::sqrt(2) - b*tsym::sqrt(2);
+    res = a + 2 * tsym::sqrt(2) * b + 3 * c - 7 * a * tsym::sqrt(2) * tsym::sqrt(3) * tsym::pow(5, Var(1, 3))
+      + 4 * tsym::pow(d, 2 * b + 2 * a) - b * 2 / tsym::sqrt(2) - b * tsym::sqrt(2);
 
     BOOST_CHECK_EQUAL(expected, res);
 }
 
 BOOST_AUTO_TEST_CASE(largeMixedTerm02)
-    /* 2^(1/3)*(a + b)*2^(1/4)*sqrt(2) + (b + a)*2^(1/12) + (a + b)*(d + c) = 3*2^(1/12)*a +
-     * 3*2^(1/12)*b + (a + b)*(d + c). */
+/* 2^(1/3)*(a + b)*2^(1/4)*sqrt(2) + (b + a)*2^(1/12) + (a + b)*(d + c) = 3*2^(1/12)*a +
+ * 3*2^(1/12)*b + (a + b)*(d + c). */
 {
-    const Var fac(3*tsym::pow(2, Var(1, 12)));
-    const Var expected(fac*a + fac*b + (a + b)*(c + d));
+    const Var fac(3 * tsym::pow(2, Var(1, 12)));
+    const Var expected(fac * a + fac * b + (a + b) * (c + d));
     Var res;
 
-    res = tsym::pow(2, Var(1, 3))*(a + b)*tsym::pow(2, Var(1, 4))*tsym::sqrt(2) + (b + a)*tsym::pow
-    (2, Var(1, 12))
-        + (a + b)*(d + c);
+    res = tsym::pow(2, Var(1, 3)) * (a + b) * tsym::pow(2, Var(1, 4)) * tsym::sqrt(2)
+      + (b + a) * tsym::pow(2, Var(1, 12)) + (a + b) * (d + c);
 
     BOOST_CHECK_EQUAL(expected, res);
 }
 
 BOOST_AUTO_TEST_CASE(largeMixedTerm03)
-    /* (c*a*b*(d + e)^(d + e))/(a*e*d*(e + d))*14/15 = 14/15*(b*c)/(d*e)*(d + e)^(-1 + d + e). */
+/* (c*a*b*(d + e)^(d + e))/(a*e*d*(e + d))*14/15 = 14/15*(b*c)/(d*e)*(d + e)^(-1 + d + e). */
 {
-    const Var expected(Var(14, 15)*b*c*tsym::pow(d, -1)*tsym::pow(e, -1)
-            *tsym::pow(d + e, -1 + d + e));
+    const Var expected(Var(14, 15) * b * c * tsym::pow(d, -1) * tsym::pow(e, -1) * tsym::pow(d + e, -1 + d + e));
     Var res;
 
-    res = (c*a*b*tsym::pow(d + e, d + e))/(a*e*d*(e + d))*Var(14, 15);
+    res = (c * a * b * tsym::pow(d + e, d + e)) / (a * e * d * (e + d)) * Var(14, 15);
 
     BOOST_CHECK_EQUAL(expected, res);
 }
 
 BOOST_AUTO_TEST_CASE(largeMixedTerm04)
 {
-    const Var expected((10 + sqrtTwo)*a + 100*tsym::pow(a, 2) + (3 + sqrtTwo)*b + 2*c + Var(13, 9)*
-        d);
+    const Var expected((10 + sqrtTwo) * a + 100 * tsym::pow(a, 2) + (3 + sqrtTwo) * b + 2 * c + Var(13, 9) * d);
     Var res;
 
-    res = (a + 2*b + 2*c) + (9*a + b + d) + tsym::sqrt(2)*(a + b) + 4*d/9 + 100*a*a;
+    res = (a + 2 * b + 2 * c) + (9 * a + b + d) + tsym::sqrt(2) * (a + b) + 4 * d / 9 + 100 * a * a;
 
     BOOST_CHECK_EQUAL(expected, res);
 }
 
 BOOST_AUTO_TEST_CASE(largeMixedTerm05)
-    /* a^(2/3)*e*sqrt(2)*sqrt(3)*b*2*d*e*(e + 2)*a*c*sqrt(3)*a^(1/5)*sqrt(5)*sqrt(3) =
-     * 6*sqrt(30)*a^(28/15)*b*c*d*e^2*(2 + e). */
+/* a^(2/3)*e*sqrt(2)*sqrt(3)*b*2*d*e*(e + 2)*a*c*sqrt(3)*a^(1/5)*sqrt(5)*sqrt(3) =
+ * 6*sqrt(30)*a^(28/15)*b*c*d*e^2*(2 + e). */
 {
-    const Var expected(6*tsym::sqrt(30)*tsym::pow(a, Var(28, 15))*b*c*d*tsym::pow(e, 2)*(2 + e));
+    const Var expected(6 * tsym::sqrt(30) * tsym::pow(a, Var(28, 15)) * b * c * d * tsym::pow(e, 2) * (2 + e));
     Var res;
 
-    res = tsym::pow(a, Var(2, 3))*e*tsym::sqrt(2)*tsym::sqrt(3)*b*2*d*e*(e + 2)*a*c*tsym::sqrt(3)*
-    tsym::pow(a, Var(1, 5))*tsym::sqrt(5)*tsym::sqrt(3);
+    res = tsym::pow(a, Var(2, 3)) * e * tsym::sqrt(2) * tsym::sqrt(3) * b * 2 * d * e * (e + 2) * a * c * tsym::sqrt(3)
+      * tsym::pow(a, Var(1, 5)) * tsym::sqrt(5) * tsym::sqrt(3);
 
     BOOST_CHECK_EQUAL(expected, res);
     BOOST_CHECK_EQUAL(8, operands(res).size());
@@ -913,8 +907,8 @@ BOOST_AUTO_TEST_CASE(largeMixedTerm05)
 
 BOOST_AUTO_TEST_CASE(acosOfCosOfThreePiFourth)
 {
-    const Var res = acos(cos(7*pi()/4));
-    const Var expected = pi()/4;
+    const Var res = acos(cos(7 * pi() / 4));
+    const Var expected = pi() / 4;
 
     BOOST_CHECK_EQUAL(expected, res);
 }
@@ -923,7 +917,7 @@ BOOST_AUTO_TEST_CASE(atan2OfResolvableArgs)
 {
     const Var res(atan2(Var(-123, 28), Var(-123, 28)));
 
-    BOOST_CHECK_EQUAL(225*pi()/180, res);
+    BOOST_CHECK_EQUAL(225 * pi() / 180, res);
 }
 
 BOOST_AUTO_TEST_CASE(atan2OfNonResolvableNumericallyEvaluableArgs)
@@ -938,16 +932,16 @@ BOOST_AUTO_TEST_CASE(atan2OfNonResolvableNumericallyEvaluableArgs)
 
 BOOST_AUTO_TEST_CASE(diffOfSum)
 {
-    const Var sum(2*tsym::pow(a, 3) + a*b);
+    const Var sum(2 * tsym::pow(a, 3) + a * b);
     const Var result = diff(sum, a);
-    const Var expected(6*a*a + b);
+    const Var expected(6 * a * a + b);
 
     BOOST_CHECK_EQUAL(expected, result);
 }
 
 BOOST_AUTO_TEST_CASE(simplifyToZero)
 {
-    const Var sum = a*b + a*c - a*(b + c);
+    const Var sum = a * b + a * c - a * (b + c);
 
     BOOST_CHECK_EQUAL(0, expand(sum));
     BOOST_CHECK_EQUAL(0, simplify(sum));
@@ -955,7 +949,7 @@ BOOST_AUTO_TEST_CASE(simplifyToZero)
 
 BOOST_AUTO_TEST_CASE(simplifyExpandLessComplex)
 {
-    const Var orig = b - 3*c - a*c - (-3 - a)*c;
+    const Var orig = b - 3 * c - a * c - (-3 - a) * c;
     const Var simplified = simplify(orig);
 
     BOOST_CHECK_EQUAL(b, simplified);
@@ -964,8 +958,8 @@ BOOST_AUTO_TEST_CASE(simplifyExpandLessComplex)
 
 BOOST_AUTO_TEST_CASE(simplifyWithUndefinedIntermediateResult, noLogs())
 {
-    const Var denom = a - a*b/(b + c) - a*c/(b + c);
-    const Var orig = d/denom;
+    const Var denom = a - a * b / (b + c) - a * c / (b + c);
+    const Var orig = d / denom;
 
     const Var result = simplify(orig);
 
@@ -982,10 +976,10 @@ BOOST_AUTO_TEST_CASE(getNumAndDenomFromFraction)
 
 BOOST_AUTO_TEST_CASE(getNumAndDenomFromProduct)
 {
-    const Var res(a*b*b/(c*c));
+    const Var res(a * b * b / (c * c));
 
-    BOOST_CHECK_EQUAL(a*b*b, numerator(res));
-    BOOST_CHECK_EQUAL(c*c, denominator(res));
+    BOOST_CHECK_EQUAL(a * b * b, numerator(res));
+    BOOST_CHECK_EQUAL(c * c, denominator(res));
 }
 
 BOOST_AUTO_TEST_CASE(negativeVar)
@@ -994,7 +988,7 @@ BOOST_AUTO_TEST_CASE(negativeVar)
     const Var bPos("b", Var::Sign::POSITIVE);
     Var res;
 
-    res = -aPos*bPos + 2 - 3*pi();
+    res = -aPos * bPos + 2 - 3 * pi();
 
     BOOST_TEST(!isPositive(res));
     BOOST_TEST(isNegative(res));
@@ -1023,7 +1017,7 @@ BOOST_AUTO_TEST_CASE(collectSymbolsFromNumber)
 
 BOOST_AUTO_TEST_CASE(collectSymbolsFromMixedTerm)
 {
-    const Var term(a*b + b/3 + 2*c*d*d + c*c*c - tsym::log(e + 12*tsym::pi()));
+    const Var term(a * b + b / 3 + 2 * c * d * d + c * c * c - tsym::log(e + 12 * tsym::pi()));
     const std::vector<Var> result(collectSymbols(term));
 
     BOOST_CHECK_EQUAL(5, result.size());
@@ -1036,7 +1030,7 @@ BOOST_AUTO_TEST_CASE(collectSymbolsFromMixedTerm)
 
 BOOST_AUTO_TEST_CASE(collectSymbolsFromPower)
 {
-    const Var term(tsym::pow(a + b, a*d*(2 + tsym::pi()*e*tsym::euler())));
+    const Var term(tsym::pow(a + b, a * d * (2 + tsym::pi() * e * tsym::euler())));
     const std::vector<Var> result(collectSymbols(term));
 
     BOOST_CHECK_EQUAL(4, result.size());
@@ -1048,7 +1042,7 @@ BOOST_AUTO_TEST_CASE(collectSymbolsFromPower)
 
 BOOST_AUTO_TEST_CASE(collectSymbolsFromFunction)
 {
-    const Var term(tsym::asin(a) + tsym::log(tsym::pi()*b) - tsym::tan(c));
+    const Var term(tsym::asin(a) + tsym::log(tsym::pi() * b) - tsym::tan(c));
     const std::vector<Var> result(collectSymbols(term));
 
     BOOST_CHECK_EQUAL(3, result.size());
@@ -1072,7 +1066,7 @@ BOOST_AUTO_TEST_CASE(printerOperatorTypeEnumSumProductPower)
     const std::string expected("SumProductPower");
     std::stringstream stream;
 
-    stream << (a + b).type() << (a*b).type() << tsym::pow(a, b).type();
+    stream << (a + b).type() << (a * b).type() << tsym::pow(a, b).type();
 
     BOOST_CHECK_EQUAL(expected, stream.str());
 }
@@ -1102,7 +1096,7 @@ BOOST_AUTO_TEST_CASE(printerOperatorTypeEnumUndefined, noLogs())
     const std::string expected("Undefined");
     std::stringstream stream;
 
-    const Var u = tsym::tan(pi()/2);
+    const Var u = tsym::tan(pi() / 2);
 
     stream << u;
 
@@ -1129,7 +1123,7 @@ BOOST_AUTO_TEST_CASE(equalHashes)
 
 BOOST_AUTO_TEST_CASE(differentHashes)
 {
-    BOOST_TEST(std::hash<Var>{}(a) != std::hash<Var>{}(2*a));
+    BOOST_TEST(std::hash<Var>{}(a) != std::hash<Var>{}(2 * a));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

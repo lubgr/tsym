@@ -1,21 +1,21 @@
 
-#include <sstream>
 #include "base.h"
+#include <sstream>
 #include "baseptr.h"
-#include "numeric.h"
-#include "symbolmap.h"
-#include "product.h"
-#include "name.h"
-#include "undefined.h"
-#include "fraction.h"
-#include "cache.h"
-#include "plaintextprintengine.h"
 #include "bplist.h"
-#include "printer.h"
+#include "cache.h"
+#include "fraction.h"
 #include "logging.h"
+#include "name.h"
+#include "numeric.h"
+#include "plaintextprintengine.h"
+#include "printer.h"
+#include "product.h"
+#include "symbolmap.h"
+#include "undefined.h"
 
-tsym::Base::Base(const BasePtrList& operands) :
-    ops(operands)
+tsym::Base::Base(const BasePtrList& operands)
+    : ops(operands)
 {}
 
 bool tsym::Base::isZero() const
@@ -205,7 +205,7 @@ tsym::BasePtr tsym::Base::normalViaCache() const
     if (lookup != cend(map))
         return lookup->second;
 
-    return map.insert({ std::move(key), normalWithoutCache() })->second;
+    return map.insert({std::move(key), normalWithoutCache()})->second;
 }
 
 tsym::BasePtr tsym::Base::normalWithoutCache() const
@@ -215,8 +215,9 @@ tsym::BasePtr tsym::Base::normalWithoutCache() const
 
     normalizedFrac = normal(map);
 
-    return Fraction(map.replaceTmpSymbolsBackFrom(normalizedFrac.num()),
-            map.replaceTmpSymbolsBackFrom(normalizedFrac.denom())).eval();
+    return Fraction(
+      map.replaceTmpSymbolsBackFrom(normalizedFrac.num()), map.replaceTmpSymbolsBackFrom(normalizedFrac.denom()))
+      .eval();
 }
 
 tsym::BasePtr tsym::Base::diff(const BasePtr& symbol) const
@@ -224,8 +225,7 @@ tsym::BasePtr tsym::Base::diff(const BasePtr& symbol) const
     if (symbol->isSymbol())
         return diffWrtSymbol(symbol);
 
-    TSYM_WARNING("Differentiation w.r.t. %s! Only Symbols work, return Undefined.",
-            typeStr().c_str());
+    TSYM_WARNING("Differentiation w.r.t. %s! Only Symbols work, return Undefined.", typeStr().c_str());
 
     return Undefined::create();
 }

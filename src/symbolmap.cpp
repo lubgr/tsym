@@ -9,7 +9,7 @@ const tsym::BasePtr& tsym::SymbolMap::getTmpSymbolAndStore(const BasePtr& ptr)
     if (lookup != cend(rep))
         return lookup->second;
 
-    return rep.insert({ ptr, Symbol::createTmpSymbol(ptr->isPositive()) }).first->second;
+    return rep.insert({ptr, Symbol::createTmpSymbol(ptr->isPositive())}).first->second;
 }
 
 tsym::BasePtr tsym::SymbolMap::replaceTmpSymbolsBackFrom(const BasePtr& orig) const

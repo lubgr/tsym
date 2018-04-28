@@ -26,88 +26,88 @@ namespace tsym {
          * container or the name() methods returns an empty Name for all subclasses except Function,
          * Symbol or Constant. This clutters the interface a bit, but provides easy access to all
          * information without using casts. */
-        public:
-            virtual ~Base() = default;
+      public:
+        virtual ~Base() = default;
 
-            virtual bool isEqualDifferentBase(const BasePtr& other) const = 0;
-            virtual bool sameType(const BasePtr& other) const = 0;
-            virtual Number numericEval() const = 0;
-            virtual Fraction normal(SymbolMap& map) const = 0;
-            virtual BasePtr diffWrtSymbol(const BasePtr& symbol) const = 0;
-            virtual std::string typeStr() const = 0;
-            /* If unclear or zero, the following two methods shall return false: */
-            virtual bool isPositive() const = 0;
-            virtual bool isNegative() const = 0;
-            virtual unsigned complexity() const = 0;
-            virtual size_t hash() const = 0;
+        virtual bool isEqualDifferentBase(const BasePtr& other) const = 0;
+        virtual bool sameType(const BasePtr& other) const = 0;
+        virtual Number numericEval() const = 0;
+        virtual Fraction normal(SymbolMap& map) const = 0;
+        virtual BasePtr diffWrtSymbol(const BasePtr& symbol) const = 0;
+        virtual std::string typeStr() const = 0;
+        /* If unclear or zero, the following two methods shall return false: */
+        virtual bool isPositive() const = 0;
+        virtual bool isNegative() const = 0;
+        virtual unsigned complexity() const = 0;
+        virtual size_t hash() const = 0;
 
-            virtual bool isZero() const;
-            virtual bool isOne() const;
-            virtual bool isNumericallyEvaluable() const;
-            virtual bool isUndefined() const;
-            virtual bool isSymbol() const;
-            virtual bool isNumeric() const;
-            virtual bool isPower() const;
-            virtual bool isNumericPower() const;
-            virtual bool isSum() const;
-            virtual bool isProduct() const;
-            virtual bool isFunction() const;
-            virtual bool isConstant() const;
+        virtual bool isZero() const;
+        virtual bool isOne() const;
+        virtual bool isNumericallyEvaluable() const;
+        virtual bool isUndefined() const;
+        virtual bool isSymbol() const;
+        virtual bool isNumeric() const;
+        virtual bool isPower() const;
+        virtual bool isNumericPower() const;
+        virtual bool isSum() const;
+        virtual bool isProduct() const;
+        virtual bool isFunction() const;
+        virtual bool isConstant() const;
 
-            virtual bool isEqual(const BasePtr& other) const;
-            virtual bool isDifferent(const BasePtr& other) const;
-            virtual bool has(const BasePtr& other) const;
-            /* Returns true for (composites of) Numerics or num. powers, nothing else: */
-            virtual bool isConst() const;
-            virtual BasePtr numericTerm() const;
-            virtual BasePtr nonNumericTerm() const;
-            /* For the following two methods, Constant types are treated as variables, only Numerics
-             * and numeric Powers are considered constant (see isConst method above): */
-            virtual BasePtr constTerm() const;
-            virtual BasePtr nonConstTerm() const;
-            virtual BasePtr expand() const;
-            virtual BasePtr subst(const BasePtr& from, const BasePtr& to) const;
-            virtual BasePtr coeff(const BasePtr& variable, int exp) const;
-            virtual BasePtr leadingCoeff(const BasePtr& variable) const;
-            virtual int degree(const BasePtr& variable) const;
-            /* These two methods return clone() and 1 and must be overridden by Power only. */
-            virtual BasePtr base() const;
-            virtual BasePtr exp() const;
+        virtual bool isEqual(const BasePtr& other) const;
+        virtual bool isDifferent(const BasePtr& other) const;
+        virtual bool has(const BasePtr& other) const;
+        /* Returns true for (composites of) Numerics or num. powers, nothing else: */
+        virtual bool isConst() const;
+        virtual BasePtr numericTerm() const;
+        virtual BasePtr nonNumericTerm() const;
+        /* For the following two methods, Constant types are treated as variables, only Numerics
+         * and numeric Powers are considered constant (see isConst method above): */
+        virtual BasePtr constTerm() const;
+        virtual BasePtr nonConstTerm() const;
+        virtual BasePtr expand() const;
+        virtual BasePtr subst(const BasePtr& from, const BasePtr& to) const;
+        virtual BasePtr coeff(const BasePtr& variable, int exp) const;
+        virtual BasePtr leadingCoeff(const BasePtr& variable) const;
+        virtual int degree(const BasePtr& variable) const;
+        /* These two methods return clone() and 1 and must be overridden by Power only. */
+        virtual BasePtr base() const;
+        virtual BasePtr exp() const;
 
-            /* Returns Symbol/Constant/Function name, an empty Name otherwise: */
-            virtual const Name& name() const;
+        /* Returns Symbol/Constant/Function name, an empty Name otherwise: */
+        virtual const Name& name() const;
 
-            BasePtr clone() const;
-            BasePtr normal() const;
-            BasePtr diff(const BasePtr& symbol) const;
-            const BasePtrList& operands() const;
+        BasePtr clone() const;
+        BasePtr normal() const;
+        BasePtr diff(const BasePtr& symbol) const;
+        const BasePtrList& operands() const;
 
-            bool isEqualByTypeAndOperands(const BasePtr& other) const;
-            void setDebugString();
+        bool isEqualByTypeAndOperands(const BasePtr& other) const;
+        void setDebugString();
 
-        protected:
-            Base() = default;
-            explicit Base(const BasePtrList& operands);
+      protected:
+        Base() = default;
+        explicit Base(const BasePtrList& operands);
 
-            const BasePtrList ops;
+        const BasePtrList ops;
 
-            /* Empty struct for using make_shared for subclasses that shall not be created directly,
-             * but only via their static creation methods. */
-            struct CtorKey {
-                CtorKey(const CtorKey&) = delete;
-                CtorKey& operator = (const CtorKey&) = delete;
-                CtorKey(CtorKey&&) = delete;
-                CtorKey& operator = (CtorKey&&) = delete;
-            };
+        /* Empty struct for using make_shared for subclasses that shall not be created directly,
+         * but only via their static creation methods. */
+        struct CtorKey {
+            CtorKey(const CtorKey&) = delete;
+            CtorKey& operator=(const CtorKey&) = delete;
+            CtorKey(CtorKey&&) = delete;
+            CtorKey& operator=(CtorKey&&) = delete;
+        };
 
-        private:
-            BasePtr normalViaCache() const;
-            BasePtr normalWithoutCache() const;
+      private:
+        BasePtr normalViaCache() const;
+        BasePtr normalWithoutCache() const;
 
 #ifdef TSYM_WITH_DEBUG_STRINGS
-            /* A member to be accessed by a gdb pretty printing plugin. As the class is immutable,
-             * it has to be filled with content during initialization only. */
-            std::string prettyStr;
+        /* A member to be accessed by a gdb pretty printing plugin. As the class is immutable,
+         * it has to be filled with content during initialization only. */
+        std::string prettyStr;
 #endif
     };
 }

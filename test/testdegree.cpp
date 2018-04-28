@@ -1,14 +1,14 @@
 
 #include <limits>
-#include "sum.h"
-#include "trigonometric.h"
-#include "undefined.h"
-#include "product.h"
 #include "constant.h"
+#include "fixtures.h"
 #include "numeric.h"
 #include "power.h"
-#include "fixtures.h"
+#include "product.h"
+#include "sum.h"
+#include "trigonometric.h"
 #include "tsymtests.h"
+#include "undefined.h"
 
 using namespace tsym;
 
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(equalNumeric)
 }
 
 BOOST_AUTO_TEST_CASE(equalUndefined)
-    /* Two Undefined are never equal, so querying the coefficient will return 0. */
+/* Two Undefined are never equal, so querying the coefficient will return 0. */
 {
     BOOST_CHECK_EQUAL(0, undefined->degree(undefined));
 }
@@ -146,25 +146,24 @@ BOOST_AUTO_TEST_CASE(sumWithProduct)
 }
 
 BOOST_AUTO_TEST_CASE(sumWithMultipleExponents)
-    /* Degree(10 + a + a*b + a^3 + a^5*b*c, a) = 5. */
+/* Degree(10 + a + a*b + a^3 + a^5*b*c, a) = 5. */
 {
-    const BasePtr sum = Sum::create({ ten, a, abProduct, Power::create(a, three),
-            Product::create(b, c, Power::create(a, five)) });
+    const BasePtr sum =
+      Sum::create({ten, a, abProduct, Power::create(a, three), Product::create(b, c, Power::create(a, five))});
 
     BOOST_CHECK_EQUAL(5, sum->degree(a));
 }
 
 BOOST_AUTO_TEST_CASE(sumWithNegativeAndZeroDegree)
-    /* Degree(a^(-4) + b^(-3), a) = 0, because degree(b^(-3), a) = 0 > -4. */
+/* Degree(a^(-4) + b^(-3), a) = 0, because degree(b^(-3), a) = 0 > -4. */
 {
-    const BasePtr sum = Sum::create(Power::create(a, Numeric::create(-4)),
-            Power::create(b, Numeric::create(-3)));
+    const BasePtr sum = Sum::create(Power::create(a, Numeric::create(-4)), Power::create(b, Numeric::create(-3)));
 
     BOOST_CHECK_EQUAL(0, sum->degree(a));
 }
 
 BOOST_AUTO_TEST_CASE(sumWithOnlyNegativeDegrees)
-    /* Degree(a^(-7) + a^(-3)*b*sin(a), a) = -3. */
+/* Degree(a^(-7) + a^(-3)*b*sin(a), a) = -3. */
 {
     const BasePtr summand1 = Power::create(a, Numeric::create(-7));
     const BasePtr pow = Power::create(a, Numeric::create(-3));
@@ -181,7 +180,7 @@ BOOST_AUTO_TEST_CASE(simpleProduct)
 }
 
 BOOST_AUTO_TEST_CASE(unexpandedProduct)
-    /* Degree(a*(a + a*b*(a + c)), a) = 3. */
+/* Degree(a*(a + a*b*(a + c)), a) = 3. */
 {
     const BasePtr aTimesBTimesAPlusC = Product::create(abProduct, Sum::create(a, c));
     const BasePtr sum = Sum::create(a, aTimesBTimesAPlusC);
@@ -191,10 +190,9 @@ BOOST_AUTO_TEST_CASE(unexpandedProduct)
 }
 
 BOOST_AUTO_TEST_CASE(productWithNegativeExp)
-    /* Degree(a*(a^(-4) + b), a) = 1. */
+/* Degree(a*(a^(-4) + b), a) = 1. */
 {
-    const BasePtr product = Product::create(a,
-            Sum::create(Power::create(a, Numeric::create(-4)), b));
+    const BasePtr product = Product::create(a, Sum::create(Power::create(a, Numeric::create(-4)), b));
 
     BOOST_CHECK_EQUAL(1, product->degree(a));
 }
@@ -215,8 +213,7 @@ BOOST_AUTO_TEST_CASE(simplePowerSumBase)
 
 BOOST_AUTO_TEST_CASE(powerSumBase)
 {
-    const BasePtr pow = Power::create(Sum::create(a, Power::create(a, Numeric::create(-5))),
-            Numeric::create(-2));
+    const BasePtr pow = Power::create(Sum::create(a, Power::create(a, Numeric::create(-5))), Numeric::create(-2));
 
     BOOST_CHECK_EQUAL(-2, pow->degree(a));
 }

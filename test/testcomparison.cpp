@@ -1,15 +1,15 @@
 
+#include "bplist.h"
 #include "constant.h"
-#include "symbol.h"
+#include "fixtures.h"
 #include "numeric.h"
 #include "power.h"
 #include "product.h"
 #include "sum.h"
-#include "bplist.h"
+#include "symbol.h"
 #include "trigonometric.h"
-#include "undefined.h"
 #include "tsymtests.h"
-#include "fixtures.h"
+#include "undefined.h"
 
 using namespace tsym;
 
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(differentNumerics)
 }
 
 BOOST_AUTO_TEST_CASE(twoUndefined, noLogs())
-    /* Comparing undefined  doesn't make sense, this shall always return false. */
+/* Comparing undefined  doesn't make sense, this shall always return false. */
 {
     BOOST_TEST(!undefined->isEqual(undefined));
 }
@@ -158,14 +158,14 @@ BOOST_AUTO_TEST_CASE(functionsDifferentTrigonometric)
 
 BOOST_AUTO_TEST_CASE(equalContainer)
 {
-    const BasePtrList container { ten, a, Product::create(two, b), Sum::create(three, c) };
+    const BasePtrList container{ten, a, Product::create(two, b), Sum::create(three, c)};
 
     BOOST_TEST(bplist::areEqual(container, container));
 }
 
 BOOST_AUTO_TEST_CASE(differentContainer)
 {
-    BasePtrList c1 { three, four, a };
+    BasePtrList c1{three, four, a};
     BasePtrList c2;
 
     c2 = c1;

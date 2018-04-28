@@ -7,8 +7,8 @@
 #include "baseptr.h"
 
 namespace tsym {
-    bool operator == (const BasePtr& lhs, const BasePtr& rhs);
-    bool operator != (const BasePtr& lhs, const BasePtr& rhs);
+    bool operator==(const BasePtr& lhs, const BasePtr& rhs);
+    bool operator!=(const BasePtr& lhs, const BasePtr& rhs);
 }
 
 #endif

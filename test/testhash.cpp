@@ -1,14 +1,14 @@
 
 #include "constant.h"
-#include "trigonometric.h"
-#include "sum.h"
-#include "power.h"
-#include "number.h"
-#include "symbol.h"
-#include "logarithm.h"
-#include "product.h"
-#include "int.h"
 #include "fixtures.h"
+#include "int.h"
+#include "logarithm.h"
+#include "number.h"
+#include "power.h"
+#include "product.h"
+#include "sum.h"
+#include "symbol.h"
+#include "trigonometric.h"
 #include "tsymtests.h"
 
 using namespace tsym;

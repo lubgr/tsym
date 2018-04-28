@@ -1,9 +1,9 @@
 
-#include <limits>
 #include <cmath>
+#include <limits>
+#include "logging.h"
 #include "numpowersimpl.h"
 #include "options.h"
-#include "logging.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -90,11 +90,11 @@ BOOST_AUTO_TEST_CASE(doublePreFactor)
     nps.setPreFac(prefac);
     nps.setPower(32, half);
 
-    check(4.0*prefac, 2, half);
+    check(4.0 * prefac, 2, half);
 }
 
 BOOST_AUTO_TEST_CASE(fractionBaseToIntBase)
-    /* sqrt(1/2) = 2^(-1/2). */
+/* sqrt(1/2) = 2^(-1/2). */
 {
     nps.setPower(half, half);
 
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(fractionBaseToIntBase)
 }
 
 BOOST_AUTO_TEST_CASE(fractionBaseWithPrefac)
-    /* 1/4*sqrt(2) = 1/2*2^(-1/2). */
+/* 1/4*sqrt(2) = 1/2*2^(-1/2). */
 {
     nps.setPower(2, half);
     nps.setPreFac(Number(1, 4));
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE(fractionBaseWithPrefac)
 }
 
 BOOST_AUTO_TEST_CASE(intBaseToFractionBase)
-    /* 3^(-1) = 1/3. */
+/* 3^(-1) = 1/3. */
 {
     nps.setPower(3, -1);
 
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(intBaseToFractionBase)
 }
 
 BOOST_AUTO_TEST_CASE(fractionBaseWithNegativeExp)
-    /* (2/3)^(-1/5) = (3/2)^(1/5). */
+/* (2/3)^(-1/5) = (3/2)^(1/5). */
 {
     nps.setPower(Number(2, 3), Number(-1, 5));
 
@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE(fractionBaseWithNegativeExp)
 }
 
 BOOST_AUTO_TEST_CASE(expGreaterThanOne)
-    /* (5/3)^(4/3) = (5/3)*(5/3)^(1/3). */
+/* (5/3)^(4/3) = (5/3)*(5/3)^(1/3). */
 {
     const Number base(5, 3);
 
@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(expGreaterThanOne)
 }
 
 BOOST_AUTO_TEST_CASE(expGreaterThanThree)
-    /* 2^(10/3) = 8*2^(1/3). */
+/* 2^(10/3) = 8*2^(1/3). */
 {
     nps.setPower(2, Number(10, 3));
 
@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(expGreaterThanThree)
 }
 
 BOOST_AUTO_TEST_CASE(expGreaterThanOneWithPreFac)
-    /* 13*4^(7/3) = 208*2^(2, 3). */
+/* 13*4^(7/3) = 208*2^(2, 3). */
 {
     nps.setPreFac(13);
     nps.setPower(4, Number(7, 3));
@@ -154,7 +154,7 @@ BOOST_AUTO_TEST_CASE(expGreaterThanOneWithPreFac)
 }
 
 BOOST_AUTO_TEST_CASE(expLessThanMinusOne)
-    /* 5^(-14/3) = (1/625)*5^(-2/3). */
+/* 5^(-14/3) = (1/625)*5^(-2/3). */
 {
     nps.setPower(5, Number(-14, 3));
 
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(expLessThanMinusOne)
 }
 
 BOOST_AUTO_TEST_CASE(negativePreFactor)
-    /* No change of (-3)*sqrt(2). */
+/* No change of (-3)*sqrt(2). */
 {
     nps.setPower(2, half);
     nps.setPreFac(-3);
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(negativePreFactor)
 }
 
 BOOST_AUTO_TEST_CASE(negPreFactorDoubleExp)
-    /* (-1)*2^0.1234567 shall be evaluated to double. */
+/* (-1)*2^0.1234567 shall be evaluated to double. */
 {
     const double exp = 0.1234567;
     const double expected = -std::pow(2, exp);
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE(negPreFactorDoubleExp)
 }
 
 BOOST_AUTO_TEST_CASE(negPreFactorResolvablePow)
-    /* (-2)*sqrt(9) = -6. */
+/* (-2)*sqrt(9) = -6. */
 {
     nps.setPreFac(-2);
     nps.setPower(9, half);
@@ -192,7 +192,7 @@ BOOST_AUTO_TEST_CASE(negPreFactorResolvablePow)
 }
 
 BOOST_AUTO_TEST_CASE(positiveBaseNegativePrefactor)
-    /* (-12(*7^(1/3) = (-12)*7^(1/3). */
+/* (-12(*7^(1/3) = (-12)*7^(1/3). */
 {
     nps.setPower(7, third);
     nps.setPreFac(-12);
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE(positiveBaseNegativePrefactor)
 }
 
 BOOST_AUTO_TEST_CASE(negativePreFactorPositiveBase)
-    /* (-9)*3^(-1/5) = 3*3^(4/5). */
+/* (-9)*3^(-1/5) = 3*3^(4/5). */
 {
     const Number exp(-1, 5);
 
@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE(negativePreFactorPositiveBase)
 }
 
 BOOST_AUTO_TEST_CASE(negativeBaseFracExponentToUndefined)
-    /* (-3)^(2/5) is undefined. */
+/* (-3)^(2/5) is undefined. */
 {
     const Number exp(2, 5);
 
@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE(negativeBaseFracExponentToUndefined)
 }
 
 BOOST_AUTO_TEST_CASE(negativeBaseDoubleExpToUndefined)
-    /* (-3/2)^(1.2345678) is undefined. */
+/* (-3/2)^(1.2345678) is undefined. */
 {
     nps.setPower(Number(-3, 2), 1.2345678);
 
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(negativeBaseDoubleExpToUndefined)
 }
 
 BOOST_AUTO_TEST_CASE(negativeDoubleBaseFracExpToUndefined)
-    /* (-0.12345678)^(2/5) is undefined. */
+/* (-0.12345678)^(2/5) is undefined. */
 {
     nps.setPower(-0.12345678, Number(2, 5));
 
@@ -245,7 +245,7 @@ BOOST_AUTO_TEST_CASE(allOne)
 }
 
 BOOST_AUTO_TEST_CASE(simpleResolvableSquareRoot)
-    /* sqrt(4) = 2. */
+/* sqrt(4) = 2. */
 {
     nps.setPower(4, half);
 
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE(simpleResolvableSquareRoot)
 }
 
 BOOST_AUTO_TEST_CASE(simpleSplittableSquareRoot)
-    /* sqrt(12) = 2*sqrt(3). */
+/* sqrt(12) = 2*sqrt(3). */
 {
     nps.setPower(12, half);
 
@@ -261,7 +261,7 @@ BOOST_AUTO_TEST_CASE(simpleSplittableSquareRoot)
 }
 
 BOOST_AUTO_TEST_CASE(smallIntWithoutChange)
-    /* 9*3^(1/5) isn't altered. */
+/* 9*3^(1/5) isn't altered. */
 {
     const Number exp(1, 5);
 
@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE(smallIntWithoutChange)
 }
 
 BOOST_AUTO_TEST_CASE(intWithoutChange)
-    /* 625*5^(2/3) isn't altered. */
+/* 625*5^(2/3) isn't altered. */
 {
     const Number exp(2, 3);
 
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE(intWithoutChange)
 }
 
 BOOST_AUTO_TEST_CASE(simplePrimeFac)
-    /* sqrt(8) = 2*sqrt(2). */
+/* sqrt(8) = 2*sqrt(2). */
 {
     nps.setPower(8, half);
 
@@ -291,7 +291,7 @@ BOOST_AUTO_TEST_CASE(simplePrimeFac)
 }
 
 BOOST_AUTO_TEST_CASE(intPrimeFactorization)
-    /* sqrt(833) = 7*sqrt(17). */
+/* sqrt(833) = 7*sqrt(17). */
 {
     nps.setPower(833, half);
 
@@ -299,7 +299,7 @@ BOOST_AUTO_TEST_CASE(intPrimeFactorization)
 }
 
 BOOST_AUTO_TEST_CASE(fractionPrimeFactorization)
-    /* 9/25*(28/117)^(2/3) = 1/25*(84/13)^(2/3). */
+/* 9/25*(28/117)^(2/3) = 1/25*(84/13)^(2/3). */
 {
     const Number exp(2, 3);
 
@@ -310,7 +310,7 @@ BOOST_AUTO_TEST_CASE(fractionPrimeFactorization)
 }
 
 BOOST_AUTO_TEST_CASE(intCollectionOfPrimes)
-    /* 25^(1/3) = 5^(2/3). */
+/* 25^(1/3) = 5^(2/3). */
 {
     nps.setPower(25, third);
 
@@ -318,7 +318,7 @@ BOOST_AUTO_TEST_CASE(intCollectionOfPrimes)
 }
 
 BOOST_AUTO_TEST_CASE(noIntCollectionOfPrimes)
-    /* 18^(1/3) isn't altered. */
+/* 18^(1/3) isn't altered. */
 {
     nps.setPower(18, third);
 
@@ -326,7 +326,7 @@ BOOST_AUTO_TEST_CASE(noIntCollectionOfPrimes)
 }
 
 BOOST_AUTO_TEST_CASE(simpleFractionCollectionToPreFactor)
-    /* 4^(2/3) = 2*2^(1/3). */
+/* 4^(2/3) = 2*2^(1/3). */
 {
     nps.setPower(4, Number(2, 3));
 
@@ -334,7 +334,7 @@ BOOST_AUTO_TEST_CASE(simpleFractionCollectionToPreFactor)
 }
 
 BOOST_AUTO_TEST_CASE(fractionCollectionToPreFactor)
-    /* (8/27)^(5/6) = 4/9*sqrt(2/3). */
+/* (8/27)^(5/6) = 4/9*sqrt(2/3). */
 {
     nps.setPower(Number(8, 27), Number(5, 6));
 
@@ -342,7 +342,7 @@ BOOST_AUTO_TEST_CASE(fractionCollectionToPreFactor)
 }
 
 BOOST_AUTO_TEST_CASE(fractionNoCollectionToPreFactor)
-    /* (4/27)^(5/6) isn't altered. */
+/* (4/27)^(5/6) isn't altered. */
 {
     const Number exp(5, 6);
     const Number base(4, 27);
@@ -353,8 +353,8 @@ BOOST_AUTO_TEST_CASE(fractionNoCollectionToPreFactor)
 }
 
 BOOST_AUTO_TEST_CASE(multipleSets)
-    /* Checks whether the internal mechanism to minimize the computation effort works, after a new
-     * rational number has been set. */
+/* Checks whether the internal mechanism to minimize the computation effort works, after a new
+ * rational number has been set. */
 {
     const Number exp(1, 4);
 
@@ -368,7 +368,7 @@ BOOST_AUTO_TEST_CASE(multipleSets)
 }
 
 BOOST_AUTO_TEST_CASE(largePlainIntBasePosExp)
-    /* A large base with fraction exponent > 1 is not automatically simplified to something else. */
+/* A large base with fraction exponent > 1 is not automatically simplified to something else. */
 {
     const Number large(std::numeric_limits<int>::max() - 5);
     const Number exp(9, 4);

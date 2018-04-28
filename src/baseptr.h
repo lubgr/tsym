@@ -14,20 +14,19 @@ namespace tsym {
      * reference, they shall equally be treated in unordered maps. */
     size_t hash_value(const BasePtr& ptr);
 
-    std::ostream& operator << (std::ostream& stream, const BasePtr& ptr);
+    std::ostream& operator<<(std::ostream& stream, const BasePtr& ptr);
 }
 
-namespace std
-{
-    template<> struct hash<tsym::BasePtr>
-        /* Implemented in terms of the above function. */
+namespace std {
+    template <>
+    struct hash<tsym::BasePtr>
+    /* Implemented in terms of the above function. */
     {
-        size_t operator () (const tsym::BasePtr& ptr) const;
+        size_t operator()(const tsym::BasePtr& ptr) const;
     };
 
-    template<> struct equal_to<tsym::BasePtr>
-    {
-        bool operator () (const tsym::BasePtr& lhs, const tsym::BasePtr& rhs) const;
+    template <> struct equal_to<tsym::BasePtr> {
+        bool operator()(const tsym::BasePtr& lhs, const tsym::BasePtr& rhs) const;
     };
 }
 

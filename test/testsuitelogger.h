@@ -5,17 +5,17 @@
 #include "logger.h"
 
 class TestSuiteLogger : public tsym::Logger {
-    public:
-        explicit TestSuiteLogger(bool suppressLogs);
+  public:
+    explicit TestSuiteLogger(bool suppressLogs);
 
-        void warning(const Logger::Message& msg) const override;
-        void error(const Logger::Message& msg) const override;
-        void critical(const Logger::Message& msg) const override;
+    void warning(const Logger::Message& msg) const override;
+    void error(const Logger::Message& msg) const override;
+    void critical(const Logger::Message& msg) const override;
 
-    private:
-        void log(std::string&& level, const Logger::Message& msg) const;
+  private:
+    void log(std::string&& level, const Logger::Message& msg) const;
 
-        bool suppressLogs;
+    bool suppressLogs;
 };
 
 #endif

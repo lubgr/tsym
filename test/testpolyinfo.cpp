@@ -1,25 +1,25 @@
 
 #include <algorithm>
-#include "polyinfo.h"
-#include "sum.h"
-#include "undefined.h"
-#include "product.h"
-#include "numeric.h"
-#include "power.h"
-#include "trigonometric.h"
 #include "fixtures.h"
+#include "numeric.h"
+#include "polyinfo.h"
+#include "power.h"
+#include "product.h"
+#include "sum.h"
+#include "trigonometric.h"
 #include "tsymtests.h"
+#include "undefined.h"
 
 using namespace tsym;
 
 struct PolyInfoFixture : public AbcFixture {
     const BasePtr abSum = Sum::create(a, b);
-    PolyInfo info {};
+    PolyInfo info{};
 
     bool contains(const BasePtrList& symbolList, const BasePtr& symbol)
     {
-        return std::any_of(cbegin(symbolList), cend(symbolList),
-                [&symbol](const auto& item){ return item->isEqual(symbol);  });
+        return std::any_of(
+          cbegin(symbolList), cend(symbolList), [&symbol](const auto& item) { return item->isEqual(symbol); });
     }
 };
 
@@ -125,13 +125,13 @@ BOOST_AUTO_TEST_CASE(symbolListTwoSymbols)
 
 BOOST_AUTO_TEST_CASE(symbolListMultipleSymbols)
 {
-    const BasePtr expected[] = { a, b, c, d, e };
-    const size_t nSymbols = sizeof(expected)/sizeof(expected[0]);
+    const BasePtr expected[] = {a, b, c, d, e};
+    const size_t nSymbols = sizeof(expected) / sizeof(expected[0]);
     const BasePtr pow1 = Power::create(d, three);
     const BasePtr sum1 = Sum::create(Product::create(two, a), b, pow1);
     const BasePtr pow2 = Power::create(sum1, five);
     const BasePtr sum2 = Sum::create(pow2, b, Power::create(c, two));
-    const BasePtr product = Product::create({ five, a, b, Sum::create(c, d), e, sum1 });
+    const BasePtr product = Product::create({five, a, b, Sum::create(c, d), e, sum1});
     BasePtrList list;
 
     info.set(product, sum2);
@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE(failingMainSymbolRequest)
 }
 
 BOOST_AUTO_TEST_CASE(mainSymbolOnlyOneCommon)
-    /* Main symbol of a*(b + c) and c*d^2: c. */
+/* Main symbol of a*(b + c) and c*d^2: c. */
 {
     const BasePtr arg1 = Product::create(a, Sum::create(b, c));
     const BasePtr arg2 = Product::create(c, Power::create(d, two));
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(mainSymbolOnlyOneCommon)
 }
 
 BOOST_AUTO_TEST_CASE(mainSymbolBothZeroMinDegree)
-    /* Main symbol of 2 + a and 3 + a + b: a. */
+/* Main symbol of 2 + a and 3 + a + b: a. */
 {
     const BasePtr arg1 = Sum::create(two, a);
     const BasePtr arg2 = Sum::create(three, abSum);
@@ -195,11 +195,11 @@ BOOST_AUTO_TEST_CASE(mainSymbolBothZeroMinDegree)
 }
 
 BOOST_AUTO_TEST_CASE(mainSymbol)
-    /* Main symbol of a^3 + b^2 + c*d^4 and a^2*b*c^2: b. */
+/* Main symbol of a^3 + b^2 + c*d^4 and a^2*b*c^2: b. */
 {
-    const BasePtr arg1 = Sum::create({ Power::create(a, three), Power::create(b, two),
-            Product::create(c, Power::create(d, four)) });
-    const BasePtr arg2 = Product::create({ Power::create(a, two), b, Power::create(c, two) });
+    const BasePtr arg1 =
+      Sum::create({Power::create(a, three), Power::create(b, two), Product::create(c, Power::create(d, four))});
+    const BasePtr arg2 = Product::create({Power::create(a, two), b, Power::create(c, two)});
 
     info.set(arg1, arg2);
 
@@ -207,7 +207,7 @@ BOOST_AUTO_TEST_CASE(mainSymbol)
 }
 
 BOOST_AUTO_TEST_CASE(mainSymbolLargeExpressions)
-    /* Main symbol of a^2*b^2*c^3 + b^3*c^4*d + d^3*e*f and a^4*b^5*d + e^3*f^3: d. */
+/* Main symbol of a^2*b^2*c^3 + b^3*c^4*d + d^3*e*f and a^4*b^5*d + e^3*f^3: d. */
 {
     const BasePtr s1 = Product::create(Power::create(a, two), b, b, Power::create(c, three));
     const BasePtr s2 = Product::create(Power::create(b, three), Power::create(c, four), d);

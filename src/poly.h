@@ -4,7 +4,9 @@
 #include "baseptr.h"
 #include "baseptrlist.h"
 
-namespace tsym { class Gcd; }
+namespace tsym {
+    class Gcd;
+}
 
 namespace tsym {
     /* Functions for multivariate polynomial terms with rational number coefficients, symbolic

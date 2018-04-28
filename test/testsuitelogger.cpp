@@ -1,11 +1,11 @@
 
-#include <cstdio>
-#include <iostream>
 #include "testsuitelogger.h"
 #include <boost/test/unit_test.hpp>
+#include <cstdio>
+#include <iostream>
 
-TestSuiteLogger::TestSuiteLogger(bool suppressLogs) :
-    suppressLogs(suppressLogs)
+TestSuiteLogger::TestSuiteLogger(bool suppressLogs)
+    : suppressLogs(suppressLogs)
 {}
 
 void TestSuiteLogger::log(std::string&& level, const Logger::Message& msg) const

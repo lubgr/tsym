@@ -1,14 +1,14 @@
 
-#include "trigonometric.h"
-#include "undefined.h"
-#include "sum.h"
-#include "power.h"
-#include "numeric.h"
 #include "constant.h"
-#include "logarithm.h"
-#include "product.h"
 #include "fixtures.h"
+#include "logarithm.h"
+#include "numeric.h"
+#include "power.h"
+#include "product.h"
+#include "sum.h"
+#include "trigonometric.h"
 #include "tsymtests.h"
+#include "undefined.h"
 
 using namespace tsym;
 
@@ -82,8 +82,7 @@ BOOST_AUTO_TEST_CASE(powerWithPosIntExp)
 
 BOOST_AUTO_TEST_CASE(powerWithNegIntExp)
 {
-    const BasePtr expected = Product::create(Numeric::create(-1234),
-            Power::create(a, Numeric::create(-1235)));
+    const BasePtr expected = Product::create(Numeric::create(-1234), Power::create(a, Numeric::create(-1235)));
     const BasePtr pow = Power::create(a, Numeric::create(-1234));
     const BasePtr result = pow->diff(a);
 
@@ -92,8 +91,7 @@ BOOST_AUTO_TEST_CASE(powerWithNegIntExp)
 
 BOOST_AUTO_TEST_CASE(powerWithPosRationalExp)
 {
-    const BasePtr expected = Product::create(Numeric::create(3, 7),
-            Power::create(a, Numeric::create(-4, 7)));
+    const BasePtr expected = Product::create(Numeric::create(3, 7), Power::create(a, Numeric::create(-4, 7)));
     const BasePtr pow = Power::create(a, Numeric::create(3, 7));
     const BasePtr result = pow->diff(a);
 
@@ -101,7 +99,7 @@ BOOST_AUTO_TEST_CASE(powerWithPosRationalExp)
 }
 
 BOOST_AUTO_TEST_CASE(powerOfEuler)
-    /* de^a/da = e^a. */
+/* de^a/da = e^a. */
 {
     const BasePtr pow = Power::create(Constant::createE(), a);
     const BasePtr result = pow->diff(a);
@@ -137,8 +135,7 @@ BOOST_AUTO_TEST_CASE(logOfSymbolWrtToDifferentSymbol)
 
 BOOST_AUTO_TEST_CASE(sinOfSum)
 {
-    const BasePtr sum = Sum::create(Product::create(Numeric::half(), a, a), b,
-            Product::create(two, c));
+    const BasePtr sum = Sum::create(Product::create(Numeric::half(), a, a), b, Product::create(two, c));
     const BasePtr expected = Product::create(a, Trigonometric::createCos(sum));
     const BasePtr sin = Trigonometric::createSin(sum);
     const BasePtr result = sin->diff(a);
@@ -157,78 +154,74 @@ BOOST_AUTO_TEST_CASE(cosOfLogarithmOfProduct)
 }
 
 BOOST_AUTO_TEST_CASE(tanOfSinOfSymbol)
-    /* d/da(tan(sin(a))) = cos(a)*(1 + tan(sin(a))^2). */
+/* d/da(tan(sin(a))) = cos(a)*(1 + tan(sin(a))^2). */
 {
     const BasePtr sinA = Trigonometric::createSin(a);
     const BasePtr tan = Trigonometric::createTan(sinA);
-    const BasePtr expected = Product::create(Trigonometric::createCos(a),
-            Sum::create(one, Power::create(tan, two)));
+    const BasePtr expected = Product::create(Trigonometric::createCos(a), Sum::create(one, Power::create(tan, two)));
     const BasePtr result = tan->diff(a);
 
     BOOST_CHECK_EQUAL(expected, result);
 }
 
 BOOST_AUTO_TEST_CASE(asinOfCosOfPower)
-    /* d/da(asin(cos(a^2))) = -2*a*sin(a^2)/sqrt(1 - cos(a^2)^2). */
+/* d/da(asin(cos(a^2))) = -2*a*sin(a^2)/sqrt(1 - cos(a^2)^2). */
 {
     const BasePtr aSquare = Power::create(a, two);
     const BasePtr cosASquare = Trigonometric::createCos(aSquare);
     const BasePtr asin = Trigonometric::createAsin(cosASquare);
     const BasePtr result = asin->diff(a);
     const BasePtr expected = Product::minus(two, a, Trigonometric::createSin(aSquare),
-            Power::create(Sum::create(one, Product::minus(cosASquare, cosASquare)),
-                Numeric::create(-1, 2)));
+      Power::create(Sum::create(one, Product::minus(cosASquare, cosASquare)), Numeric::create(-1, 2)));
 
     BOOST_CHECK_EQUAL(expected, result);
 }
 
 BOOST_AUTO_TEST_CASE(acosOfSum)
-    /* d/da(acos(a + 2*a^2 + c)) = (-4*a - 1)/sqrt(1 - (a + 2*a^2 + c)^2). */
+/* d/da(acos(a + 2*a^2 + c)) = (-4*a - 1)/sqrt(1 - (a + 2*a^2 + c)^2). */
 {
     const BasePtr arg = Sum::create(a, Product::create(two, a, a), c);
     const BasePtr acos = Trigonometric::createAcos(arg);
     const BasePtr result = acos->diff(a);
     const BasePtr expected = Product::create(Sum::create(Numeric::mOne(), Product::minus(four, a)),
-            Power::create(Sum::create(one, Product::minus(Power::create(arg, two))),
-                Numeric::create(-1, 2)));
+      Power::create(Sum::create(one, Product::minus(Power::create(arg, two))), Numeric::create(-1, 2)));
 
     BOOST_CHECK_EQUAL(expected, result);
 }
 
 BOOST_AUTO_TEST_CASE(atanOfPower)
-    /* d/da(atan(a^10)) = 10*a^9/(1 + a^20). */
+/* d/da(atan(a^10)) = 10*a^9/(1 + a^20). */
 {
     const BasePtr atan = Trigonometric::createAtan(Power::create(a, ten));
     const BasePtr result = atan->diff(a);
-    const BasePtr expected = Product::create(ten, Power::create(a, nine),
-            Power::oneOver(Sum::create(one, Power::create(a, Numeric::create(20)))));
+    const BasePtr expected = Product::create(
+      ten, Power::create(a, nine), Power::oneOver(Sum::create(one, Power::create(a, Numeric::create(20)))));
 
     BOOST_CHECK_EQUAL(expected, result);
 }
 
 BOOST_AUTO_TEST_CASE(atan2OfSymbols)
-    /* d/da(atan2(b, a)) = -b/(a^2 + b^2). */
+/* d/da(atan2(b, a)) = -b/(a^2 + b^2). */
 {
     const BasePtr atan2 = Trigonometric::createAtan2(b, a);
     const BasePtr result = atan2->diff(a);
-    const BasePtr expected = Product::minus(b, Power::oneOver(Sum::create(Power::create(a, two),
-                    Power::create(b, two))));
+    const BasePtr expected =
+      Product::minus(b, Power::oneOver(Sum::create(Power::create(a, two), Power::create(b, two))));
 
     BOOST_CHECK_EQUAL(expected, result);
 }
 
 BOOST_AUTO_TEST_CASE(mixedTerm01)
-    /* d/da(2*a*b*log(4) + 17*a^5*b - 12/13*a^(-1/5) + a*log(a)) = * 1 + 12/65*a^(-6/5) + 85*a^4*b +
-     * 2*b*log(4) + log(a). */
+/* d/da(2*a*b*log(4) + 17*a^5*b - 12/13*a^(-1/5) + a*log(a)) = * 1 + 12/65*a^(-6/5) + 85*a^4*b +
+ * 2*b*log(4) + log(a). */
 {
     const BasePtr expected = Sum::create(Sum::create(one, Logarithm::create(a)),
-            Product::create(Numeric::create(12, 65), Power::create(a, Numeric::create(-6, 5))),
-            Product::create(Numeric::create(85), b, Power::create(a, four)),
-            Product::create(two, b, Logarithm::create(four)));
+      Product::create(Numeric::create(12, 65), Power::create(a, Numeric::create(-6, 5))),
+      Product::create(Numeric::create(85), b, Power::create(a, four)),
+      Product::create(two, b, Logarithm::create(four)));
     const BasePtr term1 = Product::create(two, a, b, Logarithm::create(four));
     const BasePtr term2 = Product::create(Numeric::create(17), Power::create(a, five), b);
-    const BasePtr term3 = Product::create(Numeric::create(-12, 13),
-            Power::create(a, Numeric::create(-1, 5)));
+    const BasePtr term3 = Product::create(Numeric::create(-12, 13), Power::create(a, Numeric::create(-1, 5)));
     const BasePtr term4 = Product::create(a, Logarithm::create(a));
     const BasePtr sum = Sum::create(term1, term2, term3, term4);
     const BasePtr result = sum->diff(a);
@@ -237,14 +230,14 @@ BOOST_AUTO_TEST_CASE(mixedTerm01)
 }
 
 BOOST_AUTO_TEST_CASE(mixedTerm02)
-    /* d/da(a*b*c*log(sin(sqrt(2)*a^4*b + log(sin(2)*a)))) = ... */
+/* d/da(a*b*c*log(sin(sqrt(2)*a^4*b + log(sin(2)*a)))) = ... */
 {
     const BasePtr sinTwo = Trigonometric::createSin(two);
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr aToTheFour = Power::create(a, four);
     const BasePtr abc = Product::create(a, b, c);
-    const BasePtr sinArg = Sum::create(Product::create(sqrtTwo, aToTheFour, b),
-            Logarithm::create(Product::create(sinTwo, a)));
+    const BasePtr sinArg =
+      Sum::create(Product::create(sqrtTwo, aToTheFour, b), Logarithm::create(Product::create(sinTwo, a)));
     const BasePtr logArg = Trigonometric::createSin(sinArg);
     const BasePtr orig = Product::create(abc, Logarithm::create(logArg));
     const BasePtr bTimesCos = Product::create(b, Trigonometric::createCos(sinArg));

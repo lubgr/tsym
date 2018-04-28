@@ -85,8 +85,7 @@ tsym::PrimeFac tsym::PrimeFac::extract(const Number& exponent)
     return extraction;
 }
 
-void tsym::PrimeFac::extract(std::vector<Int>& source, std::vector<Int>& target,
-        const Int& expDenom)
+void tsym::PrimeFac::extract(std::vector<Int>& source, std::vector<Int>& target, const Int& expDenom)
 {
     Int prime(0);
     Int nPrime(0);
@@ -111,7 +110,7 @@ tsym::Number tsym::PrimeFac::collectToNewExp(const Number& exponent)
 
     if (count > 1) {
         deleteElements(count - 1);
-        return count*exponent;
+        return count * exponent;
     } else if (numPrimes.size() == 0 && denomPrimes.size() == 0)
         return 1;
     else
@@ -164,8 +163,8 @@ void tsym::PrimeFac::deleteElements(int nToDelete)
 }
 
 void tsym::PrimeFac::deleteElements(int nToDelete, std::vector<Int>& primes)
-    /* Removes duplicate elements from the given vector of primes. It is supposed, that primes have
-     * been checked before, such that this operation is safe. */
+/* Removes duplicate elements from the given vector of primes. It is supposed, that primes have
+ * been checked before, such that this operation is safe. */
 {
     for (auto it = begin(primes); it != end(primes); ++it)
         for (int i = 0; i < nToDelete; ++i)

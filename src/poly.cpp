@@ -1,17 +1,17 @@
 
-#include <cassert>
 #include "poly.h"
-#include "power.h"
-#include "product.h"
-#include "undefined.h"
-#include "numeric.h"
-#include "sum.h"
-#include "logging.h"
-#include "polyinfo.h"
-#include "primitivegcd.h"
+#include <cassert>
 #include "bplist.h"
-#include "subresultantgcd.h"
 #include "cache.h"
+#include "logging.h"
+#include "numeric.h"
+#include "polyinfo.h"
+#include "power.h"
+#include "primitivegcd.h"
+#include "product.h"
+#include "subresultantgcd.h"
+#include "sum.h"
+#include "undefined.h"
 
 namespace tsym {
     namespace {
@@ -24,9 +24,9 @@ namespace tsym {
             const BasePtr quotient(Product::create(u, Power::oneOver(v)));
 
             if (quotient->isNumeric() && quotient->numericEval().isRational())
-                return { quotient, Numeric::zero() };
+                return {quotient, Numeric::zero()};
             else
-                return { Numeric::zero(), u };
+                return {Numeric::zero(), u};
         }
 
         BasePtrList divideNonEmpty(const BasePtr& u, const BasePtr& v, const BasePtrList& L)
@@ -49,7 +49,7 @@ namespace tsym {
                 d = poly::divide(remainder->leadingCoeff(x), v->leadingCoeff(x), bplist::rest(L));
 
                 if (!d.back()->isZero())
-                    return { quotient->expand(), remainder };
+                    return {quotient->expand(), remainder};
 
                 c = d.front();
                 tmp = Power::create(x, Numeric::create(m - n));
@@ -63,7 +63,7 @@ namespace tsym {
                 m = remainder->degree(x);
             }
 
-            return { quotient->expand(), remainder };
+            return {quotient->expand(), remainder};
         }
 
         BasePtrList pseudoDivideImpl(const BasePtr& u, const BasePtr& v, const BasePtr& x, bool computeQuotient)
@@ -73,9 +73,9 @@ namespace tsym {
             if (polyInfo.isInputValid())
                 return pseudoDivideChecked(u, v, x, computeQuotient);
 
-            TSYM_ERROR("Invalid polyn. pseudo-division: %S, %S. Return Undefined quotient/remainder.",  u, v);
+            TSYM_ERROR("Invalid polyn. pseudo-division: %S, %S. Return Undefined quotient/remainder.", u, v);
 
-            return { Undefined::create(), Undefined::create() };
+            return {Undefined::create(), Undefined::create()};
         }
 
         BasePtrList pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x, bool computeQuotient)
@@ -99,8 +99,7 @@ namespace tsym {
                 if (computeQuotient)
                     quotient = Sum::create(Product::create(lCoeffV, quotient), tmp);
 
-                remainder = Sum::create(Product::create(lCoeffV, remainder),
-                        Product::minus(v, tmp))->expand();
+                remainder = Sum::create(Product::create(lCoeffV, remainder), Product::minus(v, tmp))->expand();
 
                 if (remainder->isZero())
                     break;
@@ -114,7 +113,7 @@ namespace tsym {
             remainder = Product::create(tmp, remainder)->expand();
             quotient = computeQuotient ? Product::create(tmp, quotient)->expand() : Numeric::zero();
 
-            return { quotient, remainder };
+            return {quotient, remainder};
         }
 
         int unitFromNonNumeric(const BasePtr& polynomial)
@@ -187,7 +186,7 @@ namespace tsym {
             if (base->isEqual(variable))
                 return exp;
             else
-                return exp*poly::minDegree(base, variable);
+                return exp * poly::minDegree(base, variable);
         }
 
         int minDegreeOfSum(const BasePtr& sum, const tsym::BasePtr& variable)
@@ -220,39 +219,38 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v)
 {
     static cache::RegisteredCache<BasePtrList, BasePtrList> cache;
     static auto& map(cache.map);
-    const auto lookup = map.find({ u, v });
+    const auto lookup = map.find({u, v});
 
     if (lookup != cend(map))
         return lookup->second;
 
     auto result = divide(u, v, PolyInfo(u, v).listOfSymbols());
 
-    return map.insert({{ u, v }, result })->second;
+    return map.insert({{u, v}, result})->second;
 }
 
 tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v, const BasePtrList& L)
-    /* This function implements the algorithm given in Cohen, Computer Algebra and Symbolic
-     * Computation [2003], page 211. */
+/* This function implements the algorithm given in Cohen, Computer Algebra and Symbolic
+ * Computation [2003], page 211. */
 {
     const BasePtr& zero(Numeric::zero());
     PolyInfo polyInfo(u, v);
 
     if (!polyInfo.isInputValid()) {
-        TSYM_ERROR("Invalid polynomial division: %S, %S. Return Undefined quotient and remainder.",
-                u, v);
-        return { Undefined::create(), Undefined::create() };
+        TSYM_ERROR("Invalid polynomial division: %S, %S. Return Undefined quotient and remainder.", u, v);
+        return {Undefined::create(), Undefined::create()};
     } else if (L.empty())
         return divideEmptyList(u, v);
     else if (v->isEqual(u))
-        return { Numeric::one(), zero };
+        return {Numeric::one(), zero};
     else if (u->isZero())
-        return { zero, zero };
+        return {zero, zero};
     else
         return divideNonEmpty(u, v, L);
 }
 
 tsym::BasePtrList tsym::poly::pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x)
-    /* See Cohen, Computer Algebra and Symbolic Computation [2003], page 240. */
+/* See Cohen, Computer Algebra and Symbolic Computation [2003], page 240. */
 {
     return pseudoDivideImpl(u, v, x, true);
 }
@@ -275,17 +273,16 @@ int tsym::poly::unit(const BasePtr& polynomial, const BasePtr& x)
         return unitFromNonNumeric(lCoeff);
 }
 
-
 tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v)
 {
     static cache::RegisteredCache<BasePtrList, BasePtr> cache;
     static auto& map(cache.map);
-    const auto lookup = map.find({ u, v });
+    const auto lookup = map.find({u, v});
 
     if (lookup != cend(map))
         return lookup->second;
     else
-        return map.insert({ { u, v }, gcd(u, v, defaultGcd()) })->second;
+        return map.insert({{u, v}, gcd(u, v, defaultGcd())})->second;
 }
 
 tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v, const Gcd& algo)

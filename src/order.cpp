@@ -1,14 +1,14 @@
 
 #include "order.h"
-#include "symbol.h"
-#include "numeric.h"
 #include "constant.h"
 #include "function.h"
+#include "logging.h"
 #include "number.h"
+#include "numeric.h"
 #include "power.h"
 #include "product.h"
 #include "sum.h"
-#include "logging.h"
+#include "symbol.h"
 
 namespace tsym {
     static bool doPermuteSameType(const BasePtr& left, const BasePtr& right);

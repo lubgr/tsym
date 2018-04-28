@@ -1,17 +1,17 @@
 
 #include <cmath>
 #include <limits>
-#include "sum.h"
-#include "product.h"
-#include "symbol.h"
-#include "undefined.h"
+#include "constant.h"
+#include "fixtures.h"
+#include "logarithm.h"
 #include "numeric.h"
 #include "power.h"
-#include "constant.h"
+#include "product.h"
+#include "sum.h"
+#include "symbol.h"
 #include "trigonometric.h"
-#include "logarithm.h"
-#include "fixtures.h"
 #include "tsymtests.h"
+#include "undefined.h"
 
 using namespace tsym;
 
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(createWithOneSummandGivenAsList)
 }
 
 BOOST_AUTO_TEST_CASE(twoNumericSummands)
-    /* 2 + 3 = 5. */
+/* 2 + 3 = 5. */
 {
     const BasePtr sum = Sum::create(two, three);
 
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(twoNumericSummands)
 }
 
 BOOST_AUTO_TEST_CASE(twoNumericSummandsResultingInZero)
-    /* 2 - 2 = 0. */
+/* 2 - 2 = 0. */
 {
     const BasePtr minusTwo = Numeric::create(-2);
     const BasePtr res = Sum::create(two, minusTwo);
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(zeroPlusZero)
 }
 
 BOOST_AUTO_TEST_CASE(symbolPlusZero)
-    /* a + 0 = a. */
+/* a + 0 = a. */
 {
     const BasePtr res = Sum::create(a, zero);
 
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(symbolPlusZero)
 }
 
 BOOST_AUTO_TEST_CASE(zeroPlusSymbol)
-    /* 0 + a = a. */
+/* 0 + a = a. */
 {
     const BasePtr res = Sum::create(zero, a);
 
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(zeroPlusSymbol)
 }
 
 BOOST_AUTO_TEST_CASE(rearrangeTwoSymbols)
-    /* Check simple ordering: b + a = a + b. */
+/* Check simple ordering: b + a = a + b. */
 {
     const BasePtr res = Sum::create(b, a);
 
@@ -103,10 +103,10 @@ BOOST_AUTO_TEST_CASE(rearrangeTwoSymbols)
 }
 
 BOOST_AUTO_TEST_CASE(rearrangeFiveSymbols)
-    /*  More complex ordering: e + c + a + b + d = a + b + c + d + e. */
+/*  More complex ordering: e + c + a + b + d = a + b + c + d + e. */
 {
-    const BasePtr res = Sum::create({ e, c, a, b, d });
-    const BasePtrList expected{ a, b, c, d, e };
+    const BasePtr res = Sum::create({e, c, a, b, d});
+    const BasePtrList expected{a, b, c, d, e};
     const BasePtrList& summands = res->operands();
 
     BOOST_TEST(res->isSum());
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(rearrangeFiveSymbols)
 }
 
 BOOST_AUTO_TEST_CASE(orderingOfMixedTerms)
-    /* a - sqrt(2)*a is equal to -a*sqrt(2) + a. */
+/* a - sqrt(2)*a is equal to -a*sqrt(2) + a. */
 {
     const BasePtr result1 = Sum::create(a, Product::minus(sqrtTwo, a));
     const BasePtr result2 = Sum::create(Product::minus(sqrtTwo, a), a);
@@ -124,7 +124,7 @@ BOOST_AUTO_TEST_CASE(orderingOfMixedTerms)
 }
 
 BOOST_AUTO_TEST_CASE(collectSymbols)
-    /* a + a = 2*a. */
+/* a + a = 2*a. */
 {
     const BasePtr res = Sum::create(a, a);
     const BasePtrList& summands(res->operands());
@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE(collectSymbols)
 }
 
 BOOST_AUTO_TEST_CASE(collectProducts)
-    /* 2*a*b + 3*a*b = 5*a*b. */
+/* 2*a*b + 3*a*b = 5*a*b. */
 {
     const BasePtr ab = Product::create(a, b);
     const BasePtr twoAB = Product::create(two, ab);
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(collectProducts)
 }
 
 BOOST_AUTO_TEST_CASE(collectProductOfSymbols)
-    /* 2*a*b + a*b = 3*a*b. */
+/* 2*a*b + a*b = 3*a*b. */
 {
     const BasePtr ab = Product::create(a, b);
     const BasePtr expected = Product::create(three, ab);
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(collectProductOfSymbols)
 }
 
 BOOST_AUTO_TEST_CASE(collectPower)
-    /* 3*a^3 + a^3 = 4*a^3. */
+/* 3*a^3 + a^3 = 4*a^3. */
 {
     const BasePtr pow = Power::create(a, three);
     const BasePtr s1 = Product::create(three, pow);
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(collectPower)
 }
 
 BOOST_AUTO_TEST_CASE(collectProductOfPower)
-    /* a^2*sqrt(b) - a^2*sqrt(b) = 0. */
+/* a^2*sqrt(b) - a^2*sqrt(b) = 0. */
 {
     const BasePtr pow1 = Power::create(a, two);
     const BasePtr pow2 = Power::sqrt(b);
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(collectProductOfPower)
 }
 
 BOOST_AUTO_TEST_CASE(twoSums)
-    /* (a + b) + (a + c) = 2*a + b + c. */
+/* (a + b) + (a + c) = 2*a + b + c. */
 {
     const BasePtr sum1 = Sum::create(a, b);
     const BasePtr sum2 = Sum::create(a, c);
@@ -206,11 +206,11 @@ BOOST_AUTO_TEST_CASE(twoSums)
 }
 
 BOOST_AUTO_TEST_CASE(sumOfSumAndSymbols)
-    /* (a + d) + e + c = a + c + d + e. */
+/* (a + d) + e + c = a + c + d + e. */
 {
     const BasePtr sum1 = Sum::create(a, d);
     const BasePtrList expected{a, c, d, e};
-    const BasePtr res = Sum::create({ sum1, e, c });
+    const BasePtr res = Sum::create({sum1, e, c});
     const BasePtrList& summands{res->operands()};
 
     BOOST_TEST(res->isSum());
@@ -219,7 +219,7 @@ BOOST_AUTO_TEST_CASE(sumOfSumAndSymbols)
 }
 
 BOOST_AUTO_TEST_CASE(cancellationOfNumbersInTwoSums)
-    /* (1 + a) + (-1 + b) = a + b. */
+/* (1 + a) + (-1 + b) = a + b. */
 {
     const BasePtr sum1 = Sum::create(one, a);
     const BasePtr sum2 = Sum::create(Numeric::mOne(), b);
@@ -233,7 +233,7 @@ BOOST_AUTO_TEST_CASE(cancellationOfNumbersInTwoSums)
 }
 
 BOOST_AUTO_TEST_CASE(simpleCollectionOfNumericPowers)
-    /* sqrt(2) + sqrt(2) = 2*sqrt(2). */
+/* sqrt(2) + sqrt(2) = 2*sqrt(2). */
 {
     const BasePtr res = Sum::create(sqrtTwo, sqrtTwo);
 
@@ -242,7 +242,7 @@ BOOST_AUTO_TEST_CASE(simpleCollectionOfNumericPowers)
 }
 
 BOOST_AUTO_TEST_CASE(collectionOfNumericPowers)
-    /* 2*sqrt(2) + sqrt(2) = 3*sqrt(2). */
+/* 2*sqrt(2) + sqrt(2) = 3*sqrt(2). */
 {
     const BasePtr res = Sum::create(Product::create(two, sqrtTwo), sqrtTwo);
 
@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE(collectionOfNumericPowers)
 }
 
 BOOST_AUTO_TEST_CASE(collectionOfNumericPowersInProduct)
-    /* 2*sqrt(2)*3^(1/4) + sqrt(2)*3^(1/4) = 3*sqrt(2)*3^(1/4). */
+/* 2*sqrt(2)*3^(1/4) + sqrt(2)*3^(1/4) = 3*sqrt(2)*3^(1/4). */
 {
     const BasePtr product = Product::create(sqrtTwo, Power::create(three, Numeric::fourth()));
     const BasePtr res = Sum::create(Product::create(two, product), product);
@@ -262,7 +262,7 @@ BOOST_AUTO_TEST_CASE(collectionOfNumericPowersInProduct)
 }
 
 BOOST_AUTO_TEST_CASE(collectNumericPowerProduct)
-    /* (2 + sqrt(2)*sqrt(3)) + (1 + 2*sqrt(2)*sqrt(3)) = 3 + 3*sqrt(6). */
+/* (2 + sqrt(2)*sqrt(3)) + (1 + 2*sqrt(2)*sqrt(3)) = 3 + 3*sqrt(6). */
 {
     const BasePtr expected = Sum::create(three, Product::create(three, Power::sqrt(six)));
     const BasePtr term = Product::create(sqrtTwo, sqrtThree);
@@ -276,7 +276,7 @@ BOOST_AUTO_TEST_CASE(collectNumericPowerProduct)
 }
 
 BOOST_AUTO_TEST_CASE(collectionOfConstCoeff)
-    /* No collection of 2*a + sqrt(3)*a (would be expanded afterwards). */
+/* No collection of 2*a + sqrt(3)*a (would be expanded afterwards). */
 {
     const BasePtr s1 = Product::create(two, a);
     const BasePtr s2 = Product::create(sqrtThree, a);
@@ -288,7 +288,7 @@ BOOST_AUTO_TEST_CASE(collectionOfConstCoeff)
 }
 
 BOOST_AUTO_TEST_CASE(collectionOfPi)
-    /* 2*Pi + Pi = 3*Pi. */
+/* 2*Pi + Pi = 3*Pi. */
 {
     const BasePtr res = Sum::create(Product::create(two, pi), pi);
 
@@ -296,7 +296,7 @@ BOOST_AUTO_TEST_CASE(collectionOfPi)
 }
 
 BOOST_AUTO_TEST_CASE(collectionOfE)
-    /* 2*e + sqrt(3)*e = (2 + sqrt(3))*e. */
+/* 2*e + sqrt(3)*e = (2 + sqrt(3))*e. */
 {
     const BasePtr e = Constant::createE();
     const BasePtr sqrtThree = Power::sqrt(three);
@@ -306,7 +306,7 @@ BOOST_AUTO_TEST_CASE(collectionOfE)
 }
 
 BOOST_AUTO_TEST_CASE(collectionOfPiTimesSymbol)
-    /* 2*Pi*a*b + Pi*a*b = 3*Pi*a*b. */
+/* 2*Pi*a*b + Pi*a*b = 3*Pi*a*b. */
 {
     const BasePtr piAb = Product::create(pi, a, b);
     const BasePtr res = Sum::create(Product::create(two, piAb), piAb);
@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE(collectionOfPiTimesSymbol)
 }
 
 BOOST_AUTO_TEST_CASE(noCollectionOfPiInDifferentProducts)
-    /* No collection of terms for 3*Pi + 2*Pi*a. */
+/* No collection of terms for 3*Pi + 2*Pi*a. */
 {
     const BasePtr s1 = Product::create(three, pi);
     const BasePtr s2 = Product::create(two, pi, a);
@@ -329,7 +329,7 @@ BOOST_AUTO_TEST_CASE(noCollectionOfPiInDifferentProducts)
 }
 
 BOOST_AUTO_TEST_CASE(noCollectionOfNumberAndPi)
-    /* No collection of terms for 2*a*b + Pi*a*b. */
+/* No collection of terms for 2*a*b + Pi*a*b. */
 {
     const BasePtr ab = Product::create(a, b);
     const BasePtr s1 = Product::create(two, ab);
@@ -342,7 +342,7 @@ BOOST_AUTO_TEST_CASE(noCollectionOfNumberAndPi)
 }
 
 BOOST_AUTO_TEST_CASE(collectionOfNumberNumPowAndPi)
-    /* 2*sqrt(3)*Pi + 4*sqrt(3)*Pi = 6*sqrt(3)*Pi. */
+/* 2*sqrt(3)*Pi + 4*sqrt(3)*Pi = 6*sqrt(3)*Pi. */
 {
     const BasePtr fac = Product::create(sqrtThree, pi);
     const BasePtr expected = Product::create(six, fac);
@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE(collectionOfNumberNumPowAndPi)
 }
 
 BOOST_AUTO_TEST_CASE(nonEqualConstTermsWithPi)
-    /* 2*Pi*a*b + sqrt(3)*Pi*a*b is not collected, as the factor stays a sum (would be expanded) */
+/* 2*Pi*a*b + sqrt(3)*Pi*a*b is not collected, as the factor stays a sum (would be expanded) */
 {
     const BasePtr piAb = Product::create(pi, a, b);
     const BasePtr s1 = Product::create(two, piAb);
@@ -367,7 +367,7 @@ BOOST_AUTO_TEST_CASE(nonEqualConstTermsWithPi)
 }
 
 BOOST_AUTO_TEST_CASE(noCollectionOfPiNumericPowCoeff)
-    /* 2*Pi + sqrt(3)*Pi isn't collected, because it would be expanded later on. */
+/* 2*Pi + sqrt(3)*Pi isn't collected, because it would be expanded later on. */
 {
     const BasePtr s1 = Product::create(two, pi);
     const BasePtr s2 = Product::create(sqrtThree, pi);
@@ -379,7 +379,7 @@ BOOST_AUTO_TEST_CASE(noCollectionOfPiNumericPowCoeff)
 }
 
 BOOST_AUTO_TEST_CASE(sumOfEqualFunctionsEqualArgs)
-    /* sin(a) + 2*sin(a) = 3*sin(a). */
+/* sin(a) + 2*sin(a) = 3*sin(a). */
 {
     const BasePtr expected = Product::create(three, sinA);
     const BasePtr res = Sum::create(sinA, Product::create(two, sinA));
@@ -388,7 +388,7 @@ BOOST_AUTO_TEST_CASE(sumOfEqualFunctionsEqualArgs)
 }
 
 BOOST_AUTO_TEST_CASE(sumOfEqualFunctionsDifferentArguments)
-    /* No simplification of sin(a) + sin(b). */
+/* No simplification of sin(a) + sin(b). */
 {
     const BasePtr sinB = Trigonometric::createSin(b);
     const BasePtr res = Sum::create(sinA, sinB);
@@ -399,7 +399,7 @@ BOOST_AUTO_TEST_CASE(sumOfEqualFunctionsDifferentArguments)
 }
 
 BOOST_AUTO_TEST_CASE(sumOfLogarithmDifferentArguments)
-    /* No simplification of log(2) + log(3). */
+/* No simplification of log(2) + log(3). */
 {
     const BasePtr logTwo = Logarithm::create(two);
     const BasePtr logThree = Logarithm::create(three);
@@ -411,7 +411,7 @@ BOOST_AUTO_TEST_CASE(sumOfLogarithmDifferentArguments)
 }
 
 BOOST_AUTO_TEST_CASE(sumOfLogarithmNoSimplification)
-    /* No simplification of log(a) - log(b). */
+/* No simplification of log(a) - log(b). */
 {
     const BasePtr logA = Logarithm::create(a);
     const BasePtr minusLogB = Product::minus(Logarithm::create(b));
@@ -423,7 +423,7 @@ BOOST_AUTO_TEST_CASE(sumOfLogarithmNoSimplification)
 }
 
 BOOST_AUTO_TEST_CASE(simpleNumericEvaluation)
-    /* Numeric evaluation of sqrt(2) + e. */
+/* Numeric evaluation of sqrt(2) + e. */
 {
     const BasePtr sum = Sum::create(sqrtTwo, Constant::createE());
     const double expected = std::sqrt(2.0) + M_E;
@@ -433,9 +433,9 @@ BOOST_AUTO_TEST_CASE(simpleNumericEvaluation)
 }
 
 BOOST_AUTO_TEST_CASE(numericEvaluation)
-    /* 1 + Pi + sqrt(2) + sqrt(3)*4^(1/17) can be numerically evaluated. */
+/* 1 + Pi + sqrt(2) + sqrt(3)*4^(1/17) can be numerically evaluated. */
 {
-    const double expected = 1.0 + M_PI + std::sqrt(2.0) + std::sqrt(3.0)*std::pow(4.0, 1.0/17.0);
+    const double expected = 1.0 + M_PI + std::sqrt(2.0) + std::sqrt(3.0) * std::pow(4.0, 1.0 / 17.0);
     BasePtrList summands;
     BasePtr res;
 
@@ -451,7 +451,7 @@ BOOST_AUTO_TEST_CASE(numericEvaluation)
 }
 
 BOOST_AUTO_TEST_CASE(contractableSinCosSquareWithoutPrefactor)
-    /* sin(a)^2 + cos(a)^2 = 1. */
+/* sin(a)^2 + cos(a)^2 = 1. */
 {
     const BasePtr result = Sum::create(Power::create(sinA, two), Power::create(cosA, two));
 
@@ -460,8 +460,8 @@ BOOST_AUTO_TEST_CASE(contractableSinCosSquareWithoutPrefactor)
 
 BOOST_AUTO_TEST_CASE(contractableSinCosSquarePrefactorMinusOne)
 {
-    const BasePtr result = Sum::create(Product::minus(Power::create(sinA, two)),
-            Product::minus(Power::create(cosA, two)));
+    const BasePtr result =
+      Sum::create(Product::minus(Power::create(sinA, two)), Product::minus(Power::create(cosA, two)));
 
     BOOST_CHECK_EQUAL(Numeric::mOne(), result);
 }
@@ -469,8 +469,8 @@ BOOST_AUTO_TEST_CASE(contractableSinCosSquarePrefactorMinusOne)
 BOOST_AUTO_TEST_CASE(contractableSinCosSquareNegNumericPrefactor)
 {
     const BasePtr fac = Numeric::create(-17, 18);
-    const BasePtr result = Sum::create(Product::create(fac, Power::create(sinA, two)),
-            Product::create(fac, Power::create(cosA, two)));
+    const BasePtr result =
+      Sum::create(Product::create(fac, Power::create(sinA, two)), Product::create(fac, Power::create(cosA, two)));
 
     BOOST_CHECK_EQUAL(fac, result);
 }
@@ -478,16 +478,16 @@ BOOST_AUTO_TEST_CASE(contractableSinCosSquareNegNumericPrefactor)
 BOOST_AUTO_TEST_CASE(contractableSinCosSquarePosNumPowPrefactor)
 {
     const BasePtr fac = Power::create(Numeric::create(12), Numeric::create(1, 5));
-    const BasePtr result = Sum::create(Product::create(fac, Power::create(cosA, two)),
-            Product::create(fac, Power::create(sinA, two)));
+    const BasePtr result =
+      Sum::create(Product::create(fac, Power::create(cosA, two)), Product::create(fac, Power::create(sinA, two)));
 
     BOOST_CHECK_EQUAL(fac, result);
 }
 
 BOOST_AUTO_TEST_CASE(contractableSinCosSquareNegNumPowPrefactor)
 {
-    const BasePtr result = Sum::create(Product::create(sqrtThree, Power::create(cosA, two)),
-            Product::create(sqrtThree, Power::create(sinA, two)));
+    const BasePtr result = Sum::create(
+      Product::create(sqrtThree, Power::create(cosA, two)), Product::create(sqrtThree, Power::create(sinA, two)));
 
     BOOST_CHECK_EQUAL(sqrtThree, result);
 }

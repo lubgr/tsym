@@ -5,9 +5,9 @@
 
 namespace tsym {
     class SubresultantGcd : public Gcd {
-        private:
-            BasePtr gcdAlgo(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
-            BasePtr gcd(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
+      private:
+        BasePtr gcdAlgo(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
+        BasePtr gcd(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
     };
 }
 

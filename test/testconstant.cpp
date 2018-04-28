@@ -1,8 +1,8 @@
 
 #include <cmath>
 #include "constant.h"
-#include "number.h"
 #include "fixtures.h"
+#include "number.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(typeString)
 }
 
 BOOST_AUTO_TEST_CASE(constRequest)
-    /* A Constant is treated like a Symbol, so it isn't considered const. */
+/* A Constant is treated like a Symbol, so it isn't considered const. */
 {
     BOOST_TEST(!pi->isConst());
     BOOST_TEST(!euler->isConst());

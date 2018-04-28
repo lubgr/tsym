@@ -1,37 +1,36 @@
 
-#include <cassert>
-#include <numeric>
-#include <limits>
 #include "sum.h"
-#include "sumsimpl.h"
-#include "numeric.h"
-#include "undefined.h"
-#include "fraction.h"
-#include "power.h"
+#include <cassert>
+#include <limits>
+#include <numeric>
 #include "bplist.h"
-#include "product.h"
+#include "fraction.h"
+#include "numeric.h"
 #include "poly.h"
+#include "power.h"
+#include "product.h"
+#include "sumsimpl.h"
+#include "undefined.h"
 
-tsym::Sum::Sum(const BasePtrList& summands, Base::CtorKey&&) :
-    Base(summands)
+tsym::Sum::Sum(const BasePtrList& summands, Base::CtorKey&&)
+    : Base(summands)
 {
     setDebugString();
 }
 
 tsym::BasePtr tsym::Sum::create(const BasePtr& s1, const BasePtr& s2)
 {
-    return create({ s1, s2 });
+    return create({s1, s2});
 }
 
 tsym::BasePtr tsym::Sum::create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3)
 {
-    return create({ s1, s2, s3 });
+    return create({s1, s2, s3});
 }
 
-tsym::BasePtr tsym::Sum::create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3,
-        const BasePtr& s4)
+tsym::BasePtr tsym::Sum::create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3, const BasePtr& s4)
 {
-    return create({ s1, s2, s3, s4 });
+    return create({s1, s2, s3, s4});
 }
 
 tsym::BasePtr tsym::Sum::create(const BasePtrList& summands)
@@ -114,8 +113,7 @@ tsym::Fraction tsym::Sum::toCommonDenom(const std::vector<Fraction>& operands) c
         oneOverGcd = Power::oneOver(poly::gcd(denom, nextDenom));
         lcm = Product::create(nextDenom, oneOverGcd)->expand();
 
-        num = create(Product::create(num, lcm)->expand(),
-                Product::create(nextNum, denom, oneOverGcd)->expand());
+        num = create(Product::create(num, lcm)->expand(), Product::create(nextNum, denom, oneOverGcd)->expand());
         denom = Product::create(denom, lcm)->expand();
     }
 
@@ -254,5 +252,5 @@ int tsym::Sum::degree(const tsym::BasePtr& variable) const
         return 1;
     else
         return std::accumulate(cbegin(ops), cend(ops), minInt,
-                [&variable](int deg, const auto& summand){ return std::max(deg, summand->degree(variable)); });
+          [&variable](int deg, const auto& summand) { return std::max(deg, summand->degree(variable)); });
 }

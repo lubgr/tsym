@@ -1,8 +1,8 @@
 
+#include "numpowersimpl.h"
+#include <algorithm>
 #include <cassert>
 #include <cmath>
-#include <algorithm>
-#include "numpowersimpl.h"
 #include "logging.h"
 
 void tsym::NumPowerSimpl::setPower(const Number& base, const Number& exp)
@@ -80,8 +80,8 @@ void tsym::NumPowerSimpl::initFromOrig()
 }
 
 void tsym::NumPowerSimpl::computeNonRational()
-    /* This will always have a scalar as the result. The functionality of the Number class can thus
-     * be used. */
+/* This will always have a scalar as the result. The functionality of the Number class can thus
+ * be used. */
 {
     newBase = newBase.toThe(newExp);
     newBase *= preFac;
@@ -105,7 +105,7 @@ void tsym::NumPowerSimpl::computeNegOrPosExp()
 }
 
 void tsym::NumPowerSimpl::computeNegExp()
-    /* Shifts the handling to positive exponents by and pre- and postmodifying the components. */
+/* Shifts the handling to positive exponents by and pre- and postmodifying the components. */
 {
     newExp *= -1;
     preFac = preFac.toThe(-1);
@@ -176,9 +176,9 @@ bool tsym::NumPowerSimpl::areValuesSmallEnough() const
 }
 
 void tsym::NumPowerSimpl::cancel()
-    /* Can be understood as the main method of this class, the changes made before prepared the
-     * following operations. Here, all components (preFactor, base and exponent are not undefined,
-     * but positive rational numbers. */
+/* Can be understood as the main method of this class, the changes made before prepared the
+ * following operations. Here, all components (preFactor, base and exponent are not undefined,
+ * but positive rational numbers. */
 {
     defNewBasePrimes();
     defPreFacPrimesInPower();
@@ -238,12 +238,12 @@ void tsym::NumPowerSimpl::primesToComponents()
 }
 
 void tsym::NumPowerSimpl::adjustExpGreaterThanOne()
-    /* Performs a^b = prefac*a^d with b > 1 and d < 1. */
+/* Performs a^b = prefac*a^d with b > 1 and d < 1. */
 {
     Number baseExtraction(newBase);
 
     if (newExp > 1 || newExp < -1) {
-        const Number expFloor(Int(newExp.numerator()/newExp.denominator()));
+        const Number expFloor(Int(newExp.numerator() / newExp.denominator()));
         baseExtraction = baseExtraction.toThe(expFloor);
 
         preFac *= baseExtraction;
@@ -252,10 +252,9 @@ void tsym::NumPowerSimpl::adjustExpGreaterThanOne()
 }
 
 void tsym::NumPowerSimpl::adjustExpSignAndBase()
-    /* Turns a power of type (1/a)^exp into a^(-exp) or (a/b)^(-b/c) into (b/a)^(b/c). */
+/* Turns a power of type (1/a)^exp into a^(-exp) or (a/b)^(-b/c) into (b/a)^(b/c). */
 {
-    if ((newBase.numerator() == 1 && !newExp.isOne()) ||
-            (newExp < 0 && newBase.isFrac())) {
+    if ((newBase.numerator() == 1 && !newExp.isOne()) || (newExp < 0 && newBase.isFrac())) {
         newBase = newBase.toThe(-1);
         newExp *= -1;
     }

@@ -1,13 +1,13 @@
 
-#include <cmath>
 #include "constant.h"
-#include "symbolmap.h"
+#include <cmath>
 #include "fraction.h"
 #include "numeric.h"
+#include "symbolmap.h"
 
-tsym::Constant::Constant(Type type, Name&& name, Base::CtorKey&&) :
-    type(type),
-    constantName(std::move(name))
+tsym::Constant::Constant(Type type, Name&& name, Base::CtorKey&&)
+    : type(type)
+    , constantName(std::move(name))
 {
     setDebugString();
 }

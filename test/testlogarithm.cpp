@@ -1,15 +1,15 @@
 
 #include <cmath>
-#include "logarithm.h"
 #include "constant.h"
+#include "fixtures.h"
+#include "logarithm.h"
+#include "numeric.h"
 #include "power.h"
 #include "product.h"
 #include "sum.h"
-#include "numeric.h"
-#include "undefined.h"
 #include "symbol.h"
-#include "fixtures.h"
 #include "tsymtests.h"
+#include "undefined.h"
 
 using namespace tsym;
 
@@ -173,7 +173,7 @@ BOOST_AUTO_TEST_CASE(logOfPowerWithEulerBaseArbitraryExp)
 }
 
 BOOST_AUTO_TEST_CASE(logOfPower)
-    /* log(a^2) = 2*log(a). */
+/* log(a^2) = 2*log(a). */
 {
     const BasePtr expected = Product::create(two, Logarithm::create(a));
     const BasePtr arg = Power::create(a, two);

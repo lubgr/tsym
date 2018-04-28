@@ -1,57 +1,55 @@
 
-#include <vector>
-#include <numeric>
 #include "product.h"
-#include "undefined.h"
-#include "numeric.h"
-#include "productsimpl.h"
-#include "fraction.h"
-#include "power.h"
-#include "sum.h"
+#include <numeric>
+#include <vector>
 #include "bplist.h"
+#include "fraction.h"
+#include "numeric.h"
+#include "power.h"
+#include "productsimpl.h"
+#include "sum.h"
 #include "symbolmap.h"
+#include "undefined.h"
 
-tsym::Product::Product(const BasePtrList& factors, Base::CtorKey&&) :
-    Base(factors)
+tsym::Product::Product(const BasePtrList& factors, Base::CtorKey&&)
+    : Base(factors)
 {
     setDebugString();
 }
 
 tsym::BasePtr tsym::Product::create(const BasePtr& f1, const BasePtr& f2)
 {
-    return create({ f1, f2 });
+    return create({f1, f2});
 }
 
 tsym::BasePtr tsym::Product::create(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3)
 {
-    return create({ f1, f2, f3 });
+    return create({f1, f2, f3});
 }
 
-tsym::BasePtr tsym::Product::create(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3,
-        const BasePtr& f4)
+tsym::BasePtr tsym::Product::create(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3, const BasePtr& f4)
 {
-    return create({ f1, f2, f3, f4 });
+    return create({f1, f2, f3, f4});
 }
 
 tsym::BasePtr tsym::Product::minus(const BasePtr& f1)
 {
-    return create({ Numeric::mOne(), f1 });
+    return create({Numeric::mOne(), f1});
 }
 
 tsym::BasePtr tsym::Product::minus(const BasePtr& f1, const BasePtr& f2)
 {
-    return create({ Numeric::mOne(), f1, f2 });
+    return create({Numeric::mOne(), f1, f2});
 }
 
 tsym::BasePtr tsym::Product::minus(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3)
 {
-    return create({ Numeric::mOne(), f1, f2, f3 });
+    return create({Numeric::mOne(), f1, f2, f3});
 }
 
-tsym::BasePtr tsym::Product::minus(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3,
-        const BasePtr& f4)
+tsym::BasePtr tsym::Product::minus(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3, const BasePtr& f4)
 {
-    return create({ Numeric::mOne(), f1, f2, f3, f4 });
+    return create({Numeric::mOne(), f1, f2, f3, f4});
 }
 
 tsym::BasePtr tsym::Product::create(const BasePtrList& factors)
@@ -267,7 +265,7 @@ tsym::BasePtr tsym::Product::coeff(const BasePtr& variable, int exp) const
 tsym::BasePtr tsym::Product::coeffFactorMatch(const BasePtr& variable, int exp) const
 {
     const BasePtr pow(Power::create(variable, Numeric::create(exp)));
-    auto matchingPower = std::find_if(cbegin(ops), cend(ops), [&pow](const auto& item){ return item->isEqual(pow); });
+    auto matchingPower = std::find_if(cbegin(ops), cend(ops), [&pow](const auto& item) { return item->isEqual(pow); });
 
     if (matchingPower == cend(ops))
         return Numeric::zero();
@@ -288,5 +286,5 @@ int tsym::Product::degree(const BasePtr& variable) const
         return 1;
     else
         return std::accumulate(cbegin(ops), cend(ops), 0,
-                [&variable](int deg, const auto& factor){ return deg + factor->degree(variable); });
+          [&variable](int deg, const auto& factor) { return deg + factor->degree(variable); });
 }

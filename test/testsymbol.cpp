@@ -1,6 +1,6 @@
 
-#include "symbol.h"
 #include "fixtures.h"
+#include "symbol.h"
 #include "tsymtests.h"
 
 using namespace tsym;

@@ -1,25 +1,25 @@
 
 #include "fraction.h"
-#include "numeric.h"
-#include "undefined.h"
-#include "product.h"
-#include "power.h"
-#include "poly.h"
 #include "logging.h"
+#include "numeric.h"
+#include "poly.h"
+#include "power.h"
+#include "product.h"
+#include "undefined.h"
 
-tsym::Fraction::Fraction() :
-    numerator(Undefined::create()),
-    denominator(Numeric::one())
+tsym::Fraction::Fraction()
+    : numerator(Undefined::create())
+    , denominator(Numeric::one())
 {}
 
-tsym::Fraction::Fraction(const BasePtr& numerator) :
-    numerator(numerator),
-    denominator(Numeric::one())
+tsym::Fraction::Fraction(const BasePtr& numerator)
+    : numerator(numerator)
+    , denominator(Numeric::one())
 {}
 
-tsym::Fraction::Fraction(const BasePtr& numerator, const BasePtr& denominator) :
-    numerator(numerator),
-    denominator(denominator)
+tsym::Fraction::Fraction(const BasePtr& numerator, const BasePtr& denominator)
+    : numerator(numerator)
+    , denominator(denominator)
 {}
 
 tsym::BasePtr tsym::Fraction::eval() const

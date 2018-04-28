@@ -5,7 +5,9 @@
 #include "baseptrlist.h"
 #include "int.h"
 
-namespace tsym { class Number; }
+namespace tsym {
+    class Number;
+}
 
 namespace tsym {
     class Gcd {
@@ -28,24 +30,23 @@ namespace tsym {
          *
          * Note that this class doesn't have state, making it less error prone while dealing with
          * the recursive nature of gcd algorithms. */
-        public:
-            virtual ~Gcd() = default;
+      public:
+        virtual ~Gcd() = default;
 
-            BasePtr compute(const BasePtr& u, const BasePtr& v) const;
-            BasePtr compute(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
+        BasePtr compute(const BasePtr& u, const BasePtr& v) const;
+        BasePtr compute(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
 
-        private:
-            BasePtr computeNumerics(const BasePtr& u, const BasePtr& v) const;
-            Int integerGcd(const Int& a, const Int& b) const;
-            bool haveCommonSymbol(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
-            BasePtr gcdViaAlgo(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
-            BasePtr integerContent(const BasePtr& u, const BasePtr& v) const;
-            Number integerContent(const BasePtr& poly) const;
-            Number integerContentOfSum(const BasePtrList& summands) const;
-            BasePtr normalize(const BasePtr& result, const BasePtrList& L) const;
-            Number normalizationFactor(const BasePtr& arg, BasePtrList& L) const;
-            virtual BasePtr gcdAlgo(const BasePtr& u, const BasePtr& v,
-                    const BasePtrList& L) const = 0;
+      private:
+        BasePtr computeNumerics(const BasePtr& u, const BasePtr& v) const;
+        Int integerGcd(const Int& a, const Int& b) const;
+        bool haveCommonSymbol(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
+        BasePtr gcdViaAlgo(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
+        BasePtr integerContent(const BasePtr& u, const BasePtr& v) const;
+        Number integerContent(const BasePtr& poly) const;
+        Number integerContentOfSum(const BasePtrList& summands) const;
+        BasePtr normalize(const BasePtr& result, const BasePtrList& L) const;
+        Number normalizationFactor(const BasePtr& arg, BasePtrList& L) const;
+        virtual BasePtr gcdAlgo(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const = 0;
     };
 }
 

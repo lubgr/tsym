@@ -1,13 +1,13 @@
 
 #include <memory>
-#include "powernormal.h"
 #include "constant.h"
-#include "power.h"
-#include "symbolmap.h"
-#include "sum.h"
-#include "product.h"
-#include "trigonometric.h"
 #include "fixtures.h"
+#include "power.h"
+#include "powernormal.h"
+#include "product.h"
+#include "sum.h"
+#include "symbolmap.h"
+#include "trigonometric.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -17,10 +17,10 @@ struct PowerNormalFixture : public AbcFixture {
     const BasePtr abSum = Sum::create(a, b);
     /* a/b + (c - a)/b - c/b becomes 0 by normalization. */
     const BasePtr zeroByNormal = Sum::create(Product::create(a, oneOverB), Product::minus(c, oneOverB),
-        Product::create(Sum::create(c, Product::minus(a)), oneOverB));
+      Product::create(Sum::create(c, Product::minus(a)), oneOverB));
     /* a*b + a*c - a*(b + c) is zero after expansion. */
-    const BasePtr zeroByExpansion = Sum::create(Product::create(a, b), Product::create(a, c),
-            Product::minus(a, Sum::create(b, c)));
+    const BasePtr zeroByExpansion =
+      Sum::create(Product::create(a, b), Product::create(a, c), Product::minus(a, Sum::create(b, c)));
     std::unique_ptr<SymbolMap> map = std::make_unique<SymbolMap>();
 };
 
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(powerWithPosNegExp)
 }
 
 BOOST_AUTO_TEST_CASE(powerWithSymbolExp)
-    /* (a + b)^c becomes tmp/1. */
+/* (a + b)^c becomes tmp/1. */
 {
     const BasePtr orig = Power::create(abSum, c);
     BasePtr backReplaced;
@@ -87,7 +87,7 @@ BOOST_AUTO_TEST_CASE(powerWithSymbolExp)
 }
 
 BOOST_AUTO_TEST_CASE(fractionBaseSymbolExp)
-    /* (3/4)^a becomes tmp1/1. */
+/* (3/4)^a becomes tmp1/1. */
 {
     const BasePtr base = Numeric::create(3, 4);
     PowerNormal pn(*map);
@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE(fractionBaseSymbolExp)
 }
 
 BOOST_AUTO_TEST_CASE(fractionBaseNumericallyEvaluableNegExp)
-    /* (3/4)^(-sin(1)) = tmp1/tmp2 with tmp1 = 4^sin(1) and tmp2 = 3^sin(1). */
+/* (3/4)^(-sin(1)) = tmp1/tmp2 with tmp1 = 4^sin(1) and tmp2 = 3^sin(1). */
 {
     const BasePtr sinOne = Trigonometric::createSin(one);
     const BasePtr expectedNum = Power::create(four, sinOne);
@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE(fractionBaseNumericallyEvaluableNegExp)
 }
 
 BOOST_AUTO_TEST_CASE(fractionBaseNumericallyEvaluablePosExp)
-    /* (2/5)^sqrt(2) = tmp1/tmp2 with tmp1 = 2^sqrt(2) and tmp2 = 5^sqrt(2). */
+/* (2/5)^sqrt(2) = tmp1/tmp2 with tmp1 = 2^sqrt(2) and tmp2 = 5^sqrt(2). */
 {
     const BasePtr exp = Power::sqrt(two);
     const BasePtr expectedNum = Power::create(two, exp);
@@ -159,7 +159,7 @@ BOOST_AUTO_TEST_CASE(fractionBaseNumericallyEvaluablePosExp)
 }
 
 BOOST_AUTO_TEST_CASE(symbolicFractionBaseNumericallyEvaluablePosExp)
-    /* (a/b)^sqrt(2) = tmp1/tmp2 with tmp1 = a^sqrt(2) and tmp2 = b^sqrt(2). */
+/* (a/b)^sqrt(2) = tmp1/tmp2 with tmp1 = a^sqrt(2) and tmp2 = b^sqrt(2). */
 {
     const BasePtr base = Product::create(a, Power::oneOver(b));
     const BasePtr exp = Power::sqrt(two);
@@ -187,7 +187,7 @@ BOOST_AUTO_TEST_CASE(symbolicFractionBaseNumericallyEvaluablePosExp)
 }
 
 BOOST_AUTO_TEST_CASE(powerWithMinusSymbolExp)
-    /* (a + b)^(-c) becomes tmp/1, too. */
+/* (a + b)^(-c) becomes tmp/1, too. */
 {
     const BasePtr minusC = Product::minus(c);
     BasePtr backReplaced;
@@ -208,7 +208,7 @@ BOOST_AUTO_TEST_CASE(powerWithMinusSymbolExp)
 }
 
 BOOST_AUTO_TEST_CASE(powerWithPiExp)
-    /* a^Pi becomes tmp/1 with tmp = a^Pi. */
+/* a^Pi becomes tmp/1 with tmp = a^Pi. */
 {
     BasePtr backReplaced;
     PowerNormal pn(*map);
@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE(powerWithPiExp)
 }
 
 BOOST_AUTO_TEST_CASE(powerWithNegNumEvalExp)
-    /* a^(-3*sqrt(2)*Pi) becomes 1/tmp with tmp = a^(3*sqrt(2)*Pi). */
+/* a^(-3*sqrt(2)*Pi) becomes 1/tmp with tmp = a^(3*sqrt(2)*Pi). */
 {
     const BasePtr pos = Product::create(three, pi, Power::sqrt(two));
     BasePtr backReplaced;

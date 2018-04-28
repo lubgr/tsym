@@ -5,8 +5,9 @@
 #include <vector>
 
 namespace tsym {
-    template<class Integer> struct SimplePrimePolicy {
-        static void computeAndStore(Integer n, std::vector<Integer>& primes) {
+    template <class Integer> struct SimplePrimePolicy {
+        static void computeAndStore(Integer n, std::vector<Integer>& primes)
+        {
             static const Integer zero{0};
             static const Integer two{2};
 

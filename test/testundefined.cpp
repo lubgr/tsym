@@ -1,8 +1,8 @@
 
-#include "undefined.h"
-#include "number.h"
 #include "fixtures.h"
+#include "number.h"
 #include "tsymtests.h"
+#include "undefined.h"
 
 using namespace tsym;
 
@@ -53,7 +53,6 @@ BOOST_AUTO_TEST_CASE(numericEvaluation)
 BOOST_AUTO_TEST_CASE(equalityOtherUndefined, noLogs())
 {
     const BasePtr otherUndefined = Undefined::create();
-
 
     BOOST_TEST(!undefined->isEqual(undefined));
     BOOST_TEST(!undefined->isEqual(otherUndefined));

@@ -1,17 +1,16 @@
 
-#include <cmath>
-#include <cassert>
 #include "powersimpl.h"
-#include "power.h"
-#include "product.h"
-#include "undefined.h"
-#include "numeric.h"
-#include "number.h"
-#include "numpowersimpl.h"
+#include <cassert>
+#include <cmath>
 #include "constant.h"
 #include "logarithm.h"
 #include "logging.h"
-
+#include "number.h"
+#include "numeric.h"
+#include "numpowersimpl.h"
+#include "power.h"
+#include "product.h"
+#include "undefined.h"
 
 namespace tsym {
     namespace {
@@ -46,7 +45,7 @@ namespace tsym {
             if (exp->isNumeric())
                 return simplifyNumericPower(base, exp);
             else
-                return { base, exp };
+                return {base, exp};
         }
 
         BasePtrList simplifyNumericPower(const BasePtr& base, const BasePtr& exp)
@@ -71,9 +70,9 @@ namespace tsym {
             newExp = Numeric::create(numericPow.getNewExp());
 
             if (preFac->isOne())
-                return { newBase, newExp };
+                return {newBase, newExp};
             else
-                return { Product::create(preFac, Power::create(newBase, newExp)), one() };
+                return {Product::create(preFac, Power::create(newBase, newExp)), one()};
         }
 
         const BasePtr& one()
@@ -82,7 +81,7 @@ namespace tsym {
         }
 
         BasePtrList simplifyPowerBase(const BasePtr& powBase, const BasePtr& e2)
-            /* Performs ((base)^e1)^e2 = (base)^(e1*e2) if it's possible. */
+        /* Performs ((base)^e1)^e2 = (base)^(e1*e2) if it's possible. */
         {
             const BasePtr e1(powBase->exp());
             const BasePtr base(powBase->base());
@@ -98,13 +97,13 @@ namespace tsym {
                 newBase = base;
             else
                 /* No simplification possible. */
-                return { powBase, e2 };
+                return {powBase, e2};
 
             newExp = Product::create(e1, e2);
 
             if (newExp->isZero())
                 /* For very small numeric exponents, this could be the case. */
-                return { one(), one() };
+                return {one(), one()};
 
             return powersimpl::simplify(newBase, newExp);
         }
@@ -196,7 +195,7 @@ namespace tsym {
         }
 
         BasePtrList simplifyProductBase(const BasePtr& base, const BasePtr& exp)
-            /* Performs (a*b)^c = a^c*b^c if possible. */
+        /* Performs (a*b)^c = a^c*b^c if possible. */
         {
             const bool doExpandAll = isInteger(exp);
             BasePtrList simplified;
@@ -209,19 +208,19 @@ namespace tsym {
                     keep.push_back(factor);
 
             if (simplified.empty())
-                return { base, exp };
+                return {base, exp};
 
             simplified.push_back(Power::create(Product::create(keep), exp));
 
-            return { Product::create(simplified), one() };
+            return {Product::create(simplified), one()};
         }
 
         BasePtrList simplifyConstantBase(const BasePtr& base, const BasePtr& exp)
         {
             if (isBaseEulerConstantAndExpLogarithm(base, exp))
-                return { exp->operands().front(), one() };
+                return {exp->operands().front(), one()};
             else
-                return { base, exp };
+                return {base, exp};
         }
 
         bool isBaseEulerConstantAndExpLogarithm(const BasePtr& base, const BasePtr& exp)
@@ -237,7 +236,7 @@ namespace tsym {
 tsym::BasePtrList tsym::powersimpl::simplify(const BasePtr& base, const BasePtr& exp)
 {
     if (doesInvolveComplexNumbers(base, exp))
-        return { Undefined::create(), one() };
+        return {Undefined::create(), one()};
     else if (base->isNumeric())
         return simplifyNumericBase(base, exp);
     else if (base->isPower())
@@ -245,10 +244,10 @@ tsym::BasePtrList tsym::powersimpl::simplify(const BasePtr& base, const BasePtr&
     else if (base->isProduct())
         return simplifyProductBase(base, exp);
     else if (base->isUndefined())
-        return { Undefined::create(), one() };
+        return {Undefined::create(), one()};
     else if (base->isConstant())
         return simplifyConstantBase(base, exp);
     else
         /* No simplification applicable. */
-        return { base, exp };
+        return {base, exp};
 }

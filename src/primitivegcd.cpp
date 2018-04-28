@@ -1,13 +1,12 @@
 
 #include "primitivegcd.h"
-#include "poly.h"
-#include "product.h"
-#include "numeric.h"
 #include "bplist.h"
 #include "logging.h"
+#include "numeric.h"
+#include "poly.h"
+#include "product.h"
 
-tsym::BasePtr tsym::PrimitiveGcd::gcdAlgo(const BasePtr& u, const BasePtr& v,
-        const BasePtrList& L) const
+tsym::BasePtr tsym::PrimitiveGcd::gcdAlgo(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const
 {
     const BasePtr x(L.front());
     const BasePtrList R(bplist::rest(L));

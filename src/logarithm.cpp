@@ -1,19 +1,19 @@
 
-#include <cmath>
 #include "logarithm.h"
-#include "undefined.h"
+#include <cmath>
 #include "constant.h"
-#include "sum.h"
-#include "product.h"
-#include "power.h"
-#include "numeric.h"
 #include "fraction.h"
-#include "symbolmap.h"
 #include "logging.h"
+#include "numeric.h"
+#include "power.h"
+#include "product.h"
+#include "sum.h"
+#include "symbolmap.h"
+#include "undefined.h"
 
-tsym::Logarithm::Logarithm(const BasePtr& arg, Base::CtorKey&&) :
-    Function({ arg }, "log"),
-    arg(ops.front())
+tsym::Logarithm::Logarithm(const BasePtr& arg, Base::CtorKey&&)
+    : Function({arg}, "log")
+    , arg(ops.front())
 {
     setDebugString();
 }
@@ -45,7 +45,7 @@ bool tsym::Logarithm::isInvalidArg(const BasePtr& arg)
 
     if (arg->isUndefined())
         invalid = true;
-    else if(arg->isZero())
+    else if (arg->isZero())
         invalid = true;
     else if (arg->isPower() && arg->base()->isEqual(Constant::createE()))
         /* Catches log(e^(-n)) with n being a large Numeric, which would numerically be evaluated to

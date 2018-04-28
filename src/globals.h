@@ -1,8 +1,8 @@
 #ifndef TSYM_GLOBALS_H
 #define TSYM_GLOBALS_H
 
-#include <vector>
 #include <string>
+#include <vector>
 #include "var.h"
 
 namespace tsym {
@@ -44,7 +44,7 @@ namespace tsym {
     std::vector<Var> operands(const Var& arg);
     std::vector<Var> collectSymbols(const Var& arg);
 
-    Var parse(const std::string& str, bool *success = nullptr);
+    Var parse(const std::string& str, bool* success = nullptr);
 }
 
 #endif

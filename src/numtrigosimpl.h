@@ -1,11 +1,11 @@
 #ifndef TSYM_NUMTRIGOSIMPL_H
 #define TSYM_NUMTRIGOSIMPL_H
 
-#include <vector>
 #include <unordered_map>
-#include "trigonometric.h"
+#include <vector>
 #include "constant.h"
 #include "number.h"
+#include "trigonometric.h"
 
 namespace tsym {
     /* Simplification class for trigonometric functions with arguments, that can be evaluated to a
@@ -21,72 +21,72 @@ namespace tsym {
      *
      * Everything else is not simplified. */
     class NumTrigoSimpl {
-        public:
-            NumTrigoSimpl() = default;
+      public:
+        NumTrigoSimpl() = default;
 
-            void setType(Trigonometric::Type type);
-            void setArg(const Number& arg);
-            void setArg(const BasePtr& arg);
+        void setType(Trigonometric::Type type);
+        void setArg(const Number& arg);
+        void setArg(const BasePtr& arg);
 
-            void compute();
-            bool hasSimplifiedResult() const;
-            BasePtr get() const;
+        void compute();
+        bool hasSimplifiedResult() const;
+        BasePtr get() const;
 
-        private:
-            void reset();
-            void detour();
-            bool isNotAnInverseFct() const;
-            void computeSinCosTan();
-            bool isArgRationalNonZeroNumeric() const;
-            bool isRationalNumeric(const BasePtr& ptr) const;
-            void prepareSinCosTan();
-            void adjustNumericArg();
-            void adjustArgRange();
-            void detourSinCosTan();
+      private:
+        void reset();
+        void detour();
+        bool isNotAnInverseFct() const;
+        void computeSinCosTan();
+        bool isArgRationalNonZeroNumeric() const;
+        bool isRationalNumeric(const BasePtr& ptr) const;
+        void prepareSinCosTan();
+        void adjustNumericArg();
+        void adjustArgRange();
+        void detourSinCosTan();
 
-            void sin();
-            unsigned getQuadrant() const;
-            void setSinSign(unsigned quadrant);
-            void shiftToFirstQuadrant(unsigned quadrant);
-            void compShiftedSin();
-            const BasePtr *getValue(const std::unordered_map<BasePtr, BasePtr>& table) const;
-            const BasePtr *getValueNumEval(const std::unordered_map<BasePtr, BasePtr>& table) const;
-            void setResult(const BasePtr& result);
-            bool isDoubleNumeric(const BasePtr& ptr) const;
-            void compNumericalSin();
-            void compNumerically(double (*fct)(double));
+        void sin();
+        unsigned getQuadrant() const;
+        void setSinSign(unsigned quadrant);
+        void shiftToFirstQuadrant(unsigned quadrant);
+        void compShiftedSin();
+        const BasePtr* getValue(const std::unordered_map<BasePtr, BasePtr>& table) const;
+        const BasePtr* getValueNumEval(const std::unordered_map<BasePtr, BasePtr>& table) const;
+        void setResult(const BasePtr& result);
+        bool isDoubleNumeric(const BasePtr& ptr) const;
+        void compNumericalSin();
+        void compNumerically(double (*fct)(double));
 
-            void cos();
+        void cos();
 
-            void tan();
-            void setTanSign(unsigned quadrant);
-            void tanViaSinCos();
-            void setSinForTan(BasePtr& result, bool& simplified);
-            void setCosForTan(BasePtr& result, bool& simplified);
-            void setForTan(Trigonometric::Type type, BasePtr& result, bool& simplified);
+        void tan();
+        void setTanSign(unsigned quadrant);
+        void tanViaSinCos();
+        void setSinForTan(BasePtr& result, bool& simplified);
+        void setCosForTan(BasePtr& result, bool& simplified);
+        void setForTan(Trigonometric::Type type, BasePtr& result, bool& simplified);
 
-            void computeAsinAcosAtan();
-            bool isInverseArgOutOfRange() const;
-            void prepareAsinAcosAtan();
-            void detourAsinAcosAtan();
+        void computeAsinAcosAtan();
+        bool isInverseArgOutOfRange() const;
+        void prepareAsinAcosAtan();
+        void detourAsinAcosAtan();
 
-            void asin();
-            const BasePtr *getKey(const std::unordered_map<BasePtr, BasePtr>& table) const;
+        void asin();
+        const BasePtr* getKey(const std::unordered_map<BasePtr, BasePtr>& table) const;
 
-            void acos();
-            void acosFromAsinResult();
+        void acos();
+        void acosFromAsinResult();
 
-            void atan();
+        void atan();
 
-            const BasePtr Pi { Constant::createPi() };
-            const Number PI { Pi->numericEval() };
+        const BasePtr Pi{Constant::createPi()};
+        const Number PI{Pi->numericEval()};
 
-            Trigonometric::Type type { Trigonometric::Type::SIN };
-            bool isSimplified = false;
-            int sign = 1;
-            BasePtr origArg {};
-            BasePtr arg {};
-            BasePtr res {};
+        Trigonometric::Type type{Trigonometric::Type::SIN};
+        bool isSimplified = false;
+        int sign = 1;
+        BasePtr origArg{};
+        BasePtr arg{};
+        BasePtr res{};
     };
 }
 

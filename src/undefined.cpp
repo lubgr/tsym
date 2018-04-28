@@ -1,9 +1,9 @@
 
-#include <cassert>
 #include "undefined.h"
-#include "numeric.h"
+#include <cassert>
 #include "fraction.h"
 #include "logging.h"
+#include "numeric.h"
 
 tsym::Undefined::Undefined(Base::CtorKey&&)
 {
@@ -84,7 +84,7 @@ bool tsym::Undefined::isDifferent(const BasePtr& other) const
 }
 
 bool tsym::Undefined::has(const BasePtr&) const
-    /* The Base implementation checks for equality, which doesn't make sense for an Undefined. */
+/* The Base implementation checks for equality, which doesn't make sense for an Undefined. */
 {
     return false;
 }
@@ -98,7 +98,7 @@ tsym::BasePtr tsym::Undefined::subst(const BasePtr& from, const BasePtr& to) con
 }
 
 int tsym::Undefined::degree(const BasePtr&) const
-    /* Same as in the has-method. */
+/* Same as in the has-method. */
 {
     return 0;
 }

@@ -1,8 +1,8 @@
 
 #include <cmath>
-#include "number.h"
-#include "globals.h"
 #include "fixtures.h"
+#include "globals.h"
+#include "number.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -52,7 +52,7 @@ BOOST_AUTO_TEST_CASE(nonResolvableNumericSquareRoot)
 
 BOOST_AUTO_TEST_CASE(powerEulerBaseLogExp)
 {
-    const Var arg = 2*a*b*b*pi();
+    const Var arg = 2 * a * b * b * pi();
     const Var exp = log(arg);
     const Var result = tsym::pow(euler(), exp);
 
@@ -76,10 +76,10 @@ BOOST_AUTO_TEST_CASE(logOfPowerWithBaseE)
 
 BOOST_AUTO_TEST_CASE(logOfPower)
 {
-    const Var exp = tsym::sqrt(5)*a + 1/b;
+    const Var exp = tsym::sqrt(5) * a + 1 / b;
     const Var power = tsym::pow(a, exp);
     const Var result = log(power);
-    const Var expected = exp*log(a);
+    const Var expected = exp * log(a);
 
     BOOST_CHECK_EQUAL(expected, result);
 }
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(sineZero)
 BOOST_AUTO_TEST_CASE(sinePiOverSix)
 {
     const Var expected(1, 2);
-    const Var arg(pi()/6);
+    const Var arg(pi() / 6);
     Var res;
 
     res = sin(arg);
@@ -114,40 +114,40 @@ BOOST_AUTO_TEST_CASE(sinePiOverSix)
 
 BOOST_AUTO_TEST_CASE(sinePiOverThree)
 {
-    const Var arg(pi()/3);
+    const Var arg(pi() / 3);
     Var res;
 
     res = sin(arg);
 
-    BOOST_CHECK_EQUAL(tsym::sqrt(3)/2, res);
+    BOOST_CHECK_EQUAL(tsym::sqrt(3) / 2, res);
 }
 
 BOOST_AUTO_TEST_CASE(sineSevenPiOverFour)
-    /* An angle of 315°. */
+/* An angle of 315°. */
 {
-    const Var arg(7*pi()/4);
+    const Var arg(7 * pi() / 4);
     Var res;
 
     res = sin(arg);
 
-    BOOST_CHECK_EQUAL(-1/tsym::sqrt(2), res);
+    BOOST_CHECK_EQUAL(-1 / tsym::sqrt(2), res);
 }
 
 BOOST_AUTO_TEST_CASE(cosFivePiOverFour)
-    /* An angle of 225°. */
+/* An angle of 225°. */
 {
-    const Var arg(5*pi()/4);
+    const Var arg(5 * pi() / 4);
     Var res;
 
     res = cos(arg);
 
-    BOOST_CHECK_EQUAL(-1/tsym::sqrt(2), res);
+    BOOST_CHECK_EQUAL(-1 / tsym::sqrt(2), res);
 }
 
 BOOST_AUTO_TEST_CASE(tanTwoThirdPi)
-    /* An angle of 120°. */
+/* An angle of 120°. */
 {
-    const Var arg(2*pi()/3);
+    const Var arg(2 * pi() / 3);
     Var res;
 
     res = tan(arg);
@@ -161,33 +161,33 @@ BOOST_AUTO_TEST_CASE(asinHalf)
 
     res = asin(half);
 
-    BOOST_CHECK_EQUAL(pi()/6, res);
+    BOOST_CHECK_EQUAL(pi() / 6, res);
 }
 
 BOOST_AUTO_TEST_CASE(acosMinusOneOverSqrtTwo)
 {
-    const Var arg(-1/tsym::sqrt(2));
+    const Var arg(-1 / tsym::sqrt(2));
     Var res;
 
     res = acos(arg);
 
-    BOOST_CHECK_EQUAL(3*pi()/4, res);
+    BOOST_CHECK_EQUAL(3 * pi() / 4, res);
 }
 
 BOOST_AUTO_TEST_CASE(atanMinusOneOverSqrtThree)
 {
-    const Var arg(-1/tsym::sqrt(3));
+    const Var arg(-1 / tsym::sqrt(3));
     Var res;
 
     res = atan(arg);
 
-    BOOST_CHECK_EQUAL(-pi()/6, res);
+    BOOST_CHECK_EQUAL(-pi() / 6, res);
 }
 
 BOOST_AUTO_TEST_CASE(successfulParsing)
 {
     bool success;
-    const Var expected = a*b*tsym::sqrt(2)*tan(a);
+    const Var expected = a * b * tsym::sqrt(2) * tan(a);
     const Var result(parse("a*b*sqrt(2)*tan(a)", &success));
 
     BOOST_TEST(success);
@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE(successfulParsing)
 
 BOOST_AUTO_TEST_CASE(successfulParsingWithoutFlag)
 {
-    const Var expected = a*b + sin(a)*cos(b);
+    const Var expected = a * b + sin(a) * cos(b);
     const Var result(parse("a*b + sin(a)*cos(b)"));
 
     BOOST_CHECK_EQUAL(expected, result);
