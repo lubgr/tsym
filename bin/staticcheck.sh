@@ -49,9 +49,7 @@ fi
 
 echo ''
 
-fmtDiff=`mktemp`
-${FMTSCRIPT} 2>&1 | tee ${fmtDiff}
-test -s ${fmtDiff} && EXIT=1
-rm -f ${fmtDiff}
+echo "Formatting diff with `clang-format --version`"
+${FMTSCRIPT}
 
 exit ${EXIT}
