@@ -56,7 +56,7 @@ elif [ "${MODE}" = "DEBUG" ]; then
     build "${COMPILER}"
     logFile=sanitizerLog
     ${TESTEXEC} -l all --color=no &> ${logFile} || EXIT=1
-    grep -E -C 5 'runtime *error|LeakSanitizer' ${logFile} && EXIT=1
+    grep --color=auto -E -C 5 'runtime *error|LeakSanitizer' ${logFile} && EXIT=1
     clean
 
     export CXXFLAGS="${commonCxxFLags}"

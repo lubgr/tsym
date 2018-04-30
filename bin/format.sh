@@ -23,7 +23,7 @@ tmpfile=`mktemp`
 
 for file in `ls $files`; do
     if [ -z "$inplace" ]; then
-        diff --color -u <(cat $file) <($CLANGFMT $file)
+        diff -u <(cat $file) <($CLANGFMT $file)
     else
         cp $file $tmpfile
         clang-format $inplace --style=file $file
