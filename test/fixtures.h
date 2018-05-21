@@ -40,7 +40,7 @@ namespace tsym {
         virtual ~TestSuiteLoggingFixture();
     };
 
-    inline auto noLogs() -> decltype(*boost::unit_test::fixture<TestSuiteLoggingFixture>(true))
+    inline decltype(auto) noLogs()
     {
         return *boost::unit_test::fixture<TestSuiteLoggingFixture>(true);
     }
