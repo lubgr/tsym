@@ -17,7 +17,7 @@ install:
   - sudo apt-get autoremove -y
   - sudo apt-get -qq update
   - export CMAKEVER=3.11.2
-  - wget -q0- https://cmake.org/files/v${CMAKEVER/%.[0-9]/}/cmake-${CMAKEVER/%.[0-9]/}-Linux-x86_64.tar.gz | tar xz
+  - wget -qO- https://cmake.org/files/v${CMAKEVER/%.[0-9]/}/cmake-${CMAKEVER/%.[0-9]/}-Linux-x86_64.tar.gz | tar xz
   - export CMAKE=${PWD}/cmake-${CMAKEVER}-Linux-x86_64/bin/cmake
   - export BOOSTVER=1_67_0
   - export BOOSTDIR="${PWD}/boost_${BOOSTVER}"
