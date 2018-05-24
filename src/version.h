@@ -1,7 +1,0 @@
-#ifndef TSYM_VERSION_H
-#define TSYM_VERSION_H
-
-#define TSYM_VERSION_MAJOR 0
-#define TSYM_VERSION_MINOR 2
-
-#endif

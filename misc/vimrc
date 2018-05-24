@@ -14,7 +14,7 @@ autocmd BufRead,BufReadPost README.md set spell spelllang=en_us
 
 call add(g:UltiSnipsSnippetDirectories, getcwd() . '/misc')
 
-set path=bin/**,misc/**,src/**,test/**
+set path=bin/**,misc/**,src/**,include/**,test/**
 
 function! GetTestEntityName(pattern)
     let l:nLine = line('.')

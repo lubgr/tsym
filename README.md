@@ -25,19 +25,28 @@ series expansion.
 
 Installation
 ------------
-To compile tsym, you need [boost](https://boost.org) and a C++ compiler recent enough to support
-C++14 and (GNU-)[make](https://www.gnu.org/software/make/). For unit tests, the boost test framework
-is used, which must be available to the linker as a static library. tsym should build on all major
-Linux distributions by e.g.
+To compile tsym, you need the [boost](https://boost.org) headers (version 1.65 or more recent) and a
+C++ compiler recent enough to support C++14 and [cmake](https://cmake.org). For unit tests, the
+boost test framework is used, and the appropriate static library must be available to the linker
+(pass `-D BUILD_TESTING=OFF` to exclude unit tests from the configuration). tsym should build on
+Linux platforms by e.g.
 ```bash
-make CXXFLAGS="-march=native -O2" lib
+mkdir build && cd build
+cmake ..
+make
 ```
-where the flag specifications are of course optional. All standard variables will be recognized
-(`LIBS`, `LDFLAGS`, `CXX`, `DESTDIR`... see the top of the makefile for all variables) and can be
-saved in a `makefile.in`. To install header files and the shared library:
+where cmake options should be specified as needed
+([CMAKE_BUILD_TYPE](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html),
+[BUILD_TESTING](https://cmake.org/cmake/help/latest/module/CTest.html),
+[BUILD_SHARED_LIBS](https://cmake.org/cmake/help/latest/variable/BUILD_SHARED_LIBS.html),
+[BOOST_ROOT](https://cmake.org/cmake/help/latest/module/FindBoost.html),
+[CMAKE_INSTALL_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html)
+etc.). To install header files, the library and cmake
+[configuration files](https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#config-file-packages):
 ```bash
-make install PREFIX=/usr/local
+make install
 ```
+With a different build tool (on Windows etc.), replace the `make` commands accordingly.
 
 Usage
 -----
