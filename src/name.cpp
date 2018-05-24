@@ -1,6 +1,7 @@
 
 #include "name.h"
 #include <cctype>
+#include <ostream>
 
 tsym::Name::Name(const std::string& name)
     : name(name)

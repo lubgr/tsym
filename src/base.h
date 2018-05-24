@@ -2,6 +2,7 @@
 #define TSYM_BASE_H
 
 #include <memory>
+#include <string>
 #include "baseptrlist.h"
 
 namespace tsym {
