@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.8)
 project(tsym VERSION 0.2.0 DESCRIPTION "Tiny symbolic library" LANGUAGES CXX)
 
 option(BUILD_SHARED_LIBS "Build as shared library" ON)

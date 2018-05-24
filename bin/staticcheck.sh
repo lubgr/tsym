@@ -6,7 +6,7 @@ OCLINT=oclint
 FMTSCRIPT=./bin/format.sh
 CONFIGDIR=misc
 
-INCLUDE="-I src -I test"
+INCLUDE="-I src -I include/tsym -I test"
 SRC="src/ test/"
 
 EXIT=0

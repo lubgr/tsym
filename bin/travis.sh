@@ -10,7 +10,7 @@ build() {
 
     mkdir -p "${buildDir}"
     cd "${buildDir}"
-    cmake \
+    ${CMAKE} \
         -D CMAKE_CXX_COMPILER="${CXX}"\
         -D CMAKE_CXX_FLAGS="${CXXFLAGS}"\
         -D CMAKE_EXE_LINKER_FLAGS="${LDFLAGS}"\
@@ -55,7 +55,7 @@ elif [ "${MODE}" = "DEBUG" ]; then
     CMAKE_BUILD_TYPE="Debug"
 
     CXXFLAGS="-fsanitize=address,undefined,integer-divide-by-zero,float-divide-by-zero,float-cast-overflow,return -fno-omit-frame-pointer"
-    LDFLAGS="-lasan -lubsan"
+    LDFLAGS="-fsanitize=address,undefined -fuse-ld=gold"
     build "${COMPILER}"
     logFile=sanitizerLog
     ${TESTEXEC} -l all --color=no &> ${logFile} || EXIT=1
