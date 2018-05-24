@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE(failingFractionToIntegerCast)
 {
     const Var fraction(2, 3);
 
-    BOOST_CHECK_THROW(static_cast<int>(fraction), std::domain_error);
+    BOOST_CHECK_THROW((void) static_cast<int>(fraction), std::domain_error);
 }
 
 BOOST_AUTO_TEST_CASE(failingCastOfTwiceMaxIntToPrimitiveInt)
@@ -165,18 +165,18 @@ BOOST_AUTO_TEST_CASE(failingCastOfTwiceMaxIntToPrimitiveInt)
 
     n *= 2;
 
-    BOOST_CHECK_THROW(static_cast<int>(n), std::overflow_error);
+    BOOST_CHECK_THROW((void) static_cast<int>(n), std::overflow_error);
 }
 
 BOOST_AUTO_TEST_CASE(failingCastOfBigIntToPrimitiveInt)
 {
     BOOST_CHECK_THROW(
-      static_cast<int>(Var("2384729384609865192859238659823659287589273985723029348")), std::overflow_error);
+      (void) static_cast<int>(Var("2384729384609865192859238659823659287589273985723029348")), std::overflow_error);
 }
 
 BOOST_AUTO_TEST_CASE(illegalNumberRequestSymbol)
 {
-    BOOST_CHECK_THROW(static_cast<int>(a), std::domain_error);
+    BOOST_CHECK_THROW((void) static_cast<int>(a), std::domain_error);
 }
 
 BOOST_AUTO_TEST_CASE(toDouble)
@@ -188,7 +188,7 @@ BOOST_AUTO_TEST_CASE(toDouble)
 
 BOOST_AUTO_TEST_CASE(toDoubleNonNumeric)
 {
-    BOOST_CHECK_THROW(static_cast<double>(a), std::domain_error);
+    BOOST_CHECK_THROW((void) static_cast<double>(a), std::domain_error);
 }
 
 BOOST_AUTO_TEST_CASE(powerType)
