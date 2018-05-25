@@ -1,5 +1,5 @@
 bin
-build
+build*
 .gdb*
 *.swp
 .tags
@@ -7,4 +7,3 @@ build
 !.clang-format
 .ackrc
 .vimrc
-[Mm]akefile.in
