@@ -1,27 +1,24 @@
 #!/usr/bin/env bash
 
-TESTEXEC="${PWD}/tests"
-CMAKE_BUILD_TYPE="Release"
+TESTEXEC="./test/tests"
 EXIT=0
+
+buildDir() {
+    buildDir="build-$1"
+    mkdir -p "${buildDir}"
+    pushd "${buildDir}"
+}
 
 build() {
     CXX=$1
-    buildDir="build-${MODE}-${CXX}"
 
-    mkdir -p "${buildDir}"
-    cd "${buildDir}"
     ${CMAKE} \
         -D CMAKE_CXX_COMPILER="${CXX}"\
-        -D CMAKE_CXX_FLAGS="${CXXFLAGS}"\
-        -D CMAKE_EXE_LINKER_FLAGS="${LDFLAGS}"\
         -D CMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"\
         -D BOOST_ROOT="${BOOSTDIR}"\
         ..
     make tsym tests
     SUCCESS=$?
-
-    cp "test/tests" ${TESTEXEC}
-    cd -
 
     return ${SUCCESS}
 }
@@ -35,36 +32,43 @@ buildAndTest() {
     return ${SUCCESS}
 }
 
+
 if [ "${MODE}" = "RELEASE" ]; then
+    CMAKE_BUILD_TYPE="Release"
     for compiler in ${COMPILER}; do
+        buildDir "release-${compiler}"
         buildAndTest "${compiler}" || EXIT=1
+        popd
     done
 elif [ "${MODE}" = "PROFILING" ]; then
-    export PROFILE="--coverage"
-
+    CMAKE_BUILD_TYPE="Coverage"
+    buildDir "coverage-${COMPILER}"
     buildAndTest "${COMPILER}" || EXIT=1
-    lcov -c -d . -o coverage.info || EXIT=1
-    lcov --remove coverage.info '*/include/*' '*/boost/*' -o filtered.info
+    lcov -c -d src -o coverage.info || EXIT=1
+    lcov --remove coverage.info '*usr/include/*' '*/boost/*' -o filtered.info
     test -f filtered.info && coveralls-lcov filtered.info
+    popd
 
-    CXXFLAGS="-pg"
-    LDFLAGS="-pg"
+    CMAKE_BUILD_TYPE="Profile"
+    buildDir "profile-${COMPILER}"
     buildAndTest "${COMPILER}" || EXIT=1
     gprof "${TESTEXEC}" gmon.out | head -n 100
+    popd
 elif [ "${MODE}" = "DEBUG" ]; then
-    CMAKE_BUILD_TYPE="Debug"
+    TODO CMAKE_BUILD_TYPE=Sanitizer
 
-    CXXFLAGS="-fsanitize=address,undefined,integer-divide-by-zero,float-divide-by-zero,float-cast-overflow,return -fno-omit-frame-pointer"
-    LDFLAGS="-fsanitize=address,undefined -fuse-ld=gold"
+    buildDir "debug-sanitizer-${COMPILIER}"
     build "${COMPILER}"
     logFile=sanitizerLog
     ${TESTEXEC} -l all --color=no &> ${logFile} || EXIT=1
     grep --color=auto -E -C 5 'runtime *error|LeakSanitizer' ${logFile} && EXIT=1
+    popd
 
-    unset CXXFLAGS
-    unset LIBS
+    TODO CMAKE_BUILD_TYPE=Debug
+    buildDir "debug-valgrind-${COMPILIER}"
     build "${COMPILER}"
     valgrind --error-exitcode=1 --leak-check=full "${TESTEXEC}" || EXIT=1
+    popd
 elif [ "${MODE}" = "ANALYSIS" ]; then
     ./bin/staticcheck.sh || EXIT=1
 fi

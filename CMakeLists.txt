@@ -5,6 +5,9 @@ project(tsym VERSION 0.2.0 DESCRIPTION "Tiny symbolic library" LANGUAGES CXX)
 option(BUILD_SHARED_LIBS "Build as shared library" ON)
 option(BUILD_TESTING "Compile unit tests" ON)
 
+SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
+    "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Coverage Profile Sanitizer." FORCE)
+
 set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost 1.65 REQUIRED OPTIONAL_COMPONENTS unit_test_framework)
 
@@ -32,8 +35,16 @@ target_compile_features(tsym-internal-config
 target_compile_options(tsym-internal-config
     INTERFACE
     $<$<OR:$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
-    -Wall -Wextra -pedantic -Wconversion -Wsign-conversion>)
+    -Wall -Wextra -pedantic -Wconversion -Wsign-conversion -Wsign-compare -Wold-style-cast>
+    $<$<CONFIG:PROFILE>:-pg>
+    $<$<CONFIG:COVERAGE>:--coverage>
+    $<$<CONFIG:SANITIZER>:-fsanitize=address,undefined,integer-divide-by-zero,float-divide-by-zero,float-cast-overflow,return -fno-omit-frame-pointer>)
 
+target_link_libraries(tsym-internal-config
+    INTERFACE
+    $<$<CONFIG:COVERAGE>:--coverage>
+    $<$<CONFIG:PROFILE>:-pg>
+    $<$<CONFIG:SANITIZER>:asan ubsan>)
 add_subdirectory(include)
 add_subdirectory(src)
 
