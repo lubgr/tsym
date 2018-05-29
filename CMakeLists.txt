@@ -28,10 +28,6 @@ target_include_directories(tsym-internal-config
     INTERFACE
     ${Boost_INCLUDE_DIRS})
 
-target_compile_features(tsym-internal-config
-    INTERFACE
-    cxx_std_14)
-
 target_compile_options(tsym-internal-config
     INTERFACE
     $<$<OR:$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
