@@ -67,11 +67,14 @@ target_compile_features(tsym
     PUBLIC
     cxx_std_14)
 
+target_include_directories(tsym
+    INTERFACE
+    $<BUILD_INTERFACE:${tsym_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:${tsym_installIncludeDir}>)
+
 add_library(tsym::tsym ALIAS tsym)
 
 install(TARGETS tsym
     EXPORT tsym-targets
     LIBRARY DESTINATION ${tsym_installLibDir} COMPONENT lib
-    ARCHIVE DESTINATION ${tsym_installLibDir} COMPONENT lib
-    INCLUDES
-    DESTINATION $<BUILD_INTERFACE:${tsym_SOURCE_DIR}/include> $<INSTALL_INTERFACE:${tsym_installIncludeDir}> COMPONENT development})
+    ARCHIVE DESTINATION ${tsym_installLibDir} COMPONENT lib)
