@@ -2,6 +2,7 @@
 #include "productsimpl.h"
 #include <boost/functional/hash.hpp>
 #include <cassert>
+#include <numeric>
 #include "bplist.h"
 #include "cache.h"
 #include "logging.h"
@@ -548,6 +549,7 @@ namespace tsym {
          * the factor list to contract it with another integer). */
         {
             u.sort(order::doPermute);
+
             contractNumerics(u);
             contractConst(u);
 
@@ -557,18 +559,13 @@ namespace tsym {
 
         void contractNumerics(BasePtrList& u)
         {
-            auto it = begin(u);
-            Number n(1);
+            const auto result = std::accumulate(cbegin(u), cend(u), Number{1},
+              [](const auto& n, const auto& factor) { return factor->isNumeric() ? n * factor->numericEval() : n; });
 
-            while (it != end(u))
-                if ((*it)->isNumeric()) {
-                    n *= (*it)->numericEval();
-                    it = u.erase(it);
-                } else
-                    ++it;
+            u.remove_if([](const auto& factor) { return factor->isNumeric(); });
 
-            if (!n.isOne() || u.empty())
-                u.push_front(Numeric::create(n));
+            if (result != 1 || u.empty())
+                u.push_front(Numeric::create(result));
         }
 
         void contractConst(BasePtrList& u)
