@@ -1,22 +1,35 @@
 #!/usr/bin/env bash
 
-TARGETDIR=build/coverage
-INDEX=${TARGETDIR}/index.html
-
-if [ -z "`find . -iname '*.gcda' -or -iname '*.gcno' 2> /dev/null`" ]; then
-    echo "No gcov files found (*.gcda, *.gcno)!"
+if [[ $# -ne 2 || ! -d $1 ]]; then
+    echo "Usage: $0 [coverage-build-directory] [gcov-executable]"
     exit 1
 fi
 
-if ! which gcovr &> /dev/null; then
-    echo "gcovr not found in \$PATH!"
+DIR="$1"
+GCOV="$2"
+
+if [ -z "`find "${DIR}" -iname '*.gcda' -or -iname '*.gcno' 2> /dev/null`" ]; then
+    echo "No gcov files found (*.gcda, *.gcno) in ${DIR}!"
     exit 1
 fi
 
-test -d $TARGETDIR || mkdir -p ${TARGETDIR}
+if ! which lcov &> /dev/null; then
+    echo "lcov not found in \$PATH!"
+    exit 1
+fi
 
-rm -f ${TARGETDIR}/*
+pushd "${DIR}"
 
-gcovr -r . --sort-percentage --html --html-details -o ${INDEX}
+HTMLDIR=coverage-html
+mkdir -p "${HTMLDIR}"
 
-echo "Test coverage statistics written to file://${PWD}/${INDEX}"
+rm -rf "${HTMLDIR}"/*
+
+lcov --gcov-tool "${GCOV}" -c -d src -o coverage.info || exit 1
+lcov --remove coverage.info '*/c++*' '*/include/*' '*boost/*' -o filtered.info
+genhtml -o "${HTMLDIR}" filtered.info
+
+popd
+
+echo "Test coverage statistics written to file://${PWD}/${DIR}/${HTMLDIR}/index.html"
+
