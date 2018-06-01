@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE(solveLinearSystemDim3a)
     BOOST_CHECK_EQUAL(b, x(2));
 }
 
-BOOST_AUTO_TEST_CASE(solveLinearSystemDim3b)
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim3b, *label("expensive"))
 {
     const BoostSizeType dim(3);
     BoostMatrix A(dim, dim);
@@ -186,7 +186,7 @@ BOOST_AUTO_TEST_CASE(solveLinearSystemDim4)
     BOOST_CHECK_EQUAL(1 - 2 * a * a + 3 * b / 2 + 3 * a * a * b / (2 * c) - 3 * b * b / (2 * c), x(3));
 }
 
-BOOST_AUTO_TEST_CASE(solveDependentLinearSystemDim4)
+BOOST_AUTO_TEST_CASE(solveDependentLinearSystemDim4, *label("expensive"))
 {
     const BoostSizeType dim(4);
     BoostMatrix A(dim, dim);
@@ -498,7 +498,7 @@ BOOST_AUTO_TEST_CASE(numericInverseDim3)
     BOOST_CHECK_EQUAL(expected, A);
 }
 
-BOOST_AUTO_TEST_CASE(inverseDim3)
+BOOST_AUTO_TEST_CASE(inverseDim3, *label("expensive"))
 {
     const unsigned dim = 3;
     std::vector<std::vector<Var>> A(dim);
@@ -532,7 +532,7 @@ BOOST_AUTO_TEST_CASE(trivialInverseDim5)
     BOOST_CHECK_EQUAL(copy, identity);
 }
 
-BOOST_AUTO_TEST_CASE(inverseDim15)
+BOOST_AUTO_TEST_CASE(inverseDim15, *label("expensive"))
 {
     const size_t size = 15;
     Var A[size][size] = {{9.29395026851320, 8.09033121585509, 5.14433525830085, 8.95249050693807, 6.96258322137449,

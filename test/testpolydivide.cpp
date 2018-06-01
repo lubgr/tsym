@@ -146,7 +146,7 @@ BOOST_AUTO_TEST_CASE(multipleVarsNoRemainder)
     BOOST_TEST(res.back()->isZero());
 }
 
-BOOST_AUTO_TEST_CASE(hugeExpandedPolynomials)
+BOOST_AUTO_TEST_CASE(hugeExpandedPolynomials, *label("expensive"))
 {
     const BasePtr p1 = Sum::create(Product::create(two, a), Product::create(b, c));
     const BasePtr p2 = Sum::create(Power::create(d, five), Power::create(e, four));

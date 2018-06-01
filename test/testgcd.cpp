@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE(rationalCoefficients)
     check(a, aThird, a);
 }
 
-BOOST_AUTO_TEST_CASE(simpleFractionCoefficients)
+BOOST_AUTO_TEST_CASE(simpleFractionCoefficients, *label("expensive"))
 /* Gcd(1/2*a^2*b*d - 1/3*a*c*d + 1/2*a^3*d^2, a*c*d - 2*a^3*d^2 + 2*a*b^7*d) = a*d. The results
  * given by GiNaC, Maxima or Mathematic differ in that they all give a*d/6. Thus, the division
  * of u or v by the gcd gives a polynomial with rational coefficients in our case, and one with
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE(simpleIntegerCoefficients)
     check(expected, u, v);
 }
 
-BOOST_AUTO_TEST_CASE(integerCoefficients)
+BOOST_AUTO_TEST_CASE(integerCoefficients, *label("expensive"))
 {
     const BasePtr cefg = Product::create(c, e, f, g);
     const BasePtr u1 = Product::create(Numeric::create(-464), a, b, e);
@@ -295,7 +295,7 @@ BOOST_AUTO_TEST_CASE(integerCoefficients)
     check(expected, u, v);
 }
 
-BOOST_AUTO_TEST_CASE(largeMultivarPolyCohenExample)
+BOOST_AUTO_TEST_CASE(largeMultivarPolyCohenExample, *label("expensive"))
 /* Example 6.63 in Cohen [2003]. */
 {
     const BasePtr aCubic = Power::create(a, three);
@@ -341,7 +341,7 @@ BOOST_AUTO_TEST_CASE(largeMultivarPolyCohenExample)
     check(expected, u, v);
 }
 
-BOOST_AUTO_TEST_CASE(largeMultivarPoly)
+BOOST_AUTO_TEST_CASE(largeMultivarPoly, *label("expensive"))
 {
     const BasePtr gcd = Sum::create(Numeric::create(14), Product::create(three, a, b, c));
     BasePtr aux[4];

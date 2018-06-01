@@ -11,4 +11,6 @@ namespace tsym {
     bool operator!=(const BasePtr& lhs, const BasePtr& rhs);
 }
 
+using boost::unit_test::label;
+
 #endif
