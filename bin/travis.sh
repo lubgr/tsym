@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-TESTEXEC="./test/tests"
+TESTEXEC="./unit-tests/tests"
 EXIT=0
 
 buildDir() {

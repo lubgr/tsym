@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-executables=`ls -1t build*/test/tests 2>/dev/null`
+executables=`ls -1t build*/unit-tests/tests 2>/dev/null`
 
 if [ -z "${executables}" ]; then
     echo "No unit test executable found"

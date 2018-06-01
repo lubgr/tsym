@@ -46,7 +46,7 @@ add_subdirectory(src)
 
 if(${BUILD_TESTING})
     enable_testing()
-    add_subdirectory(test)
+    add_subdirectory(unit-tests)
 endif()
 
 include(CMakePackageConfigHelpers)
