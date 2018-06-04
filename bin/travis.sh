@@ -70,7 +70,10 @@ elif [ "${MODE}" = "DEBUG" ]; then
     valgrind --error-exitcode=1 --leak-check=full "${TESTEXEC}" || EXIT=1
     popd
 elif [ "${MODE}" = "ANALYSIS" ]; then
-    ./bin/staticcheck.sh || EXIT=1
+    buildDir "compile-database-${COMPILER}"
+    build "${COMPILER}"
+    popd
+    ./bin/staticcheck.sh "${buildDir}/compile_commands.json" || EXIT=1
 fi
 
 exit ${EXIT}

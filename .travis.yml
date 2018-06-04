@@ -55,6 +55,7 @@ matrix:
           - COMPILER="g++-7"
 
     - env:
+          - COMPILER="g++-7"
           - MODE=ANALYSIS
 
 script:
