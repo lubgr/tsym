@@ -3,17 +3,17 @@
 
 constexpr int tsym::version::major()
 {
-    return @tsym_VERSION_MAJOR @;
+    return @tsym_VERSION_MAJOR@;
 }
 
 constexpr int tsym::version::minor()
 {
-    return @tsym_VERSION_MINOR @;
+    return @tsym_VERSION_MINOR@;
 }
 
 constexpr int tsym::version::patch()
 {
-    return @tsym_VERSION_PATCH @;
+    return @tsym_VERSION_PATCH@;
 }
 
 constexpr const char* tsym::version::compiler()
