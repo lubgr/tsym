@@ -6,9 +6,9 @@
 #include <initializer_list>
 #include "plu.h"
 
-typedef boost::numeric::ublas::matrix<tsym::Var> BoostMatrix;
-typedef boost::numeric::ublas::vector<tsym::Var> BoostVector;
-typedef BoostMatrix::size_type BoostSizeType;
+using BoostMatrix = boost::numeric::ublas::matrix<tsym::Var>;
+using BoostVector = boost::numeric::ublas::vector<tsym::Var>;
+using BoostSizeType = BoostMatrix::size_type;
 typedef tsym::plu::detail::MatrixAccessProxy<BoostMatrix, BoostSizeType> BoostMatrixProxy;
 typedef tsym::plu::detail::VectorAccessProxy<BoostVector, BoostSizeType> BoostVectorProxy;
 

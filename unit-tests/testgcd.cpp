@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE(integerCoefficientsLargerIntExp)
     const BasePtr u = Sum::create(Product::create(Numeric::create(56), Power::create(c, five), e),
       Product::create(Numeric::create(12), a, b, Product::create(Power::create(c, six), e)));
     const BasePtr v = Sum::create(Numeric::create(14), Product::create(three, a, b, c));
-    const BasePtr expected = v;
+    const BasePtr& expected = v;
 
     check(expected, u, v);
 }

@@ -9,7 +9,7 @@ struct GlobalFixture : public tsym::TestSuiteLoggingFixture {
         : tsym::TestSuiteLoggingFixture(false)
     {}
 
-    ~GlobalFixture()
+    ~GlobalFixture() override
     {
         tsym::cache::clearRegisteredCaches();
     }

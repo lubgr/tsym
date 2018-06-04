@@ -15,13 +15,15 @@ using namespace tsym;
 struct PolyInfoFixture : public AbcFixture {
     const BasePtr abSum = Sum::create(a, b);
     PolyInfo info{};
+};
 
+namespace {
     bool contains(const BasePtrList& symbolList, const BasePtr& symbol)
     {
         return std::any_of(
           cbegin(symbolList), cend(symbolList), [&symbol](const auto& item) { return item->isEqual(symbol); });
     }
-};
+}
 
 BOOST_FIXTURE_TEST_SUITE(TestPolyInfo, PolyInfoFixture)
 
@@ -140,8 +142,8 @@ BOOST_AUTO_TEST_CASE(symbolListMultipleSymbols)
 
     BOOST_CHECK_EQUAL(nSymbols, list.size());
 
-    for (size_t i = 0; i < nSymbols; ++i)
-        BOOST_TEST(contains(list, expected[i]));
+    for (const auto& symbol : expected)
+        BOOST_TEST(contains(list, symbol));
 }
 
 BOOST_AUTO_TEST_CASE(simpleMainSymbol01)
