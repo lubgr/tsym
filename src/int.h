@@ -4,7 +4,7 @@
 #include "integer.h"
 
 namespace tsym {
-    typedef integer::Type Int;
+    using Int = integer::Type;
 }
 
 #endif

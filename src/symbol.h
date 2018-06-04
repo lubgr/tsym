@@ -15,27 +15,27 @@ namespace tsym {
         static BasePtr createPositive(const Name& name);
         static BasePtr createTmpSymbol(bool positive = false);
 
-        Symbol(const Name& name, bool positive, Base::CtorKey&&);
+        Symbol(Name name, bool positive, Base::CtorKey&&);
         Symbol(unsigned tmpId, bool positive, Base::CtorKey&&);
         Symbol(const Symbol&) = delete;
         Symbol& operator=(const Symbol&) = delete;
         Symbol(Symbol&&) = delete;
         Symbol& operator=(Symbol&&) = delete;
-        ~Symbol();
+        ~Symbol() override;
 
-        bool isEqualDifferentBase(const BasePtr& other) const;
-        bool sameType(const BasePtr& other) const;
-        Number numericEval() const;
-        Fraction normal(SymbolMap&) const;
-        BasePtr diffWrtSymbol(const BasePtr& symbol) const;
-        std::string typeStr() const;
-        bool isPositive() const;
-        bool isNegative() const;
-        unsigned complexity() const;
-        size_t hash() const;
+        bool isEqualDifferentBase(const BasePtr& other) const override;
+        bool sameType(const BasePtr& other) const override;
+        Number numericEval() const override;
+        Fraction normal(SymbolMap&) const override;
+        BasePtr diffWrtSymbol(const BasePtr& symbol) const override;
+        std::string typeStr() const override;
+        bool isPositive() const override;
+        bool isNegative() const override;
+        unsigned complexity() const override;
+        size_t hash() const override;
 
-        bool isSymbol() const;
-        const Name& name() const;
+        bool isSymbol() const override;
+        const Name& name() const override;
 
       private:
         static BasePtr create(const Name& name, bool positive);

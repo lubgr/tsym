@@ -13,7 +13,7 @@ namespace tsym {
       public:
         enum class CharSet { ASCII, UNICODE };
 
-        PlaintextPrintEngine(std::ostream& out, CharSet charset = CharSet::UNICODE);
+        explicit PlaintextPrintEngine(std::ostream& out, CharSet charset = CharSet::UNICODE);
         PlaintextPrintEngine(const PlaintextPrintEngine& other) = delete;
         PlaintextPrintEngine& operator=(const PlaintextPrintEngine& rhs) = delete;
         PlaintextPrintEngine(PlaintextPrintEngine&& other) = default;

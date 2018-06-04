@@ -200,7 +200,7 @@ std::vector<tsym::Var> tsym::operands(const Var& arg)
     std::vector<Var> ops;
 
     for (const auto& operand : arg.get()->operands())
-        ops.push_back(Var{operand});
+        ops.emplace_back(operand);
 
     return ops;
 }

@@ -1,6 +1,7 @@
 
 #include "base.h"
 #include <sstream>
+#include <utility>
 #include "baseptr.h"
 #include "bplist.h"
 #include "cache.h"
@@ -14,8 +15,8 @@
 #include "symbolmap.h"
 #include "undefined.h"
 
-tsym::Base::Base(const BasePtrList& operands)
-    : ops(operands)
+tsym::Base::Base(BasePtrList operands)
+    : ops(std::move(operands))
 {}
 
 bool tsym::Base::isZero() const
@@ -205,7 +206,7 @@ tsym::BasePtr tsym::Base::normalViaCache() const
     if (lookup != cend(map))
         return lookup->second;
 
-    return map.insert({std::move(key), normalWithoutCache()})->second;
+    return map.insert({key, normalWithoutCache()})->second;
 }
 
 tsym::BasePtr tsym::Base::normalWithoutCache() const

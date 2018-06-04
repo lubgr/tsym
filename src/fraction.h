@@ -11,8 +11,8 @@ namespace tsym {
          * numerator only is provided - the denominator is set to 1. */
       public:
         Fraction();
-        explicit Fraction(const BasePtr& numerator);
-        Fraction(const BasePtr& numerator, const BasePtr& denominator);
+        explicit Fraction(BasePtr numerator);
+        Fraction(BasePtr numerator, BasePtr denominator);
 
         BasePtr eval() const; /* Divides numerator by denominator. */
         Fraction invert() const;

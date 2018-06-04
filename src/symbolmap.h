@@ -20,7 +20,7 @@ namespace tsym {
         ~SymbolMap() = default;
 
         const BasePtr& getTmpSymbolAndStore(const BasePtr& ptr);
-        BasePtr replaceTmpSymbolsBackFrom(const BasePtr& ptr) const;
+        BasePtr replaceTmpSymbolsBackFrom(const BasePtr& orig) const;
 
       private:
         std::unordered_map<BasePtr, BasePtr> rep;

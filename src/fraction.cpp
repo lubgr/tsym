@@ -1,5 +1,7 @@
 
 #include "fraction.h"
+
+#include <utility>
 #include "logging.h"
 #include "numeric.h"
 #include "poly.h"
@@ -12,14 +14,14 @@ tsym::Fraction::Fraction()
     , denominator(Numeric::one())
 {}
 
-tsym::Fraction::Fraction(const BasePtr& numerator)
-    : numerator(numerator)
+tsym::Fraction::Fraction(BasePtr numerator)
+    : numerator(std::move(numerator))
     , denominator(Numeric::one())
 {}
 
-tsym::Fraction::Fraction(const BasePtr& numerator, const BasePtr& denominator)
-    : numerator(numerator)
-    , denominator(denominator)
+tsym::Fraction::Fraction(BasePtr numerator, BasePtr denominator)
+    : numerator(std::move(numerator))
+    , denominator(std::move(denominator))
 {}
 
 tsym::BasePtr tsym::Fraction::eval() const

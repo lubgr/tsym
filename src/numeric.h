@@ -19,7 +19,7 @@ namespace tsym {
         Numeric& operator=(const Numeric&) = delete;
         Numeric(Numeric&&) = delete;
         Numeric& operator=(Numeric&&) = delete;
-        ~Numeric() = default;
+        ~Numeric() override = default;
 
         /* Shortcuts for frequently used constant numbers. */
         static const BasePtr& zero();
@@ -32,28 +32,28 @@ namespace tsym {
         static const BasePtr& fourth();
         static const BasePtr& mOne();
 
-        bool isEqualDifferentBase(const BasePtr& other) const;
-        bool sameType(const BasePtr& other) const;
-        Number numericEval() const;
-        Fraction normal(SymbolMap& map) const;
-        BasePtr diffWrtSymbol(const BasePtr& symbol) const;
-        std::string typeStr() const;
-        bool isPositive() const;
-        bool isNegative() const;
-        unsigned complexity() const;
-        size_t hash() const;
+        bool isEqualDifferentBase(const BasePtr& other) const override;
+        bool sameType(const BasePtr& other) const override;
+        Number numericEval() const override;
+        Fraction normal(SymbolMap& map) const override;
+        BasePtr diffWrtSymbol(const BasePtr& symbol) const override;
+        std::string typeStr() const override;
+        bool isPositive() const override;
+        bool isNegative() const override;
+        unsigned complexity() const override;
+        size_t hash() const override;
 
-        bool isNumericallyEvaluable() const;
-        bool isNumeric() const;
-        bool isZero() const;
-        bool isOne() const;
-        bool isConst() const;
-        BasePtr numericTerm() const;
-        BasePtr nonNumericTerm() const;
-        BasePtr constTerm() const;
-        BasePtr nonConstTerm() const;
-        BasePtr coeff(const BasePtr& variable, int exp) const;
-        int degree(const BasePtr& variable) const;
+        bool isNumericallyEvaluable() const override;
+        bool isNumeric() const override;
+        bool isZero() const override;
+        bool isOne() const override;
+        bool isConst() const override;
+        BasePtr numericTerm() const override;
+        BasePtr nonNumericTerm() const override;
+        BasePtr constTerm() const override;
+        BasePtr nonConstTerm() const override;
+        BasePtr coeff(const BasePtr& variable, int exp) const override;
+        int degree(const BasePtr& variable) const override;
 
       private:
         const Number number;

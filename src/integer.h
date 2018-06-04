@@ -7,7 +7,7 @@
 
 namespace tsym {
     namespace integer {
-        typedef boost::multiprecision::cpp_int Type;
+        using Type = boost::multiprecision::cpp_int;
 
         using boost::multiprecision::abs;
         using boost::multiprecision::gcd;

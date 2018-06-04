@@ -74,7 +74,7 @@ size_t tsym::Name::greekAlphabetIndex() const
     static const size_t nLetters = sizeof(alphabet) / sizeof(alphabet[0]);
 
     for (size_t i = 0; i < nLetters; ++i)
-        if (name.substr(1).compare(alphabet[i].substr(1)) != 0)
+        if (name.substr(1) != alphabet[i].substr(1))
             continue;
         else if (alphabet[i][0] == name[0] || alphabet[i][0] == static_cast<char>(std::tolower(name[0])))
             return i;

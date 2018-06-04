@@ -21,22 +21,22 @@ namespace tsym {
         Constant& operator=(const Constant&) = delete;
         Constant(Constant&&) = delete;
         Constant& operator=(Constant&&) = delete;
-        ~Constant() = default;
+        ~Constant() override = default;
 
-        bool isEqualDifferentBase(const BasePtr& other) const;
-        bool sameType(const BasePtr& other) const;
-        Number numericEval() const;
-        Fraction normal(SymbolMap& map) const;
-        BasePtr diffWrtSymbol(const BasePtr& symbol) const;
-        std::string typeStr() const;
-        bool isPositive() const;
-        bool isNegative() const;
-        unsigned complexity() const;
-        size_t hash() const;
+        bool isEqualDifferentBase(const BasePtr& other) const override;
+        bool sameType(const BasePtr& other) const override;
+        Number numericEval() const override;
+        Fraction normal(SymbolMap& map) const override;
+        BasePtr diffWrtSymbol(const BasePtr& symbol) const override;
+        std::string typeStr() const override;
+        bool isPositive() const override;
+        bool isNegative() const override;
+        unsigned complexity() const override;
+        size_t hash() const override;
 
-        bool isNumericallyEvaluable() const;
-        bool isConstant() const;
-        const Name& name() const;
+        bool isNumericallyEvaluable() const override;
+        bool isConstant() const override;
+        const Name& name() const override;
 
       private:
         static BasePtr create(Type type, Name&& name);

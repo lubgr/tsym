@@ -88,7 +88,7 @@ namespace tsym {
 
       protected:
         Base() = default;
-        explicit Base(const BasePtrList& operands);
+        explicit Base(BasePtrList operands);
 
         const BasePtrList ops{};
 

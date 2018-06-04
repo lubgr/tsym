@@ -5,7 +5,7 @@
 #include "baseptr.h"
 
 namespace tsym {
-    typedef std::list<BasePtr> BasePtrList;
+    using BasePtrList = std::list<BasePtr>;
 
     std::ostream& operator<<(std::ostream& stream, const BasePtrList& items);
 }

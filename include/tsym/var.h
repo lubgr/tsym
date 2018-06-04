@@ -50,7 +50,7 @@ namespace tsym {
 
       public:
         /* To be used internally: */
-        typedef std::shared_ptr<const Base> BasePtr;
+        using BasePtr = std::shared_ptr<const Base>;
         explicit Var(const BasePtr& ptr);
         explicit Var(BasePtr&& ptr);
         const BasePtr& get() const;

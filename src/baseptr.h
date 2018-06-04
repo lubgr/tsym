@@ -6,7 +6,7 @@
 
 namespace tsym {
     class Base;
-    typedef std::shared_ptr<const Base> BasePtr;
+    using BasePtr = std::shared_ptr<const Base>;
 
     /* Necessary to ensure that boosts hash specialisations for e.g. standard containers work as
      * expected: The hash is implemented in terms of the pointee, not the pointer itself. This can

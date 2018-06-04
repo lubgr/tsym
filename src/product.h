@@ -20,28 +20,28 @@ namespace tsym {
         Product& operator=(const Product&) = delete;
         Product(Product&&) = delete;
         Product& operator=(Product&&) = delete;
-        ~Product() = default;
+        ~Product() override = default;
 
-        bool isEqualDifferentBase(const BasePtr& other) const;
-        bool sameType(const BasePtr& other) const;
-        Number numericEval() const;
-        Fraction normal(SymbolMap& map) const;
-        BasePtr diffWrtSymbol(const BasePtr& symbol) const;
-        std::string typeStr() const;
-        bool isPositive() const;
-        bool isNegative() const;
-        unsigned complexity() const;
-        size_t hash() const;
+        bool isEqualDifferentBase(const BasePtr& other) const override;
+        bool sameType(const BasePtr& other) const override;
+        Number numericEval() const override;
+        Fraction normal(SymbolMap& map) const override;
+        BasePtr diffWrtSymbol(const BasePtr& symbol) const override;
+        std::string typeStr() const override;
+        bool isPositive() const override;
+        bool isNegative() const override;
+        unsigned complexity() const override;
+        size_t hash() const override;
 
-        bool isProduct() const;
-        BasePtr numericTerm() const;
-        BasePtr nonNumericTerm() const;
-        BasePtr constTerm() const;
-        BasePtr nonConstTerm() const;
-        BasePtr expand() const;
-        BasePtr subst(const BasePtr& from, const BasePtr& to) const;
-        BasePtr coeff(const BasePtr& variable, int exp) const;
-        int degree(const BasePtr& variable) const;
+        bool isProduct() const override;
+        BasePtr numericTerm() const override;
+        BasePtr nonNumericTerm() const override;
+        BasePtr constTerm() const override;
+        BasePtr nonConstTerm() const override;
+        BasePtr expand() const override;
+        BasePtr subst(const BasePtr& from, const BasePtr& to) const override;
+        BasePtr coeff(const BasePtr& variable, int exp) const override;
+        int degree(const BasePtr& variable) const override;
 
       private:
         static BasePtr createSimplifiedProduct(const BasePtrList& factors);

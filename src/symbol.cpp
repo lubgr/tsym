@@ -2,6 +2,7 @@
 #include "symbol.h"
 #include <boost/functional/hash.hpp>
 #include <unordered_map>
+#include <utility>
 #include "cache.h"
 #include "fraction.h"
 #include "logging.h"
@@ -10,8 +11,8 @@
 
 unsigned tsym::Symbol::tmpCounter = 0;
 
-tsym::Symbol::Symbol(const Name& name, bool positive, Base::CtorKey&&)
-    : symbolName(name)
+tsym::Symbol::Symbol(Name name, bool positive, Base::CtorKey&&)
+    : symbolName(std::move(name))
     , positive(positive)
 {
     setDebugString();

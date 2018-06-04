@@ -17,24 +17,24 @@ namespace tsym {
         Sum& operator=(const Sum&) = delete;
         Sum(Sum&&) = delete;
         Sum& operator=(Sum&&) = delete;
-        ~Sum() = default;
+        ~Sum() override = default;
 
-        bool isEqualDifferentBase(const BasePtr& other) const;
-        bool sameType(const BasePtr& other) const;
-        Number numericEval() const;
-        Fraction normal(SymbolMap& map) const;
-        BasePtr diffWrtSymbol(const BasePtr& symbol) const;
-        std::string typeStr() const;
-        bool isPositive() const;
-        bool isNegative() const;
-        unsigned complexity() const;
-        size_t hash() const;
+        bool isEqualDifferentBase(const BasePtr& other) const override;
+        bool sameType(const BasePtr& other) const override;
+        Number numericEval() const override;
+        Fraction normal(SymbolMap& map) const override;
+        BasePtr diffWrtSymbol(const BasePtr& symbol) const override;
+        std::string typeStr() const override;
+        bool isPositive() const override;
+        bool isNegative() const override;
+        unsigned complexity() const override;
+        size_t hash() const override;
 
-        bool isSum() const;
-        BasePtr expand() const;
-        BasePtr subst(const BasePtr& from, const BasePtr& to) const;
-        BasePtr coeff(const BasePtr& variable, int exp) const;
-        int degree(const BasePtr& variable) const;
+        bool isSum() const override;
+        BasePtr expand() const override;
+        BasePtr subst(const BasePtr& from, const BasePtr& to) const override;
+        BasePtr coeff(const BasePtr& variable, int exp) const override;
+        int degree(const BasePtr& variable) const override;
 
       private:
         static BasePtr createSimplifiedSum(const BasePtrList& summands);

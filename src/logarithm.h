@@ -14,15 +14,15 @@ namespace tsym {
         Logarithm& operator=(const Logarithm&) = delete;
         Logarithm(Logarithm&&) = delete;
         Logarithm& operator=(Logarithm&&) = delete;
-        ~Logarithm() = default;
+        ~Logarithm() override = default;
 
-        Number numericEval() const;
-        Fraction normal(SymbolMap& map) const;
-        BasePtr diffWrtSymbol(const BasePtr& symbol) const;
-        BasePtr subst(const BasePtr& from, const BasePtr& to) const;
-        bool isPositive() const;
-        bool isNegative() const;
-        unsigned complexity() const;
+        Number numericEval() const override;
+        Fraction normal(SymbolMap& map) const override;
+        BasePtr diffWrtSymbol(const BasePtr& symbol) const override;
+        BasePtr subst(const BasePtr& from, const BasePtr& to) const override;
+        bool isPositive() const override;
+        bool isNegative() const override;
+        unsigned complexity() const override;
 
       private:
         static bool isInvalidArg(const BasePtr& arg);
