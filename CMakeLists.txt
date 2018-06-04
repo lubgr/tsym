@@ -27,7 +27,7 @@ target_compile_definitions(tsym-internal-config
 target_include_directories(tsym-internal-config
     SYSTEM
     INTERFACE
-    ${Boost_INCLUDE_DIRS})
+    $<BUILD_INTERFACE:${Boost_INCLUDE_DIRS}>)
 
 target_compile_options(tsym-internal-config
     INTERFACE
@@ -62,3 +62,8 @@ install(EXPORT tsym-targets
     FILE tsymTargets.cmake
     NAMESPACE tsym::
     DESTINATION ${tsym_installLibDir}/cmake/tsym)
+
+if(NOT ${BUILD_SHARED_LIBS})
+    install(TARGETS tsym-internal-config
+        EXPORT tsym-targets)
+endif()
