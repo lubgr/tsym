@@ -109,12 +109,37 @@ tsym::Number tsym::PrimeFac::collectToNewExp(const Number& exponent)
     const int count = getEqualCount();
 
     if (count > 1) {
-        deleteElements(count - 1);
+        deleteFromNumAndDenom(count - 1);
         return count * exponent;
     } else if (numPrimes.size() == 0 && denomPrimes.size() == 0)
         return 1;
     else
         return exponent;
+}
+
+namespace tsym {
+    namespace {
+        int getEqualCountOf(const std::vector<Int>& primes)
+        {
+            int lastCount = 0;
+            int count = 0;
+            Int oldPrime;
+
+            /* The vector must not be empty at this point! */
+            for (const auto& prime : primes)
+                if (prime == oldPrime)
+                    ++count;
+                else if (lastCount != 0 && lastCount != count)
+                    return 0;
+                else {
+                    lastCount = count;
+                    count = 1;
+                    oldPrime = prime;
+                }
+
+            return count == lastCount || lastCount == 0 ? count : 0;
+        }
+    }
 }
 
 int tsym::PrimeFac::getEqualCount() const
@@ -125,50 +150,31 @@ int tsym::PrimeFac::getEqualCount() const
     if (numPrimes.empty() && denomPrimes.empty())
         return 0;
     else if (numPrimes.empty())
-        return getEqualCount(denomPrimes);
+        return getEqualCountOf(denomPrimes);
     else if (denomPrimes.empty())
-        return getEqualCount(numPrimes);
+        return getEqualCountOf(numPrimes);
 
-    numCount = getEqualCount(numPrimes);
-    denomCount = getEqualCount(denomPrimes);
+    numCount = getEqualCountOf(numPrimes);
+    denomCount = getEqualCountOf(denomPrimes);
 
     return numCount == denomCount ? numCount : 0;
 }
 
-int tsym::PrimeFac::getEqualCount(const std::vector<Int>& primes) const
-{
-    int lastCount = 0;
-    int count = 0;
-    Int oldPrime;
-
-    /* The vector must not be empty at this point! */
-    for (const auto& prime : primes)
-        if (prime == oldPrime)
-            ++count;
-        else if (lastCount != 0 && lastCount != count)
-            return 0;
-        else {
-            lastCount = count;
-            count = 1;
-            oldPrime = prime;
-        }
-
-    return count == lastCount || lastCount == 0 ? count : 0;
+namespace {
+    void deleteElements(int nToDelete, std::vector<tsym::Int>& primes)
+    /* Removes duplicate elements from the given vector of primes. It is supposed, that primes have
+     * been checked before, such that this operation is safe. */
+    {
+        for (auto it = begin(primes); it != end(primes); ++it)
+            for (int i = 0; i < nToDelete; ++i)
+                it = primes.erase(it);
+    }
 }
 
-void tsym::PrimeFac::deleteElements(int nToDelete)
+void tsym::PrimeFac::deleteFromNumAndDenom(int nToDelete)
 {
     deleteElements(nToDelete, numPrimes);
     deleteElements(nToDelete, denomPrimes);
-}
-
-void tsym::PrimeFac::deleteElements(int nToDelete, std::vector<Int>& primes)
-/* Removes duplicate elements from the given vector of primes. It is supposed, that primes have
- * been checked before, such that this operation is safe. */
-{
-    for (auto it = begin(primes); it != end(primes); ++it)
-        for (int i = 0; i < nToDelete; ++i)
-            it = primes.erase(it);
 }
 
 const std::vector<tsym::Int>& tsym::PrimeFac::getNumPrimes() const

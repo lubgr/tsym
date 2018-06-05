@@ -58,9 +58,7 @@ namespace tsym {
         void cancelPrimes(std::vector<Int>& p1, std::vector<Int>& p2);
         void merge(std::vector<Int>& target, const std::vector<Int>& source);
         void extract(std::vector<Int>& source, std::vector<Int>& target, const Int& expDenom);
-        int getEqualCount(const std::vector<Int>& primes) const;
-        void deleteElements(int nToDelete);
-        void deleteElements(int nToDelete, std::vector<Int>& primes);
+        void deleteFromNumAndDenom(int nToDelete);
 
         std::vector<Int> numPrimes;
         std::vector<Int> denomPrimes;
