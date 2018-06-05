@@ -59,6 +59,7 @@ namespace tsym {
         void contractNumerics(BasePtrList& u);
         void contractConst(BasePtrList& u);
         bool areTwoContractableConst(const BasePtr& f1, const BasePtr& f2);
+        bool isContractableConst(const BasePtr& arg);
         void contractTwoConst(BasePtrList::iterator& it1, BasePtrList::iterator& it2, BasePtrList& u);
         BasePtrList simplPreparedFactors(const BasePtrList& u);
         BasePtrList simplNPreparedFactors(const BasePtrList& u);
@@ -580,14 +581,17 @@ namespace tsym {
 
         bool areTwoContractableConst(const BasePtr& f1, const BasePtr& f2)
         {
-            if (!f1->isConst())
-                return false;
-            else if (!f2->isConst())
-                return false;
-            else if (f1->isNumeric() || f1->isNumericPower())
-                return f2->isNumeric() || f2->isNumericPower();
-            else
-                return false;
+            return isContractableConst(f1) && isContractableConst(f2);
+        }
+
+        bool isContractableConst(const BasePtr& arg)
+        /* For composite types (sums, products), isConst() returns true if all operands are
+         * isConst(), this must be caught here. */
+        {
+            if (arg->isConst())
+                return arg->isNumeric() || arg->isNumericPower();
+
+            return false;
         }
 
         void contractTwoConst(BasePtrList::iterator& it1, BasePtrList::iterator& it2, BasePtrList& u)
