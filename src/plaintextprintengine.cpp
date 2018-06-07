@@ -22,8 +22,10 @@ tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::positiveSymbol(const Nam
 {
     symbol(name);
 
+#ifndef TSYM_ASCII_ONLY
     if (charset == CharSet::UNICODE)
         out << "\u208A";
+#endif
 
     return *this;
 }
