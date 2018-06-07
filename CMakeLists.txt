@@ -22,6 +22,7 @@ add_library(tsym-internal-config INTERFACE)
 target_compile_definitions(tsym-internal-config
     INTERFACE
     $<$<OR:$<PLATFORM_ID:Windows>,$<PLATFORM_ID:Cygwin>>:_USE_MATH_DEFINES>
+    $<$<PLATFORM_ID:Windows>:TSYM_ASCII_ONLY>
     $<$<CONFIG:Debug>:TSYM_WITH_DEBUG_STRINGS>)
 
 target_include_directories(tsym-internal-config

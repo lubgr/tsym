@@ -73,7 +73,13 @@ BOOST_AUTO_TEST_CASE(operatorWithNumber)
 
 BOOST_AUTO_TEST_CASE(piUnicode)
 {
-    BOOST_CHECK_EQUAL("\u03c0", print(pi));
+    const std::string expected =
+#ifndef TSYM_ASCII_ONLY
+      "\u03c0";
+#else
+      "pi";
+#endif
+    BOOST_CHECK_EQUAL(expected, print(pi));
 }
 
 BOOST_AUTO_TEST_CASE(piAscii)
@@ -109,17 +115,29 @@ BOOST_AUTO_TEST_CASE(symbol)
 
 BOOST_AUTO_TEST_CASE(positiveSymbol)
 {
+    const std::string expected =
+#ifndef TSYM_ASCII_ONLY
+      "a\u208A";
+#else
+      "a";
+#endif
     const BasePtr aPos = Symbol::createPositive("a");
 
-    BOOST_CHECK_EQUAL("a\u208A", print(aPos));
+    BOOST_CHECK_EQUAL(expected, print(aPos));
 }
 
 BOOST_AUTO_TEST_CASE(positiveSymbolWithSubAndSuperscript)
 {
+    const std::string expected =
+#ifndef TSYM_ASCII_ONLY
+      "a_b_c\u208A";
+#else
+      "a_b_c";
+#endif
     const Name name("a", "b", "c");
     const BasePtr aPos = Symbol::createPositive(name);
 
-    BOOST_CHECK_EQUAL("a_b_c\u208A", print(aPos));
+    BOOST_CHECK_EQUAL(expected, print(aPos));
 }
 
 BOOST_AUTO_TEST_CASE(positiveSymbolAsciiCharset)
@@ -141,37 +159,54 @@ BOOST_AUTO_TEST_CASE(symbolGreekLetterWithoutUnicode)
 
 BOOST_AUTO_TEST_CASE(symbolGreekLetterWithUnicode)
 {
+    const std::string expected =
+#ifndef TSYM_ASCII_ONLY
+      "\u03C9";
+#else
+      "omega";
+#endif
     const BasePtr omega = Symbol::create("omega");
 
-    BOOST_CHECK_EQUAL("\u03C9", print(omega));
+    BOOST_CHECK_EQUAL(expected, print(omega));
 }
 
 BOOST_AUTO_TEST_CASE(capitalOmega)
 {
+    const std::string expected =
+#ifndef TSYM_ASCII_ONLY
+      "\u03a9";
+#else
+      "Omega";
+#endif
     const BasePtr omega = Symbol::create("Omega");
 
-    BOOST_CHECK_EQUAL("\u03a9", print(omega));
+    BOOST_CHECK_EQUAL(expected, print(omega));
 }
 
 BOOST_AUTO_TEST_CASE(lowerCaseAlpha)
 {
+    const std::string expected =
+#ifndef TSYM_ASCII_ONLY
+      "\u03B1";
+#else
+      "alpha";
+#endif
     const BasePtr alpha = Symbol::create("alpha");
 
-    BOOST_CHECK_EQUAL("\u03B1", print(alpha));
+    BOOST_CHECK_EQUAL(expected, print(alpha));
 }
 
 BOOST_AUTO_TEST_CASE(upperCaseAlpha)
 {
+    const std::string expected =
+#ifndef TSYM_ASCII_ONLY
+      "\u0391";
+#else
+      "Alpha";
+#endif
     const BasePtr capitalAlpha = Symbol::create("Alpha");
 
-    BOOST_CHECK_EQUAL("\u0391", print(capitalAlpha));
-}
-
-BOOST_AUTO_TEST_CASE(sumWithPi)
-{
-    const BasePtr sum = Sum::create(two, a, b, pi);
-
-    BOOST_CHECK_EQUAL("2 + \u03c0 + a + b", print(sum));
+    BOOST_CHECK_EQUAL(expected, print(capitalAlpha));
 }
 
 BOOST_AUTO_TEST_CASE(sumWithFunction)
@@ -232,10 +267,10 @@ BOOST_AUTO_TEST_CASE(powerOfPowerOfPowerOfPower)
 {
     const BasePtr pow1 = Power::create(a, b);
     const BasePtr pow2 = Power::create(pow1, c);
-    const BasePtr pow3 = Power::create(pow2, Product::create(Numeric::create(-1, 4), pi));
+    const BasePtr pow3 = Power::create(pow2, Product::create(Numeric::create(-1, 4), a));
     const BasePtr pow4 = Power::create(pow3, d);
 
-    BOOST_CHECK_EQUAL("(((a^b)^c)^(-1/4*\u03c0))^d", print(pow4));
+    BOOST_CHECK_EQUAL("(((a^b)^c)^(-1/4*a))^d", print(pow4));
 }
 
 BOOST_AUTO_TEST_CASE(omitFirstNumeratorFactorIfOne)
@@ -306,16 +341,28 @@ BOOST_AUTO_TEST_CASE(powerOfFraction)
 
 BOOST_AUTO_TEST_CASE(powerWithPiBase)
 {
+    const std::string expected =
+#ifndef TSYM_ASCII_ONLY
+      "\u03c0^(a + b)";
+#else
+      "pi^(a + b)";
+#endif
     const BasePtr pow = Power::create(pi, Sum::create(a, b));
 
-    BOOST_CHECK_EQUAL("\u03c0^(a + b)", print(pow));
+    BOOST_CHECK_EQUAL(expected, print(pow));
 }
 
 BOOST_AUTO_TEST_CASE(powerWithPiExp)
 {
+    const std::string expected =
+#ifndef TSYM_ASCII_ONLY
+      "(a + b)^\u03c0";
+#else
+      "(a + b)^pi";
+#endif
     const BasePtr pow = Power::create(Sum::create(a, b), pi);
 
-    BOOST_CHECK_EQUAL("(a + b)^\u03c0", print(pow));
+    BOOST_CHECK_EQUAL(expected, print(pow));
 }
 
 BOOST_AUTO_TEST_CASE(powerOfSymbolAndSymbol)
@@ -426,9 +473,15 @@ BOOST_AUTO_TEST_CASE(negProductNonTrivialFactor)
 
 BOOST_AUTO_TEST_CASE(productWithConstantPi)
 {
+    const std::string expected =
+#ifndef TSYM_ASCII_ONLY
+      "-2*\u03c0*a*b";
+#else
+      "-2*pi*a*b";
+#endif
     const BasePtr product = Product::create({Numeric::create(-2), a, b, pi});
 
-    BOOST_CHECK_EQUAL("-2*\u03c0*a*b", print(product));
+    BOOST_CHECK_EQUAL(expected, print(product));
 }
 
 BOOST_AUTO_TEST_CASE(productOfEqualExpPowers)

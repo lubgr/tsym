@@ -84,6 +84,7 @@ size_t tsym::Name::greekAlphabetIndex() const
 
 std::string tsym::Name::unicodeForGreekLetter() const
 {
+#ifndef TSYM_ASCII_ONLY
     const size_t index = greekAlphabetIndex();
     const size_t shift = startsWithCapitalLetter() ? 0 : 24;
     static const std::string alphabet[] = {"\u0391", "\u0392", "\u0393", "\u0394", "\u0395", "\u0396", "\u0397",
@@ -93,6 +94,9 @@ std::string tsym::Name::unicodeForGreekLetter() const
       "\u03c1", "\u03c3", "\u03c4", "\u03c5", "\u03c6", "\u03c7", "\u03c8", "\u03c9"};
 
     return alphabet[shift + index];
+#else
+    return plain();
+#endif
 }
 
 bool tsym::Name::startsWithCapitalLetter() const
