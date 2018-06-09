@@ -1,32 +1,37 @@
 
 #include "primefac.h"
+#include <limits>
+
+namespace {
+    void copyElementsNTimes(const tsym::Int& n, std::vector<tsym::Int>& primes)
+    {
+        using size_type = std::vector<tsym::Int>::size_type;
+
+        assert(n > 0 && n < tsym::Int(std::numeric_limits<size_type>::max()));
+        const auto nUnsigned = static_cast<size_type>(n);
+
+        primes.reserve(nUnsigned * primes.size());
+
+        for (auto it = begin(primes); it != end(primes);) {
+            it = primes.insert(it, nUnsigned - 1, *it);
+
+            std::advance(it, nUnsigned);
+        }
+    }
+}
 
 void tsym::PrimeFac::toThe(const Int& exponent)
 {
     if (exponent == 0) {
         numPrimes.clear();
         denomPrimes.clear();
+    } else {
+        copyElementsNTimes(integer::abs(exponent), numPrimes);
+        copyElementsNTimes(integer::abs(exponent), denomPrimes);
     }
-
-    copyElementsNTimes(integer::abs(exponent), numPrimes);
-    copyElementsNTimes(integer::abs(exponent), denomPrimes);
 
     if (exponent < 0)
         numPrimes.swap(denomPrimes);
-}
-
-void tsym::PrimeFac::copyElementsNTimes(const Int& n, std::vector<Int>& primes)
-{
-    auto it = begin(primes);
-    Int i;
-
-    while (it != end(primes)) {
-        for (i = 0; i < n - 1; ++i)
-            it = primes.insert(it, *it);
-
-        for (i = 0; i < n; ++i)
-            ++it;
-    }
 }
 
 void tsym::PrimeFac::multiply(const Number& n)

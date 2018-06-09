@@ -54,7 +54,6 @@ namespace tsym {
             PrimeFacPolicy::computeAndStore(n.denominator(), denomPrimes);
         }
 
-        void copyElementsNTimes(const Int& n, std::vector<Int>& primes);
         void cancelPrimes(std::vector<Int>& p1, std::vector<Int>& p2);
         void merge(std::vector<Int>& target, const std::vector<Int>& source);
         void extract(std::vector<Int>& source, std::vector<Int>& target, const Int& expDenom);
