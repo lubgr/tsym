@@ -246,7 +246,7 @@ namespace tsym {
                 else
                     engine.invokePrint(first).timesSign();
 
-                for (auto factor = std::begin(factors); factor != std::end(factors); ++factor) {
+                for (auto factor = std::cbegin(factors); factor != std::cend(factors); ++factor) {
                     if (precedence(*factor) < productPrecedence)
                         engine.openParentheses().invokePrint(*factor).closeParentheses();
                     else
