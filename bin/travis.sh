@@ -55,7 +55,7 @@ elif [ "${MODE}" = "PROFILING" ]; then
     gprof "${TESTEXEC}" gmon.out | head -n 100
     popd
 elif [ "${MODE}" = "DEBUG" ]; then
-    TODO CMAKE_BUILD_TYPE=Sanitizer
+    CMAKE_BUILD_TYPE=Sanitizer
 
     buildDir "debug-sanitizer-${COMPILIER}"
     build "${COMPILER}"
@@ -64,11 +64,15 @@ elif [ "${MODE}" = "DEBUG" ]; then
     grep --color=auto -E -C 5 'runtime *error|LeakSanitizer' ${logFile} && EXIT=1
     popd
 
-    TODO CMAKE_BUILD_TYPE=Debug
+    CMAKE_BUILD_TYPE=Debug
     buildDir "debug-valgrind-${COMPILIER}"
     build "${COMPILER}"
     valgrind --error-exitcode=1 --leak-check=full "${TESTEXEC}" || EXIT=1
     popd
+elif [ "${MODE}" = "INTEGRATION" ]; then
+    integrationTestDir="integration-tests"
+    mkdir -p "${integrationTestDir}"
+    CXX="${COMPILER}" ./integration-tests/test-all.sh "${integrationTestDir}" || EXIT=1
 elif [ "${MODE}" = "ANALYSIS" ]; then
     buildDir "compile-database-${COMPILER}"
     build "${COMPILER}"

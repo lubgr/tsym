@@ -55,6 +55,10 @@ matrix:
           - COMPILER="g++-7"
 
     - env:
+          - MODE=INTEGRATION
+          - COMPILER="g++-7"
+
+    - env:
           - COMPILER="g++-7"
           - MODE=ANALYSIS
 
