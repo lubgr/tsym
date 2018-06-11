@@ -77,6 +77,8 @@ tsym::Var b; /* Initialized to zero by default constructor. */
 
 b = 2*a + a/1.2345 - largeInt;
 
+std::cout << b << std::endl;
+
 /* Careful - this will be zero, because 2/3 is evaluated first and as plain integral type: */
 b = 2/3*a;
 ```
@@ -93,7 +95,7 @@ functions:
 tsym::Var b("b");
 tsym::Var c = 2*tsym::Var("a")/b/5;
 
-if (tsym::has(c, b) && c.type() == tsym::Var::PRODUCT)
+if (tsym::has(c, b) && c.type() == tsym::Var::Type::PRODUCT)
     std::cout << "c contains " << b << " and is a " << c.type() << std::endl;
 
 std::cout << tsym::numerator(c) << ", " << tsym::denominator(c) << std::endl; /* 2*a, 5*b */
@@ -110,7 +112,7 @@ tsym::Var a = tsym::Var("a");
 tsym::Var b = tsym::Var("b");
 tsym::Var c = a/b + 1/(5*b);
 
-std::cout << tsym::subst(c, b, Var(1, 3)) << std::endl; /* 3a + 3/5 */
+std::cout << tsym::subst(c, b, tsym::Var(1, 3)) << std::endl; /* 3/5 + 3a */
 std::cout << tsym::diff(c, b) << std::endl; /* (-1/5)/b^2 - a/b^2 */
 
 c = c*b;
@@ -125,7 +127,7 @@ tsym::Var parsedFromString = tsym::parse("a*cos(pi/5) + sqrt(3)*log(euler)");
 This can go wrong of course, so a flag reference can be passed to check the success of parsing
 ```c++
 bool success;
-tsym::Var wrong = tsym::parse("a*cos(3!)", &success); /* Results in a*cos(3). */
+tsym::Var wrong = tsym::parse("a*cos(3!)", &success); /* Results in a*cos, where "cos" is a variable. */
 
 if (!success)
     std::cout << "Factorials aren't implemented" << std::endl;
