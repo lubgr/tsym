@@ -62,7 +62,7 @@ echo ''
 
 if which $CLANGTIDY &> /dev/null; then
     for file in `find ${SRC} -iname '*.cpp'`; do
-        $CLANGTIDY -quiet -p "${CDB}" "${file}"
+        $CLANGTIDY -quiet -header-filter='tsym' -p "${CDB}" "${file}"
     done
 else
     echo "$CLANGTIDY not found"
