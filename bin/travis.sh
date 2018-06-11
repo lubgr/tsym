@@ -70,9 +70,11 @@ elif [ "${MODE}" = "DEBUG" ]; then
     valgrind --error-exitcode=1 --leak-check=full "${TESTEXEC}" || EXIT=1
     popd
 elif [ "${MODE}" = "INTEGRATION" ]; then
-    integrationTestDir="integration-tests"
-    mkdir -p "${integrationTestDir}"
-    CXX="${COMPILER}" ./integration-tests/test-all.sh "${integrationTestDir}" || EXIT=1
+    pushd integration-tests
+    buildDirRoot="build"
+    mkdir -p "${buildDirRoot}"
+    CXX="${COMPILER}" ./test-all.sh "${buildDirRoot}" || EXIT=1
+    popd
 elif [ "${MODE}" = "ANALYSIS" ]; then
     buildDir "compile-database-${COMPILER}"
     build "${COMPILER}"
