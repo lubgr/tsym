@@ -71,7 +71,7 @@ elif [ "${MODE}" = "DEBUG" ]; then
     popd
 elif [ "${MODE}" = "INTEGRATION" ]; then
     pushd integration-tests
-    buildDirRoot="build"
+    buildDirRoot="$(pwd)/output"
     mkdir -p "${buildDirRoot}"
     CXX="${COMPILER}" ./test-all.sh "${buildDirRoot}" || EXIT=1
     popd
