@@ -7,7 +7,6 @@ namespace tsym {
         constexpr int minor();
         constexpr int patch();
         constexpr const char* compiler();
-        constexpr const char* commit();
         constexpr const char* os();
         constexpr const char* configureTime();
     }

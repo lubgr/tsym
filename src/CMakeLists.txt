@@ -1,15 +1,4 @@
 
-find_package(Git)
-
-if(Git_FOUND)
-    execute_process(COMMAND "${GIT_EXECUTABLE}" log --pretty=format:%h -n 1
-        WORKING_DIRECTORY "${tsym_SOURCE_DIR}"
-        OUTPUT_VARIABLE tsym_COMMIT_SHA1
-        ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
-else()
-    set(tsym_COMMIT_SHA1 "Unknown")
-endif()
-
 string(TIMESTAMP tsym_CONFIGURE_TIME "%Y-%B-%d %H:%M")
 
 configure_file(version.cpp.in version.cpp)
