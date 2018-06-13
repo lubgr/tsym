@@ -67,7 +67,7 @@ elif [ "${MODE}" = "DEBUG" ]; then
     CMAKE_BUILD_TYPE=Debug
     buildDir "debug-valgrind-${COMPILIER}"
     build "${COMPILER}"
-    valgrind --error-exitcode=1 --leak-check=full "${TESTEXEC}" || EXIT=1
+    valgrind --error-exitcode=1 --leak-check=full "${TESTEXEC}" -t '!@expensive' || EXIT=1
     popd
 elif [ "${MODE}" = "INTEGRATION" ]; then
     pushd integration-tests
