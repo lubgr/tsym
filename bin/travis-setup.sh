@@ -3,10 +3,10 @@
 set -e
 
 if [ "${MODE}" != "ANALYSIS" ]; then
-    cd ${BOOSTDIR}
+    pushd ${BOOSTDIR}
     ./bootstrap.sh debug-symbols=off cflags="${CPPFLAGS} ${CFLAGS} -std=c99 -O2" cxxflags="${CPPFLAGS} ${CXXFLAGS} -std=c++14 -O2"
-    ./b2 --with-test link=static install --prefix=/usr/local
-    cd ..
+    sudo ./b2 --with-test link=static install --prefix=/usr/local
+    popd
 fi
 
 if [ "${MODE}" = "PROFILING" ]; then
