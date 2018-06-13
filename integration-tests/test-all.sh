@@ -17,6 +17,10 @@ export TSYM_REMOTE="${TSYM_REMOTE:-$(dirname "${CURRENT_DIR}")}"
 export TSYM_BUILD_DIR="${DESTDIR}/setup-tsym-build"
 TSYM_CLONE_DIR="${DESTDIR}/setup-tsym-clone"
 
+if [ -n "$(env | grep 'BOOSTDIR')" ]; then
+    CMAKE_BOOST_OPT="-DBOOST_ROOT=${BOOSTDIR}"
+fi
+
 if [ -d "${TSYM_CLONE_DIR}" ]; then
     pushd "${TSYM_CLONE_DIR}"
     git pull
@@ -27,7 +31,7 @@ fi
 
 mkdir -p "${TSYM_BUILD_DIR}"
 pushd "${TSYM_BUILD_DIR}"
-cmake -DCMAKE_INSTALL_PREFIX="${TSYM_INSTALLATION_PATH}" "${TSYM_CLONE_DIR}"
+cmake -D CMAKE_INSTALL_PREFIX="${TSYM_INSTALLATION_PATH}" "${CMAKE_BOOST_OPT}" "${TSYM_CLONE_DIR}"
 make install
 popd
 
