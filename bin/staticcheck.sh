@@ -18,10 +18,6 @@ SRC="src/ unit-tests/"
 
 EXIT=0
 
-if env | grep BOOSTDIR; then
-    SYSTEM_INCLUDE="-isystem ${BOOSTDIR}"
-fi
-
 if ! which $CLANGTIDY &> /dev/null; then
     echo "$CLANGTIDY not found"
     exit 1

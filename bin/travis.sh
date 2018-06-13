@@ -15,7 +15,6 @@ build() {
     ${CMAKE} \
         -D CMAKE_CXX_COMPILER="${CXX}"\
         -D CMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"\
-        -D BOOST_ROOT="${BOOSTDIR}"\
         ..
     make tsym tests
     SUCCESS=$?
@@ -60,7 +59,8 @@ elif [ "${MODE}" = "DEBUG" ]; then
     buildDir "debug-sanitizer-${COMPILIER}"
     build "${COMPILER}"
     logFile=sanitizerLog
-    ${TESTEXEC} -l all --color=no &> ${logFile} || EXIT=1
+    ${TESTEXEC} -l all --color=no &> "${logFile}" || EXIT=1
+    cat "${logFile}"
     grep --color=auto -E -C 5 'runtime *error|LeakSanitizer' ${logFile} && EXIT=1
     popd
 

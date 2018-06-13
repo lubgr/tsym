@@ -5,8 +5,7 @@ set -e
 if [ "${MODE}" != "ANALYSIS" ]; then
     cd ${BOOSTDIR}
     ./bootstrap.sh debug-symbols=off cflags="${CPPFLAGS} ${CFLAGS} -std=c99 -O2" cxxflags="${CPPFLAGS} ${CXXFLAGS} -std=c++14 -O2"
-    ./b2 --with-test link=static
-    find ./stage -name 'libboost_unit_test*.a' -exec ln -s '{}' . \;
+    ./b2 --with-test link=static install --prefix=/usr/local
     cd ..
 fi
 
