@@ -219,10 +219,9 @@ namespace tsym {
 
         BasePtrList simplTwoFactors(const BasePtrList& u)
         {
-            BasePtr f1 = *cbegin(u);
-            BasePtr f2 = *(++cbegin(u));
+            assert(u.size() == 2);
 
-            return simplTwoFactors(f1, f2);
+            return simplTwoFactors(u.front(), u.back());
         }
 
         BasePtrList simplTwoFactors(const BasePtr& f1, const BasePtr& f2)
