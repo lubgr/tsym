@@ -27,7 +27,7 @@ fi
 
 mkdir -p "${TSYM_BUILD_DIR}"
 pushd "${TSYM_BUILD_DIR}"
-cmake -D CMAKE_INSTALL_PREFIX="${TSYM_INSTALLATION_PATH}" "${TSYM_CLONE_DIR}"
+cmake --debug-output -D CMAKE_INSTALL_PREFIX="${TSYM_INSTALLATION_PATH}" "${TSYM_CLONE_DIR}"
 make install
 popd
 
