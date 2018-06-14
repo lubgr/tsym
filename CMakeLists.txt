@@ -42,7 +42,7 @@ target_link_libraries(tsym-internal-config
     INTERFACE
     $<$<CONFIG:COVERAGE>:--coverage>
     $<$<CONFIG:PROFILE>:-pg>
-    $<$<CONFIG:SANITIZER>:asan ubsan>)
+    $<$<CONFIG:SANITIZER>:-fsanitize=address,undefined>)
 add_subdirectory(include)
 add_subdirectory(src)
 
