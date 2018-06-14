@@ -48,7 +48,7 @@ matrix:
 
     - env:
           - MODE=DEBUG
-          - COMPILER="g++-7"
+          - COMPILER="clang++"
 
     - env:
           - MODE=PROFILING

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-set -e
 set -x
 
 if [ $# -ne 1 ]; then
@@ -27,11 +26,17 @@ fi
 
 mkdir -p "${TSYM_BUILD_DIR}"
 pushd "${TSYM_BUILD_DIR}"
-cmake --debug-output -D CMAKE_INSTALL_PREFIX="${TSYM_INSTALLATION_PATH}" "${TSYM_CLONE_DIR}"
+
+cmake --debug-output -D BUILD_TESTING=OFF -D CMAKE_INSTALL_PREFIX="${TSYM_INSTALLATION_PATH}" "${TSYM_CLONE_DIR}"
+
+# This option doesn't work out earlier due to an older cmake version
+set -e
+
 make install
 popd
 
-export DESTDIR # Don't export this one earlier, it changes the cmake install prefix
+ # Don't export this one earlier, it changes the cmake install prefix
+export DESTDIR
 
 for testscript in */test.sh; do
     "${testscript}"
