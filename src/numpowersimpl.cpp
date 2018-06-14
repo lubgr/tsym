@@ -1,6 +1,5 @@
 
 #include "numpowersimpl.h"
-#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include "logging.h"

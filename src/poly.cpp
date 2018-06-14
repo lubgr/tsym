@@ -1,5 +1,6 @@
 
 #include "poly.h"
+#include <boost/range/algorithm.hpp>
 #include <cassert>
 #include "bplist.h"
 #include "cache.h"
@@ -191,16 +192,12 @@ namespace tsym {
 
         int minDegreeOfSum(const BasePtr& sum, const tsym::BasePtr& variable)
         {
-            auto it(cbegin(sum->operands()));
-            int result = poly::minDegree(*it, variable);
+            std::vector<int> degrees(sum->operands().size());
 
-            while (++it != cend(sum->operands())) {
-                int minDeg = poly::minDegree(*it, variable);
-                if (minDeg < result)
-                    result = minDeg;
-            }
+            boost::transform(sum->operands(), std::begin(degrees),
+              [&variable](const auto& operand) { return poly::minDegree(operand, variable); });
 
-            return result;
+            return *boost::min_element(degrees);
         }
 
         int minDegreeOfProduct(const BasePtr& product, const tsym::BasePtr& variable)

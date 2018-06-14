@@ -1,6 +1,6 @@
 
 #include "globals.h"
-#include <algorithm>
+#include <boost/range/algorithm.hpp>
 #include <chrono>
 #include "constant.h"
 #include "fraction.h"
@@ -32,7 +32,7 @@ namespace tsym {
         {
             const Var term(symbol);
 
-            if (std::find(cbegin(symbols), cend(symbols), term) == cend(symbols))
+            if (boost::find(symbols, term) == cend(symbols))
                 symbols.push_back(term);
         }
 

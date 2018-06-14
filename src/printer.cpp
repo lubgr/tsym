@@ -246,13 +246,13 @@ namespace tsym {
                 else
                     engine.invokePrint(first).timesSign();
 
-                for (auto factor = std::cbegin(factors); factor != std::cend(factors); ++factor) {
+                for (auto factor = cbegin(factors); factor != cend(factors); ++factor) {
                     if (precedence(*factor) < productPrecedence)
                         engine.openParentheses().invokePrint(*factor).closeParentheses();
                     else
                         engine.invokePrint(*factor);
 
-                    if (factor != --std::end(factors))
+                    if (factor != --cend(factors))
                         engine.timesSign();
                 }
             }

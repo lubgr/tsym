@@ -1,5 +1,5 @@
 
-#include <algorithm>
+#include <boost/algorithm/cxx11/any_of.hpp>
 #include "fixtures.h"
 #include "numeric.h"
 #include "polyinfo.h"
@@ -20,8 +20,7 @@ struct PolyInfoFixture : public AbcFixture {
 namespace {
     bool contains(const BasePtrList& symbolList, const BasePtr& symbol)
     {
-        return std::any_of(
-          cbegin(symbolList), cend(symbolList), [&symbol](const auto& item) { return item->isEqual(symbol); });
+        return boost::algorithm::any_of(symbolList, [&symbol](const auto& item) { return item->isEqual(symbol); });
     }
 }
 

@@ -1,8 +1,10 @@
 
 #include "bplist.h"
-#include <algorithm>
-#include <iterator>
-#include <numeric>
+#include <boost/algorithm/cxx11/all_of.hpp>
+#include <boost/algorithm/cxx11/any_of.hpp>
+#include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm_ext.hpp>
+#include <boost/range/numeric.hpp>
 #include "cache.h"
 #include "logging.h"
 #include "numeric.h"
@@ -29,17 +31,7 @@ tsym::BasePtrList tsym::bplist::join(BasePtrList&& first, BasePtrList&& second)
 
 bool tsym::bplist::areEqual(const BasePtrList& list1, const BasePtrList& list2)
 {
-    auto it1 = cbegin(list1);
-    auto it2 = cbegin(list2);
-
-    if (list1.size() != list2.size())
-        return false;
-
-    for (; it1 != cend(list1) && it2 != cend(list2); ++it1, ++it2)
-        if ((*it1)->isDifferent(*it2))
-            return false;
-
-    return true;
+    return boost::equal(list1, list2, [](const auto& bp1, const auto bp2) { return bp1->isEqual(bp2); });
 }
 
 bool tsym::bplist::has(const BasePtrList& list, const BasePtr& element)
@@ -72,40 +64,40 @@ void tsym::bplist::rest(BasePtrList& list)
 
 bool tsym::bplist::hasUndefinedElements(const BasePtrList& list)
 {
-    return std::any_of(cbegin(list), cend(list), std::mem_fn(&Base::isUndefined));
+    return boost::algorithm::any_of(list, std::mem_fn(&Base::isUndefined));
 }
 
 bool tsym::bplist::hasZeroElements(const BasePtrList& list)
 {
-    return std::any_of(cbegin(list), cend(list), std::mem_fn(&Base::isZero));
+    return boost::algorithm::any_of(list, std::mem_fn(&Base::isZero));
 }
 
 bool tsym::bplist::hasSumElements(const BasePtrList& list)
 {
-    return std::any_of(cbegin(list), cend(list), std::mem_fn(&Base::isSum));
+    return boost::algorithm::any_of(list, std::mem_fn(&Base::isSum));
 }
 
 bool tsym::bplist::areElementsNumericallyEvaluable(const BasePtrList& list)
 {
-    return std::all_of(cbegin(list), cend(list), std::mem_fn(&Base::isNumericallyEvaluable));
+    return boost::algorithm::all_of(list, std::mem_fn(&Base::isNumericallyEvaluable));
 }
 
 bool tsym::bplist::areAllElementsConst(const BasePtrList& list)
 {
-    return std::all_of(cbegin(list), cend(list), std::mem_fn(&Base::isConst));
+    return boost::algorithm::all_of(list, std::mem_fn(&Base::isConst));
 }
 
 unsigned tsym::bplist::complexitySum(const BasePtrList& list)
 {
-    return std::accumulate(cbegin(list), cend(list), 0u,
-      [](unsigned complexity, const auto& item) { return complexity + item->complexity(); });
+    return boost::accumulate(
+      list, 0u, [](unsigned complexity, const auto& item) { return complexity + item->complexity(); });
 }
 
 tsym::BasePtrList tsym::bplist::getConstElements(const BasePtrList& list)
 {
     BasePtrList items;
 
-    std::copy_if(cbegin(list), cend(list), std::back_inserter(items), std::mem_fn(&Base::isConst));
+    boost::push_back(items, list | boost::adaptors::filtered(std::mem_fn(&Base::isConst)));
 
     return items;
 }
@@ -114,7 +106,7 @@ tsym::BasePtrList tsym::bplist::getNonConstElements(const BasePtrList& list)
 {
     BasePtrList items;
 
-    std::copy_if(cbegin(list), cend(list), std::back_inserter(items), [](const BasePtr& bp) { return !bp->isConst(); });
+    boost::push_back(items, list | boost::adaptors::filtered([](const BasePtr& bp) { return !bp->isConst(); }));
 
     return items;
 }

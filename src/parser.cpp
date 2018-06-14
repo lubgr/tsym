@@ -1,6 +1,6 @@
 
 #include "parser.h"
-#include <algorithm>
+#include <boost/algorithm/cxx11/all_of.hpp>
 #include <boost/spirit/include/qi.hpp>
 #include <functional>
 #include <stack>
@@ -264,7 +264,7 @@ namespace tsym {
 
         bool isAsciiOnly(const std::string& inputStr)
         {
-            return std::all_of(cbegin(inputStr), cend(inputStr), [](auto ch) { return ch >= 0; });
+            return boost::algorithm::all_of(inputStr, [](auto ch) { return ch >= 0; });
         }
     }
 }

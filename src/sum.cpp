@@ -1,8 +1,8 @@
 
 #include "sum.h"
+#include <boost/range/numeric.hpp>
 #include <cassert>
 #include <limits>
-#include <numeric>
 #include "bplist.h"
 #include "fraction.h"
 #include "numeric.h"
@@ -251,6 +251,6 @@ int tsym::Sum::degree(const tsym::BasePtr& variable) const
     if (isEqual(variable))
         return 1;
     else
-        return std::accumulate(cbegin(ops), cend(ops), minInt,
-          [&variable](int deg, const auto& summand) { return std::max(deg, summand->degree(variable)); });
+        return boost::accumulate(
+          ops, minInt, [&variable](int deg, const auto& summand) { return std::max(deg, summand->degree(variable)); });
 }

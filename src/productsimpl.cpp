@@ -1,8 +1,9 @@
 
 #include "productsimpl.h"
 #include <boost/functional/hash.hpp>
+#include <boost/range/algorithm.hpp>
+#include <boost/range/numeric.hpp>
 #include <cassert>
-#include <numeric>
 #include "bplist.h"
 #include "cache.h"
 #include "logging.h"
@@ -88,7 +89,7 @@ namespace tsym {
         /* Recursively looks for items of type Product in the given container and inserts all factors
          * into the list itself. */
         {
-            const auto product = std::find_if(begin(u), end(u), [](const auto& item) { return item->isProduct(); });
+            const auto product = boost::find_if(u, [](const auto& item) { return item->isProduct(); });
 
             if (product == end(u))
                 return;
@@ -559,7 +560,7 @@ namespace tsym {
 
         void contractNumerics(BasePtrList& u)
         {
-            const auto result = std::accumulate(cbegin(u), cend(u), Number{1},
+            const auto result = boost::accumulate(u, Number{1},
               [](const auto& n, const auto& factor) { return factor->isNumeric() ? n * factor->numericEval() : n; });
 
             u.remove_if([](const auto& factor) { return factor->isNumeric(); });

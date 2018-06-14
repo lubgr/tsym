@@ -1,5 +1,5 @@
 
-#include <algorithm>
+#include <boost/range/algorithm.hpp>
 #include <limits>
 #include <sstream>
 #include <stdexcept>
@@ -1034,10 +1034,10 @@ BOOST_AUTO_TEST_CASE(collectSymbolsFromPower)
     const std::vector<Var> result(collectSymbols(term));
 
     BOOST_CHECK_EQUAL(4, result.size());
-    BOOST_TEST((std::find(cbegin(result), cend(result), a) != cend(result)));
-    BOOST_TEST((std::find(cbegin(result), cend(result), b) != cend(result)));
-    BOOST_TEST((std::find(cbegin(result), cend(result), d) != cend(result)));
-    BOOST_TEST((std::find(cbegin(result), cend(result), e) != cend(result)));
+    BOOST_TEST((boost::find(result, a) != cend(result)));
+    BOOST_TEST((boost::find(result, b) != cend(result)));
+    BOOST_TEST((boost::find(result, d) != cend(result)));
+    BOOST_TEST((boost::find(result, e) != cend(result)));
 }
 
 BOOST_AUTO_TEST_CASE(collectSymbolsFromFunction)
@@ -1046,9 +1046,9 @@ BOOST_AUTO_TEST_CASE(collectSymbolsFromFunction)
     const std::vector<Var> result(collectSymbols(term));
 
     BOOST_CHECK_EQUAL(3, result.size());
-    BOOST_TEST((std::find(cbegin(result), cend(result), a) != cend(result)));
-    BOOST_TEST((std::find(cbegin(result), cend(result), b) != cend(result)));
-    BOOST_TEST((std::find(cbegin(result), cend(result), c) != cend(result)));
+    BOOST_TEST((boost::find(result, a) != cend(result)));
+    BOOST_TEST((boost::find(result, b) != cend(result)));
+    BOOST_TEST((boost::find(result, c) != cend(result)));
 }
 
 BOOST_AUTO_TEST_CASE(printerOperator)

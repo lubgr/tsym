@@ -1,6 +1,7 @@
 
 #include "product.h"
-#include <numeric>
+#include <boost/range/algorithm.hpp>
+#include <boost/range/numeric.hpp>
 #include <vector>
 #include "bplist.h"
 #include "fraction.h"
@@ -265,7 +266,7 @@ tsym::BasePtr tsym::Product::coeff(const BasePtr& variable, int exp) const
 tsym::BasePtr tsym::Product::coeffFactorMatch(const BasePtr& variable, int exp) const
 {
     const BasePtr pow(Power::create(variable, Numeric::create(exp)));
-    auto matchingPower = std::find_if(cbegin(ops), cend(ops), [&pow](const auto& item) { return item->isEqual(pow); });
+    auto matchingPower = boost::find_if(ops, [&pow](const auto& item) { return item->isEqual(pow); });
 
     if (matchingPower == cend(ops))
         return Numeric::zero();
@@ -285,6 +286,6 @@ int tsym::Product::degree(const BasePtr& variable) const
     if (isEqual(variable))
         return 1;
     else
-        return std::accumulate(cbegin(ops), cend(ops), 0,
-          [&variable](int deg, const auto& factor) { return deg + factor->degree(variable); });
+        return boost::accumulate(
+          ops, 0, [&variable](int deg, const auto& factor) { return deg + factor->degree(variable); });
 }
