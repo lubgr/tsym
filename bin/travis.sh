@@ -14,6 +14,7 @@ build() {
 
     ${CMAKE} \
         -D CMAKE_CXX_COMPILER="${CXX}"\
+        -D CMAKE_EXE_LINKER_FLAGS="-fuse-ld=gold"\
         -D CMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"\
         ..
     make tsym tests
