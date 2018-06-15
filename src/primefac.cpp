@@ -9,9 +9,10 @@ namespace tsym {
     namespace {
         void copyElementsNTimes(const Int& n, std::vector<Int>& primes)
         {
+            using difference_type = std::vector<Int>::difference_type;
             using size_type = std::vector<Int>::size_type;
 
-            assert(n > 0 && n < Int(std::numeric_limits<size_type>::max()));
+            assert(n > 0 && n < Int(std::numeric_limits<difference_type>::max()));
             const auto nUnsigned = static_cast<size_type>(n);
 
             primes.reserve(nUnsigned * primes.size());
@@ -19,7 +20,7 @@ namespace tsym {
             for (auto it = begin(primes); it != end(primes);) {
                 it = primes.insert(it, nUnsigned - 1, *it);
 
-                std::advance(it, nUnsigned);
+                std::advance(it, static_cast<difference_type>(n));
             }
         }
     }
