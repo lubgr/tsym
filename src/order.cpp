@@ -1,5 +1,7 @@
 
 #include "order.h"
+#include <boost/range/adaptor/reversed.hpp>
+#include <boost/range/algorithm.hpp>
 #include "constant.h"
 #include "function.h"
 #include "logging.h"
@@ -111,19 +113,10 @@ bool tsym::doPermuteBothProduct(const BasePtr& left, const BasePtr& right)
 
 bool tsym::doPermuteListReverse(const BasePtrList& left, const BasePtrList& right)
 {
-    auto lIt(crbegin(left));
-    auto rIt(crbegin(right));
+    using boost::adaptors::reversed;
 
-    for (; lIt != crend(left) && rIt != crend(right); ++lIt, ++rIt)
-        if ((*lIt)->isDifferent(*rIt))
-            return order::doPermute(*lIt, *rIt);
-
-    if (lIt == crend(left) && rIt != crend(right))
-        return false;
-    else if (rIt == crend(right) && lIt != crend(left))
-        return true;
-    else
-        return left.size() < right.size();
+    return boost::lexicographical_compare(right | reversed, left | reversed,
+      [](const auto& bp1, const auto& bp2) { return bp1->isDifferent(bp2) && order::isCorrect(bp1, bp2); });
 }
 
 bool tsym::doPermuteBothSum(const BasePtr& left, const BasePtr& right)
