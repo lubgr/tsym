@@ -147,7 +147,6 @@ BOOST_AUTO_TEST_CASE(sumsWithTwoSummands)
 
 BOOST_AUTO_TEST_CASE(sumsWithThreeSummands)
 {
-    BasePtrList summands;
     const BasePtr sum1 = Sum::create(a, c, d);
     const BasePtr sum2 = Sum::create(b, c, d);
 
@@ -158,7 +157,6 @@ BOOST_AUTO_TEST_CASE(sumsWithTwoAndThreeSummands)
 {
     const BasePtr sum1 = Sum::create(c, d);
     const BasePtr sum2 = Sum::create(b, c, d);
-    ;
 
     BOOST_TEST(order::doPermute(sum2, sum1));
     BOOST_TEST(order::isCorrect(sum1, sum2));
