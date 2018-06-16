@@ -194,7 +194,7 @@ namespace tsym {
         {
             std::vector<int> degrees(sum->operands().size());
 
-            boost::transform(sum->operands(), std::begin(degrees),
+            boost::transform(sum->operands(), begin(degrees),
               [&variable](const auto& operand) { return poly::minDegree(operand, variable); });
 
             return *boost::min_element(degrees);
