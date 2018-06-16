@@ -11,6 +11,9 @@ branches:
 git:
     depth: 3
 
+before_install:
+  - export -f travis_fold
+
 install:
   - export MAKEFLAGS='-j 2'
   - sudo apt-get remove -y libboost-all-dev cmake cmake-data
@@ -18,14 +21,16 @@ install:
   - sudo apt-get -qq update
   - export CMAKEVER=3.11.2
   - wget -qO- https://cmake.org/files/v${CMAKEVER/%.[0-9]/}/cmake-${CMAKEVER}-Linux-x86_64.tar.gz | tar xz
-  - export CMAKE=${PWD}/cmake-${CMAKEVER}-Linux-x86_64/bin/cmake
+  - export PATH="${PWD}/cmake-${CMAKEVER}-Linux-x86_64/bin/:${PATH}"
   - export BOOSTVER=1_67_0
   - export BOOSTDIR="${PWD}/boost_${BOOSTVER}"
   - wget -qO- https://downloads.sourceforge.net/project/boost/boost/${BOOSTVER//_/.}/boost_${BOOSTVER}.tar.bz2 | tar xj
   - export OCLINTVER=0.13
   - export OCLINT_HOME="$HOME/oclint-${OCLINTVER}"
   - export PATH="${PATH}:${PWD}/oclint-${OCLINTVER}/bin"
+  - travis_fold start "setup-script"
   - ./bin/travis-setup.sh
+  - travis_fold end "setup-script"
   - echo | g++ -E -v -
   - echo | clang++ -E -v -
 

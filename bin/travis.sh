@@ -12,7 +12,7 @@ buildDir() {
 build() {
     CXX=$1
 
-    ${CMAKE} \
+    cmake \
         -D CMAKE_CXX_COMPILER="${CXX}"\
         -D CMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"\
         ..
