@@ -5,9 +5,9 @@ project(${dirname} LANGUAGES CXX)
 
 find_package(tsym REQUIRED)
 
-add_executable(test
+add_executable(tsym-test
     main.cpp)
 
-target_link_libraries(test
+target_link_libraries(tsym-test
     PRIVATE
     tsym::tsym)

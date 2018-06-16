@@ -35,11 +35,11 @@ buildAndTest() {
     mkdir -p "${TEST_BUILD_DIR}"
 
     pushd "${TEST_BUILD_DIR}"
-    cmake -D TSYM_SUBDIR="${TSYM_SUBDIR}" -D BUILD_SHARED_LIBS="${buildShared}" "${TEST_DIR}"
+    cmake -D BUILD_TESTING=OFF -D TSYM_SUBDIR="${TSYM_SUBDIR}" -D BUILD_SHARED_LIBS="${buildShared}" "${TEST_DIR}"
     make
     popd
 
-    output="$("${TEST_BUILD_DIR}"/test)"
+    output="$("${TEST_BUILD_DIR}"/tsym-test)"
 
     if [ "${output}" != "${EXPECTED_OUTPUT}" ]; then
         echo "${output} doesn't match ${EXPECTED_OUTPUT}"

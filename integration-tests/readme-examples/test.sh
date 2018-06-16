@@ -39,7 +39,7 @@ awk \
 
             make -C "${TEST_BUILD_DIR}" clean
             make -C "${TEST_BUILD_DIR}"
-            "${TEST_BUILD_DIR}/test" >> "${EXAMPLE_OUTPUT}"
+            "${TEST_BUILD_DIR}/tsym-test" >> "${EXAMPLE_OUTPUT}"
         done
 
 diff "${EXAMPLE_OUTPUT}" "${EXPECTED_OUTPUT}"

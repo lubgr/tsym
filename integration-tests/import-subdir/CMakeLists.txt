@@ -5,9 +5,9 @@ project(${dirname} LANGUAGES CXX)
 
 add_subdirectory(${TSYM_SUBDIR})
 
-add_executable(test
+add_executable(tsym-test
     main.cpp)
 
-target_link_libraries(test
+target_link_libraries(tsym-test
     PRIVATE
     tsym::tsym)
