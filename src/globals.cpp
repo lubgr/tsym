@@ -126,7 +126,7 @@ tsym::Var tsym::expand(const Var& arg)
 tsym::Var tsym::simplify(const Var& arg)
 /* Currently, only normalization and expansion is tested for the simplest representation. */
 {
-    using clock = std::chrono::high_resolution_clock;
+    using clock = std::chrono::system_clock;
     auto before = clock::now();
     const BasePtr& rep = arg.get();
     const BasePtr expanded(rep->expand());
