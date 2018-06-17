@@ -98,8 +98,7 @@ namespace tsym {
                 } else if (++nPrime == expDenom) {
                     target.push_back(prime);
 
-                    for (Int i(0); i < expDenom; ++i)
-                        it = --source.erase(it);
+                    it = --source.erase(it - static_cast<int>(expDenom - 1), it + 1);
 
                     nPrime = 0;
                 }
