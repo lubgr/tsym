@@ -133,34 +133,35 @@ tsym::Number tsym::PrimeFac::collectToNewExp(const Number& exponent)
 
 namespace tsym {
     namespace {
-        int getEqualCountOf(const std::vector<Int>& primes)
+        auto equalCountOrZero(const std::vector<Int>& primes, int guess)
         {
-            int lastCount = 0;
-            int count = 0;
-            Int oldPrime;
-
-            /* The vector must not be empty at this point! */
-            for (const auto& prime : primes)
-                if (prime == oldPrime)
-                    ++count;
-                else if (lastCount != 0 && lastCount != count)
+            for (auto prime = cbegin(primes) + guess; prime != cend(primes); prime += guess)
+                if (*prime != *(prime + (guess - 1)))
                     return 0;
-                else {
-                    lastCount = count;
-                    count = 1;
-                    oldPrime = prime;
-                }
 
-            return count == lastCount || lastCount == 0 ? count : 0;
+            return guess;
+        }
+
+        auto getEqualCountOf(const std::vector<Int>& primes)
+        {
+            const auto firstEqualRange = boost::find_if<boost::return_begin_found>(
+              primes, [& first = primes.front()](const auto& prime) { return prime != first; });
+            const auto firstSize = size(firstEqualRange);
+
+            if (primes.size() % firstSize != 0)
+                return 0;
+            else if (firstSize == 1)
+                return 1;
+
+            const auto n = static_cast<int>(firstSize);
+
+            return equalCountOrZero(primes, n);
         }
     }
 }
 
 int tsym::PrimeFac::getEqualCount() const
 {
-    int denomCount;
-    int numCount;
-
     if (numPrimes.empty() && denomPrimes.empty())
         return 0;
     else if (numPrimes.empty())
@@ -168,8 +169,8 @@ int tsym::PrimeFac::getEqualCount() const
     else if (denomPrimes.empty())
         return getEqualCountOf(numPrimes);
 
-    numCount = getEqualCountOf(numPrimes);
-    denomCount = getEqualCountOf(denomPrimes);
+    const auto numCount = getEqualCountOf(numPrimes);
+    const auto denomCount = getEqualCountOf(denomPrimes);
 
     return numCount == denomCount ? numCount : 0;
 }

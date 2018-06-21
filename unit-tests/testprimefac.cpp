@@ -282,14 +282,14 @@ BOOST_AUTO_TEST_CASE(fractionCountNumeratorOne)
 }
 
 BOOST_AUTO_TEST_CASE(fractionCountNonEqual)
-/* Count of (2*3*5*7)/(11*13*13) : 0. */
+/* Count of (2*3*5*7)/(11*13*13) : 1. */
 {
     int count;
 
     pf = PrimeFac(Number(210, 1859));
     count = pf.getEqualCount();
 
-    BOOST_CHECK_EQUAL(0, count);
+    BOOST_CHECK_EQUAL(1, count);
 }
 
 BOOST_AUTO_TEST_CASE(intCollection)
