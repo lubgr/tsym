@@ -17,9 +17,7 @@ namespace tsym {
         bool has(const BasePtrList& list, const BasePtr& element);
 
         /* Copies the given container and removes the first element: */
-        BasePtrList rest(const BasePtrList& list);
-        /* Removes the first element: */
-        void rest(BasePtrList& list);
+        BasePtrList rest(BasePtrList list);
 
         /* Shortcuts to STL algorithm calls: */
         bool hasUndefinedElements(const BasePtrList& list);

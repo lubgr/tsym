@@ -13,20 +13,16 @@
 
 tsym::BasePtrList tsym::bplist::join(BasePtr&& first, BasePtrList&& second)
 {
-    BasePtrList result{first};
+    second.push_front(std::move(first));
 
-    result.insert(end(result), begin(second), end(second));
-
-    return result;
+    return std::move(second);
 }
 
 tsym::BasePtrList tsym::bplist::join(BasePtrList&& first, BasePtrList&& second)
 {
-    BasePtrList result{first};
+    first.splice(end(first), std::move(second));
 
-    result.insert(end(result), begin(second), end(second));
-
-    return result;
+    return std::move(first);
 }
 
 bool tsym::bplist::areEqual(const BasePtrList& list1, const BasePtrList& list2)
@@ -36,30 +32,18 @@ bool tsym::bplist::areEqual(const BasePtrList& list1, const BasePtrList& list2)
 
 bool tsym::bplist::has(const BasePtrList& list, const BasePtr& element)
 {
-    for (const auto& item : list)
-        if (item->isEqual(element))
-            return true;
-        else if (item->has(element))
-            return true;
-
-    return false;
+    return boost::algorithm::any_of(
+      list, [&element](const auto item) { return item->isEqual(element) || item->has(element); });
 }
 
-tsym::BasePtrList tsym::bplist::rest(const BasePtrList& list)
+tsym::BasePtrList tsym::bplist::rest(BasePtrList list)
 {
-    BasePtrList rest(list);
-
-    if (rest.empty())
+    if (list.empty())
         TSYM_WARNING("Requesting rest of an empty list!");
     else
-        rest.pop_front();
+        list.pop_front();
 
-    return rest;
-}
-
-void tsym::bplist::rest(BasePtrList& list)
-{
-    list.pop_front();
+    return list;
 }
 
 bool tsym::bplist::hasUndefinedElements(const BasePtrList& list)

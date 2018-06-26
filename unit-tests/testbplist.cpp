@@ -17,12 +17,10 @@ BOOST_AUTO_TEST_CASE(restOfEmptyList, noLogs())
     BOOST_TEST(result.empty());
 }
 
-BOOST_AUTO_TEST_CASE(restOfNonCVList)
+BOOST_AUTO_TEST_CASE(restOfRvalueArg)
 {
     const BasePtrList expected{b, c, d, ten};
-    BasePtrList list{a, b, c, d, ten};
-
-    bplist::rest(list);
+    const BasePtrList list = bplist::rest({a, b, c, d, ten});
 
     BOOST_CHECK_EQUAL_COLLECTIONS(cbegin(expected), cend(expected), cbegin(list), cend(list));
 }
