@@ -55,7 +55,7 @@ namespace tsym {
         }
 
         void cancelPrimes(std::vector<Int>& p1, std::vector<Int>& p2);
-        void merge(std::vector<Int>& target, const std::vector<Int>& source);
+        void merge(std::vector<Int>& target, std::vector<Int>&& source);
         void eraseDuplicates();
 
         std::vector<Int> numPrimes;

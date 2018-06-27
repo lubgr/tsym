@@ -57,8 +57,8 @@ void tsym::PrimeFac::multiply(const PrimeFac& other)
     cancelPrimes(numPrimes, copy.denomPrimes);
     cancelPrimes(denomPrimes, copy.numPrimes);
 
-    merge(numPrimes, copy.numPrimes);
-    merge(denomPrimes, copy.denomPrimes);
+    merge(numPrimes, std::move(copy.numPrimes));
+    merge(denomPrimes, std::move(copy.denomPrimes));
 }
 
 void tsym::PrimeFac::cancelPrimes(std::vector<Int>& p1, std::vector<Int>& p2)
@@ -77,9 +77,9 @@ void tsym::PrimeFac::cancelPrimes(std::vector<Int>& p1, std::vector<Int>& p2)
         }
 }
 
-void tsym::PrimeFac::merge(std::vector<Int>& target, const std::vector<Int>& source)
+void tsym::PrimeFac::merge(std::vector<Int>& target, std::vector<Int>&& source)
 {
-    target.insert(end(target), cbegin(source), cend(source));
+    target.insert(end(target), std::make_move_iterator(begin(source)), std::make_move_iterator(end(source)));
 
     boost::sort(target);
 }
