@@ -145,7 +145,7 @@ namespace tsym {
         auto getEqualCountOf(const std::vector<Int>& primes)
         {
             const auto firstEqualRange = boost::find_if<boost::return_begin_found>(
-              primes, [& first = primes.front()](const auto& prime) { return prime != first; });
+              primes, [first = primes.front()](const auto& prime) { return prime != first; });
             const auto firstSize = size(firstEqualRange);
 
             if (primes.size() % firstSize != 0)
