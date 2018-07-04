@@ -7,21 +7,38 @@
 
 namespace tsym {
     namespace {
-        void copyElementsNTimes(const Int& n, std::vector<Int>& primes)
+        template <class Container> void duplicate(Container& c, Container&& result, unsigned n)
         {
-            using difference_type = std::vector<Int>::difference_type;
-            using size_type = std::vector<Int>::size_type;
+            using std::begin;
+            using std::end;
+            unsigned insCount = n;
 
-            assert(n > 0 && n < Int(std::numeric_limits<difference_type>::max()));
-            const auto nUnsigned = static_cast<size_type>(n);
+            for (auto i = begin(c); i != end(c); ++i) {
+                auto next = i;
 
-            primes.reserve(nUnsigned * primes.size());
+                if (++next != end(c) && *next == *i) {
+                    insCount += n;
+                    continue;
+                }
 
-            for (auto it = begin(primes); it != end(primes);) {
-                it = primes.insert(it, nUnsigned - 1, *it);
-
-                std::advance(it, static_cast<difference_type>(n));
+                result.insert(cend(result), insCount, *i);
+                insCount = n;
             }
+
+            c = std::move(result);
+        }
+
+        void duplicate(std::vector<Int>& primes, const Int& n)
+        {
+            std::vector<Int> result;
+
+            assert(n > 0 && n < Int(std::numeric_limits<unsigned>::max()));
+
+            const unsigned nUnsigned = static_cast<unsigned>(n);
+
+            result.reserve(nUnsigned * primes.size());
+
+            duplicate(primes, std::move(result), nUnsigned);
         }
     }
 }
@@ -32,8 +49,8 @@ void tsym::PrimeFac::toThe(const Int& exponent)
         numPrimes.clear();
         denomPrimes.clear();
     } else {
-        copyElementsNTimes(integer::abs(exponent), numPrimes);
-        copyElementsNTimes(integer::abs(exponent), denomPrimes);
+        duplicate(numPrimes, integer::abs(exponent));
+        duplicate(denomPrimes, integer::abs(exponent));
     }
 
     if (exponent < 0)
