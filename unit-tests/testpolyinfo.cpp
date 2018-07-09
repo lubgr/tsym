@@ -1,5 +1,6 @@
 
 #include <boost/algorithm/cxx11/any_of.hpp>
+#include <boost/range/adaptors.hpp>
 #include "fixtures.h"
 #include "numeric.h"
 #include "polyinfo.h"
@@ -18,9 +19,12 @@ struct PolyInfoFixture : public AbcFixture {
 };
 
 namespace {
-    bool contains(const BasePtrList& symbolList, const BasePtr& symbol)
+    bool contains(const BasePtrList& symbolList, const Base& symbol)
     {
-        return boost::algorithm::any_of(symbolList, [&symbol](const auto& item) { return item->isEqual(symbol); });
+        using boost::adaptors::indirected;
+
+        return boost::algorithm::any_of(
+          symbolList | indirected, [&symbol](const auto& item) { return item.isEqual(symbol); });
     }
 }
 
@@ -109,7 +113,7 @@ BOOST_AUTO_TEST_CASE(symbolListForOneSymbol)
     info.set(a, a);
 
     BOOST_CHECK_EQUAL(1, info.listOfSymbols().size());
-    BOOST_TEST(contains(info.listOfSymbols(), a));
+    BOOST_TEST(contains(info.listOfSymbols(), *a));
 }
 
 BOOST_AUTO_TEST_CASE(symbolListTwoSymbols)
@@ -120,28 +124,28 @@ BOOST_AUTO_TEST_CASE(symbolListTwoSymbols)
     list = info.listOfSymbols();
 
     BOOST_CHECK_EQUAL(2, list.size());
-    BOOST_TEST(contains(list, a));
-    BOOST_TEST(contains(list, b));
+    BOOST_TEST(contains(list, *a));
+    BOOST_TEST(contains(list, *b));
 }
 
 BOOST_AUTO_TEST_CASE(symbolListMultipleSymbols)
 {
-    const BasePtr expected[] = {a, b, c, d, e};
-    const size_t nSymbols = sizeof(expected) / sizeof(expected[0]);
+    const BasePtrList expected{a, b, c, d, e};
     const BasePtr pow1 = Power::create(d, three);
     const BasePtr sum1 = Sum::create(Product::create(two, a), b, pow1);
     const BasePtr pow2 = Power::create(sum1, five);
     const BasePtr sum2 = Sum::create(pow2, b, Power::create(c, two));
     const BasePtr product = Product::create({five, a, b, Sum::create(c, d), e, sum1});
+    using boost::adaptors::indirected;
     BasePtrList list;
 
     info.set(product, sum2);
 
     list = info.listOfSymbols();
 
-    BOOST_CHECK_EQUAL(nSymbols, list.size());
+    BOOST_CHECK_EQUAL(expected.size(), list.size());
 
-    for (const auto& symbol : expected)
+    for (const auto& symbol : expected | indirected)
         BOOST_TEST(contains(list, symbol));
 }
 

@@ -33,8 +33,8 @@ namespace tsym {
 
         Number numericEval() const override;
         Fraction normal(SymbolMap& map) const override;
-        BasePtr diffWrtSymbol(const BasePtr& symbol) const override;
-        BasePtr subst(const BasePtr& from, const BasePtr& to) const override;
+        BasePtr diffWrtSymbol(const Base& symbol) const override;
+        BasePtr subst(const Base& from, const BasePtr& to) const override;
         bool isPositive() const override;
         bool isNegative() const override;
         unsigned complexity() const override;
@@ -64,7 +64,7 @@ namespace tsym {
         Number checkedNumericEval() const;
         Fraction normalAtan2(SymbolMap& map) const;
         Fraction normalOtherThanAtan2(SymbolMap& map) const;
-        BasePtr diffWrtSymbol(const BasePtr& arg, const BasePtr& symbol) const;
+        BasePtr diffWrtSymbol(const Base& arg, const Base& symbol) const;
         BasePtr innerDiff() const;
 
         const BasePtr& arg1;

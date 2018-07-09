@@ -17,8 +17,9 @@ namespace tsym {
       public:
         explicit PowerNormal(SymbolMap& map);
 
-        void setBase(const BasePtr& base);
-        void setExponent(const BasePtr& exp);
+        /* Base and exponent parameter aren't required to outlive the class instance: */
+        void setBase(const Base& base);
+        void setExponent(const Base& exp);
 
         Fraction normal();
 

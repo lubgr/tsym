@@ -102,21 +102,21 @@ BOOST_AUTO_TEST_CASE(atan2FunctionName)
 
 BOOST_AUTO_TEST_CASE(trivialEquality)
 {
-    BOOST_TEST(sinA->isEqual(sinA));
+    BOOST_TEST(sinA->isEqual(*sinA));
 }
 
 BOOST_AUTO_TEST_CASE(inequalityDifferentArg)
 {
     const BasePtr sinB = Trigonometric::createSin(b);
 
-    BOOST_TEST(sinA->isDifferent(sinB));
+    BOOST_TEST(sinA->isDifferent(*sinB));
 }
 
 BOOST_AUTO_TEST_CASE(inequalityDifferentTrigonometric)
 {
     const BasePtr cosA = Trigonometric::createCos(a);
 
-    BOOST_TEST(sinA->isDifferent(cosA));
+    BOOST_TEST(sinA->isDifferent(*cosA));
 }
 
 BOOST_AUTO_TEST_CASE(sinZero)
@@ -553,7 +553,7 @@ BOOST_AUTO_TEST_CASE(atanOfTanNumEvalWithNegShift)
     BOOST_TEST(res->isFunction());
     BOOST_TEST(res->operands().front()->isFunction());
 
-    replaced = res->subst(a, two);
+    replaced = res->subst(*a, two);
 
     BOOST_CHECK_EQUAL(expected, replaced);
 }

@@ -76,14 +76,14 @@ tsym::BasePtr tsym::Power::createNonTrivial(const BasePtr& base, const BasePtr& 
     return std::make_shared<const Power>(res.front(), res.back(), Base::CtorKey{});
 }
 
-bool tsym::Power::isEqualDifferentBase(const BasePtr& other) const
+bool tsym::Power::isEqualDifferentBase(const Base& other) const
 {
     return isEqualByTypeAndOperands(other);
 }
 
-bool tsym::Power::sameType(const BasePtr& other) const
+bool tsym::Power::sameType(const Base& other) const
 {
-    return other->isPower();
+    return other.isPower();
 }
 
 tsym::Number tsym::Power::numericEval() const
@@ -102,13 +102,13 @@ tsym::Fraction tsym::Power::normal(SymbolMap& map) const
 {
     PowerNormal pn(map);
 
-    pn.setBase(baseRef);
-    pn.setExponent(expRef);
+    pn.setBase(*baseRef);
+    pn.setExponent(*expRef);
 
     return pn.normal();
 }
 
-tsym::BasePtr tsym::Power::diffWrtSymbol(const BasePtr& symbol) const
+tsym::BasePtr tsym::Power::diffWrtSymbol(const Base& symbol) const
 {
     const BasePtrList summands{Product::create(Logarithm::create(baseRef), expRef->diffWrtSymbol(symbol)),
       Product::create(expRef, oneOver(baseRef), baseRef->diffWrtSymbol(symbol))};
@@ -165,15 +165,15 @@ bool tsym::Power::isNumericPower() const
 
 tsym::BasePtr tsym::Power::expand() const
 {
-    if (isInteger(expRef))
+    if (isInteger(*expRef))
         return expandIntegerExponent();
     else
         return clone();
 }
 
-bool tsym::Power::isInteger(const BasePtr& ptr) const
+bool tsym::Power::isInteger(const Base& ptr) const
 {
-    return ptr->isNumeric() && ptr->numericEval().isInt();
+    return ptr.isNumeric() && ptr.numericEval().isInt();
 }
 
 tsym::BasePtr tsym::Power::expandIntegerExponent() const
@@ -204,7 +204,7 @@ tsym::BasePtr tsym::Power::expandSumBaseIntExp() const
     return res;
 }
 
-tsym::BasePtr tsym::Power::subst(const BasePtr& from, const BasePtr& to) const
+tsym::BasePtr tsym::Power::subst(const Base& from, const BasePtr& to) const
 {
     if (isEqual(from))
         return to;
@@ -212,11 +212,11 @@ tsym::BasePtr tsym::Power::subst(const BasePtr& from, const BasePtr& to) const
         return create(baseRef->subst(from, to), expRef->subst(from, to));
 }
 
-tsym::BasePtr tsym::Power::coeff(const BasePtr& variable, int exp) const
+tsym::BasePtr tsym::Power::coeff(const Base& variable, int exp) const
 {
     if (isEqual(variable))
         return exp == 1 ? Numeric::one() : Numeric::zero();
-    else if (isEqual(create(variable, Numeric::create(exp))))
+    else if (isEqual(*create(variable.clone(), Numeric::create(exp))))
         /* We won't get here for an exp < 2, otherwise *this wasn't a Power. */
         return Numeric::one();
     else if (!baseRef->isEqual(variable))
@@ -225,13 +225,13 @@ tsym::BasePtr tsym::Power::coeff(const BasePtr& variable, int exp) const
         return Numeric::zero();
 }
 
-int tsym::Power::degree(const BasePtr& variable) const
+int tsym::Power::degree(const Base& variable) const
 {
     Int nExp;
 
     if (isEqual(variable))
         return 1;
-    else if (isInteger(expRef))
+    else if (isInteger(*expRef))
         nExp = expRef->numericEval().numerator();
 
     int baseDegree = baseRef->degree(variable);

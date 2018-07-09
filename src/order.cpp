@@ -36,7 +36,7 @@ namespace tsym {
 
 bool tsym::order::doPermute(const BasePtr& left, const BasePtr& right)
 {
-    if (left->sameType(right))
+    if (left->sameType(*right))
         return doPermuteSameType(left, right);
     else
         return doPermuteDifferentType(left, right);
@@ -97,7 +97,7 @@ bool tsym::doPermuteBothPower(const BasePtr& left, const BasePtr& right)
     const BasePtr lExp(left->exp());
     const BasePtr rExp(right->exp());
 
-    if (lBase->isDifferent(rBase))
+    if (lBase->isDifferent(*rBase))
         return order::doPermute(lBase, rBase);
     else
         return order::doPermute(lExp, rExp);
@@ -116,7 +116,7 @@ bool tsym::doPermuteListReverse(const BasePtrList& left, const BasePtrList& righ
     using boost::adaptors::reversed;
 
     return boost::lexicographical_compare(right | reversed, left | reversed,
-      [](const auto& bp1, const auto& bp2) { return bp1->isDifferent(bp2) && order::isCorrect(bp1, bp2); });
+      [](const auto& bp1, const auto& bp2) { return bp1->isDifferent(*bp2) && order::isCorrect(bp1, bp2); });
 }
 
 bool tsym::doPermuteBothSum(const BasePtr& left, const BasePtr& right)
@@ -191,9 +191,9 @@ bool tsym::doPermuteLeftProduct(const BasePtr& left, const BasePtr& right)
 
 bool tsym::doPermuteLastElement(const BasePtrList& lList, const BasePtr& right)
 {
-    const BasePtr lLastFactor(lList.back());
+    const BasePtr& lLastFactor(lList.back());
 
-    if (lLastFactor->isEqual(right))
+    if (lLastFactor->isEqual(*right))
         return true;
     else
         return order::doPermute(lLastFactor, right);
@@ -209,7 +209,7 @@ bool tsym::doPermuteLeftPower(const BasePtr& left, const BasePtr& right)
     const BasePtr lBase(left->base());
     const BasePtr lExp(left->exp());
 
-    if (lBase->isDifferent(right))
+    if (lBase->isDifferent(*right))
         return order::doPermute(lBase, right);
     else
         return order::doPermute(lExp, Numeric::one());

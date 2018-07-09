@@ -54,11 +54,11 @@ BOOST_AUTO_TEST_CASE(equalityOtherUndefined, noLogs())
 {
     const BasePtr otherUndefined = Undefined::create();
 
-    BOOST_TEST(!undefined->isEqual(undefined));
-    BOOST_TEST(!undefined->isEqual(otherUndefined));
+    BOOST_TEST(!undefined->isEqual(*undefined));
+    BOOST_TEST(!undefined->isEqual(*otherUndefined));
 
-    BOOST_TEST(undefined->isDifferent(undefined));
-    BOOST_TEST(undefined->isDifferent(otherUndefined));
+    BOOST_TEST(undefined->isDifferent(*undefined));
+    BOOST_TEST(undefined->isDifferent(*otherUndefined));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

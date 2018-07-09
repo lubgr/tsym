@@ -29,7 +29,7 @@ namespace tsym {
         void defineSymbolListIfRequired();
         void addSymbols(const BasePtr& ptr);
         void addIfNotAlreadyStored(const BasePtr& symbol);
-        void addSymbolsNonScalar(const BasePtr& ptr);
+        void addSymbolsNonScalar(const Base& ptr);
         void addSymbols(const BasePtrList& list);
         bool hasCommonSymbol() const;
 

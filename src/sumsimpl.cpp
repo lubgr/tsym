@@ -140,7 +140,7 @@ namespace tsym {
             if (nonConst1->isOne() || nonConst2->isOne())
                 return false;
             else
-                return nonConst1->isEqual(nonConst2);
+                return nonConst1->isEqual(*nonConst2);
         }
 
         BasePtrList simplEqualNonConstTerms(const BasePtr& s1, const BasePtr& s2)
@@ -165,7 +165,7 @@ namespace tsym {
             const BasePtr nonNumeric2(s2->nonNumericTerm());
 
             /* Both aren't of type Numeric (has been processes earlier). So they can't be both one. */
-            return nonNumeric1->isEqual(nonNumeric2);
+            return nonNumeric1->isEqual(*nonNumeric2);
         }
 
         BasePtrList simplEqualNonNumericTerms(const BasePtr& s1, const BasePtr& s2)
@@ -187,7 +187,7 @@ namespace tsym {
             const BasePtr const1(s1->constTerm());
             const BasePtr const2(s2->constTerm());
 
-            if (const1->isEqual(const2) && areSinAndCosSquare(nonConst1, nonConst2))
+            if (const1->isEqual(*const2) && areSinAndCosSquare(nonConst1, nonConst2))
                 return haveEqualFirstOperands(nonConst1, nonConst2);
             else
                 return false;
@@ -221,7 +221,7 @@ namespace tsym {
             const BasePtr arg1(pow1->base()->operands().front());
             const BasePtr arg2(pow2->base()->operands().front());
 
-            return arg1->isEqual(arg2) || arg1->normal()->isEqual(arg2->normal());
+            return arg1->isEqual(*arg2) || arg1->normal()->isEqual(*arg2->normal());
         }
 
         BasePtrList simplNSummands(const BasePtrList& u)

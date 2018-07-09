@@ -12,14 +12,14 @@ namespace tsym {
       public:
         Number numericEval() const override = 0;
         Fraction normal(SymbolMap& map) const override = 0;
-        BasePtr diffWrtSymbol(const BasePtr& symbol) const override = 0;
-        BasePtr subst(const BasePtr& from, const BasePtr& to) const override = 0;
+        BasePtr diffWrtSymbol(const Base& symbol) const override = 0;
+        BasePtr subst(const Base& from, const BasePtr& to) const override = 0;
         bool isPositive() const override = 0;
         bool isNegative() const override = 0;
         unsigned complexity() const override = 0;
 
-        bool isEqualDifferentBase(const BasePtr& other) const override;
-        bool sameType(const BasePtr& other) const override;
+        bool isEqualDifferentBase(const Base& other) const override;
+        bool sameType(const Base& other) const override;
         std::string typeStr() const override;
         size_t hash() const override;
 

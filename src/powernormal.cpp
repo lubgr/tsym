@@ -9,14 +9,14 @@ tsym::PowerNormal::PowerNormal(SymbolMap& map)
     : map(map)
 {}
 
-void tsym::PowerNormal::setBase(const BasePtr& base)
+void tsym::PowerNormal::setBase(const Base& base)
 {
-    rationalBase = base->normal(map);
+    rationalBase = base.normal(map);
 }
 
-void tsym::PowerNormal::setExponent(const BasePtr& exp)
+void tsym::PowerNormal::setExponent(const Base& exp)
 {
-    rationalExp = exp->normal();
+    rationalExp = exp.normal();
 }
 
 tsym::Fraction tsym::PowerNormal::normal()

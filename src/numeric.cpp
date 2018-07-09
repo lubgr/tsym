@@ -101,17 +101,17 @@ const tsym::BasePtr& tsym::Numeric::mOne()
     return refToLocalStatic<-1>();
 }
 
-bool tsym::Numeric::isEqualDifferentBase(const BasePtr& other) const
+bool tsym::Numeric::isEqualDifferentBase(const Base& other) const
 {
-    if (other->isNumeric())
-        return number == other->numericEval();
+    if (other.isNumeric())
+        return number == other.numericEval();
     else
         return false;
 }
 
-bool tsym::Numeric::sameType(const BasePtr& other) const
+bool tsym::Numeric::sameType(const Base& other) const
 {
-    return other->isNumeric();
+    return other.isNumeric();
 }
 
 tsym::Number tsym::Numeric::numericEval() const
@@ -127,7 +127,7 @@ tsym::Fraction tsym::Numeric::normal(SymbolMap& map) const
         return Fraction(map.getTmpSymbolAndStore(clone()));
 }
 
-tsym::BasePtr tsym::Numeric::diffWrtSymbol(const BasePtr&) const
+tsym::BasePtr tsym::Numeric::diffWrtSymbol(const Base&) const
 {
     return zero();
 }
@@ -207,7 +207,7 @@ tsym::BasePtr tsym::Numeric::nonConstTerm() const
     return create(1);
 }
 
-tsym::BasePtr tsym::Numeric::coeff(const BasePtr&, int exp) const
+tsym::BasePtr tsym::Numeric::coeff(const Base&, int exp) const
 {
     if (exp == 0)
         return clone();
@@ -215,7 +215,7 @@ tsym::BasePtr tsym::Numeric::coeff(const BasePtr&, int exp) const
         return Numeric::zero();
 }
 
-int tsym::Numeric::degree(const BasePtr&) const
+int tsym::Numeric::degree(const Base&) const
 {
     return 0;
 }

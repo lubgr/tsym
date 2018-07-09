@@ -23,11 +23,11 @@ namespace tsym {
         Symbol& operator=(Symbol&&) = delete;
         ~Symbol() override;
 
-        bool isEqualDifferentBase(const BasePtr& other) const override;
-        bool sameType(const BasePtr& other) const override;
+        bool isEqualDifferentBase(const Base& other) const override;
+        bool sameType(const Base& other) const override;
         Number numericEval() const override;
         Fraction normal(SymbolMap&) const override;
-        BasePtr diffWrtSymbol(const BasePtr& symbol) const override;
+        BasePtr diffWrtSymbol(const Base& symbol) const override;
         std::string typeStr() const override;
         bool isPositive() const override;
         bool isNegative() const override;
@@ -40,7 +40,7 @@ namespace tsym {
       private:
         static BasePtr create(const Name& name, bool positive);
         static BasePtr createNonEmptyName(const Name& name, bool positive);
-        bool isEqualOtherSymbol(const BasePtr& other) const;
+        bool isEqualOtherSymbol(const Base& other) const;
 
         const Name symbolName;
         const bool positive;

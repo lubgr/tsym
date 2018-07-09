@@ -225,8 +225,8 @@ namespace tsym {
 
         bool isBaseEulerConstantAndExpLogarithm(const BasePtr& base, const BasePtr& exp)
         {
-            if (base->isEqual(Constant::createE()) && exp->isFunction())
-                return exp->isEqual(Logarithm::create(exp->operands().front()));
+            if (base->isEqual(*Constant::createE()) && exp->isFunction())
+                return exp->isEqual(*Logarithm::create(exp->operands().front()));
             else
                 return false;
         }

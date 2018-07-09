@@ -55,14 +55,14 @@ tsym::BasePtr tsym::Sum::createSimplifiedSum(const BasePtrList& summands)
         return std::make_shared<const Sum>(res, Base::CtorKey{});
 }
 
-bool tsym::Sum::isEqualDifferentBase(const BasePtr& other) const
+bool tsym::Sum::isEqualDifferentBase(const Base& other) const
 {
     return isEqualByTypeAndOperands(other);
 }
 
-bool tsym::Sum::sameType(const BasePtr& other) const
+bool tsym::Sum::sameType(const Base& other) const
 {
-    return other->isSum();
+    return other.isSum();
 }
 
 tsym::Number tsym::Sum::numericEval() const
@@ -105,7 +105,7 @@ tsym::Fraction tsym::Sum::toCommonDenom(const std::vector<Fraction>& operands) c
         nextNum = it->num();
         nextDenom = it->denom();
 
-        if (denom->isEqual(nextDenom)) {
+        if (denom->isEqual(*nextDenom)) {
             num = create(num, nextNum);
             continue;
         }
@@ -120,7 +120,7 @@ tsym::Fraction tsym::Sum::toCommonDenom(const std::vector<Fraction>& operands) c
     return Fraction(num, denom).cancel();
 }
 
-tsym::BasePtr tsym::Sum::diffWrtSymbol(const BasePtr& symbol) const
+tsym::BasePtr tsym::Sum::diffWrtSymbol(const Base& symbol) const
 {
     BasePtrList derivedSummands;
 
@@ -216,7 +216,7 @@ tsym::BasePtr tsym::Sum::expand() const
     return create(expandedSummands);
 }
 
-tsym::BasePtr tsym::Sum::subst(const tsym::BasePtr& from, const tsym::BasePtr& to) const
+tsym::BasePtr tsym::Sum::subst(const tsym::Base& from, const tsym::BasePtr& to) const
 {
     if (isEqual(from))
         return to;
@@ -224,7 +224,7 @@ tsym::BasePtr tsym::Sum::subst(const tsym::BasePtr& from, const tsym::BasePtr& t
         return create(bplist::subst(ops, from, to));
 }
 
-tsym::BasePtr tsym::Sum::coeff(const BasePtr& variable, int exp) const
+tsym::BasePtr tsym::Sum::coeff(const Base& variable, int exp) const
 {
     if (isEqual(variable))
         return exp == 1 ? Numeric::one() : Numeric::zero();
@@ -234,7 +234,7 @@ tsym::BasePtr tsym::Sum::coeff(const BasePtr& variable, int exp) const
         return coeffOverSummands(variable, exp);
 }
 
-tsym::BasePtr tsym::Sum::coeffOverSummands(const BasePtr& variable, int exp) const
+tsym::BasePtr tsym::Sum::coeffOverSummands(const Base& variable, int exp) const
 {
     BasePtr coeffSum(Numeric::zero());
 
@@ -244,7 +244,7 @@ tsym::BasePtr tsym::Sum::coeffOverSummands(const BasePtr& variable, int exp) con
     return coeffSum;
 }
 
-int tsym::Sum::degree(const tsym::BasePtr& variable) const
+int tsym::Sum::degree(const Base& variable) const
 {
     static auto minInt = std::numeric_limits<int>::min();
 

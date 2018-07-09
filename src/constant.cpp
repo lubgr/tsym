@@ -31,17 +31,17 @@ tsym::BasePtr tsym::Constant::create(Type type, Name&& name)
     return std::make_shared<const Constant>(type, std::move(name), Base::CtorKey{});
 }
 
-bool tsym::Constant::isEqualDifferentBase(const BasePtr& other) const
+bool tsym::Constant::isEqualDifferentBase(const Base& other) const
 {
-    if (other->isConstant())
-        return name() == other->name();
+    if (other.isConstant())
+        return name() == other.name();
     else
         return false;
 }
 
-bool tsym::Constant::sameType(const BasePtr& other) const
+bool tsym::Constant::sameType(const Base& other) const
 {
-    return other->isConstant();
+    return other.isConstant();
 }
 
 tsym::Number tsym::Constant::numericEval() const
@@ -63,7 +63,7 @@ tsym::Fraction tsym::Constant::normal(SymbolMap& map) const
     return Fraction(replacement);
 }
 
-tsym::BasePtr tsym::Constant::diffWrtSymbol(const BasePtr&) const
+tsym::BasePtr tsym::Constant::diffWrtSymbol(const Base&) const
 {
     return Numeric::zero();
 }

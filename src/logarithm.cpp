@@ -20,7 +20,7 @@ tsym::Logarithm::Logarithm(const BasePtr& arg, Base::CtorKey&&)
 
 tsym::BasePtr tsym::Logarithm::create(const BasePtr& arg)
 {
-    if (isInvalidArg(arg))
+    if (isInvalidArg(*arg))
         return Undefined::create();
     else if (arg->isOne())
         return Numeric::zero();
@@ -39,22 +39,22 @@ tsym::BasePtr tsym::Logarithm::createInstance(const BasePtr& arg)
     return std::make_shared<const Logarithm>(arg, Base::CtorKey{});
 }
 
-bool tsym::Logarithm::isInvalidArg(const BasePtr& arg)
+bool tsym::Logarithm::isInvalidArg(const Base& arg)
 {
     bool invalid = false;
 
-    if (arg->isUndefined())
+    if (arg.isUndefined())
         invalid = true;
-    else if (arg->isZero())
+    else if (arg.isZero())
         invalid = true;
-    else if (arg->isPower() && arg->base()->isEqual(Constant::createE()))
+    else if (arg.isPower() && arg.base()->isEqual(*Constant::createE()))
         /* Catches log(e^(-n)) with n being a large Numeric, which would numerically be evaluated to
          * zero and thus resulting in an Undefined return value. */
         ;
-    else if (arg->isNegative())
+    else if (arg.isNegative())
         invalid = true;
-    else if (arg->isNumericallyEvaluable())
-        invalid = arg->numericEval().isZero();
+    else if (arg.isNumericallyEvaluable())
+        invalid = arg.numericEval().isZero();
 
     if (invalid)
         TSYM_WARNING("Logarithm: invalid argument %S", arg);
@@ -76,7 +76,7 @@ tsym::BasePtr tsym::Logarithm::createNumerically(const BasePtr& arg)
 
 tsym::BasePtr tsym::Logarithm::createFromConstant(const BasePtr& arg)
 {
-    if (arg->isEqual(Constant::createE()))
+    if (arg->isEqual(*Constant::createE()))
         return Numeric::one();
     else
         return createInstance(arg);
@@ -110,12 +110,12 @@ tsym::Fraction tsym::Logarithm::normal(SymbolMap& map) const
     return Fraction(replacement);
 }
 
-tsym::BasePtr tsym::Logarithm::diffWrtSymbol(const BasePtr& symbol) const
+tsym::BasePtr tsym::Logarithm::diffWrtSymbol(const Base& symbol) const
 {
     return Product::create(Power::oneOver(arg), arg->diffWrtSymbol(symbol));
 }
 
-tsym::BasePtr tsym::Logarithm::subst(const BasePtr& from, const BasePtr& to) const
+tsym::BasePtr tsym::Logarithm::subst(const Base& from, const BasePtr& to) const
 {
     if (isEqual(from))
         return to;

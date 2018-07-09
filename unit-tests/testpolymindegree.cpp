@@ -14,19 +14,19 @@ BOOST_FIXTURE_TEST_SUITE(TestPolyMinDegree, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(minDegreeMatchingSymbol)
 {
-    BOOST_CHECK_EQUAL(1, poly::minDegree(a, a));
+    BOOST_CHECK_EQUAL(1, poly::minDegree(*a, *a));
 }
 
 BOOST_AUTO_TEST_CASE(minDegreeDifferentSymbol)
 {
-    BOOST_CHECK_EQUAL(0, poly::minDegree(a, b));
+    BOOST_CHECK_EQUAL(0, poly::minDegree(*a, *b));
 }
 
 BOOST_AUTO_TEST_CASE(minDegreeInteger, noLogs())
 {
-    BOOST_CHECK_EQUAL(0, poly::minDegree(two, a));
+    BOOST_CHECK_EQUAL(0, poly::minDegree(*two, *a));
 
-    BOOST_CHECK_EQUAL(0, poly::minDegree(two, two));
+    BOOST_CHECK_EQUAL(0, poly::minDegree(*two, *two));
 }
 
 BOOST_AUTO_TEST_CASE(minDegreePowerOneSymbolInBase)
@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(minDegreePowerOneSymbolInBase)
     const BasePtr base = Sum::create(Product::create(two, a), Power::create(a, two));
     const BasePtr pow = Power::create(base, four);
 
-    BOOST_CHECK_EQUAL(4, poly::minDegree(pow, a));
+    BOOST_CHECK_EQUAL(4, poly::minDegree(*pow, *a));
 }
 
 BOOST_AUTO_TEST_CASE(minDegreeNestedPower)
@@ -44,7 +44,7 @@ BOOST_AUTO_TEST_CASE(minDegreeNestedPower)
     const BasePtr base = Sum::create(Power::create(a, two), Power::create(a, three));
     const BasePtr pow = Power::create(base, four);
 
-    BOOST_CHECK_EQUAL(8, poly::minDegree(pow, a));
+    BOOST_CHECK_EQUAL(8, poly::minDegree(*pow, *a));
 }
 
 BOOST_AUTO_TEST_CASE(minDegreePowerOtherSymbolInBase)
@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE(minDegreePowerOtherSymbolInBase)
     const BasePtr base = Sum::create(Product::create(two, a), b);
     const BasePtr pow = Power::create(base, four);
 
-    BOOST_CHECK_EQUAL(0, poly::minDegree(pow, a));
+    BOOST_CHECK_EQUAL(0, poly::minDegree(*pow, *a));
 }
 
 BOOST_AUTO_TEST_CASE(minDegreeSum)
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(minDegreeSum)
 {
     const BasePtr sum = Sum::create(a, Power::create(a, two), Power::create(a, five));
 
-    BOOST_CHECK_EQUAL(1, poly::minDegree(sum, a));
+    BOOST_CHECK_EQUAL(1, poly::minDegree(*sum, *a));
 }
 
 BOOST_AUTO_TEST_CASE(minDegreeSumOneIntegerSummand)
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(minDegreeSumOneIntegerSummand)
 {
     const BasePtr sum = Sum::create(a, two);
 
-    BOOST_CHECK_EQUAL(0, poly::minDegree(sum, a));
+    BOOST_CHECK_EQUAL(0, poly::minDegree(*sum, *a));
 }
 
 BOOST_AUTO_TEST_CASE(minDegreeSumOneSummandIndependent)
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(minDegreeSumOneSummandIndependent)
 {
     const BasePtr sum = Sum::create(Power::create(a, two), b);
 
-    BOOST_CHECK_EQUAL(0, poly::minDegree(sum, a));
+    BOOST_CHECK_EQUAL(0, poly::minDegree(*sum, *a));
 }
 
 BOOST_AUTO_TEST_CASE(minDegreeProduct)
@@ -85,7 +85,7 @@ BOOST_AUTO_TEST_CASE(minDegreeProduct)
 {
     const BasePtr product = Product::create(a, b, Sum::create(a, two));
 
-    BOOST_CHECK_EQUAL(1, poly::minDegree(product, a));
+    BOOST_CHECK_EQUAL(1, poly::minDegree(*product, *a));
 }
 
 BOOST_AUTO_TEST_CASE(minDegreeProductNoMatchingSymbol)
@@ -93,7 +93,7 @@ BOOST_AUTO_TEST_CASE(minDegreeProductNoMatchingSymbol)
 {
     const BasePtr product = Product::create(a, b, c);
 
-    BOOST_CHECK_EQUAL(0, poly::minDegree(product, d));
+    BOOST_CHECK_EQUAL(0, poly::minDegree(*product, *d));
 }
 
 BOOST_AUTO_TEST_CASE(minDegreeInvalidInput)
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(minDegreeInvalidInput)
     const BasePtr arg = Trigonometric::createSin(a);
     int result;
 
-    result = poly::minDegree(arg, a);
+    result = poly::minDegree(*arg, *a);
 
     BOOST_CHECK_EQUAL(0, result);
 }
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(minDegreeLargeExp, noLogs())
     const BasePtr arg = Power::create(a, Numeric::create(largeExp));
     int result;
 
-    result = poly::minDegree(arg, a);
+    result = poly::minDegree(*arg, *a);
 
     BOOST_CHECK_EQUAL(0, result);
 }

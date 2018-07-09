@@ -82,17 +82,17 @@ bool tsym::Base::isConstant() const
     return false;
 }
 
-bool tsym::Base::isEqual(const BasePtr& other) const
+bool tsym::Base::isEqual(const Base& other) const
 {
-    return this == &*other || isEqualDifferentBase(other);
+    return this == &other || isEqualDifferentBase(other);
 }
 
-bool tsym::Base::isDifferent(const BasePtr& other) const
+bool tsym::Base::isDifferent(const Base& other) const
 {
     return !isEqual(other);
 }
 
-bool tsym::Base::has(const BasePtr& other) const
+bool tsym::Base::has(const Base& other) const
 {
     if (isEqual(other))
         return true;
@@ -135,7 +135,7 @@ tsym::BasePtr tsym::Base::expand() const
     return clone();
 }
 
-tsym::BasePtr tsym::Base::subst(const BasePtr& from, const BasePtr& to) const
+tsym::BasePtr tsym::Base::subst(const Base& from, const BasePtr& to) const
 {
     if (isEqual(from))
         return to;
@@ -143,7 +143,7 @@ tsym::BasePtr tsym::Base::subst(const BasePtr& from, const BasePtr& to) const
         return clone();
 }
 
-tsym::BasePtr tsym::Base::coeff(const BasePtr& variable, int exp) const
+tsym::BasePtr tsym::Base::coeff(const Base& variable, int exp) const
 {
     if (isEqual(variable))
         return exp == 1 ? Numeric::one() : Numeric::zero();
@@ -153,12 +153,12 @@ tsym::BasePtr tsym::Base::coeff(const BasePtr& variable, int exp) const
         return Numeric::zero();
 }
 
-tsym::BasePtr tsym::Base::leadingCoeff(const BasePtr& variable) const
+tsym::BasePtr tsym::Base::leadingCoeff(const Base& variable) const
 {
     return coeff(variable, degree(variable));
 }
 
-int tsym::Base::degree(const BasePtr& variable) const
+int tsym::Base::degree(const Base& variable) const
 {
     if (isEqual(variable))
         return 1;
@@ -221,9 +221,9 @@ tsym::BasePtr tsym::Base::normalWithoutCache() const
       .eval();
 }
 
-tsym::BasePtr tsym::Base::diff(const BasePtr& symbol) const
+tsym::BasePtr tsym::Base::diff(const Base& symbol) const
 {
-    if (symbol->isSymbol())
+    if (symbol.isSymbol())
         return diffWrtSymbol(symbol);
 
     TSYM_WARNING("Differentiation w.r.t. %s! Only Symbols work, return Undefined.", typeStr().c_str());
@@ -236,10 +236,10 @@ const tsym::BasePtrList& tsym::Base::operands() const
     return ops;
 }
 
-bool tsym::Base::isEqualByTypeAndOperands(const BasePtr& other) const
+bool tsym::Base::isEqualByTypeAndOperands(const Base& other) const
 {
     if (sameType(other))
-        return bplist::areEqual(ops, other->ops);
+        return bplist::areEqual(ops, other.ops);
     else
         return false;
 }
@@ -254,4 +254,13 @@ void tsym::Base::setDebugString()
 
     prettyStr = stream.str();
 #endif
+}
+
+std::ostream& tsym::operator<<(std::ostream& stream, const Base& arg)
+{
+    auto engine = PlaintextPrintEngine{stream};
+
+    printer::print(engine, arg);
+
+    return stream;
 }

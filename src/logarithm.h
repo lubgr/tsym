@@ -18,14 +18,14 @@ namespace tsym {
 
         Number numericEval() const override;
         Fraction normal(SymbolMap& map) const override;
-        BasePtr diffWrtSymbol(const BasePtr& symbol) const override;
-        BasePtr subst(const BasePtr& from, const BasePtr& to) const override;
+        BasePtr diffWrtSymbol(const Base& symbol) const override;
+        BasePtr subst(const Base& from, const BasePtr& to) const override;
         bool isPositive() const override;
         bool isNegative() const override;
         unsigned complexity() const override;
 
       private:
-        static bool isInvalidArg(const BasePtr& arg);
+        static bool isInvalidArg(const Base& arg);
         static BasePtr createInstance(const BasePtr& arg);
         static BasePtr createNumerically(const BasePtr& arg);
         static BasePtr createFromConstant(const BasePtr& arg);

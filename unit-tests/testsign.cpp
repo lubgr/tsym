@@ -364,7 +364,7 @@ BOOST_AUTO_TEST_CASE(mixedNegativeAndUnclear)
     const BasePtr res = Sum::create(s1, s2, s3, s4);
 
     checkNeg(res);
-    checkUnclear(res->subst(bPos, b));
+    checkUnclear(res->subst(*bPos, b));
 }
 
 BOOST_AUTO_TEST_CASE(mixedPosAndUnclear)
@@ -377,7 +377,7 @@ BOOST_AUTO_TEST_CASE(mixedPosAndUnclear)
 
     checkPos(res);
 
-    checkUnclear(res->subst(bPos, b));
+    checkUnclear(res->subst(*bPos, b));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -31,5 +31,5 @@ size_t std::hash<tsym::BasePtr>::operator()(const tsym::BasePtr& ptr) const
 
 bool std::equal_to<tsym::BasePtr>::operator()(const tsym::BasePtr& lhs, const tsym::BasePtr& rhs) const
 {
-    return lhs->isEqual(rhs);
+    return lhs->isEqual(*rhs);
 }

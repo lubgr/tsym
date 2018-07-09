@@ -27,10 +27,10 @@ tsym::BasePtrList tsym::bplist::join(BasePtrList&& first, BasePtrList&& second)
 
 bool tsym::bplist::areEqual(const BasePtrList& list1, const BasePtrList& list2)
 {
-    return boost::equal(list1, list2, [](const auto& bp1, const auto bp2) { return bp1->isEqual(bp2); });
+    return boost::equal(list1, list2, [](const auto& bp1, const auto bp2) { return bp1->isEqual(*bp2); });
 }
 
-bool tsym::bplist::has(const BasePtrList& list, const BasePtr& element)
+bool tsym::bplist::has(const BasePtrList& list, const Base& element)
 {
     return boost::algorithm::any_of(
       list, [&element](const auto item) { return item->isEqual(element) || item->has(element); });
@@ -140,12 +140,12 @@ namespace tsym {
             return expandProductOf(sums);
         }
 
-        BasePtr expandProductOf(const BasePtr& scalar, const BasePtr& sum)
+        BasePtr expandProductOf(const BasePtr& scalar, const Base& sum)
         {
             BasePtrList summands;
             BasePtr product;
 
-            for (const auto& item : sum->operands()) {
+            for (const auto& item : sum.operands()) {
                 product = Product::create(scalar, item);
                 summands.push_back(product->expand());
             }
@@ -172,18 +172,18 @@ tsym::BasePtr tsym::bplist::expandAsProduct(const BasePtrList& list)
     if (sums.empty())
         expanded = scalar;
     else
-        expanded = expandProductOf(scalar, expandProductOf(sums));
+        expanded = expandProductOf(scalar, *expandProductOf(sums));
 
     return map.insert({list, std::move(expanded)})->second;
 }
 
-void tsym::bplist::subst(BasePtrList& list, const BasePtr& from, const BasePtr& to)
+void tsym::bplist::subst(BasePtrList& list, const Base& from, const BasePtr& to)
 {
     for (auto& item : list)
         item = item->subst(from, to);
 }
 
-tsym::BasePtrList tsym::bplist::subst(const BasePtrList& list, const BasePtr& from, const BasePtr& to)
+tsym::BasePtrList tsym::bplist::subst(const BasePtrList& list, const Base& from, const BasePtr& to)
 {
     BasePtrList res;
 

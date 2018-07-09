@@ -23,11 +23,11 @@ namespace tsym {
         Constant& operator=(Constant&&) = delete;
         ~Constant() override = default;
 
-        bool isEqualDifferentBase(const BasePtr& other) const override;
-        bool sameType(const BasePtr& other) const override;
+        bool isEqualDifferentBase(const Base& other) const override;
+        bool sameType(const Base& other) const override;
         Number numericEval() const override;
         Fraction normal(SymbolMap& map) const override;
-        BasePtr diffWrtSymbol(const BasePtr& symbol) const override;
+        BasePtr diffWrtSymbol(const Base& symbol) const override;
         std::string typeStr() const override;
         bool isPositive() const override;
         bool isNegative() const override;

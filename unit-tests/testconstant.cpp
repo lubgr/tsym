@@ -56,8 +56,8 @@ BOOST_AUTO_TEST_CASE(getNameFromE)
 
 BOOST_AUTO_TEST_CASE(trivialEquality)
 {
-    BOOST_TEST(pi->isEqual(pi));
-    BOOST_TEST(euler->isEqual(euler));
+    BOOST_TEST(pi->isEqual(*pi));
+    BOOST_TEST(euler->isEqual(*euler));
 }
 
 BOOST_AUTO_TEST_CASE(numericEvaluationPi)

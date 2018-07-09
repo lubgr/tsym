@@ -54,7 +54,7 @@ namespace tsym {
 
             void power(const BasePtr& base, const BasePtr& exp)
             {
-                if (exp->isEqual(Numeric::half()))
+                if (exp->isEqual(*Numeric::half()))
                     engine.openSquareRoot().invokePrint(base).closeSquareRoot();
                 else if (isNegativeNumeric(exp) && powerAsFraction == PowerAsFraction::TRUE)
                     powerNegNumericExp(base, exp);

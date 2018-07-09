@@ -16,7 +16,7 @@
 
 namespace tsym {
     namespace {
-        BasePtrList pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x, bool computeQuotient);
+        BasePtrList pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const Base& x, bool computeQuotient);
         BasePtr getFirstSymbol(const BasePtr& polynomial);
         BasePtr getFirstSymbol(const BasePtrList& polynomials);
 
@@ -33,7 +33,7 @@ namespace tsym {
         BasePtrList divideNonEmpty(const BasePtr& u, const BasePtr& v, const BasePtrList& L)
         /* The central part of the algorithm described in Cohen [2003]. */
         {
-            const BasePtr& x(L.front());
+            const Base& x(*L.front());
             BasePtr quotient(Numeric::zero());
             BasePtr remainder(u);
             int m = u->degree(x);
@@ -42,7 +42,7 @@ namespace tsym {
             BasePtr tmp;
             BasePtr c;
 
-            assert(x->isSymbol());
+            assert(x.isSymbol());
 
             while (m >= n) {
                 assert(m >= 0 && n >= 0);
@@ -53,7 +53,7 @@ namespace tsym {
                     return {quotient->expand(), remainder};
 
                 c = d.front();
-                tmp = Power::create(x, Numeric::create(m - n));
+                tmp = Power::create(x.clone(), Numeric::create(m - n));
                 quotient = Sum::create(quotient, Product::create(c, tmp));
 
                 remainder = Sum::create(remainder, Product::minus(c, v, tmp))->expand();
@@ -67,7 +67,7 @@ namespace tsym {
             return {quotient->expand(), remainder};
         }
 
-        BasePtrList pseudoDivideImpl(const BasePtr& u, const BasePtr& v, const BasePtr& x, bool computeQuotient)
+        BasePtrList pseudoDivideImpl(const BasePtr& u, const BasePtr& v, const Base& x, bool computeQuotient)
         {
             PolyInfo polyInfo(u, v);
 
@@ -79,7 +79,7 @@ namespace tsym {
             return {Undefined::create(), Undefined::create()};
         }
 
-        BasePtrList pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const BasePtr& x, bool computeQuotient)
+        BasePtrList pseudoDivideChecked(const BasePtr& u, const BasePtr& v, const Base& x, bool computeQuotient)
         {
             const BasePtr lCoeffV(v->leadingCoeff(x));
             const int n = v->degree(x);
@@ -95,7 +95,7 @@ namespace tsym {
             while (m >= n) {
                 lCoeffR = remainder->coeff(x, m);
 
-                tmp = Product::create(lCoeffR, Power::create(x, Numeric::create(m - n)));
+                tmp = Product::create(lCoeffR, Power::create(x.clone(), Numeric::create(m - n)));
 
                 if (computeQuotient)
                     quotient = Sum::create(Product::create(lCoeffV, quotient), tmp);
@@ -160,22 +160,22 @@ namespace tsym {
             return algo;
         }
 
-        BasePtr nonTrivialContent(const BasePtr& expandedPolynomial, const BasePtr& x, const Gcd& algo)
+        BasePtr nonTrivialContent(const Base& expandedPolynomial, const Base& x, const Gcd& algo)
         {
             const int minDegree = poly::minDegree(expandedPolynomial, x);
-            const int degree = expandedPolynomial->degree(x);
+            const int degree = expandedPolynomial.degree(x);
             BasePtr content(Numeric::zero());
 
             for (int i = minDegree; i <= degree; ++i)
-                content = poly::gcd(expandedPolynomial->coeff(x, i), content, algo);
+                content = poly::gcd(expandedPolynomial.coeff(x, i), content, algo);
 
             return content;
         }
 
-        int minDegreeOfPower(const BasePtr& power, const tsym::BasePtr& variable)
+        int minDegreeOfPower(const Base& power, const tsym::Base& variable)
         {
-            const Int largeExp = power->exp()->numericEval().numerator();
-            const BasePtr base(power->base());
+            const Int largeExp = power.exp()->numericEval().numerator();
+            const BasePtr base(power.base());
             int exp;
 
             if (!integer::fitsInto<int>(largeExp)) {
@@ -187,25 +187,25 @@ namespace tsym {
             if (base->isEqual(variable))
                 return exp;
             else
-                return exp * poly::minDegree(base, variable);
+                return exp * poly::minDegree(*base, variable);
         }
 
-        int minDegreeOfSum(const BasePtr& sum, const tsym::BasePtr& variable)
+        int minDegreeOfSum(const Base& sum, const tsym::Base& variable)
         {
-            std::vector<int> degrees(sum->operands().size());
+            std::vector<int> degrees(sum.operands().size());
 
-            boost::transform(sum->operands(), begin(degrees),
-              [&variable](const auto& operand) { return poly::minDegree(operand, variable); });
+            boost::transform(sum.operands(), begin(degrees),
+              [&variable](const auto& operand) { return poly::minDegree(*operand, variable); });
 
             return *boost::min_element(degrees);
         }
 
-        int minDegreeOfProduct(const BasePtr& product, const tsym::BasePtr& variable)
+        int minDegreeOfProduct(const Base& product, const Base& variable)
         {
             int result = 0;
 
-            for (const auto& factor : product->operands())
-                result += poly::minDegree(factor, variable);
+            for (const auto& factor : product.operands())
+                result += poly::minDegree(*factor, variable);
 
             return result;
         }
@@ -238,7 +238,7 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v, const B
         return {Undefined::create(), Undefined::create()};
     } else if (L.empty())
         return divideEmptyList(u, v);
-    else if (v->isEqual(u))
+    else if (v->isEqual(*u))
         return {Numeric::one(), zero};
     else if (u->isZero())
         return {zero, zero};
@@ -249,18 +249,18 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v, const B
 tsym::BasePtrList tsym::poly::pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x)
 /* See Cohen, Computer Algebra and Symbolic Computation [2003], page 240. */
 {
-    return pseudoDivideImpl(u, v, x, true);
+    return pseudoDivideImpl(u, v, *x, true);
 }
 
 tsym::BasePtr tsym::poly::pseudoRemainder(const BasePtr& u, const BasePtr& v, const BasePtr& x)
 {
-    return pseudoDivideImpl(u, v, x, false).back();
+    return pseudoDivideImpl(u, v, *x, false).back();
 }
 
 int tsym::poly::unit(const BasePtr& polynomial, const BasePtr& x)
 {
     const BasePtr expanded(polynomial->expand());
-    const BasePtr lCoeff(expanded->leadingCoeff(x));
+    const BasePtr lCoeff(expanded->leadingCoeff(*x));
 
     if (lCoeff->isZero())
         return 1;
@@ -300,23 +300,23 @@ tsym::BasePtr tsym::poly::content(const BasePtr& polynomial, const tsym::BasePtr
         /* This include the zero case. */
         return Numeric::create(expanded->numericEval().abs());
     else
-        return nonTrivialContent(expanded, x, algo);
+        return nonTrivialContent(*expanded, *x, algo);
 }
 
-int tsym::poly::minDegree(const BasePtr& of, const BasePtr& variable)
+int tsym::poly::minDegree(const Base& of, const Base& variable)
 {
-    if (!variable->isSymbol())
+    if (!variable.isSymbol())
         TSYM_WARNING("Requesting min. degree with non-Symbol argument %S", variable);
 
-    if (of->isNumeric())
+    if (of.isNumeric())
         return 0;
-    else if (of->isEqual(variable))
+    else if (of.isEqual(variable))
         return 1;
-    else if (of->isPower())
+    else if (of.isPower())
         return minDegreeOfPower(of, variable);
-    else if (of->isSum())
+    else if (of.isSum())
         return minDegreeOfSum(of, variable);
-    else if (of->isProduct())
+    else if (of.isProduct())
         return minDegreeOfProduct(of, variable);
 
     return 0;

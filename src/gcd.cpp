@@ -39,7 +39,7 @@ tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v, const BaseP
         result = vExp;
     else if (vExp->isZero())
         result = uExp;
-    else if (uExp->isEqual(vExp))
+    else if (uExp->isEqual(*vExp))
         result = uExp;
     else if (uExp->isNumeric() && vExp->isNumeric())
         result = computeNumerics(uExp, vExp);
@@ -76,7 +76,7 @@ tsym::Int tsym::Gcd::integerGcd(const Int& u, const Int& v) const
 bool tsym::Gcd::haveCommonSymbol(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const
 {
     for (const auto& item : L)
-        if (u->has(item) && v->has(item))
+        if (u->has(*item) && v->has(*item))
             return true;
 
     return false;
@@ -155,7 +155,7 @@ tsym::Number tsym::Gcd::normalizationFactor(const BasePtr& arg, BasePtrList& L) 
     if (L.empty())
         lCoeff = arg;
     else {
-        lCoeff = arg->leadingCoeff(L.back());
+        lCoeff = arg->leadingCoeff(*L.back());
         L.pop_back();
     }
 

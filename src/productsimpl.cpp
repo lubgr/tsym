@@ -22,10 +22,10 @@ namespace tsym {
         void prepare(BasePtrList& fac);
         void extractProducts(BasePtrList& u);
         void contractTrigonometrics(BasePtrList& u);
-        void contract(BasePtrList& u, bool (*check)(const BasePtr& f1, const BasePtr& f2),
+        void contract(BasePtrList& u, bool (*check)(const Base& f1, const Base& f2),
           BasePtrList (*simpl)(const BasePtr& f1, const BasePtr& f2));
-        bool areContractableTrigFctPowers(const BasePtr& f1, const BasePtr& f2);
-        bool isContractableTrigFctPower(const BasePtr& pow);
+        bool areContractableTrigFctPowers(const Base& f1, const Base& f2);
+        bool isContractableTrigFctPower(const Base& pow);
         BasePtrList contractTrigFctPowers(const BasePtr& f1, const BasePtr& f2);
         BasePtr trigSymbReplacement(Trigonometric::Type type, const BasePtr& arg);
         BasePtr trigFunctionPowerReplacement(const BasePtr& pow, const BasePtr& sin, const BasePtr& cos);
@@ -41,15 +41,15 @@ namespace tsym {
         BasePtrList simplNumAndConst(const BasePtr& numeric, const BasePtr& constant);
         BasePtrList simplNumAndNumPow(const BasePtr& numeric, const BasePtr& numPow);
         BasePtrList simplNumAndNumPow(const Number& preFactor, const Number& base, const Number& exp);
-        bool haveEqualBases(const BasePtr& f1, const BasePtr& f2);
+        bool haveEqualBases(const Base& f1, const Base& f2);
         BasePtrList simplTwoEqualBases(const BasePtr& f1, const BasePtr& f2);
-        bool isFraction(const BasePtr& arg);
-        bool isInteger(const BasePtr& arg);
-        bool areNumPowersWithEqualExp(const BasePtr& f1, const BasePtr& f2);
+        bool isFraction(const Base& arg);
+        bool isInteger(const Base& arg);
+        bool areNumPowersWithEqualExp(const Base& f1, const Base& f2);
         BasePtrList simplTwoEqualExp(const BasePtr& f1, const BasePtr& f2);
-        bool areNumPowersWithZeroSumExp(const BasePtr& f1, const BasePtr& f2);
+        bool areNumPowersWithZeroSumExp(const Base& f1, const Base& f2);
         BasePtrList simplTwoZeroSumExp(const BasePtr& f1, const BasePtr& f2);
-        bool areNumPowersWithEqualExpDenom(const BasePtr& f1, const BasePtr& f2);
+        bool areNumPowersWithEqualExpDenom(const Base& f1, const Base& f2);
         BasePtrList simplTwoEqualExpDenom(const BasePtr& f1, const BasePtr& f2);
         Int evalNumExpNumerator(const BasePtr& numPow);
         Int evalExpNumerator(const Number& base, const Int& exp);
@@ -106,7 +106,7 @@ namespace tsym {
             contract(u, &areContractableTrigFctPowers, &contractTrigFctPowers);
         }
 
-        void contract(BasePtrList& u, bool (*check)(const BasePtr& f1, const BasePtr& f2),
+        void contract(BasePtrList& u, bool (*check)(const Base& f1, const Base& f2),
           BasePtrList (*simpl)(const BasePtr& f1, const BasePtr& f2))
         /* This method is somewhat compliated, as it operates on the given list, possibly modifying it,
          * while checking for possible contraction of two list items. If that is the case, they are
@@ -123,10 +123,10 @@ namespace tsym {
 
             while (it1 != end(u)) {
                 for (found = false, it2 = it1, ++it2; it2 != end(u); ++it2)
-                    if ((check)(*it1, *it2)) {
+                    if ((check)(**it1, **it2)) {
                         res = (simpl)(*it1, *it2);
 
-                        if (res.size() == 2 && res.front()->isEqual(*it1) && res.back()->isEqual(*it2))
+                        if (res.size() == 2 && res.front()->isEqual(**it1) && res.back()->isEqual(**it2))
                             continue;
 
                         it1 = u.erase(it1);
@@ -146,12 +146,12 @@ namespace tsym {
                 contract(u, check, simpl);
         }
 
-        bool isContractableTrigFctPower(const BasePtr& pow)
+        bool isContractableTrigFctPower(const Base& pow)
         {
             static Name trigoNames[3] = {Name("sin"), Name("cos"), Name("tan")};
-            const Name& name(pow->base()->name());
+            const Name& name(pow.base()->name());
 
-            if (pow->base()->isFunction() && pow->exp()->isNumericallyEvaluable())
+            if (pow.base()->isFunction() && pow.exp()->isNumericallyEvaluable())
                 return name == trigoNames[0] || name == trigoNames[1] || name == trigoNames[2];
 
             return false;
@@ -176,9 +176,9 @@ namespace tsym {
             exp1 = res.front()->exp();
             exp2 = res.back()->exp();
 
-            if (res.size() == 2 && exp1->isEqual(Product::minus(exp2))) {
+            if (res.size() == 2 && exp1->isEqual(*Product::minus(exp2))) {
                 /* A combination of sin and cos should lead to tan or 1/tan. */
-                if (res.front()->base()->isEqual(cos))
+                if (res.front()->base()->isEqual(*cos))
                     newExp = Product::minus(exp1);
                 else
                     newExp = exp1;
@@ -186,8 +186,8 @@ namespace tsym {
                 return {Power::create(Trigonometric::createTan(newArg), newExp)};
             }
 
-            bplist::subst(res, sin, Trigonometric::createSin(newArg));
-            bplist::subst(res, cos, Trigonometric::createCos(newArg));
+            bplist::subst(res, *sin, Trigonometric::createSin(newArg));
+            bplist::subst(res, *cos, Trigonometric::createCos(newArg));
 
             if (order::doPermute(res.front(), res.back()))
                 return {res.back(), res.front()};
@@ -289,7 +289,7 @@ namespace tsym {
                 /* Here, we differ from Cohen's algorithm, as numerics and constant powers (sqrt(2) etc.)are
                  * handled together and somewhat similarly. */
                 return simplTwoConst(f1, f2);
-            else if (haveEqualBases(f1, f2))
+            else if (haveEqualBases(*f1, *f2))
                 return simplTwoEqualBases(f1, f2);
             else if (order::doPermute(f1, f2))
                 return {f2, f1};
@@ -308,16 +308,16 @@ namespace tsym {
                 return simplNumAndConst(f1, f2);
             else if (f2->isNumeric())
                 return simplNumAndConst(f2, f1);
-            else if (haveEqualBases(f1, f2))
+            else if (haveEqualBases(*f1, *f2))
                 /* 2*sqrt(2) has been handled earlier, so this will catch terms like 2^(1/3)*2(1/4). */
                 return simplTwoEqualBases(f1, f2);
-            else if (areNumPowersWithEqualExp(f1, f2))
+            else if (areNumPowersWithEqualExp(*f1, *f2))
                 /* ... while this is for sqrt(2)*sqrt(3) = sqrt(6). */
                 return simplTwoEqualExp(f1, f2);
-            else if (areNumPowersWithZeroSumExp(f1, f2))
+            else if (areNumPowersWithZeroSumExp(*f1, *f2))
                 /* ... and this is for 2^(1/4)*3^(-1/4) = (2/3)^(1/4). */
                 return simplTwoZeroSumExp(f1, f2);
-            else if (areNumPowersWithEqualExpDenom(f1, f2))
+            else if (areNumPowersWithEqualExpDenom(*f1, *f2))
                 return simplTwoEqualExpDenom(f1, f2);
             else if (order::doPermute(f1, f2))
                 /* This has to be checked additionaly for e.g. (1 + sqrt(2))*sqrt(3), which doesn't need
@@ -388,9 +388,9 @@ namespace tsym {
                 return {preFac, Power::create(newBase, newExp)};
         }
 
-        bool haveEqualBases(const BasePtr& f1, const BasePtr& f2)
+        bool haveEqualBases(const Base& f1, const Base& f2)
         {
-            return f1->base()->isEqual(f2->base());
+            return f1.base()->isEqual(*f2.base());
         }
 
         BasePtrList simplTwoEqualBases(const BasePtr& f1, const BasePtr& f2)
@@ -404,47 +404,44 @@ namespace tsym {
                 /* If base < 0, both exponents can't be part of an undefined power expressions (fraction or
                  * double exponent), thus the addition of exponents must be valid, too. */
                 ;
-            else if (isFraction(e1) && isFraction(e2) && isInteger(newExp))
+            else if (isFraction(*e1) && isFraction(*e2) && isInteger(*newExp))
                 /* Exponent addition would hide the fact that the power factors could be undefined. */
                 return {f1, f2};
 
             return {Power::create(newBase, newExp)};
         }
 
-        bool isFraction(const BasePtr& arg)
+        bool isFraction(const Base& arg)
         {
-            return arg->isNumeric() && arg->numericEval().isFrac();
+            return arg.isNumeric() && arg.numericEval().isFrac();
         }
 
-        bool isInteger(const BasePtr& arg)
+        bool isInteger(const Base& arg)
         {
-            return arg->isNumeric() && arg->numericEval().isInt();
+            return arg.isNumeric() && arg.numericEval().isInt();
         }
 
-        bool areContractableTrigFctPowers(const BasePtr& f1, const BasePtr& f2)
+        bool areContractableTrigFctPowers(const Base& f1, const Base& f2)
         /* Returns true for Powers with numerically evaluable exponents and bases that are trigonometric
          * functions of the same argument. */
         {
             if (isContractableTrigFctPower(f1) && isContractableTrigFctPower(f2))
-                return f1->base()->operands().front()->isEqual(f2->base()->operands().front());
+                return f1.base()->operands().front()->isEqual(*f2.base()->operands().front());
             else
                 return false;
         }
 
-        bool areNumPowersWithEqualExp(const BasePtr& f1, const BasePtr& f2)
+        bool areNumPowersWithEqualExp(const Base& f1, const Base& f2)
         {
-            BasePtr exp1;
-            BasePtr exp2;
-
-            if (!f1->isNumericPower())
+            if (!f1.isNumericPower())
                 return false;
-            else if (!f2->isNumericPower())
+            else if (!f2.isNumericPower())
                 return false;
 
-            exp1 = f1->exp();
-            exp2 = f2->exp();
+            const auto exp1 = f1.exp();
+            const auto exp2 = f2.exp();
 
-            return exp1->isEqual(exp2);
+            return exp1->isEqual(*exp2);
         }
 
         BasePtrList simplTwoEqualExp(const BasePtr& f1, const BasePtr& f2)
@@ -456,9 +453,9 @@ namespace tsym {
             return simplNumAndNumPow(1, base1 * base2, exp);
         }
 
-        bool areNumPowersWithZeroSumExp(const BasePtr& f1, const BasePtr& f2)
+        bool areNumPowersWithZeroSumExp(const Base& f1, const Base& f2)
         {
-            const BasePtr sum(Sum::create(f1->exp(), f2->exp()));
+            const BasePtr sum(Sum::create(f1.exp(), f2.exp()));
 
             return sum->isZero();
         }
@@ -477,10 +474,10 @@ namespace tsym {
             return {Power::create(Numeric::create(base1 * base2), exp1)};
         }
 
-        bool areNumPowersWithEqualExpDenom(const BasePtr& f1, const BasePtr& f2)
+        bool areNumPowersWithEqualExpDenom(const Base& f1, const Base& f2)
         {
-            if (f1->isNumericPower() && f2->isNumericPower())
-                return f1->exp()->numericEval().denominator() == f2->exp()->numericEval().denominator();
+            if (f1.isNumericPower() && f2.isNumericPower())
+                return f1.exp()->numericEval().denominator() == f2.exp()->numericEval().denominator();
             else
                 return false;
         }

@@ -446,7 +446,7 @@ const tsym::BasePtr* tsym::NumTrigoSimpl::getKey(const std::unordered_map<BasePt
     for (const auto& entry : table)
         if (entry.second->isUndefined())
             continue;
-        else if (arg->isEqual(entry.second))
+        else if (arg->isEqual(*entry.second))
             return &entry.first;
         else if (nArg == entry.second->numericEval())
             return &entry.first;

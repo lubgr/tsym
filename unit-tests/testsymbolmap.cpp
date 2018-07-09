@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(simpleReplacement)
 
     replacement = map.getTmpSymbolAndStore(a);
 
-    BOOST_TEST(replacement->isDifferent(a));
+    BOOST_TEST(replacement->isDifferent(*a));
     BOOST_CHECK_EQUAL(a, map.replaceTmpSymbolsBackFrom(replacement));
 }
 
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(equalArgumentsDifferentMaps)
     replacement[0] = map1.getTmpSymbolAndStore(arg);
     replacement[1] = map2.getTmpSymbolAndStore(arg);
 
-    BOOST_TEST(replacement[0]->isDifferent(replacement[1]));
+    BOOST_TEST(replacement[0]->isDifferent(*replacement[1]));
 }
 
 BOOST_AUTO_TEST_CASE(differentArguments)
@@ -59,7 +59,7 @@ BOOST_AUTO_TEST_CASE(differentArguments)
     replacement[0] = map.getTmpSymbolAndStore(arg1);
     replacement[1] = map.getTmpSymbolAndStore(arg2);
 
-    BOOST_TEST(replacement[0]->isDifferent(replacement[1]));
+    BOOST_TEST(replacement[0]->isDifferent(*replacement[1]));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

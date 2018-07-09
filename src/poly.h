@@ -29,7 +29,7 @@ namespace tsym {
         BasePtr content(const BasePtr& polynomial, const BasePtr& x, const Gcd& algo);
         /* A variation of the degree of a polynomial; returns the minimal degree, e.g. minDegree(a^2
          * + a^3) = 2, while the degree will return 3. Used internally by the content function. */
-        int minDegree(const BasePtr& of, const BasePtr& variable);
+        int minDegree(const Base& of, const Base& variable);
     }
 }
 

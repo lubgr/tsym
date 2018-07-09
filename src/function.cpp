@@ -9,17 +9,17 @@ tsym::Function::Function(const BasePtrList& args, const std::string& name)
     , functionName(name)
 {}
 
-bool tsym::Function::isEqualDifferentBase(const BasePtr& other) const
+bool tsym::Function::isEqualDifferentBase(const Base& other) const
 {
     if (sameType(other))
-        return name() == other->name() && bplist::areEqual(ops, other->operands());
+        return name() == other.name() && bplist::areEqual(ops, other.operands());
     else
         return false;
 }
 
-bool tsym::Function::sameType(const BasePtr& other) const
+bool tsym::Function::sameType(const Base& other) const
 {
-    return other->isFunction();
+    return other.isFunction();
 }
 
 std::string tsym::Function::typeStr() const

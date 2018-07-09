@@ -5,10 +5,10 @@
 
 bool tsym::operator==(const BasePtr& lhs, const BasePtr& rhs)
 {
-    return lhs->isEqual(rhs);
+    return lhs->isEqual(*rhs);
 }
 
 bool tsym::operator!=(const BasePtr& lhs, const BasePtr& rhs)
 {
-    return lhs->isDifferent(rhs);
+    return lhs->isDifferent(*rhs);
 }

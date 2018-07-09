@@ -86,25 +86,25 @@ tsym::BasePtr tsym::Symbol::createTmpSymbol(bool positive)
     return std::make_shared<const Symbol>(tmpCounter, positive, Base::CtorKey{});
 }
 
-bool tsym::Symbol::isEqualDifferentBase(const BasePtr& other) const
+bool tsym::Symbol::isEqualDifferentBase(const Base& other) const
 {
-    if (other->isSymbol())
+    if (other.isSymbol())
         return isEqualOtherSymbol(other);
     else
         return false;
 }
 
-bool tsym::Symbol::isEqualOtherSymbol(const BasePtr& other) const
+bool tsym::Symbol::isEqualOtherSymbol(const Base& other) const
 {
-    if (symbolName == other->name())
-        return positive == other->isPositive();
+    if (symbolName == other.name())
+        return positive == other.isPositive();
     else
         return false;
 }
 
-bool tsym::Symbol::sameType(const BasePtr& other) const
+bool tsym::Symbol::sameType(const Base& other) const
 {
-    return other->isSymbol();
+    return other.isSymbol();
 }
 
 tsym::Number tsym::Symbol::numericEval() const
@@ -117,7 +117,7 @@ tsym::Fraction tsym::Symbol::normal(SymbolMap&) const
     return Fraction(clone());
 }
 
-tsym::BasePtr tsym::Symbol::diffWrtSymbol(const BasePtr& symbol) const
+tsym::BasePtr tsym::Symbol::diffWrtSymbol(const Base& symbol) const
 {
     return isEqual(symbol) ? Numeric::one() : Numeric::zero();
 }

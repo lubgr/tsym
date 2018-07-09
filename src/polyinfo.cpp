@@ -20,15 +20,15 @@ namespace tsym {
          * are first. Variables occuring only in one of u or v are placed at the end. */
         class ComparePolyVariables {
           public:
-            ComparePolyVariables(const BasePtr& u, const BasePtr& v)
+            ComparePolyVariables(const Base& u, const Base& v)
                 : u(u)
                 , v(v)
             {}
 
             bool operator()(const BasePtr& lhs, const BasePtr& rhs) const
             {
-                const int lhsMinDegree = std::min(u->degree(lhs), v->degree(lhs));
-                const int rhsMinDegree = std::min(u->degree(rhs), v->degree(rhs));
+                const int lhsMinDegree = std::min(u.degree(*lhs), v.degree(*lhs));
+                const int rhsMinDegree = std::min(u.degree(*rhs), v.degree(*rhs));
 
                 if (lhsMinDegree != 0 && rhsMinDegree != 0)
                     return lhsMinDegree < rhsMinDegree;
@@ -41,8 +41,8 @@ namespace tsym {
             }
 
           private:
-            const BasePtr& u;
-            const BasePtr& v;
+            const Base& u;
+            const Base& v;
         };
     }
 }
@@ -124,7 +124,7 @@ void tsym::PolyInfo::defineSymbolListIfRequired()
     addSymbols(u);
     addSymbols(v);
 
-    symbolList.sort(ComparePolyVariables(u, v));
+    symbolList.sort(ComparePolyVariables(*u, *v));
 
     needsUpdate = false;
 }
@@ -136,26 +136,26 @@ void tsym::PolyInfo::addSymbols(const BasePtr& ptr)
     else if (ptr->isNumeric())
         return;
     else
-        addSymbolsNonScalar(ptr);
+        addSymbolsNonScalar(*ptr);
 }
 
 void tsym::PolyInfo::addIfNotAlreadyStored(const BasePtr& symbol)
 {
     for (const auto& existentSymbol : symbolList)
-        if (existentSymbol->isEqual(symbol))
+        if (existentSymbol->isEqual(*symbol))
             return;
 
     symbolList.push_back(symbol);
 }
 
-void tsym::PolyInfo::addSymbolsNonScalar(const BasePtr& ptr)
+void tsym::PolyInfo::addSymbolsNonScalar(const Base& ptr)
 {
-    if (ptr->isSum())
-        addSymbols(ptr->operands());
-    else if (ptr->isProduct())
-        addSymbols(ptr->operands());
-    else if (ptr->isPower())
-        addSymbols(ptr->base());
+    if (ptr.isSum())
+        addSymbols(ptr.operands());
+    else if (ptr.isProduct())
+        addSymbols(ptr.operands());
+    else if (ptr.isPower())
+        addSymbols(ptr.base());
 }
 
 void tsym::PolyInfo::addSymbols(const BasePtrList& list)
@@ -177,7 +177,7 @@ tsym::BasePtr tsym::PolyInfo::mainSymbol()
 bool tsym::PolyInfo::hasCommonSymbol() const
 {
     for (const auto& symbol : symbolList)
-        if (u->has(symbol) && v->has(symbol))
+        if (u->has(*symbol) && v->has(*symbol))
             return true;
 
     return false;

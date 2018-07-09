@@ -454,17 +454,17 @@ tsym::Fraction tsym::Trigonometric::normalOtherThanAtan2(SymbolMap& map) const
     return Fraction(map.getTmpSymbolAndStore(result));
 }
 
-tsym::BasePtr tsym::Trigonometric::diffWrtSymbol(const BasePtr& symbol) const
+tsym::BasePtr tsym::Trigonometric::diffWrtSymbol(const Base& symbol) const
 {
     if (type != Type::ATAN2)
-        return diffWrtSymbol(arg1, symbol);
+        return diffWrtSymbol(*arg1, symbol);
     else
-        return diffWrtSymbol(atan2ArgEval(arg1, arg2), symbol);
+        return diffWrtSymbol(*atan2ArgEval(arg1, arg2), symbol);
 }
 
-tsym::BasePtr tsym::Trigonometric::diffWrtSymbol(const BasePtr& arg, const BasePtr& symbol) const
+tsym::BasePtr tsym::Trigonometric::diffWrtSymbol(const Base& arg, const Base& symbol) const
 {
-    const BasePtr outerDerivative(arg->diffWrtSymbol(symbol));
+    const BasePtr outerDerivative(arg.diffWrtSymbol(symbol));
     const BasePtr innerDerivative(innerDiff());
 
     return Product::create(innerDerivative, outerDerivative)->normal();
@@ -499,7 +499,7 @@ tsym::BasePtr tsym::Trigonometric::innerDiff() const
     }
 }
 
-tsym::BasePtr tsym::Trigonometric::subst(const BasePtr& from, const BasePtr& to) const
+tsym::BasePtr tsym::Trigonometric::subst(const Base& from, const BasePtr& to) const
 {
     if (isEqual(from))
         return to;

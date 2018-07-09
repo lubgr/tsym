@@ -14,7 +14,7 @@ namespace tsym {
 
         /* Returns true if any item is equal to the given object or the item's has method evaluates
          * to true for the given object (hence, different from std::find): */
-        bool has(const BasePtrList& list, const BasePtr& element);
+        bool has(const BasePtrList& list, const Base& element);
 
         /* Copies the given container and removes the first element: */
         BasePtrList rest(BasePtrList list);
@@ -35,9 +35,9 @@ namespace tsym {
         BasePtr expandAsProduct(const BasePtrList& list);
 
         /* Substitute by in-place modification: */
-        void subst(BasePtrList& list, const BasePtr& from, const BasePtr& to);
+        void subst(BasePtrList& list, const Base& from, const BasePtr& to);
         /* Substitute after copying the container: */
-        BasePtrList subst(const BasePtrList& list, const BasePtr& from, const BasePtr& to);
+        BasePtrList subst(const BasePtrList& list, const Base& from, const BasePtr& to);
     }
 }
 

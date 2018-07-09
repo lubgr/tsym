@@ -17,22 +17,22 @@ const tsym::BasePtr& tsym::Undefined::create()
     return instance;
 }
 
-bool tsym::Undefined::isEqual(const BasePtr& other) const
+bool tsym::Undefined::isEqual(const Base& other) const
 {
     return isEqualDifferentBase(other);
 }
 
-bool tsym::Undefined::isEqualDifferentBase(const BasePtr& other) const
+bool tsym::Undefined::isEqualDifferentBase(const Base& other) const
 {
-    if (other->isUndefined())
+    if (other.isUndefined())
         TSYM_ERROR("Equality request between two undefined expressions! Returns false.");
 
     return false;
 }
 
-bool tsym::Undefined::sameType(const BasePtr& other) const
+bool tsym::Undefined::sameType(const Base& other) const
 {
-    return other->isUndefined();
+    return other.isUndefined();
 }
 
 tsym::Number tsym::Undefined::numericEval() const
@@ -45,7 +45,7 @@ tsym::Fraction tsym::Undefined::normal(SymbolMap&) const
     return Fraction(clone());
 }
 
-tsym::BasePtr tsym::Undefined::diffWrtSymbol(const BasePtr&) const
+tsym::BasePtr tsym::Undefined::diffWrtSymbol(const Base&) const
 {
     return clone();
 }
@@ -75,29 +75,29 @@ bool tsym::Undefined::isUndefined() const
     return true;
 }
 
-bool tsym::Undefined::isDifferent(const BasePtr& other) const
+bool tsym::Undefined::isDifferent(const Base& other) const
 {
-    if (other->isUndefined())
+    if (other.isUndefined())
         TSYM_WARNING("Difference request between two Undefined! Returns true.");
 
     return true;
 }
 
-bool tsym::Undefined::has(const BasePtr&) const
+bool tsym::Undefined::has(const Base&) const
 /* The Base implementation checks for equality, which doesn't make sense for an Undefined. */
 {
     return false;
 }
 
-tsym::BasePtr tsym::Undefined::subst(const BasePtr& from, const BasePtr& to) const
+tsym::BasePtr tsym::Undefined::subst(const Base& from, const BasePtr& to) const
 {
-    if (from->isUndefined())
+    if (from.isUndefined())
         return to;
     else
         return clone();
 }
 
-int tsym::Undefined::degree(const BasePtr&) const
+int tsym::Undefined::degree(const Base&) const
 /* Same as in the has-method. */
 {
     return 0;

@@ -206,7 +206,7 @@ const tsym::BasePtr& tsym::Var::get() const
 
 bool tsym::operator==(const Var& lhs, const Var& rhs)
 {
-    return lhs.get()->isEqual(rhs.get());
+    return lhs.get()->isEqual(*rhs.get());
 }
 
 bool tsym::operator!=(const Var& lhs, const Var& rhs)

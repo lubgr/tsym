@@ -32,11 +32,11 @@ namespace tsym {
         static const BasePtr& fourth();
         static const BasePtr& mOne();
 
-        bool isEqualDifferentBase(const BasePtr& other) const override;
-        bool sameType(const BasePtr& other) const override;
+        bool isEqualDifferentBase(const Base& other) const override;
+        bool sameType(const Base& other) const override;
         Number numericEval() const override;
         Fraction normal(SymbolMap& map) const override;
-        BasePtr diffWrtSymbol(const BasePtr& symbol) const override;
+        BasePtr diffWrtSymbol(const Base& symbol) const override;
         std::string typeStr() const override;
         bool isPositive() const override;
         bool isNegative() const override;
@@ -52,8 +52,8 @@ namespace tsym {
         BasePtr nonNumericTerm() const override;
         BasePtr constTerm() const override;
         BasePtr nonConstTerm() const override;
-        BasePtr coeff(const BasePtr& variable, int exp) const override;
-        int degree(const BasePtr& variable) const override;
+        BasePtr coeff(const Base& variable, int exp) const override;
+        int degree(const Base& variable) const override;
 
       private:
         const Number number;

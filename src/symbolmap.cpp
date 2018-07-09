@@ -17,12 +17,12 @@ tsym::BasePtr tsym::SymbolMap::replaceTmpSymbolsBackFrom(const BasePtr& orig) co
     BasePtr result(orig);
 
     for (const auto& entry : rep)
-        result = result->subst(entry.second, entry.first);
+        result = result->subst(*entry.second, entry.first);
 
     if (result->isUndefined())
         /* Catch this in advance to avoid a possible comparison with an Undefined instance: */
         return result;
-    else if (result->isDifferent(orig))
+    else if (result->isDifferent(*orig))
         /* There might be nested replacements by temporary symbols. */
         return replaceTmpSymbolsBackFrom(result);
     else

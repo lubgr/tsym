@@ -42,8 +42,8 @@ BOOST_AUTO_TEST_CASE(powerWithPosIntExp)
     PowerNormal pn(*map);
     Fraction res;
 
-    pn.setBase(a);
-    pn.setExponent(two);
+    pn.setBase(*a);
+    pn.setExponent(*two);
 
     res = pn.normal();
 
@@ -56,8 +56,8 @@ BOOST_AUTO_TEST_CASE(powerWithPosNegExp)
     PowerNormal pn(*map);
     Fraction res;
 
-    pn.setBase(a);
-    pn.setExponent(Numeric::create(-2));
+    pn.setBase(*a);
+    pn.setExponent(*Numeric::create(-2));
 
     res = pn.normal();
 
@@ -73,8 +73,8 @@ BOOST_AUTO_TEST_CASE(powerWithSymbolExp)
     PowerNormal pn(*map);
     Fraction res;
 
-    pn.setBase(Sum::create(a, b));
-    pn.setExponent(c);
+    pn.setBase(*Sum::create(a, b));
+    pn.setExponent(*c);
 
     res = pn.normal();
 
@@ -93,8 +93,8 @@ BOOST_AUTO_TEST_CASE(fractionBaseSymbolExp)
     PowerNormal pn(*map);
     Fraction res;
 
-    pn.setBase(base);
-    pn.setExponent(a);
+    pn.setBase(*base);
+    pn.setExponent(*a);
 
     res = pn.normal();
 
@@ -114,8 +114,8 @@ BOOST_AUTO_TEST_CASE(fractionBaseNumericallyEvaluableNegExp)
     BasePtr backReplaced;
     Fraction res;
 
-    pn.setBase(base);
-    pn.setExponent(exp);
+    pn.setBase(*base);
+    pn.setExponent(*exp);
 
     res = pn.normal();
 
@@ -141,8 +141,8 @@ BOOST_AUTO_TEST_CASE(fractionBaseNumericallyEvaluablePosExp)
     BasePtr backReplaced;
     Fraction res;
 
-    pn.setBase(Numeric::create(2, 5));
-    pn.setExponent(exp);
+    pn.setBase(*Numeric::create(2, 5));
+    pn.setExponent(*exp);
 
     res = pn.normal();
 
@@ -169,8 +169,8 @@ BOOST_AUTO_TEST_CASE(symbolicFractionBaseNumericallyEvaluablePosExp)
     BasePtr backReplaced;
     Fraction res;
 
-    pn.setBase(base);
-    pn.setExponent(exp);
+    pn.setBase(*base);
+    pn.setExponent(*exp);
 
     res = pn.normal();
 
@@ -194,8 +194,8 @@ BOOST_AUTO_TEST_CASE(powerWithMinusSymbolExp)
     PowerNormal pn(*map);
     Fraction res;
 
-    pn.setBase(abSum);
-    pn.setExponent(minusC);
+    pn.setBase(*abSum);
+    pn.setExponent(*minusC);
 
     res = pn.normal();
 
@@ -214,8 +214,8 @@ BOOST_AUTO_TEST_CASE(powerWithPiExp)
     PowerNormal pn(*map);
     Fraction res;
 
-    pn.setBase(a);
-    pn.setExponent(pi);
+    pn.setBase(*a);
+    pn.setExponent(*pi);
 
     res = pn.normal();
 
@@ -235,8 +235,8 @@ BOOST_AUTO_TEST_CASE(powerWithNegNumEvalExp)
     PowerNormal pn(*map);
     Fraction res;
 
-    pn.setBase(a);
-    pn.setExponent(Product::minus(pos));
+    pn.setBase(*a);
+    pn.setExponent(*Product::minus(pos));
 
     res = pn.normal();
 
@@ -254,8 +254,8 @@ BOOST_AUTO_TEST_CASE(rationalBaseZero)
     PowerNormal pn(*map);
     Fraction res;
 
-    pn.setBase(zeroByNormal);
-    pn.setExponent(pi);
+    pn.setBase(*zeroByNormal);
+    pn.setExponent(*pi);
 
     res = pn.normal();
     backReplaced = map->replaceTmpSymbolsBackFrom(res.eval());
@@ -270,8 +270,8 @@ BOOST_AUTO_TEST_CASE(rationalBaseOne)
     PowerNormal pn(*map);
     Fraction res;
 
-    pn.setBase(base);
-    pn.setExponent(pi);
+    pn.setBase(*base);
+    pn.setExponent(*pi);
 
     res = pn.normal();
     backReplaced = map->replaceTmpSymbolsBackFrom(res.eval());
@@ -285,8 +285,8 @@ BOOST_AUTO_TEST_CASE(rationalBaseUndefined)
     PowerNormal pn(*map);
     BasePtr res;
 
-    pn.setBase(base);
-    pn.setExponent(pi);
+    pn.setBase(*base);
+    pn.setExponent(*pi);
 
     res = pn.normal().eval();
 
@@ -299,8 +299,8 @@ BOOST_AUTO_TEST_CASE(rationalBaseUndefinedByExpansion)
     PowerNormal pn(*map);
     BasePtr res;
 
-    pn.setBase(base);
-    pn.setExponent(a);
+    pn.setBase(*base);
+    pn.setExponent(*a);
 
     res = pn.normal().eval();
 

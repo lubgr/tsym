@@ -30,11 +30,11 @@ namespace tsym {
       public:
         virtual ~Base() = default;
 
-        virtual bool isEqualDifferentBase(const BasePtr& other) const = 0;
-        virtual bool sameType(const BasePtr& other) const = 0;
+        virtual bool isEqualDifferentBase(const Base& other) const = 0;
+        virtual bool sameType(const Base& other) const = 0;
         virtual Number numericEval() const = 0;
         virtual Fraction normal(SymbolMap& map) const = 0;
-        virtual BasePtr diffWrtSymbol(const BasePtr& symbol) const = 0;
+        virtual BasePtr diffWrtSymbol(const Base& symbol) const = 0;
         virtual std::string typeStr() const = 0;
         /* If unclear or zero, the following two methods shall return false: */
         virtual bool isPositive() const = 0;
@@ -55,9 +55,9 @@ namespace tsym {
         virtual bool isFunction() const;
         virtual bool isConstant() const;
 
-        virtual bool isEqual(const BasePtr& other) const;
-        virtual bool isDifferent(const BasePtr& other) const;
-        virtual bool has(const BasePtr& other) const;
+        virtual bool isEqual(const Base& other) const;
+        virtual bool isDifferent(const Base& other) const;
+        virtual bool has(const Base& other) const;
         /* Returns true for (composites of) Numerics or num. powers, nothing else: */
         virtual bool isConst() const;
         virtual BasePtr numericTerm() const;
@@ -67,10 +67,10 @@ namespace tsym {
         virtual BasePtr constTerm() const;
         virtual BasePtr nonConstTerm() const;
         virtual BasePtr expand() const;
-        virtual BasePtr subst(const BasePtr& from, const BasePtr& to) const;
-        virtual BasePtr coeff(const BasePtr& variable, int exp) const;
-        virtual BasePtr leadingCoeff(const BasePtr& variable) const;
-        virtual int degree(const BasePtr& variable) const;
+        virtual BasePtr subst(const Base& from, const BasePtr& to) const;
+        virtual BasePtr coeff(const Base& variable, int exp) const;
+        virtual BasePtr leadingCoeff(const Base& variable) const;
+        virtual int degree(const Base& variable) const;
         /* These two methods return clone() and 1 and must be overridden by Power only. */
         virtual BasePtr base() const;
         virtual BasePtr exp() const;
@@ -80,10 +80,10 @@ namespace tsym {
 
         BasePtr clone() const;
         BasePtr normal() const;
-        BasePtr diff(const BasePtr& symbol) const;
+        BasePtr diff(const Base& symbol) const;
         const BasePtrList& operands() const;
 
-        bool isEqualByTypeAndOperands(const BasePtr& other) const;
+        bool isEqualByTypeAndOperands(const Base& other) const;
         void setDebugString();
 
       protected:
@@ -111,6 +111,8 @@ namespace tsym {
         std::string prettyStr;
 #endif
     };
+
+    std::ostream& operator<<(std::ostream& stream, const Base& arg);
 }
 
 #endif

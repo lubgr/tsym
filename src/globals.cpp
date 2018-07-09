@@ -115,7 +115,7 @@ const tsym::Var& tsym::euler()
 
 tsym::Var tsym::subst(const Var& arg, const Var& from, const Var& to)
 {
-    return Var(arg.get()->subst(from.get(), to.get()));
+    return Var(arg.get()->subst(*from.get(), to.get()));
 }
 
 tsym::Var tsym::expand(const Var& arg)
@@ -136,7 +136,7 @@ tsym::Var tsym::simplify(const Var& arg)
     if (normalizedNext->isUndefined())
         return Var(normalizedNext);
 
-    while (normalizedNext->isDifferent(normalizedLast)) {
+    while (normalizedNext->isDifferent(*normalizedLast)) {
         /* Though it's probably not supposed to happen, there has been an expression that changed
          * upon a second normalization. Most of the time, the first normalization will directly
          * yield the simplest representation. */
@@ -146,7 +146,7 @@ tsym::Var tsym::simplify(const Var& arg)
 
     const BasePtr& result = normalizedNext->complexity() < expanded->complexity() ? normalizedNext : expanded;
 
-    if (result->isDifferent(rep)) {
+    if (result->isDifferent(*rep)) {
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(clock::now() - before);
 
         TSYM_DEBUG("Simplified %S to %S in %.2f ms.", rep, result, static_cast<float>(duration.count()) / 1000.0);
@@ -157,12 +157,12 @@ tsym::Var tsym::simplify(const Var& arg)
 
 tsym::Var tsym::diff(const Var& arg, const Var& symbol)
 {
-    return Var(arg.get()->diff(symbol.get()));
+    return Var(arg.get()->diff(*symbol.get()));
 }
 
 bool tsym::has(const Var& arg, const Var& what)
 {
-    return arg.get()->has(what.get());
+    return arg.get()->has(*what.get());
 }
 
 bool tsym::isPositive(const Var& arg)

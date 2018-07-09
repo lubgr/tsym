@@ -95,14 +95,14 @@ bool tsym::Product::needsExpansion(const BasePtrList& factors)
     return bplist::hasSumElements(constFac);
 }
 
-bool tsym::Product::isEqualDifferentBase(const BasePtr& other) const
+bool tsym::Product::isEqualDifferentBase(const Base& other) const
 {
     return isEqualByTypeAndOperands(other);
 }
 
-bool tsym::Product::sameType(const BasePtr& other) const
+bool tsym::Product::sameType(const Base& other) const
 {
-    return other->isProduct();
+    return other.isProduct();
 }
 
 tsym::Number tsym::Product::numericEval() const
@@ -145,7 +145,7 @@ tsym::Fraction tsym::Product::normalAndSplitIntoFraction(SymbolMap& map) const
     return Fraction(create(numerators), create(denominators));
 }
 
-tsym::BasePtr tsym::Product::diffWrtSymbol(const BasePtr& symbol) const
+tsym::BasePtr tsym::Product::diffWrtSymbol(const Base& symbol) const
 {
     BasePtrList derivedSummands;
     BasePtrList factors;
@@ -245,7 +245,7 @@ tsym::BasePtr tsym::Product::expand() const
     return bplist::expandAsProduct(ops);
 }
 
-tsym::BasePtr tsym::Product::subst(const BasePtr& from, const BasePtr& to) const
+tsym::BasePtr tsym::Product::subst(const Base& from, const BasePtr& to) const
 {
     if (isEqual(from))
         return to;
@@ -253,7 +253,7 @@ tsym::BasePtr tsym::Product::subst(const BasePtr& from, const BasePtr& to) const
         return create(bplist::subst(ops, from, to));
 }
 
-tsym::BasePtr tsym::Product::coeff(const BasePtr& variable, int exp) const
+tsym::BasePtr tsym::Product::coeff(const Base& variable, int exp) const
 {
     if (isEqual(variable))
         return exp == 1 ? Numeric::one() : Numeric::zero();
@@ -263,10 +263,10 @@ tsym::BasePtr tsym::Product::coeff(const BasePtr& variable, int exp) const
         return coeffFactorMatch(variable, exp);
 }
 
-tsym::BasePtr tsym::Product::coeffFactorMatch(const BasePtr& variable, int exp) const
+tsym::BasePtr tsym::Product::coeffFactorMatch(const Base& variable, int exp) const
 {
-    const BasePtr pow(Power::create(variable, Numeric::create(exp)));
-    auto matchingPower = boost::find_if(ops, [&pow](const auto& item) { return item->isEqual(pow); });
+    const BasePtr pow(Power::create(variable.clone(), Numeric::create(exp)));
+    auto matchingPower = boost::find_if(ops, [&pow](const auto& item) { return item->isEqual(*pow); });
 
     if (matchingPower == cend(ops))
         return Numeric::zero();
@@ -281,7 +281,7 @@ tsym::BasePtr tsym::Product::coeffFactorMatch(const BasePtr& variable, int exp) 
     return create(factors);
 }
 
-int tsym::Product::degree(const BasePtr& variable) const
+int tsym::Product::degree(const Base& variable) const
 {
     if (isEqual(variable))
         return 1;

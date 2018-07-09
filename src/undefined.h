@@ -17,12 +17,12 @@ namespace tsym {
         ~Undefined() override = default;
 
         /* Returns always false: */
-        bool isEqual(const BasePtr& other) const override;
-        bool isEqualDifferentBase(const BasePtr& other) const override;
-        bool sameType(const BasePtr& other) const override;
+        bool isEqual(const Base& other) const override;
+        bool isEqualDifferentBase(const Base& other) const override;
+        bool sameType(const Base& other) const override;
         Number numericEval() const override;
         Fraction normal(SymbolMap&) const override;
-        BasePtr diffWrtSymbol(const BasePtr& symbol) const override;
+        BasePtr diffWrtSymbol(const Base& symbol) const override;
         std::string typeStr() const override;
         bool isPositive() const override;
         bool isNegative() const override;
@@ -30,10 +30,10 @@ namespace tsym {
         size_t hash() const override;
 
         /* Returns always true: */
-        bool isDifferent(const BasePtr& other) const override;
-        bool has(const BasePtr& other) const override;
-        BasePtr subst(const BasePtr& from, const BasePtr& to) const override;
-        int degree(const BasePtr& variable) const override;
+        bool isDifferent(const Base& other) const override;
+        bool has(const Base& other) const override;
+        BasePtr subst(const Base& from, const BasePtr& to) const override;
+        int degree(const Base& variable) const override;
 
         bool isUndefined() const override;
     };
