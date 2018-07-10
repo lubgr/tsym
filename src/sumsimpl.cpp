@@ -116,7 +116,7 @@ namespace tsym {
                 return simplEqualNonNumericTerms(s1, s2);
             else if (haveContractableSinCos(s1, s2))
                 return {s1->constTerm()};
-            else if (order::doPermute(s1, s2))
+            else if (order::doPermute(*s1, *s2))
                 return {s2, s1};
             else
                 return {s1, s2};
@@ -153,7 +153,7 @@ namespace tsym {
 
             if (!sum->isSum())
                 return {Product::create(sum, s1->nonConstTerm())};
-            else if (order::doPermute(s1, s2))
+            else if (order::doPermute(*s1, *s2))
                 return {s2, s1};
             else
                 return {s1, s2};

@@ -189,7 +189,7 @@ namespace tsym {
             bplist::subst(res, *sin, Trigonometric::createSin(newArg));
             bplist::subst(res, *cos, Trigonometric::createCos(newArg));
 
-            if (order::doPermute(res.front(), res.back()))
+            if (order::doPermute(*res.front(), *res.back()))
                 return {res.back(), res.front()};
             else
                 return res;
@@ -291,7 +291,7 @@ namespace tsym {
                 return simplTwoConst(f1, f2);
             else if (haveEqualBases(*f1, *f2))
                 return simplTwoEqualBases(f1, f2);
-            else if (order::doPermute(f1, f2))
+            else if (order::doPermute(*f1, *f2))
                 return {f2, f1};
             else
                 return {f1, f2};
@@ -319,7 +319,7 @@ namespace tsym {
                 return simplTwoZeroSumExp(f1, f2);
             else if (areNumPowersWithEqualExpDenom(*f1, *f2))
                 return simplTwoEqualExpDenom(f1, f2);
-            else if (order::doPermute(f1, f2))
+            else if (order::doPermute(*f1, *f2))
                 /* This has to be checked additionaly for e.g. (1 + sqrt(2))*sqrt(3), which doesn't need
                  * simplification at this point, but should be perturbed in its order. */
                 return {f2, f1};
@@ -546,7 +546,7 @@ namespace tsym {
          * is provided (in the example: it could be necessary to shift the integer 3 to the beginning of
          * the factor list to contract it with another integer). */
         {
-            u.sort(order::doPermute);
+            u.sort([](const auto& bp1, const auto& bp2) { return order::doPermute(*bp1, *bp2); });
 
             contractNumerics(u);
             contractConst(u);

@@ -5,8 +5,8 @@
 
 namespace tsym {
     namespace order {
-        bool doPermute(const BasePtr& left, const BasePtr& right);
-        bool isCorrect(const BasePtr& left, const BasePtr& right);
+        bool doPermute(const Base& left, const Base& right);
+        bool isCorrect(const Base& left, const Base& right);
     }
 }
 
