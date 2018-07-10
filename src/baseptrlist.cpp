@@ -12,9 +12,9 @@ std::ostream& tsym::operator<<(std::ostream& stream, const BasePtrList& items)
     stream << "[ ";
 
     for (const auto& item : items) {
-        printer::print(engine, item);
+        printer::print(engine, *item);
 
-        if (&item != &*(--end(items)))
+        if (&item != &*(prev(end(items))))
             stream << "   ";
     }
 

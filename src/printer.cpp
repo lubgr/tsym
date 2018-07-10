@@ -304,16 +304,11 @@ template <class Engine> void tsym::printer::print(Engine& engine, const Base& ba
     print(engine, base, PowerAsFraction::TRUE);
 }
 
-template <class Engine> void tsym::printer::print(Engine& engine, const BasePtr& ptr)
-{
-    print(engine, *ptr);
-}
-
 template <class Engine> void tsym::printer::printDebug(Engine& engine, const Base& base)
 {
     print(engine, base, PowerAsFraction::FALSE);
 }
 
-template void tsym::printer::print<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const BasePtr&);
 template void tsym::printer::print<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const Number&);
+template void tsym::printer::print<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const Base&);
 template void tsym::printer::printDebug<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const Base&);

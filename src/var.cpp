@@ -246,7 +246,7 @@ std::ostream& tsym::operator<<(std::ostream& stream, const Var& var)
 {
     PlaintextPrintEngine engine(stream);
 
-    printer::print(engine, var.get());
+    printer::print(engine, *var.get());
 
     return stream;
 }
