@@ -69,7 +69,7 @@ namespace tsym {
 
         BasePtrList pseudoDivideImpl(const BasePtr& u, const BasePtr& v, const Base& x, bool computeQuotient)
         {
-            PolyInfo polyInfo(u, v);
+            PolyInfo polyInfo(*u, *v);
 
             if (polyInfo.isInputValid())
                 return pseudoDivideChecked(u, v, x, computeQuotient);
@@ -126,7 +126,7 @@ namespace tsym {
                 return 1;
             }
 
-            return poly::unit(polynomial, firstSymbol);
+            return poly::unit(*polynomial, *firstSymbol);
         }
 
         BasePtr getFirstSymbol(const BasePtr& polynomial)
@@ -144,7 +144,7 @@ namespace tsym {
         BasePtr getFirstSymbol(const BasePtrList& polynomials)
         {
             for (const auto& item : polynomials) {
-                BasePtr firstSymbol = getFirstSymbol(item);
+                auto firstSymbol = getFirstSymbol(item);
 
                 if (!firstSymbol->isUndefined())
                     return firstSymbol;
@@ -221,7 +221,7 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v)
     if (lookup != cend(map))
         return lookup->second;
 
-    auto result = divide(u, v, PolyInfo(u, v).listOfSymbols());
+    auto result = divide(u, v, PolyInfo(*u, *v).listOfSymbols());
 
     return map.insert({{u, v}, result})->second;
 }
@@ -231,7 +231,7 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v, const B
  * Computation [2003], page 211. */
 {
     const BasePtr& zero(Numeric::zero());
-    PolyInfo polyInfo(u, v);
+    PolyInfo polyInfo(*u, *v);
 
     if (!polyInfo.isInputValid()) {
         TSYM_ERROR("Invalid polynomial division: %S, %S. Return Undefined quotient and remainder.", u, v);
@@ -257,10 +257,10 @@ tsym::BasePtr tsym::poly::pseudoRemainder(const BasePtr& u, const BasePtr& v, co
     return pseudoDivideImpl(u, v, *x, false).back();
 }
 
-int tsym::poly::unit(const BasePtr& polynomial, const BasePtr& x)
+int tsym::poly::unit(const Base& polynomial, const Base& x)
 {
-    const BasePtr expanded(polynomial->expand());
-    const BasePtr lCoeff(expanded->leadingCoeff(*x));
+    const BasePtr expanded(polynomial.expand());
+    const BasePtr lCoeff(expanded->leadingCoeff(x));
 
     if (lCoeff->isZero())
         return 1;

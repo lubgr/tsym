@@ -88,9 +88,10 @@ tsym::BasePtrList tsym::bplist::getConstElements(const BasePtrList& list)
 
 tsym::BasePtrList tsym::bplist::getNonConstElements(const BasePtrList& list)
 {
+    using boost::adaptors::filtered;
     BasePtrList items;
 
-    boost::push_back(items, list | boost::adaptors::filtered([](const BasePtr& bp) { return !bp->isConst(); }));
+    boost::push_back(items, list | filtered([](const auto& bp) { return !bp->isConst(); }));
 
     return items;
 }
@@ -143,14 +144,13 @@ namespace tsym {
         BasePtr expandProductOf(const BasePtr& scalar, const Base& sum)
         {
             BasePtrList summands;
-            BasePtr product;
 
             for (const auto& item : sum.operands()) {
-                product = Product::create(scalar, item);
+                auto product = Product::create(scalar, item);
                 summands.push_back(product->expand());
             }
 
-            return Sum::create(summands);
+            return Sum::create(std::move(summands));
         }
     }
 }

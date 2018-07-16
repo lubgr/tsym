@@ -14,14 +14,14 @@ BOOST_FIXTURE_TEST_SUITE(TestPolyUnit, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(unitOfZero)
 {
-    BOOST_CHECK_EQUAL(1, poly::unit(zero, a));
-    BOOST_CHECK_EQUAL(1, poly::unit(zero, zero));
+    BOOST_CHECK_EQUAL(1, poly::unit(*zero, *a));
+    BOOST_CHECK_EQUAL(1, poly::unit(*zero, *zero));
 }
 
 BOOST_AUTO_TEST_CASE(illegalUndefinedInput, noLogs())
 /* Illegal input is supposed to return 1. */
 {
-    BOOST_CHECK_EQUAL(1, poly::unit(undefined, a));
+    BOOST_CHECK_EQUAL(1, poly::unit(*undefined, *a));
 }
 
 BOOST_AUTO_TEST_CASE(illegalNumPowerInput, noLogs())
@@ -29,31 +29,31 @@ BOOST_AUTO_TEST_CASE(illegalNumPowerInput, noLogs())
     const BasePtr illegal = Product::create(two, Sum::create(Power::create(five, Numeric::third()), b));
     const BasePtr sum = Sum::create(a, illegal);
 
-    BOOST_CHECK_EQUAL(1, poly::unit(sum, b));
+    BOOST_CHECK_EQUAL(1, poly::unit(*sum, *b));
 }
 
 BOOST_AUTO_TEST_CASE(posSymbol)
 {
-    BOOST_CHECK_EQUAL(1, poly::unit(a, a));
+    BOOST_CHECK_EQUAL(1, poly::unit(*a, *a));
 }
 
 BOOST_AUTO_TEST_CASE(negSymbol)
 {
-    BOOST_CHECK_EQUAL(-1, poly::unit(Product::minus(a), a));
+    BOOST_CHECK_EQUAL(-1, poly::unit(*Product::minus(a), *a));
 }
 
 BOOST_AUTO_TEST_CASE(negMonomial)
 {
     const BasePtr monomial = Product::minus(a, b, Power::create(c, two));
 
-    BOOST_CHECK_EQUAL(-1, poly::unit(monomial, c));
+    BOOST_CHECK_EQUAL(-1, poly::unit(*monomial, *c));
 }
 
 BOOST_AUTO_TEST_CASE(posMonomial)
 {
     const BasePtr monomial = Product::create(a, b, Power::create(c, three));
 
-    BOOST_CHECK_EQUAL(1, poly::unit(monomial, b));
+    BOOST_CHECK_EQUAL(1, poly::unit(*monomial, *b));
 }
 
 BOOST_AUTO_TEST_CASE(longNegativeMonomial)
@@ -71,12 +71,12 @@ BOOST_AUTO_TEST_CASE(longNegativeMonomial)
 
     monomial = Product::create(factors);
 
-    BOOST_CHECK_EQUAL(-1, poly::unit(monomial, a));
-    BOOST_CHECK_EQUAL(-1, poly::unit(monomial, b));
-    BOOST_CHECK_EQUAL(-1, poly::unit(monomial, c));
-    BOOST_CHECK_EQUAL(-1, poly::unit(monomial, d));
-    BOOST_CHECK_EQUAL(-1, poly::unit(monomial, e));
-    BOOST_CHECK_EQUAL(-1, poly::unit(monomial, g));
+    BOOST_CHECK_EQUAL(-1, poly::unit(*monomial, *a));
+    BOOST_CHECK_EQUAL(-1, poly::unit(*monomial, *b));
+    BOOST_CHECK_EQUAL(-1, poly::unit(*monomial, *c));
+    BOOST_CHECK_EQUAL(-1, poly::unit(*monomial, *d));
+    BOOST_CHECK_EQUAL(-1, poly::unit(*monomial, *e));
+    BOOST_CHECK_EQUAL(-1, poly::unit(*monomial, *g));
 }
 
 BOOST_AUTO_TEST_CASE(mixedSignPolynomial)
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(mixedSignPolynomial)
 {
     const BasePtr polynomial = Sum::create(Product::create(a, b, b), Product::minus(a, Power::create(c, three)));
 
-    BOOST_CHECK_EQUAL(1, poly::unit(polynomial, a));
+    BOOST_CHECK_EQUAL(1, poly::unit(*polynomial, *a));
 }
 
 BOOST_AUTO_TEST_CASE(mixedInverseSignPolynomial)
@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(mixedInverseSignPolynomial)
 {
     const BasePtr polynomial = Sum::create(Product::minus(a, b, b), Product::create(a, c, c, c));
 
-    BOOST_CHECK_EQUAL(-1, poly::unit(polynomial, a));
+    BOOST_CHECK_EQUAL(-1, poly::unit(*polynomial, *a));
 }
 
 BOOST_AUTO_TEST_CASE(positiveSignPolynomial)
@@ -101,7 +101,7 @@ BOOST_AUTO_TEST_CASE(positiveSignPolynomial)
     const BasePtr polynomial = Sum::create(Product::create(Numeric::half(), a, b, b),
       Product::create(a, a, Power::create(b, three)), Product::create(Power::create(a, three), Power::create(b, five)));
 
-    BOOST_CHECK_EQUAL(1, poly::unit(polynomial, a));
+    BOOST_CHECK_EQUAL(1, poly::unit(*polynomial, *a));
 }
 
 BOOST_AUTO_TEST_CASE(negativeSignPolynomial)
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(negativeSignPolynomial)
     const BasePtr polynomial =
       Sum::create(Product::create(Numeric::create(-1, 5), a, b), Product::create(Numeric::create(-2, 7), c, d));
 
-    BOOST_CHECK_EQUAL(-1, poly::unit(polynomial, d));
+    BOOST_CHECK_EQUAL(-1, poly::unit(*polynomial, *d));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

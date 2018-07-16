@@ -1,5 +1,6 @@
 
 #include "polyinfo.h"
+#include <boost/range/adaptors.hpp>
 #include <cassert>
 #include "logging.h"
 #include "name.h"
@@ -47,126 +48,108 @@ namespace tsym {
     }
 }
 
-tsym::PolyInfo::PolyInfo(const BasePtr& u, const BasePtr& v)
+tsym::PolyInfo::PolyInfo(const Base& u, const Base& v)
     : u(u)
     , v(v)
 {}
 
-void tsym::PolyInfo::set(const BasePtr& u, const BasePtr& v)
-{
-    this->u = u;
-    this->v = v;
-
-    needsUpdate = true;
-
-    symbolList.clear();
-}
-
 bool tsym::PolyInfo::isInputValid() const
 {
-    if (u->isZero() && v->isZero())
+    if (u.isZero() && v.isZero())
         return false;
     else
         return hasValidType(u) && hasValidType(v);
 }
 
-bool tsym::PolyInfo::hasValidType(const BasePtr& ptr)
+bool tsym::PolyInfo::hasValidType(const Base& arg)
 /* Only symbols, rational Numerics, sums, products or powers with primitive int exponents are
  * allowed. */
 {
-    if (ptr->isSymbol())
+    if (arg.isSymbol())
         return true;
-    else if (ptr->isNumeric())
-        return ptr->numericEval().isRational();
-    else if (ptr->isPower())
-        return isValidPower(ptr);
-    else if (ptr->isSum() || ptr->isProduct())
-        return hasValidOperands(ptr);
+    else if (arg.isNumeric())
+        return arg.numericEval().isRational();
+    else if (arg.isPower())
+        return isValidPower(arg);
+    else if (arg.isSum() || arg.isProduct())
+        return hasValidOperands(arg);
     else
         return false;
 }
 
-bool tsym::PolyInfo::isValidPower(const tsym::BasePtr& power)
+bool tsym::PolyInfo::isValidPower(const tsym::Base& power)
 {
-    Number exp;
-
-    if (hasValidType(power->base()) && power->exp()->isNumericallyEvaluable()) {
-        exp = power->exp()->numericEval();
+    if (hasValidType(*power.base()) && power.exp()->isNumericallyEvaluable()) {
+        auto exp = power.exp()->numericEval();
         return exp.isInt() && integer::fitsInto<int>(exp.numerator()) && exp > 0;
     }
 
     return false;
 }
 
-bool tsym::PolyInfo::hasValidOperands(const BasePtr& ptr)
+bool tsym::PolyInfo::hasValidOperands(const Base& arg)
 {
-    for (const auto& operand : ptr->operands())
+    using boost::adaptors::indirected;
+
+    for (const auto& operand : arg.operands() | indirected)
         if (!hasValidType(operand))
             return false;
 
     return true;
 }
 
-const tsym::BasePtrList& tsym::PolyInfo::listOfSymbols()
+tsym::BasePtrList tsym::PolyInfo::listOfSymbols()
 {
-    defineSymbolListIfRequired();
-
-    return symbolList;
-}
-
-void tsym::PolyInfo::defineSymbolListIfRequired()
-{
-    if (!needsUpdate)
-        return;
-
     symbolList.clear();
 
     addSymbols(u);
     addSymbols(v);
 
-    symbolList.sort(ComparePolyVariables(*u, *v));
+    symbolList.sort(ComparePolyVariables(u, v));
 
-    needsUpdate = false;
+    return symbolList;
 }
 
-void tsym::PolyInfo::addSymbols(const BasePtr& ptr)
+void tsym::PolyInfo::addSymbols(const Base& arg)
 {
-    if (ptr->isSymbol())
-        addIfNotAlreadyStored(ptr);
-    else if (ptr->isNumeric())
+    if (arg.isSymbol())
+        addIfNotAlreadyStored(arg);
+    else if (arg.isNumeric())
         return;
     else
-        addSymbolsNonScalar(*ptr);
+        addSymbolsNonScalar(arg);
 }
 
-void tsym::PolyInfo::addIfNotAlreadyStored(const BasePtr& symbol)
+void tsym::PolyInfo::addIfNotAlreadyStored(const Base& symbol)
 {
     for (const auto& existentSymbol : symbolList)
-        if (existentSymbol->isEqual(*symbol))
+        if (existentSymbol->isEqual(symbol))
             return;
 
-    symbolList.push_back(symbol);
+    symbolList.push_back(symbol.clone());
 }
 
-void tsym::PolyInfo::addSymbolsNonScalar(const Base& ptr)
+void tsym::PolyInfo::addSymbolsNonScalar(const Base& arg)
 {
-    if (ptr.isSum())
-        addSymbols(ptr.operands());
-    else if (ptr.isProduct())
-        addSymbols(ptr.operands());
-    else if (ptr.isPower())
-        addSymbols(ptr.base());
+    if (arg.isSum())
+        addSymbols(arg.operands());
+    else if (arg.isProduct())
+        addSymbols(arg.operands());
+    else if (arg.isPower())
+        addSymbols(*arg.base());
 }
 
 void tsym::PolyInfo::addSymbols(const BasePtrList& list)
 {
-    for (const auto& item : list)
+    using boost::adaptors::indirected;
+
+    for (const auto& item : list | indirected)
         addSymbols(item);
 }
 
 tsym::BasePtr tsym::PolyInfo::mainSymbol()
 {
-    defineSymbolListIfRequired();
+    listOfSymbols();
 
     if (hasCommonSymbol())
         return symbolList.front();
@@ -176,8 +159,10 @@ tsym::BasePtr tsym::PolyInfo::mainSymbol()
 
 bool tsym::PolyInfo::hasCommonSymbol() const
 {
-    for (const auto& symbol : symbolList)
-        if (u->has(*symbol) && v->has(*symbol))
+    using boost::adaptors::indirected;
+
+    for (const auto& symbol : symbolList | indirected)
+        if (u.has(symbol) && v.has(symbol))
             return true;
 
     return false;

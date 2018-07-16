@@ -22,7 +22,7 @@ namespace tsym {
         BasePtrList pseudoDivide(const BasePtr& u, const BasePtr& v, const BasePtr& x);
         /* As before, but avoids the computation of the pseudo-quotient: */
         BasePtr pseudoRemainder(const BasePtr& u, const BasePtr& v, const BasePtr& x);
-        int unit(const BasePtr& polynomial, const BasePtr& x);
+        int unit(const Base& polynomial, const Base& x);
         BasePtr gcd(const BasePtr& u, const BasePtr& v);
         BasePtr gcd(const BasePtr& u, const BasePtr& v, const Gcd& algo);
         BasePtr content(const BasePtr& polynomial, const BasePtr& x);

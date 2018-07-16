@@ -13,7 +13,7 @@
 
 tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v) const
 {
-    PolyInfo polyInfo(u, v);
+    PolyInfo polyInfo(*u, *v);
 
     if (polyInfo.isInputValid())
         return compute(u, v, polyInfo.listOfSymbols());
