@@ -26,7 +26,7 @@ series expansion.
 Installation
 ------------
 To compile tsym, you need the [boost](https://boost.org) headers (version 1.65 or more recent) and a
-C++ compiler recent enough to support C++14 and [cmake](https://cmake.org). For unit tests, the
+C++ compiler recent enough to support C++17 and [cmake](https://cmake.org). For unit tests, the
 boost test framework is used, and the appropriate static library must be available to the linker
 (pass `-D BUILD_TESTING=OFF` to exclude unit tests from the configuration). tsym should build on
 Linux platforms by e.g.
@@ -177,7 +177,7 @@ The exemplary C++ program from above can be compiled with
 ```bash
 g++ -o example main-function-from-above.cpp -ltsym
 ```
-for less recent compiler versions, `-std=c++14` should be manually enabled.
+for less recent compiler versions, `-std=c++17` should be manually enabled.
 
 Additional notes
 ----------------

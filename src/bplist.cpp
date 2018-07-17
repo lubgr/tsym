@@ -91,7 +91,7 @@ tsym::BasePtrList tsym::bplist::getNonConstElements(const BasePtrList& list)
     using boost::adaptors::filtered;
     BasePtrList items;
 
-    boost::push_back(items, list | filtered([](const auto& bp) { return !bp->isConst(); }));
+    boost::push_back(items, list | filtered(std::not_fn(&Base::isConst)));
 
     return items;
 }

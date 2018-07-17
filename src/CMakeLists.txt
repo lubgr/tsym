@@ -54,7 +54,7 @@ target_link_libraries(tsym PRIVATE tsym-internal-config)
 
 target_compile_features(tsym
     PUBLIC
-    cxx_std_14)
+    cxx_std_17)
 
 target_include_directories(tsym
     INTERFACE

@@ -163,7 +163,7 @@ namespace tsym {
         {
             const auto firstEqualRange = boost::find_if<boost::return_begin_found>(
               primes, [first = primes.front()](const auto& prime) { return prime != first; });
-            const auto firstSize = size(firstEqualRange);
+            const auto firstSize = boost::size(firstEqualRange);
 
             if (primes.size() % firstSize != 0)
                 return 0;
