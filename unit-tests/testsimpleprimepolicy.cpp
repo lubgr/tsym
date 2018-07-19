@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(factorizeIntegralInt)
 
     SimplePrimePolicy<int>::computeAndStore(input, result);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(cbegin(expected), cend(expected), cbegin(result), cend(result));
+    BOOST_TEST(expected == result, per_element());
 }
 
 BOOST_AUTO_TEST_CASE(factorizeMultiPrecisionInt)
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(factorizeMultiPrecisionInt)
 
     SimplePrimePolicy<Int>::computeAndStore(input, result);
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(cbegin(expected), cend(expected), cbegin(result), cend(result));
+    BOOST_TEST(expected == result, per_element());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

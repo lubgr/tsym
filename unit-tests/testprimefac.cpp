@@ -24,7 +24,7 @@ struct PrimeFacFixture {
 
     void check(const std::vector<Int>& expected, const std::vector<Int>& primes)
     {
-        BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(primes), end(primes));
+        BOOST_TEST(expected == primes, per_element());
     }
 };
 

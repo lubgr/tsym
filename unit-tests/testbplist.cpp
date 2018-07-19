@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(restOfRvalueArg)
     const BasePtrList expected{b, c, d, ten};
     const BasePtrList list = bplist::rest({a, b, c, d, ten});
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(cbegin(expected), cend(expected), cbegin(list), cend(list));
+    BOOST_TEST(expected == list, per_element());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

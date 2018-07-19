@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE(rearrangeFiveSymbols)
 
     BOOST_TEST(res->isSum());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(summands), end(summands));
+    BOOST_TEST(expected == summands, per_element());
 }
 
 BOOST_AUTO_TEST_CASE(orderingOfMixedTerms)
@@ -148,7 +148,7 @@ BOOST_AUTO_TEST_CASE(collectProducts)
 
     BOOST_TEST(res->isProduct());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(res->operands()), end(res->operands()));
+    BOOST_TEST(expected == res->operands(), per_element());
 }
 
 BOOST_AUTO_TEST_CASE(collectProductOfSymbols)
@@ -202,7 +202,7 @@ BOOST_AUTO_TEST_CASE(twoSums)
 
     BOOST_TEST(res->isSum());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(res->operands()), end(res->operands()));
+    BOOST_TEST(expected == res->operands(), per_element());
 }
 
 BOOST_AUTO_TEST_CASE(sumOfSumAndSymbols)
@@ -215,7 +215,7 @@ BOOST_AUTO_TEST_CASE(sumOfSumAndSymbols)
 
     BOOST_TEST(res->isSum());
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(begin(expected), end(expected), begin(summands), end(summands));
+    BOOST_TEST(expected == summands, per_element());
 }
 
 BOOST_AUTO_TEST_CASE(cancellationOfNumbersInTwoSums)
