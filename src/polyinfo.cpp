@@ -1,6 +1,9 @@
 
 #include "polyinfo.h"
+#include <boost/algorithm/cxx11/all_of.hpp>
+#include <boost/algorithm/cxx11/any_of.hpp>
 #include <boost/range/adaptors.hpp>
+#include <boost/range/algorithm.hpp>
 #include <cassert>
 #include "logging.h"
 #include "name.h"
@@ -53,49 +56,53 @@ tsym::PolyInfo::PolyInfo(const Base& u, const Base& v)
     , v(v)
 {}
 
+namespace tsym {
+    namespace {
+        bool isValidPower(const Base& power);
+        bool hasValidOperands(const Base& arg);
+
+        bool hasValidType(const Base& arg)
+        /* Only symbols, rational Numerics, sums, products or powers with primitive int exponents are
+         * allowed. */
+        {
+            if (arg.isSymbol())
+                return true;
+            else if (arg.isNumeric())
+                return arg.numericEval().isRational();
+            else if (arg.isPower())
+                return isValidPower(arg);
+            else if (arg.isSum() || arg.isProduct())
+                return hasValidOperands(arg);
+            else
+                return false;
+        }
+
+        bool isValidPower(const Base& power)
+        {
+            if (hasValidType(*power.base()) && power.exp()->isNumericallyEvaluable()) {
+                auto exp = power.exp()->numericEval();
+                return exp.isInt() && integer::fitsInto<int>(exp.numerator()) && exp > 0;
+            }
+
+            return false;
+        }
+
+        bool hasValidOperands(const Base& arg)
+        {
+            using boost::adaptors::indirected;
+            const auto valid = [](const auto& op) { return hasValidType(op); };
+
+            return boost::algorithm::all_of(arg.operands() | indirected, valid);
+        }
+    }
+}
+
 bool tsym::PolyInfo::isInputValid() const
 {
     if (u.isZero() && v.isZero())
         return false;
     else
         return hasValidType(u) && hasValidType(v);
-}
-
-bool tsym::PolyInfo::hasValidType(const Base& arg)
-/* Only symbols, rational Numerics, sums, products or powers with primitive int exponents are
- * allowed. */
-{
-    if (arg.isSymbol())
-        return true;
-    else if (arg.isNumeric())
-        return arg.numericEval().isRational();
-    else if (arg.isPower())
-        return isValidPower(arg);
-    else if (arg.isSum() || arg.isProduct())
-        return hasValidOperands(arg);
-    else
-        return false;
-}
-
-bool tsym::PolyInfo::isValidPower(const tsym::Base& power)
-{
-    if (hasValidType(*power.base()) && power.exp()->isNumericallyEvaluable()) {
-        auto exp = power.exp()->numericEval();
-        return exp.isInt() && integer::fitsInto<int>(exp.numerator()) && exp > 0;
-    }
-
-    return false;
-}
-
-bool tsym::PolyInfo::hasValidOperands(const Base& arg)
-{
-    using boost::adaptors::indirected;
-
-    for (const auto& operand : arg.operands() | indirected)
-        if (!hasValidType(operand))
-            return false;
-
-    return true;
 }
 
 tsym::BasePtrList tsym::PolyInfo::listOfSymbols()
@@ -122,11 +129,10 @@ void tsym::PolyInfo::addSymbols(const Base& arg)
 
 void tsym::PolyInfo::addIfNotAlreadyStored(const Base& symbol)
 {
-    for (const auto& existentSymbol : symbolList)
-        if (existentSymbol->isEqual(symbol))
-            return;
+    const auto existing = boost::find_if(symbolList, [&symbol](const auto& other) { return symbol.isEqual(*other); });
 
-    symbolList.push_back(symbol.clone());
+    if (existing == cend(symbolList))
+        symbolList.push_back(symbol.clone());
 }
 
 void tsym::PolyInfo::addSymbolsNonScalar(const Base& arg)
@@ -161,9 +167,6 @@ bool tsym::PolyInfo::hasCommonSymbol() const
 {
     using boost::adaptors::indirected;
 
-    for (const auto& symbol : symbolList | indirected)
-        if (u.has(symbol) && v.has(symbol))
-            return true;
-
-    return false;
+    return boost::algorithm::any_of(
+      symbolList | indirected, [this](const auto& symbol) { return u.has(symbol) && v.has(symbol); });
 }

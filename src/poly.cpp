@@ -1,6 +1,8 @@
 
 #include "poly.h"
+#include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm.hpp>
+#include <boost/range/numeric.hpp>
 #include <cassert>
 #include "bplist.h"
 #include "cache.h"
@@ -202,12 +204,10 @@ namespace tsym {
 
         int minDegreeOfProduct(const Base& product, const Base& variable)
         {
-            int result = 0;
+            using boost::adaptors::indirected;
 
-            for (const auto& factor : product.operands())
-                result += poly::minDegree(*factor, variable);
-
-            return result;
+            return boost::accumulate(product.operands() | indirected, 0,
+              [&variable](int deg, const auto& op) { return deg + poly::minDegree(op, variable); });
         }
     }
 }

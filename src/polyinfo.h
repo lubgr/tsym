@@ -20,9 +20,6 @@ namespace tsym {
         BasePtr mainSymbol();
 
       private:
-        static bool hasValidType(const Base& arg);
-        static bool isValidPower(const Base& power);
-        static bool hasValidOperands(const Base& arg);
         void addSymbols(const Base& arg);
         void addIfNotAlreadyStored(const Base& symbol);
         void addSymbolsNonScalar(const Base& arg);
