@@ -83,7 +83,7 @@ tsym::Fraction tsym::Sum::normal(SymbolMap& map) const
     std::vector<Fraction> fractions;
 
     if (expand()->isZero())
-        return Fraction(Numeric::zero());
+        return Fraction{Numeric::zero()};
 
     for (const auto& summand : ops)
         fractions.push_back(summand->normal(map));
@@ -94,16 +94,16 @@ tsym::Fraction tsym::Sum::normal(SymbolMap& map) const
 tsym::Fraction tsym::Sum::toCommonDenom(const std::vector<Fraction>& operands) const
 {
     auto it(cbegin(operands));
-    BasePtr denom(it->denom());
-    BasePtr num(it->num());
+    BasePtr denom(it->denom);
+    BasePtr num(it->num);
     BasePtr oneOverGcd;
     BasePtr nextDenom;
     BasePtr nextNum;
     BasePtr lcm;
 
     for (++it; it != cend(operands); ++it) {
-        nextNum = it->num();
-        nextDenom = it->denom();
+        nextNum = it->num;
+        nextDenom = it->denom;
 
         if (denom->isEqual(*nextDenom)) {
             num = create(num, nextNum);
@@ -117,7 +117,7 @@ tsym::Fraction tsym::Sum::toCommonDenom(const std::vector<Fraction>& operands) c
         denom = Product::create(denom, lcm)->expand();
     }
 
-    return Fraction(num, denom).cancel();
+    return cancel({num, denom});
 }
 
 tsym::BasePtr tsym::Sum::diffWrtSymbol(const Base& symbol) const

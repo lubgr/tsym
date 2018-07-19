@@ -114,7 +114,7 @@ tsym::Number tsym::Symbol::numericEval() const
 
 tsym::Fraction tsym::Symbol::normal(SymbolMap&) const
 {
-    return Fraction(clone());
+    return Fraction{clone()};
 }
 
 tsym::BasePtr tsym::Symbol::diffWrtSymbol(const Base& symbol) const

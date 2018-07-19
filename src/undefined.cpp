@@ -42,7 +42,7 @@ tsym::Number tsym::Undefined::numericEval() const
 
 tsym::Fraction tsym::Undefined::normal(SymbolMap&) const
 {
-    return Fraction(clone());
+    return Fraction{clone()};
 }
 
 tsym::BasePtr tsym::Undefined::diffWrtSymbol(const Base&) const

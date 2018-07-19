@@ -272,11 +272,20 @@ void tsym::Trigonometric::defineIntervalAndEndFactor(Type type, BasePtr* interva
     factor = type == Type::ATAN ? Numeric::mOne() : Numeric::one();
 }
 
+namespace tsym {
+    namespace {
+        auto normalFrac(const BasePtr& num, const BasePtr& denom)
+        {
+            return eval({num, denom})->normal();
+        }
+    }
+}
+
 tsym::BasePtr tsym::Trigonometric::createFromTrigoNoInverse(Type type, const BasePtr& arg)
 {
     const Trigonometric* other(tryCast(arg));
     const Type otherType = other->type;
-    const BasePtr one(Numeric::one());
+    const BasePtr& one(Numeric::one());
     const BasePtr aux1(Power::sqrt(Sum::create(one, Product::minus(square(other->arg1)))));
     const BasePtr aux2(Power::sqrt(Sum::create(one, square(other->arg1))));
     const BasePtr aux3(Power::sqrt(Sum::create(square(other->arg1), square(other->arg2))));
@@ -284,17 +293,17 @@ tsym::BasePtr tsym::Trigonometric::createFromTrigoNoInverse(Type type, const Bas
     if ((type == Type::SIN && otherType == Type::ACOS) || (type == Type::COS && otherType == Type::ASIN))
         return aux1;
     else if (type == Type::SIN && otherType == Type::ATAN)
-        return Fraction(other->arg1, aux2).eval()->normal();
+        return normalFrac(other->arg1, aux2);
     else if (type == Type::SIN && otherType == Type::ATAN2)
-        return Fraction(other->arg1, aux3).eval()->normal();
+        return normalFrac(other->arg1, aux3);
     else if (type == Type::COS && otherType == Type::ATAN)
-        return Fraction(one, aux2).eval()->normal();
+        return normalFrac(one, aux2);
     else if (type == Type::COS && otherType == Type::ATAN2)
-        return Fraction(other->arg2, aux3).eval()->normal();
+        return normalFrac(other->arg2, aux3);
     else if (type == Type::TAN && otherType == Type::ASIN)
-        return Fraction(other->arg1, aux1).eval()->normal();
+        return normalFrac(other->arg1, aux1);
     else if (type == Type::TAN && otherType == Type::ACOS)
-        return Fraction(aux1, other->arg1).eval()->normal();
+        return normalFrac(aux1, other->arg1);
     else
         return createInstance(type, {arg});
 }
@@ -444,14 +453,14 @@ tsym::Fraction tsym::Trigonometric::normalAtan2(SymbolMap& map) const
     const BasePtr normalizedArg2(arg2->normal());
     const BasePtr result(createAtan2(normalizedArg1, normalizedArg2));
 
-    return Fraction(map.getTmpSymbolAndStore(result));
+    return Fraction{map.getTmpSymbolAndStore(result)};
 }
 
 tsym::Fraction tsym::Trigonometric::normalOtherThanAtan2(SymbolMap& map) const
 {
     const BasePtr result(create(type, arg1->normal()));
 
-    return Fraction(map.getTmpSymbolAndStore(result));
+    return Fraction{map.getTmpSymbolAndStore(result)};
 }
 
 tsym::BasePtr tsym::Trigonometric::diffWrtSymbol(const Base& symbol) const

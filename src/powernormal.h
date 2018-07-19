@@ -35,9 +35,9 @@ namespace tsym {
         Fraction normalNonNumEvalExp();
 
         const BasePtr& one{Numeric::one()};
-        Fraction rationalBase{};
         BasePtr rationalExp{};
         SymbolMap& map;
+        Fraction rationalBase;
     };
 }
 

@@ -60,7 +60,7 @@ tsym::Fraction tsym::Constant::normal(SymbolMap& map) const
 {
     const BasePtr replacement(map.getTmpSymbolAndStore(clone()));
 
-    return Fraction(replacement);
+    return Fraction{replacement};
 }
 
 tsym::BasePtr tsym::Constant::diffWrtSymbol(const Base&) const

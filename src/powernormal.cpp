@@ -7,6 +7,7 @@
 
 tsym::PowerNormal::PowerNormal(SymbolMap& map)
     : map(map)
+    , rationalBase{Undefined::create()}
 {}
 
 void tsym::PowerNormal::setBase(const Base& base)
@@ -22,7 +23,7 @@ void tsym::PowerNormal::setExponent(const Base& exp)
 tsym::Fraction tsym::PowerNormal::normal()
 {
     if (isBaseOrExpUndefined())
-        return Fraction(Undefined::create());
+        return {Undefined::create()};
     else if (isRationalExpInteger())
         return normalIntegerExp();
     else
@@ -31,8 +32,8 @@ tsym::Fraction tsym::PowerNormal::normal()
 
 bool tsym::PowerNormal::isBaseOrExpUndefined() const
 {
-    return rationalBase.num()->isUndefined() || rationalBase.denom()->isUndefined() || rationalBase.denom()->isZero()
-      || rationalBase.denom()->expand()->isZero() || rationalExp->isUndefined();
+    return rationalBase.num->isUndefined() || rationalBase.denom->isUndefined() || rationalBase.denom->isZero()
+      || rationalBase.denom->expand()->isZero() || rationalExp->isUndefined();
 }
 
 bool tsym::PowerNormal::isRationalExpInteger() const
@@ -45,16 +46,16 @@ tsym::Fraction tsym::PowerNormal::normalIntegerExp() const
 {
     const Number nExp(rationalExp->numericEval());
     const BasePtr absExp(Numeric::create(nExp.abs()));
-    const BasePtr numPower(Power::create(rationalBase.num(), absExp));
-    const BasePtr denomPower(Power::create(rationalBase.denom(), absExp));
+    const BasePtr numPower(Power::create(rationalBase.num, absExp));
+    const BasePtr denomPower(Power::create(rationalBase.denom, absExp));
 
     if (nExp > 0)
-        return Fraction(numPower, denomPower);
+        return {numPower, denomPower};
     else if (nExp < 0)
-        return Fraction(denomPower, numPower);
+        return {denomPower, numPower};
 
     /* The exponent became zero by normal(). */
-    return Fraction(one);
+    return {one};
 }
 
 tsym::Fraction tsym::PowerNormal::normalNonIntegerExp()
@@ -80,10 +81,10 @@ tsym::Fraction tsym::PowerNormal::normalNumEvalExp()
 
 tsym::Fraction tsym::PowerNormal::normalNumEvalPosExp()
 {
-    const BasePtr num(evaluatePow(rationalBase.num(), rationalExp));
-    const BasePtr denom(evaluatePow(rationalBase.denom(), rationalExp));
+    const BasePtr num(evaluatePow(rationalBase.num, rationalExp));
+    const BasePtr denom(evaluatePow(rationalBase.denom, rationalExp));
 
-    return Fraction(num, denom);
+    return {num, denom};
 }
 
 tsym::BasePtr tsym::PowerNormal::evaluatePow(const BasePtr& base, const BasePtr& exp)
@@ -96,19 +97,16 @@ tsym::BasePtr tsym::PowerNormal::evaluatePow(const BasePtr& base, const BasePtr&
 tsym::Fraction tsym::PowerNormal::normalNumEvalNegExp()
 {
     const BasePtr positiveExp(Product::minus(rationalExp));
-    const BasePtr num(evaluatePow(rationalBase.denom(), positiveExp));
-    const BasePtr denom(evaluatePow(rationalBase.num(), positiveExp));
+    const BasePtr num(evaluatePow(rationalBase.denom, positiveExp));
+    const BasePtr denom(evaluatePow(rationalBase.num, positiveExp));
 
-    return Fraction(num, denom);
+    return {num, denom};
 }
 
 tsym::Fraction tsym::PowerNormal::normalNonNumEvalExp()
 {
-    BasePtr replacement;
-    BasePtr result;
+    const BasePtr result = Power::create(eval(rationalBase), rationalExp);
+    const BasePtr replacement = map.getTmpSymbolAndStore(result);
 
-    result = Power::create(rationalBase.eval(), rationalExp);
-    replacement = map.getTmpSymbolAndStore(result);
-
-    return Fraction(replacement, one);
+    return {replacement, one};
 }

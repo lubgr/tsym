@@ -216,9 +216,8 @@ tsym::BasePtr tsym::Base::normalWithoutCache() const
 
     normalizedFrac = normal(map);
 
-    return Fraction(
-      map.replaceTmpSymbolsBackFrom(normalizedFrac.num()), map.replaceTmpSymbolsBackFrom(normalizedFrac.denom()))
-      .eval();
+    return eval(
+      {map.replaceTmpSymbolsBackFrom(normalizedFrac.num), map.replaceTmpSymbolsBackFrom(normalizedFrac.denom)});
 }
 
 tsym::BasePtr tsym::Base::diff(const Base& symbol) const

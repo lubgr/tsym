@@ -8,7 +8,7 @@
 namespace tsym {
     class SymbolMap;
     class Number;
-    class Fraction;
+    struct Fraction;
     class Name;
 }
 

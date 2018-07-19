@@ -120,29 +120,24 @@ tsym::Number tsym::Product::numericEval() const
 
 tsym::Fraction tsym::Product::normal(SymbolMap& map) const
 {
-    Fraction unCanceled;
-
     if (expand()->isZero())
-        return Fraction(Numeric::zero());
-
-    unCanceled = normalAndSplitIntoFraction(map);
-
-    return unCanceled.cancel();
+        return {Numeric::zero()};
+    else
+        return cancel(normalAndSplitIntoFraction(map));
 }
 
 tsym::Fraction tsym::Product::normalAndSplitIntoFraction(SymbolMap& map) const
 {
     BasePtrList denominators;
     BasePtrList numerators;
-    Fraction normalOperand;
 
     for (const auto& factor : ops) {
-        normalOperand = factor->normal(map);
-        numerators.push_back(normalOperand.num());
-        denominators.push_back(normalOperand.denom());
+        const auto normalOperand = factor->normal(map);
+        numerators.push_back(normalOperand.num);
+        denominators.push_back(normalOperand.denom);
     }
 
-    return Fraction(create(numerators), create(denominators));
+    return Fraction{create(numerators), create(denominators)};
 }
 
 tsym::BasePtr tsym::Product::diffWrtSymbol(const Base& symbol) const

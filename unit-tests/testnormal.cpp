@@ -114,8 +114,8 @@ BOOST_AUTO_TEST_CASE(simpleProduct)
     const BasePtr orig = Product::create(a, Power::oneOver(b));
     const Fraction frac = orig->normal(*map);
 
-    BOOST_CHECK_EQUAL(a, frac.num());
-    BOOST_CHECK_EQUAL(b, frac.denom());
+    BOOST_CHECK_EQUAL(a, frac.num);
+    BOOST_CHECK_EQUAL(b, frac.denom);
 }
 
 BOOST_AUTO_TEST_CASE(product)
@@ -133,8 +133,8 @@ BOOST_AUTO_TEST_CASE(product)
 
     frac = orig->normal(*map);
 
-    BOOST_CHECK_EQUAL(expectedNum, frac.num());
-    BOOST_CHECK_EQUAL(expectedDenom, frac.denom());
+    BOOST_CHECK_EQUAL(expectedNum, frac.num);
+    BOOST_CHECK_EQUAL(expectedDenom, frac.denom);
     BOOST_CHECK_EQUAL(expected, orig->normal());
 }
 
@@ -212,10 +212,10 @@ BOOST_AUTO_TEST_CASE(replacementOfFunctionWithNumPowerArg)
     const Fraction frac = orig->normal(*map);
     BasePtr denom;
 
-    BOOST_CHECK_EQUAL(one, frac.num());
-    BOOST_TEST(frac.denom()->isSymbol());
+    BOOST_CHECK_EQUAL(one, frac.num);
+    BOOST_TEST(frac.denom->isSymbol());
 
-    denom = map->replaceTmpSymbolsBackFrom(frac.denom());
+    denom = map->replaceTmpSymbolsBackFrom(frac.denom);
 
     BOOST_CHECK_EQUAL(sin, denom);
 }

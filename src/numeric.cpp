@@ -122,9 +122,9 @@ tsym::Number tsym::Numeric::numericEval() const
 tsym::Fraction tsym::Numeric::normal(SymbolMap& map) const
 {
     if (number.isRational())
-        return Fraction(Numeric::create(number.numerator()), Numeric::create(number.denominator()));
+        return Fraction{Numeric::create(number.numerator()), Numeric::create(number.denominator())};
     else
-        return Fraction(map.getTmpSymbolAndStore(clone()));
+        return Fraction{map.getTmpSymbolAndStore(clone())};
 }
 
 tsym::BasePtr tsym::Numeric::diffWrtSymbol(const Base&) const

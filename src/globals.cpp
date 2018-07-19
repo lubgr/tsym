@@ -22,8 +22,8 @@ namespace tsym {
 
             normalizedFrac = rep->normal(map);
 
-            denom = map.replaceTmpSymbolsBackFrom(normalizedFrac.denom());
-            num = map.replaceTmpSymbolsBackFrom(normalizedFrac.num());
+            denom = map.replaceTmpSymbolsBackFrom(normalizedFrac.denom);
+            num = map.replaceTmpSymbolsBackFrom(normalizedFrac.num);
 
             return std::make_pair(Var(num), Var(denom));
         }

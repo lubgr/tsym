@@ -107,7 +107,7 @@ tsym::Fraction tsym::Logarithm::normal(SymbolMap& map) const
     const BasePtr result(create(arg->normal()));
     const BasePtr replacement(map.getTmpSymbolAndStore(result));
 
-    return Fraction(replacement);
+    return Fraction{replacement};
 }
 
 tsym::BasePtr tsym::Logarithm::diffWrtSymbol(const Base& symbol) const
