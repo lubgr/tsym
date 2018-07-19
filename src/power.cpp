@@ -171,9 +171,9 @@ tsym::BasePtr tsym::Power::expand() const
         return clone();
 }
 
-bool tsym::Power::isInteger(const Base& ptr) const
+bool tsym::Power::isInteger(const Base& arg) const
 {
-    return ptr.isNumeric() && ptr.numericEval().isInt();
+    return arg.isNumeric() && arg.numericEval().isInt();
 }
 
 tsym::BasePtr tsym::Power::expandIntegerExponent() const

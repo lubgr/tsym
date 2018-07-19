@@ -48,16 +48,7 @@ namespace tsym {
             const Base& u;
             const Base& v;
         };
-    }
-}
 
-tsym::PolyInfo::PolyInfo(const Base& u, const Base& v)
-    : u(u)
-    , v(v)
-{}
-
-namespace tsym {
-    namespace {
         bool isValidPower(const Base& power);
         bool hasValidOperands(const Base& arg);
 
@@ -97,7 +88,7 @@ namespace tsym {
     }
 }
 
-bool tsym::PolyInfo::isInputValid() const
+bool tsym::polyinfo::isInputValid(const Base& u, const Base& v)
 {
     if (u.isZero() && v.isZero())
         return false;
@@ -105,68 +96,79 @@ bool tsym::PolyInfo::isInputValid() const
         return hasValidType(u) && hasValidType(v);
 }
 
-tsym::BasePtrList tsym::PolyInfo::listOfSymbols()
-{
-    symbolList.clear();
+namespace tsym {
+    namespace {
+        void addIfNotAlreadyStored(BasePtrList& symbolList, const Base& symbol);
+        void addSymbolsNonScalar(BasePtrList& symbolList, const Base& arg);
+        void addSymbols(BasePtrList& symbolList, const BasePtrList& operands);
 
-    addSymbols(u);
-    addSymbols(v);
+        void addSymbols(BasePtrList& symbolList, const Base& arg)
+        {
+            if (arg.isSymbol())
+                addIfNotAlreadyStored(symbolList, arg);
+            else if (arg.isNumeric())
+                return;
+            else
+                addSymbolsNonScalar(symbolList, arg);
+        }
+
+        void addIfNotAlreadyStored(BasePtrList& symbolList, const Base& symbol)
+        {
+            const auto existing =
+              boost::find_if(symbolList, [&symbol](const auto& other) { return symbol.isEqual(*other); });
+
+            if (existing == cend(symbolList))
+                symbolList.push_back(symbol.clone());
+        }
+
+        void addSymbolsNonScalar(BasePtrList& symbolList, const Base& arg)
+        {
+            if (arg.isSum())
+                addSymbols(symbolList, arg.operands());
+            else if (arg.isProduct())
+                addSymbols(symbolList, arg.operands());
+            else if (arg.isPower())
+                addSymbols(symbolList, *arg.base());
+        }
+
+        void addSymbols(BasePtrList& symbolList, const BasePtrList& operands)
+        {
+            using boost::adaptors::indirected;
+
+            for (const auto& op : operands | indirected)
+                addSymbols(symbolList, op);
+        }
+    }
+}
+
+tsym::BasePtrList tsym::polyinfo::listOfSymbols(const Base& u, const Base& v)
+{
+    BasePtrList symbolList;
+
+    addSymbols(symbolList, u);
+    addSymbols(symbolList, v);
 
     symbolList.sort(ComparePolyVariables(u, v));
 
     return symbolList;
 }
 
-void tsym::PolyInfo::addSymbols(const Base& arg)
-{
-    if (arg.isSymbol())
-        addIfNotAlreadyStored(arg);
-    else if (arg.isNumeric())
-        return;
-    else
-        addSymbolsNonScalar(arg);
+namespace tsym {
+    namespace {
+        bool hasCommonSymbol(const BasePtrList& symbolList, const Base& u, const Base& v)
+        {
+            using boost::adaptors::indirected;
+
+            return boost::algorithm::any_of(
+              symbolList | indirected, [&u, &v](const auto& symbol) { return u.has(symbol) && v.has(symbol); });
+        }
+    }
 }
 
-void tsym::PolyInfo::addIfNotAlreadyStored(const Base& symbol)
+tsym::BasePtr tsym::polyinfo::mainSymbol(const BasePtrList& symbolList, const Base& u, const Base& v)
 {
-    const auto existing = boost::find_if(symbolList, [&symbol](const auto& other) { return symbol.isEqual(*other); });
-
-    if (existing == cend(symbolList))
-        symbolList.push_back(symbol.clone());
-}
-
-void tsym::PolyInfo::addSymbolsNonScalar(const Base& arg)
-{
-    if (arg.isSum())
-        addSymbols(arg.operands());
-    else if (arg.isProduct())
-        addSymbols(arg.operands());
-    else if (arg.isPower())
-        addSymbols(*arg.base());
-}
-
-void tsym::PolyInfo::addSymbols(const BasePtrList& list)
-{
-    using boost::adaptors::indirected;
-
-    for (const auto& item : list | indirected)
-        addSymbols(item);
-}
-
-tsym::BasePtr tsym::PolyInfo::mainSymbol()
-{
-    listOfSymbols();
-
-    if (hasCommonSymbol())
+    if (hasCommonSymbol(symbolList, u, v))
         return symbolList.front();
     else
         return Undefined::create();
-}
-
-bool tsym::PolyInfo::hasCommonSymbol() const
-{
-    using boost::adaptors::indirected;
-
-    return boost::algorithm::any_of(
-      symbolList | indirected, [this](const auto& symbol) { return u.has(symbol) && v.has(symbol); });
 }

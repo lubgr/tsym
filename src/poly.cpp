@@ -71,9 +71,7 @@ namespace tsym {
 
         BasePtrList pseudoDivideImpl(const BasePtr& u, const BasePtr& v, const Base& x, bool computeQuotient)
         {
-            PolyInfo polyInfo(*u, *v);
-
-            if (polyInfo.isInputValid())
+            if (polyinfo::isInputValid(*u, *v))
                 return pseudoDivideChecked(u, v, x, computeQuotient);
 
             TSYM_ERROR("Invalid polyn. pseudo-division: %S, %S. Return Undefined quotient/remainder.", u, v);
@@ -221,7 +219,7 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v)
     if (lookup != cend(map))
         return lookup->second;
 
-    auto result = divide(u, v, PolyInfo(*u, *v).listOfSymbols());
+    auto result = divide(u, v, polyinfo::listOfSymbols(*u, *v));
 
     return map.insert({{u, v}, result})->second;
 }
@@ -231,9 +229,8 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v, const B
  * Computation [2003], page 211. */
 {
     const BasePtr& zero(Numeric::zero());
-    PolyInfo polyInfo(*u, *v);
 
-    if (!polyInfo.isInputValid()) {
+    if (!polyinfo::isInputValid(*u, *v)) {
         TSYM_ERROR("Invalid polynomial division: %S, %S. Return Undefined quotient and remainder.", u, v);
         return {Undefined::create(), Undefined::create()};
     } else if (L.empty())

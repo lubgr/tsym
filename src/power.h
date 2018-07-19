@@ -45,7 +45,7 @@ namespace tsym {
       private:
         static BasePtr createNotUndefined(const BasePtr& base, const BasePtr& exponent);
         static BasePtr createNonTrivial(const BasePtr& base, const BasePtr& exponent);
-        bool isInteger(const Base& ptr) const;
+        bool isInteger(const Base& arg) const;
         bool isExponentRationalNumeric() const;
         BasePtr expandIntegerExponent() const;
         BasePtr expandSumBaseIntExp() const;

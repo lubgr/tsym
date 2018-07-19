@@ -13,7 +13,7 @@
 
 using namespace tsym;
 
-struct PolyInfoFixture : public AbcFixture {
+struct polyinfoFixture : public AbcFixture {
     const BasePtr abSum = Sum::create(a, b);
 };
 
@@ -27,35 +27,28 @@ namespace {
     }
 }
 
-BOOST_FIXTURE_TEST_SUITE(TestPolyInfo, PolyInfoFixture)
+BOOST_FIXTURE_TEST_SUITE(Testpolyinfo, polyinfoFixture)
 
 BOOST_AUTO_TEST_CASE(bothZero)
 {
-    PolyInfo info(*zero, *zero);
-
-    BOOST_TEST(!info.isInputValid());
+    BOOST_TEST(!polyinfo::isInputValid(*zero, *zero));
 }
 
 BOOST_AUTO_TEST_CASE(invalidInputFirstArgUndefined)
 {
-    PolyInfo info(*undefined, *a);
-
-    BOOST_TEST(!info.isInputValid());
+    BOOST_TEST(!polyinfo::isInputValid(*undefined, *a));
 }
 
 BOOST_AUTO_TEST_CASE(invalidInputSecondArgUndefined)
 {
-    PolyInfo info(*a, *undefined);
-
-    BOOST_TEST(!info.isInputValid());
+    BOOST_TEST(!polyinfo::isInputValid(*a, *undefined));
 }
 
 BOOST_AUTO_TEST_CASE(validInputFraction)
 {
     const auto frac = Numeric::create(1, 7);
-    PolyInfo info(*a, *frac);
 
-    BOOST_TEST(info.isInputValid());
+    BOOST_TEST(polyinfo::isInputValid(*a, *frac));
 }
 
 BOOST_AUTO_TEST_CASE(invalidInputSumWithNumericPower)
@@ -63,17 +56,14 @@ BOOST_AUTO_TEST_CASE(invalidInputSumWithNumericPower)
     const BasePtr numPow = Power::create(three, Numeric::create(1, 17));
     const BasePtr sum = Sum::create(a, numPow);
 
-    PolyInfo info(*sum, *b);
-
-    BOOST_TEST(!info.isInputValid());
+    BOOST_TEST(!polyinfo::isInputValid(*sum, *b));
 }
 
 BOOST_AUTO_TEST_CASE(invalidInputPowerWithSymbolExp)
 {
     const auto pow = Power::create(b, c);
-    PolyInfo info(*a, *pow);
 
-    BOOST_TEST(!info.isInputValid());
+    BOOST_TEST(!polyinfo::isInputValid(*a, *pow));
 }
 
 BOOST_AUTO_TEST_CASE(invalidInputPowerWithValidSumExp)
@@ -81,16 +71,12 @@ BOOST_AUTO_TEST_CASE(invalidInputPowerWithValidSumExp)
     const auto exp = Sum::create(two, a);
     const auto pow = Power::create(b, exp);
 
-    PolyInfo info(*a, *pow);
-
-    BOOST_TEST(!info.isInputValid());
+    BOOST_TEST(!polyinfo::isInputValid(*a, *pow));
 }
 
 BOOST_AUTO_TEST_CASE(validInputTwoInteger)
 {
-    PolyInfo info(*two, *eight);
-
-    BOOST_TEST(info.isInputValid());
+    BOOST_TEST(polyinfo::isInputValid(*two, *eight));
 }
 
 BOOST_AUTO_TEST_CASE(validInputSumAndProduct)
@@ -98,34 +84,28 @@ BOOST_AUTO_TEST_CASE(validInputSumAndProduct)
     const BasePtr sum = Sum::create(two, a);
     const BasePtr product = Product::create(b, c);
 
-    PolyInfo info(*sum, *product);
-
-    BOOST_TEST(info.isInputValid());
+    BOOST_TEST(polyinfo::isInputValid(*sum, *product));
 }
 
 BOOST_AUTO_TEST_CASE(emptySymbolList)
 {
-    PolyInfo info(*three, *four);
-
-    BOOST_TEST(info.listOfSymbols().empty());
+    BOOST_TEST(polyinfo::listOfSymbols(*three, *four).empty());
 }
 
 BOOST_AUTO_TEST_CASE(symbolListForOneSymbol)
 {
-    PolyInfo info(*a, *a);
+    const BasePtrList expected{a};
 
-    BOOST_CHECK_EQUAL(1, info.listOfSymbols().size());
-    BOOST_TEST(contains(info.listOfSymbols(), *a));
+    BOOST_TEST(expected == polyinfo::listOfSymbols(*a, *a), per_element());
 }
 
 BOOST_AUTO_TEST_CASE(symbolListTwoSymbols)
 {
-    PolyInfo info(*a, *b);
-    auto list = info.listOfSymbols();
+    const BasePtrList expected{a, b};
 
-    BOOST_CHECK_EQUAL(2, list.size());
-    BOOST_TEST(contains(list, *a));
-    BOOST_TEST(contains(list, *b));
+    auto list = polyinfo::listOfSymbols(*a, *b);
+
+    BOOST_TEST(expected == list, per_element());
 }
 
 BOOST_AUTO_TEST_CASE(symbolListMultipleSymbols)
@@ -137,9 +117,7 @@ BOOST_AUTO_TEST_CASE(symbolListMultipleSymbols)
     const BasePtr sum2 = Sum::create(pow2, b, Power::create(c, two));
     const BasePtr product = Product::create({five, a, b, Sum::create(c, d), e, sum1});
     using boost::adaptors::indirected;
-    PolyInfo info(*product, *sum2);
-
-    auto list = info.listOfSymbols();
+    const auto list = polyinfo::listOfSymbols(*product, *sum2);
 
     BOOST_CHECK_EQUAL(expected.size(), list.size());
 
@@ -150,26 +128,26 @@ BOOST_AUTO_TEST_CASE(symbolListMultipleSymbols)
 BOOST_AUTO_TEST_CASE(simpleMainSymbol01)
 {
     const BasePtr pow = Power::create(a, nine);
-    PolyInfo info(*abSum, *pow);
+    const auto list = polyinfo::listOfSymbols(*abSum, *pow);
 
-    BOOST_CHECK_EQUAL(a, info.mainSymbol());
+    BOOST_CHECK_EQUAL(a, polyinfo::mainSymbol(list, *abSum, *pow));
 }
 
 BOOST_AUTO_TEST_CASE(simpleMainSymbol02)
 {
     const BasePtr power = Power::create(Sum::create(two, a), four);
-    PolyInfo info(*abSum, *power);
+    const auto list = polyinfo::listOfSymbols(*abSum, *power);
 
-    BOOST_CHECK_EQUAL(a, info.mainSymbol());
+    BOOST_CHECK_EQUAL(a, polyinfo::mainSymbol(list, *abSum, *power));
 }
 
 BOOST_AUTO_TEST_CASE(failingMainSymbolRequest)
 {
     const BasePtr product = Product::create(a, Power::create(b, two));
     const BasePtr sum = Sum::create(c, four);
-    PolyInfo info(*product, *sum);
+    const auto list = polyinfo::listOfSymbols(*product, *sum);
 
-    BOOST_TEST(info.mainSymbol()->isUndefined());
+    BOOST_TEST(polyinfo::mainSymbol(list, *product, *sum)->isUndefined());
 }
 
 BOOST_AUTO_TEST_CASE(mainSymbolOnlyOneCommon)
@@ -177,9 +155,9 @@ BOOST_AUTO_TEST_CASE(mainSymbolOnlyOneCommon)
 {
     const BasePtr arg1 = Product::create(a, Sum::create(b, c));
     const BasePtr arg2 = Product::create(c, Power::create(d, two));
-    PolyInfo info(*arg1, *arg2);
+    const auto list = polyinfo::listOfSymbols(*arg1, *arg2);
 
-    BOOST_CHECK_EQUAL(c, info.mainSymbol());
+    BOOST_CHECK_EQUAL(c, polyinfo::mainSymbol(list, *arg1, *arg2));
 }
 
 BOOST_AUTO_TEST_CASE(mainSymbolBothZeroMinDegree)
@@ -187,9 +165,9 @@ BOOST_AUTO_TEST_CASE(mainSymbolBothZeroMinDegree)
 {
     const BasePtr arg1 = Sum::create(two, a);
     const BasePtr arg2 = Sum::create(three, abSum);
-    PolyInfo info(*arg1, *arg2);
+    const auto list = polyinfo::listOfSymbols(*arg1, *arg2);
 
-    BOOST_CHECK_EQUAL(a, info.mainSymbol());
+    BOOST_CHECK_EQUAL(a, polyinfo::mainSymbol(list, *arg1, *arg2));
 }
 
 BOOST_AUTO_TEST_CASE(mainSymbol)
@@ -198,9 +176,9 @@ BOOST_AUTO_TEST_CASE(mainSymbol)
     const BasePtr arg1 =
       Sum::create({Power::create(a, three), Power::create(b, two), Product::create(c, Power::create(d, four))});
     const BasePtr arg2 = Product::create({Power::create(a, two), b, Power::create(c, two)});
-    PolyInfo info(*arg1, *arg2);
+    const auto list = polyinfo::listOfSymbols(*arg1, *arg2);
 
-    BOOST_CHECK_EQUAL(b, info.mainSymbol());
+    BOOST_CHECK_EQUAL(b, polyinfo::mainSymbol(list, *arg1, *arg2));
 }
 
 BOOST_AUTO_TEST_CASE(mainSymbolLargeExpressions)
@@ -213,9 +191,9 @@ BOOST_AUTO_TEST_CASE(mainSymbolLargeExpressions)
     const BasePtr s4 = Product::create(Power::create(a, four), Power::create(b, five), d);
     const BasePtr s5 = Product::create(Power::create(e, three), Power::create(f, three));
     const BasePtr arg2 = Sum::create(s4, s5);
-    PolyInfo info(*arg1, *arg2);
+    const auto list = polyinfo::listOfSymbols(*arg1, *arg2);
 
-    BOOST_CHECK_EQUAL(d, info.mainSymbol());
+    BOOST_CHECK_EQUAL(d, polyinfo::mainSymbol(list, *arg1, *arg2));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

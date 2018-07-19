@@ -16,7 +16,7 @@ namespace tsym {
          * implemented by concrete subclasses. These simple cases are handled by methods of this
          * class:
          *
-         * - invalid input (see PolyInfo class)
+         * - invalid input (see polyinfo utilities)
          * - u and v have no common variables
          *
          * And after expansion of the argument:

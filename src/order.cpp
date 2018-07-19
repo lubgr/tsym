@@ -25,12 +25,12 @@ namespace tsym {
     static bool doPermuteBothConstant(const Base& left, const Base& right);
     static bool doPermuteBothFunction(const Base& left, const Base& right);
     static bool doPermuteDifferentType(const Base& left, const Base& right);
-    static bool isPowerSumSymbolOrFunction(const Base& ptr);
+    static bool isPowerSumSymbolOrFunction(const Base& arg);
     static bool doPermuteLeftProduct(const Base& left, const Base& right);
-    static bool isSumSymbolOrFunction(const Base& ptr);
+    static bool isSumSymbolOrFunction(const Base& arg);
     static bool doPermuteLeftPower(const Base& left, const Base& right);
     static bool doPermuteLastElement(const BasePtrList& lList, const Base& right);
-    static bool isSymbolOrFunction(const Base& ptr);
+    static bool isSymbolOrFunction(const Base& arg);
     static bool doPermuteLeftSum(const Base& left, const Base& right);
     static bool doPermuteLeftFunctionRightSymbol(const Base& left, const Base& right);
 }

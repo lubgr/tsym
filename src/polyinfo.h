@@ -5,31 +5,18 @@
 #include "baseptrlist.h"
 
 namespace tsym {
-    class PolyInfo {
-        /* Utility class for operations on two multivariate polynomials. */
-      public:
-        PolyInfo(const Base& u, const Base& v);
+    namespace polyinfo {
+        /* Utility functions for operations on two multivariate polynomials. */
 
         /* A valid input is the following: rational Numerics, Symbols or combinations of those
          * types, i.e., Sum, Product or Power: */
-        bool isInputValid() const;
+        bool isInputValid(const Base& u, const Base& v);
         /* The first element is the main symbol: */
-        BasePtrList listOfSymbols();
+        BasePtrList listOfSymbols(const Base& u, const Base& v);
         /* The main symbol is the variable with least degree contained in u and v. If there is
          * no common symbol, Undefined is returned: */
-        BasePtr mainSymbol();
-
-      private:
-        void addSymbols(const Base& arg);
-        void addIfNotAlreadyStored(const Base& symbol);
-        void addSymbolsNonScalar(const Base& arg);
-        void addSymbols(const BasePtrList& list);
-        bool hasCommonSymbol() const;
-
-        const Base& u;
-        const Base& v;
-        BasePtrList symbolList{};
-    };
+        BasePtr mainSymbol(const BasePtrList& symbolList, const Base& u, const Base& v);
+    }
 }
 
 #endif

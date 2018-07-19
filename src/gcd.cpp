@@ -13,10 +13,8 @@
 
 tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v) const
 {
-    PolyInfo polyInfo(*u, *v);
-
-    if (polyInfo.isInputValid())
-        return compute(u, v, polyInfo.listOfSymbols());
+    if (polyinfo::isInputValid(*u, *v))
+        return compute(u, v, polyinfo::listOfSymbols(*u, *v));
 
     TSYM_ERROR("Invalid gcd input: %S and %S", u, v);
 
