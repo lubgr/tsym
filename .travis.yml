@@ -31,16 +31,12 @@ install:
   - travis_fold start "setup-script"
   - ./bin/travis-setup.sh
   - travis_fold end "setup-script"
-  - echo | g++ -E -v -
-  - echo | clang++ -E -v -
 
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-5
-      - g++-6
       - g++-7
       - lcov
       - valgrind
@@ -49,7 +45,7 @@ matrix:
   include:
     - env:
           - MODE=RELEASE
-          - COMPILER="g++-7 g++-6 g++-5 clang++"
+          - COMPILER="g++-7 clang++"
 
     - env:
           - MODE=DEBUG
