@@ -1,7 +1,5 @@
 
 languages:
-- cpp
-
 - name: cpp
   production:
     exclude:
