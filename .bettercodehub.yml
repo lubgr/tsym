@@ -1,0 +1,13 @@
+
+languages:
+  - cpp
+
+- name: cpp
+  production:
+  exclude:
+     - /unit-tests/.*\.cpp
+     - /integration-tests/.*\.cpp
+  test:
+  include:
+     - /unit-tests/.*\.cpp
+     - /integration-tests/.*/.*\.cpp
