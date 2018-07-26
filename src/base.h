@@ -83,12 +83,12 @@ namespace tsym {
         BasePtr diff(const Base& symbol) const;
         const BasePtrList& operands() const;
 
-        bool isEqualByTypeAndOperands(const Base& other) const;
-        void setDebugString();
-
       protected:
         Base() = default;
         explicit Base(BasePtrList operands);
+
+        bool isEqualByTypeAndOperands(const Base& other) const;
+        void setDebugString();
 
         const BasePtrList ops{};
 
