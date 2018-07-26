@@ -2,19 +2,29 @@
 #define TSYM_NUMERIC_H
 
 #include "base.h"
+#include "logging.h"
 #include "number.h"
+#include "undefined.h"
 
 namespace tsym {
     class Numeric : public Base {
       public:
-        static BasePtr create(int value);
-        static BasePtr create(double value);
-        static BasePtr create(const Int& value);
-        static BasePtr create(int numerator, int denominator);
-        static BasePtr create(const Int& numerator, const Int& denominator);
-        static BasePtr create(const Number& number);
+        static BasePtr create(Number number);
+        template <class T> static BasePtr create(T&& value)
+        {
+            return create(Number(std::forward<T>(value)));
+        }
+        template <class S, class T> static BasePtr create(S&& num, T&& denom)
+        {
+            if (denom == 0) {
+                TSYM_ERROR("Attempt to create a Numeric with zero denominator, result is Undefined");
+                return Undefined::create();
+            }
 
-        explicit Numeric(const Number& number, Base::CtorKey&&);
+            return create(Number(std::forward<S>(num), std::forward<T>(denom)));
+        }
+
+        Numeric(Number&& number, Base::CtorKey&&);
         Numeric(const Numeric&) = delete;
         Numeric& operator=(const Numeric&) = delete;
         Numeric(Numeric&&) = delete;

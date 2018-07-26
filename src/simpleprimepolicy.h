@@ -18,7 +18,7 @@ namespace tsym {
                 n /= two;
             }
 
-            auto upperLimit = std::sqrt(static_cast<double>(n)) + 0.5;
+            const auto upperLimit = std::sqrt(static_cast<double>(n)) + 0.5;
 
             for (Integer i(3); static_cast<double>(i) < upperLimit; i = i + two)
                 while (n % i == zero) {

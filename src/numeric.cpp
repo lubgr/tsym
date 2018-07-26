@@ -1,48 +1,17 @@
 
 #include "numeric.h"
 #include "fraction.h"
-#include "logging.h"
 #include "symbolmap.h"
-#include "undefined.h"
 
-tsym::Numeric::Numeric(const Number& number, Base::CtorKey&&)
-    : number(number)
+tsym::Numeric::Numeric(Number&& number, Base::CtorKey&&)
+    : number(std::move(number))
 {
     setDebugString();
 }
 
-tsym::BasePtr tsym::Numeric::create(int value)
+tsym::BasePtr tsym::Numeric::create(Number number)
 {
-    return create(Number(value));
-}
-
-tsym::BasePtr tsym::Numeric::create(int numerator, int denominator)
-{
-    return create(Int(numerator), Int(denominator));
-}
-
-tsym::BasePtr tsym::Numeric::create(double value)
-{
-    return create(Number(value));
-}
-
-tsym::BasePtr tsym::Numeric::create(const Int& value)
-{
-    return create(Number(value));
-}
-
-tsym::BasePtr tsym::Numeric::create(const Int& numerator, const Int& denominator)
-{
-    if (denominator == 0) {
-        TSYM_ERROR("Attempt to create a Numeric with zero denominator, result is Undefined");
-        return Undefined::create();
-    } else
-        return create(Number(numerator, denominator));
-}
-
-tsym::BasePtr tsym::Numeric::create(const Number& number)
-{
-    return std::make_shared<const Numeric>(number, Base::CtorKey{});
+    return std::make_shared<const Numeric>(std::move(number), Base::CtorKey{});
 }
 
 namespace tsym {

@@ -18,21 +18,6 @@ tsym::Sum::Sum(const BasePtrList& summands, Base::CtorKey&&)
     setDebugString();
 }
 
-tsym::BasePtr tsym::Sum::create(const BasePtr& s1, const BasePtr& s2)
-{
-    return create({s1, s2});
-}
-
-tsym::BasePtr tsym::Sum::create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3)
-{
-    return create({s1, s2, s3});
-}
-
-tsym::BasePtr tsym::Sum::create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3, const BasePtr& s4)
-{
-    return create({s1, s2, s3, s4});
-}
-
 tsym::BasePtr tsym::Sum::create(const BasePtrList& summands)
 {
     if (bplist::hasUndefinedElements(summands))

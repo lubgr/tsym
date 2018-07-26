@@ -5,7 +5,6 @@
 #include <vector>
 #include "bplist.h"
 #include "fraction.h"
-#include "numeric.h"
 #include "power.h"
 #include "productsimpl.h"
 #include "sum.h"
@@ -16,41 +15,6 @@ tsym::Product::Product(const BasePtrList& factors, Base::CtorKey&&)
     : Base(factors)
 {
     setDebugString();
-}
-
-tsym::BasePtr tsym::Product::create(const BasePtr& f1, const BasePtr& f2)
-{
-    return create({f1, f2});
-}
-
-tsym::BasePtr tsym::Product::create(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3)
-{
-    return create({f1, f2, f3});
-}
-
-tsym::BasePtr tsym::Product::create(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3, const BasePtr& f4)
-{
-    return create({f1, f2, f3, f4});
-}
-
-tsym::BasePtr tsym::Product::minus(const BasePtr& f1)
-{
-    return create({Numeric::mOne(), f1});
-}
-
-tsym::BasePtr tsym::Product::minus(const BasePtr& f1, const BasePtr& f2)
-{
-    return create({Numeric::mOne(), f1, f2});
-}
-
-tsym::BasePtr tsym::Product::minus(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3)
-{
-    return create({Numeric::mOne(), f1, f2, f3});
-}
-
-tsym::BasePtr tsym::Product::minus(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3, const BasePtr& f4)
-{
-    return create({Numeric::mOne(), f1, f2, f3, f4});
 }
 
 tsym::BasePtr tsym::Product::create(const BasePtrList& factors)

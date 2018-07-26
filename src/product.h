@@ -2,18 +2,21 @@
 #define TSYM_PRODUCT_H
 
 #include "base.h"
+#include "numeric.h"
 
 namespace tsym {
     class Product : public Base {
       public:
-        static BasePtr create(const BasePtr& f1, const BasePtr& f2);
-        static BasePtr create(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3);
-        static BasePtr create(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3, const BasePtr& f4);
-        static BasePtr minus(const BasePtr& f1);
-        static BasePtr minus(const BasePtr& f1, const BasePtr& f2);
-        static BasePtr minus(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3);
-        static BasePtr minus(const BasePtr& f1, const BasePtr& f2, const BasePtr& f3, const BasePtr& f4);
         static BasePtr create(const BasePtrList& factors);
+        template <class... T> static BasePtr create(T&&... args)
+        {
+            return create({std::forward<T>(args)...});
+        }
+
+        template <class... T> static BasePtr minus(T&&... args)
+        {
+            return create({Numeric::mOne(), std::forward<T>(args)...});
+        }
 
         explicit Product(const BasePtrList& factors, Base::CtorKey&&);
         Product(const Product&) = delete;

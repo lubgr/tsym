@@ -7,10 +7,11 @@
 namespace tsym {
     class Sum : public Base {
       public:
-        static BasePtr create(const BasePtr& s1, const BasePtr& s2);
-        static BasePtr create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3);
-        static BasePtr create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3, const BasePtr& s4);
         static BasePtr create(const BasePtrList& summands);
+        template <class... T> static BasePtr create(T&&... args)
+        {
+            return create({std::forward<T>(args)...});
+        }
 
         explicit Sum(const BasePtrList& summands, Base::CtorKey&&);
         Sum(const Sum&) = delete;
