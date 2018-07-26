@@ -6,12 +6,11 @@
 #include "logger.h"
 
 namespace logging {
-    template <class... T> std::string fmt(const std::string& fmt, const T&... args)
+    template <class S, class... T> std::string fmt(S&& fmt, const T&... args)
     {
-        boost::format format(fmt);
-        using expander = int[];
+        boost::format format(std::forward<S>(fmt));
 
-        (void) expander{0, (void(format % args), 0)...};
+        (void) (format % ... % args);
 
         return boost::str(format);
     }
