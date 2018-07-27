@@ -10,6 +10,11 @@ namespace tsym {
          * classes. For those, a constructor is provided, otherwise, there are getter to access the
          * name and the argument of the function. */
       public:
+        Function(const Function&) = delete;
+        Function& operator=(const Function&) = delete;
+        Function(Function&&) = delete;
+        Function& operator=(Function&&) = delete;
+
         Number numericEval() const override = 0;
         Fraction normal(SymbolMap& map) const override = 0;
         BasePtr diffWrtSymbol(const Base& symbol) const override = 0;
@@ -31,10 +36,6 @@ namespace tsym {
 
       protected:
         Function(const BasePtrList& args, const std::string& name);
-        Function(const Function&) = delete;
-        Function& operator=(const Function&) = delete;
-        Function(Function&&) = delete;
-        Function& operator=(Function&&) = delete;
         ~Function() override = default;
 
       private:
