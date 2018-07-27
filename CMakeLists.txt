@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.8)
 project(tsym VERSION 0.2.0 DESCRIPTION "Tiny symbolic library" LANGUAGES CXX)
 
 option(BUILD_SHARED_LIBS "Build as shared library" ON)
-option(BUILD_TESTING "Compile unit tests" ON)
+option(BUILD_TESTING "Compile unit tests" OFF)
 
 SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING
     "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel Coverage Profile Sanitizer." FORCE)
