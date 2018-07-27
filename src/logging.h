@@ -3,6 +3,7 @@
 
 #include <boost/format.hpp>
 #include <cstring>
+#include <iterator>
 #include "logger.h"
 
 namespace logging {
@@ -18,7 +19,7 @@ namespace logging {
 
 #define TSYM_LOGGING_ARGS(...)                                                                                         \
     {                                                                                                                  \
-        "tsym", (std::strrchr(__FILE__, '/') + 1), __LINE__, logging::fmt(__VA_ARGS__)                                 \
+        "tsym", std::next(std::strrchr(__FILE__, '/')), __LINE__, logging::fmt(__VA_ARGS__)                            \
     }
 
 #define TSYM_DEBUG(...) tsym::Logger::getInstance().debug(TSYM_LOGGING_ARGS(__VA_ARGS__))
