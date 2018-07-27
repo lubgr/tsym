@@ -94,12 +94,7 @@ namespace tsym {
 
         /* Empty struct for using make_shared for subclasses that shall not be created directly,
          * but only via their static creation methods. */
-        struct CtorKey {
-            CtorKey(const CtorKey&) = delete;
-            CtorKey& operator=(const CtorKey&) = delete;
-            CtorKey(CtorKey&&) = delete;
-            CtorKey& operator=(CtorKey&&) = delete;
-        };
+        struct CtorKey {};
 
       private:
         BasePtr normalViaCache() const;
