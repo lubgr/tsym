@@ -1,6 +1,6 @@
 
 #include "globals.h"
-#include <boost/range/algorithm.hpp>
+#include <boost/range/algorithm/find.hpp>
 #include <chrono>
 #include "constant.h"
 #include "fraction.h"

@@ -1,5 +1,5 @@
 
-#include <boost/range/algorithm.hpp>
+#include <boost/range/algorithm/find.hpp>
 #include <limits>
 #include <sstream>
 #include <stdexcept>

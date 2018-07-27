@@ -1,7 +1,7 @@
 
 #include "productsimpl.h"
 #include <boost/functional/hash.hpp>
-#include <boost/range/algorithm.hpp>
+#include <boost/range/algorithm/find_if.hpp>
 #include <boost/range/numeric.hpp>
 #include <cassert>
 #include "bplist.h"

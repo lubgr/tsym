@@ -1,7 +1,8 @@
 
 #include "poly.h"
 #include <boost/range/adaptors.hpp>
-#include <boost/range/algorithm.hpp>
+#include <boost/range/algorithm/min_element.hpp>
+#include <boost/range/algorithm/transform.hpp>
 #include <boost/range/numeric.hpp>
 #include <cassert>
 #include "bplist.h"

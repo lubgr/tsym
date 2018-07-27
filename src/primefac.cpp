@@ -1,7 +1,9 @@
 
 #include "primefac.h"
-#include <boost/range/algorithm.hpp>
-#include <boost/range/algorithm_ext.hpp>
+#include <boost/range/algorithm/find_if.hpp>
+#include <boost/range/algorithm/sort.hpp>
+#include <boost/range/algorithm/unique.hpp>
+#include <boost/range/algorithm_ext/erase.hpp>
 #include <boost/range/numeric.hpp>
 #include <limits>
 

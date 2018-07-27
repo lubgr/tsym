@@ -2,7 +2,7 @@
 #include "order.h"
 #include <boost/range/adaptor/indirected.hpp>
 #include <boost/range/adaptor/reversed.hpp>
-#include <boost/range/algorithm.hpp>
+#include <boost/range/algorithm/lexicographical_compare.hpp>
 #include "constant.h"
 #include "function.h"
 #include "logging.h"

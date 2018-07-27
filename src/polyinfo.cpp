@@ -3,7 +3,7 @@
 #include <boost/algorithm/cxx11/all_of.hpp>
 #include <boost/algorithm/cxx11/any_of.hpp>
 #include <boost/range/adaptors.hpp>
-#include <boost/range/algorithm.hpp>
+#include <boost/range/algorithm/find_if.hpp>
 #include <cassert>
 #include "logging.h"
 #include "name.h"

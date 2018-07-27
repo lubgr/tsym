@@ -1,6 +1,6 @@
 
 #include "product.h"
-#include <boost/range/algorithm.hpp>
+#include <boost/range/algorithm/find_if.hpp>
 #include <boost/range/numeric.hpp>
 #include <vector>
 #include "bplist.h"
