@@ -14,6 +14,7 @@ build() {
 
     cmake \
         -D CMAKE_CXX_COMPILER="${CXX}"\
+        -D BUILD_TESTING=ON\
         -D CMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"\
         ..
     make tsym tests
