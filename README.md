@@ -2,10 +2,10 @@
 # tsym: Tiny Symbolic Library [![Build Status](https://travis-ci.org/lubgr/tsym.svg?branch=develop)](https://travis-ci.org/lubgr/tsym) [![Coverage Status](https://coveralls.io/repos/github/lubgr/tsym/badge.svg?branch=develop)](https://coveralls.io/github/lubgr/tsym?branch=develop) [![BCH compliance](https://bettercodehub.com/edge/badge/lubgr/tsym?branch=develop)](https://bettercodehub.com/results/lubgr/tsym)
 
 This small C++ library intends to provide a simple approach to symbolic algebra. In contrast to
-fully-fledged computer algebra systems or libraries (e.g. maxima, GiNaC, sympy), only the most basic
-features are implemented and the scope is limited to real-valued symbols: no complex numbers are
-taken into account during expression simplification (this prohibits some simplifications and allows
-for some). The main features are:
+fully-fledged computer algebra systems or libraries (e.g. maxima, GiNaC, sympy), only basic features
+are implemented and the scope is limited to real-valued symbols: no complex numbers are taken into
+account during expression simplification (this prohibits some simplifications and allows for some).
+The main features are:
 
 * automatic simplification `a + b + 2*a = 3*a + b`
 * expand expressions `(a + b)^2 = a^2 + 2*a*b + b^2`
@@ -19,34 +19,47 @@ for some). The main features are:
 
 Most algorithms are implemented according to _Cohen, Computer Algebra and Symbolic Computation
 [2003]_, modifications are made for the handling of numeric power expressions and when not taking
-complex numbers into account. Absent features that are usually implemented in common CAS are e.g.
-arbitrary precision arithmetics for floating point numbers, collecting parts of an expression or
-series expansion.
+complex numbers into account. Absent features often implemented in other CAS are e.g. arbitrary
+precision arithmetics for floating point numbers, collecting parts of an expression or series
+expansion.
 
-Installation
-------------
-To compile tsym, you need the [boost](https://boost.org) headers (version 1.65 or more recent) and a
-C++ compiler recent enough to support C++17 and [cmake](https://cmake.org). For unit tests, the
-boost test framework is used, and the appropriate static library must be available to the linker
-(pass `-D BUILD_TESTING=OFF` to exclude unit tests from the configuration). tsym should build on
-Linux platforms by e.g.
+Note that this library is under development and _far from being stable_. Breaking changes are to be
+expected.
+
+Setup
+-----
+To compile tsym, you need a compiler supporting
+[C++17](https://en.cppreference.com/w/cpp/compiler_support#cpp17), [cmake](https://cmake.org) and
+the [boost](https://boost.org) headers (build dependency only, version >= 1.65). The easiest way to
+integrate tsym into a project is to leverage cmake in conjunction with git submdodules:
+```bash
+cd path/to/your/project
+git submodule add https://github.com/lubgr/tsym external/tsym
+```
+In the `CMakeLists.txt` of your application, add
+```
+add_subdirectory(external/tsym)
+
+target_link_libraries(yourTarget PRIVATE tsym::tsym)
+```
+and on Linux or MacOS, you should now be able to compile via the usual
 ```bash
 mkdir build && cd build
-cmake ..
+cmake .. # pass e.g. -D BOOST_ROOT=/non/standard/path
 make
 ```
-where cmake options should be specified as needed
+The configuration step can be tweaked with common cmake options
 ([CMAKE_BUILD_TYPE](https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html),
-[BUILD_TESTING](https://cmake.org/cmake/help/latest/module/CTest.html),
 [BUILD_SHARED_LIBS](https://cmake.org/cmake/help/latest/variable/BUILD_SHARED_LIBS.html),
 [BOOST_ROOT](https://cmake.org/cmake/help/latest/module/FindBoost.html),
 [CMAKE_INSTALL_PREFIX](https://cmake.org/cmake/help/latest/variable/CMAKE_INSTALL_PREFIX.html)
-etc.). To install header files, the library and cmake
-[configuration files](https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#config-file-packages):
-```bash
-make install
-```
-With a different build tool (on Windows etc.), replace the `make` commands accordingly.
+etc.). An alternative is a system-wide installation (`git clone`, `cmake -D [OPTIONS]
+[path/to/tsym]`, `make install`). In case of Archlinux, there is also an [AUR
+package](https://aur.archlinux.org/packages/tsym-git). When using cmake for the client application,
+use `find_package(tsym)` instead of `add_subdirectory`, otherwise pass e.g. `-std=c++17`, `-ltsym`
+and `-I`/`-L` to your compiler where appropriate. For compiling unit tests, configure the tsym build
+with [BUILD_TESTING](https://cmake.org/cmake/help/latest/module/CTest.html)`=ON`. The test
+executable links to the boost test framework, and the appropriate static library must be available.
 
 Usage
 -----
@@ -170,15 +183,6 @@ matrix is singular, all functions will throw an instance of `std::invalid_argume
 requirements on vector/matrix types low, no sanity checks are made (client code is hence responsible
 for correct dimensions)
 
-Compiling the example code
---------------------------
-
-The exemplary C++ program from above can be compiled with
-```bash
-g++ -o example main-function-from-above.cpp -ltsym
-```
-for less recent compiler versions, `-std=c++17` should be manually enabled.
-
 Additional notes
 ----------------
 * `Var` objects can be used as keys in `std::unordered_map` containers, as `std::hash` is specified
@@ -188,5 +192,5 @@ Additional notes
 * Control over logging output can be implemented by providing a subclass of `tsym::Logger` that
   overrides the debug/info/warning/error/critical methods. An instance of that subclass must then be
   registered to replace the default behavior (print warning, error and critical messages to standard
-  output) by `tsym::Logger::setInstance(...);` where the argument is a `std::unique_ptr` of the
-  Logger subclass.
+  output) by `tsym::Logger::setInstance(...);` where the argument is a `std::unique_ptr` to the
+  Logger object.
