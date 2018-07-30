@@ -12,8 +12,8 @@ namespace tsym {
          * automatically converted to fractions up to a certain (not very high) accuracy. */
       public:
         Number() = default;
-        Number(int value);
-        Number(double value);
+        Number(int value); // NOLINT
+        Number(double value); // NOLINT
         Number(int numerator, int denominator);
         explicit Number(Int value);
         Number(Int numerator, Int denominator);

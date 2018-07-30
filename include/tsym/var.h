@@ -23,8 +23,8 @@ namespace tsym {
         enum class Type { SYMBOL, INT, FRACTION, DOUBLE, CONSTANT, UNDEFINED, FUNCTION, SUM, PRODUCT, POWER };
 
         Var();
-        Var(int value);
-        Var(double value);
+        Var(int value); // NOLINT
+        Var(double value); // NOLINT
         Var(int numerator, int denominator);
         /* The next two constructors create symbols or (possibly big) integers. For symbols,
          * alphanumeric characters are valid, though the symbol name must not start with a
