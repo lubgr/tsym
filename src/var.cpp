@@ -113,11 +113,7 @@ tsym::Var::Var(const std::string& str, Var::Sign sign)
     rep = withoutSign.rep;
 }
 
-tsym::Var::Var(const BasePtr& ptr)
-    : rep(ptr)
-{}
-
-tsym::Var::Var(BasePtr&& ptr)
+tsym::Var::Var(BasePtr ptr)
     : rep(std::move(ptr))
 {}
 
@@ -242,19 +238,19 @@ tsym::Var tsym::operator/(Var lhs, const Var& rhs)
     return lhs;
 }
 
-std::ostream& tsym::operator<<(std::ostream& stream, const Var& var)
+std::ostream& tsym::operator<<(std::ostream& stream, const Var& rhs)
 {
     PlaintextPrintEngine engine(stream);
 
-    printer::print(engine, *var.get());
+    printer::print(engine, *rhs.get());
 
     return stream;
 }
 
-std::ostream& tsym::operator<<(std::ostream& stream, const Var::Type& type)
+std::ostream& tsym::operator<<(std::ostream& stream, const Var::Type& rhs)
 {
     for (const auto& it : typeStringMap())
-        if (it.second == type) {
+        if (it.second == rhs) {
             stream << it.first;
             return stream;
         }

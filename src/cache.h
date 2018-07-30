@@ -25,6 +25,11 @@ namespace tsym {
                   reinterpret_cast<uintptr_t>(&map), [this]() { decltype(map){}.swap(map); });
             }
 
+            RegisteredCache(const RegisteredCache&) = delete;
+            RegisteredCache& operator=(const RegisteredCache&) = delete;
+            RegisteredCache(RegisteredCache&&) = delete;
+            RegisteredCache& operator=(RegisteredCache&&) = delete;
+
             ~RegisteredCache()
             {
                 detail::deregisterCacheClearer(reinterpret_cast<uintptr_t>(&map));

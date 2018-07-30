@@ -2,4 +2,4 @@
 WarningsAsErrors: ''
 HeaderFilterRegex: '.*'
 FormatStyle: none
-Checks: '-*,clang-*,bugprone-*,cert-*,misc-*,modernize-*,google-explicit-constructor,readability-*,performance-*,cppcoreguidelines-*,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-readability-braces-around-statements,-readability-named-parameter,-readability-identifier-naming,-readability-else-after-return'
+Checks: '-*,clang-*,bugprone-*,misc-*,modernize-*,google-explicit-constructor,readability-*,performance-*,cppcoreguidelines-*,-cppcoreguidelines-pro-type-vararg,-cppcoreguidelines-pro-bounds-array-to-pointer-decay,-readability-braces-around-statements,-readability-named-parameter,-readability-identifier-naming,-readability-else-after-return'

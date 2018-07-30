@@ -85,7 +85,7 @@ bool tsym::Constant::isNegative() const
 
 size_t tsym::Constant::hash() const
 {
-    typedef std::underlying_type<Type>::type EnumType;
+    using EnumType = std::underlying_type<Type>::type;
 
     return std::hash<EnumType>{}(static_cast<EnumType>(type));
 }

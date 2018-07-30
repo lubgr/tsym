@@ -58,7 +58,7 @@ tsym::BasePtr tsym::Symbol::create(const Name& name, bool positive)
 
 tsym::BasePtr tsym::Symbol::createNonEmptyName(const Name& name, bool positive)
 {
-    typedef std::pair<Name, bool> Key;
+    using Key = std::pair<Name, bool>;
     static std::unordered_map<Key, BasePtr, boost::hash<Key>> pool;
     const auto key = std::make_pair(name, positive);
     const auto lookup = pool.find(key);

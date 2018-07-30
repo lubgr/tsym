@@ -19,7 +19,7 @@ namespace tsym {
          * functions. Var objects holding numbers can be explicitely converted to plain double or,
          * if they fit, into integers. */
       public:
-        enum class Sign : bool { POSITIVE = 1 };
+        enum class Sign : bool { POSITIVE = true };
         enum class Type { SYMBOL, INT, FRACTION, DOUBLE, CONSTANT, UNDEFINED, FUNCTION, SUM, PRODUCT, POWER };
 
         Var();
@@ -51,8 +51,7 @@ namespace tsym {
       public:
         /* To be used internally: */
         using BasePtr = std::shared_ptr<const Base>;
-        explicit Var(const BasePtr& ptr);
-        explicit Var(BasePtr&& ptr);
+        explicit Var(BasePtr ptr);
         const BasePtr& get() const;
 
       private:

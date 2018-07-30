@@ -9,8 +9,8 @@
 using BoostMatrix = boost::numeric::ublas::matrix<tsym::Var>;
 using BoostVector = boost::numeric::ublas::vector<tsym::Var>;
 using BoostSizeType = BoostMatrix::size_type;
-typedef tsym::plu::detail::MatrixAccessProxy<BoostMatrix, BoostSizeType> BoostMatrixProxy;
-typedef tsym::plu::detail::VectorAccessProxy<BoostVector, BoostSizeType> BoostVectorProxy;
+using BoostMatrixProxy = tsym::plu::detail::MatrixAccessProxy<BoostMatrix, BoostSizeType>;
+using BoostVectorProxy = tsym::plu::detail::VectorAccessProxy<BoostVector, BoostSizeType>;
 
 BoostVector createBoostVector(std::initializer_list<tsym::Var> values);
 BoostMatrix createBoostMatrix(std::initializer_list<std::initializer_list<tsym::Var>> values);

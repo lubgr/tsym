@@ -630,7 +630,7 @@ namespace tsym {
     }
 
     namespace {
-        typedef std::pair<BasePtrList, Int> CacheKey;
+        using CacheKey = std::pair<BasePtrList, Int>;
 
         struct CacheEqualTo {
             bool operator()(const CacheKey& lhs, const CacheKey& rhs) const
