@@ -15,8 +15,8 @@ namespace tsym {
         Number(int value); // NOLINT
         Number(double value); // NOLINT
         Number(int numerator, int denominator);
-        explicit Number(Int value);
-        Number(Int numerator, Int denominator);
+        explicit Number(const Int& value);
+        Number(const Int& numerator, const Int& denominator);
 
         Number& operator+=(const Number& rhs);
         Number& operator-=(const Number& rhs);

@@ -54,7 +54,6 @@ namespace tsym {
         static bool isTanOfAtan2(Type type, Type otherType);
         static bool isThisTheInverse(Type type, Type otherType);
         static BasePtr shiftArgIntoRange(Type type, BasePtr arg);
-        static void defineIntervalAndEndFactor(Type type, BasePtr* interval, BasePtr& factor);
         static BasePtr createFromTrigoNoInverse(Type type, const BasePtr& arg);
         static BasePtr createAtan2Numerically(const BasePtr& y, const BasePtr& x);
         static BasePtr simplAtan2(const BasePtr& y, const BasePtr& x, const BasePtr& increment);

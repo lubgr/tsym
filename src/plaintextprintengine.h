@@ -14,7 +14,6 @@ namespace tsym {
         enum class CharSet { ASCII, UNICODE };
 
         explicit PlaintextPrintEngine(std::ostream& out, CharSet charset = CharSet::UNICODE);
-        PlaintextPrintEngine(const PlaintextPrintEngine&) = delete;
 
         PlaintextPrintEngine& symbol(const Name& name);
         PlaintextPrintEngine& positiveSymbol(const Name& name);

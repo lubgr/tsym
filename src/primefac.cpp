@@ -36,7 +36,7 @@ namespace tsym {
 
             assert(n > 0 && n < Int(std::numeric_limits<unsigned>::max()));
 
-            const unsigned nUnsigned = static_cast<unsigned>(n);
+            const auto nUnsigned = static_cast<unsigned>(n);
 
             result.reserve(nUnsigned * primes.size());
 
@@ -144,7 +144,7 @@ tsym::Number tsym::PrimeFac::collectToNewExp(const Number& exponent)
     if (count > 1) {
         eraseDuplicates();
         return count * exponent;
-    } else if (numPrimes.size() == 0 && denomPrimes.size() == 0)
+    } else if (numPrimes.empty() && denomPrimes.empty())
         return 1;
     else
         return exponent;
@@ -221,8 +221,8 @@ const std::vector<tsym::Int>& tsym::PrimeFac::getDenomPrimes() const
 
 tsym::Number tsym::PrimeFac::eval() const
 {
-    const auto num = boost::accumulate(numPrimes, Int(1), std::multiplies<Int>());
-    const auto denom = boost::accumulate(denomPrimes, Int(1), std::multiplies<Int>());
+    const auto num = boost::accumulate(numPrimes, Int(1), std::multiplies<>());
+    const auto denom = boost::accumulate(denomPrimes, Int(1), std::multiplies<>());
 
     return Number(num, denom);
 }

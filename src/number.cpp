@@ -26,12 +26,13 @@ tsym::Number::Number(double value)
     setDebugString();
 }
 
-tsym::Number::Number(Int value)
-    : Number(std::move(value), 1)
+tsym::Number::Number(const Int& value)
+    : Number(value, 1)
 {}
 
-tsym::Number::Number(Int numerator, Int denominator)
-    : rational(std::move(numerator), std::move(denominator))
+tsym::Number::Number(const Int& numerator, const Int& denominator)
+    /* The implementation doesn't move from input rvalues, hence const references are fine here: */
+    : rational(numerator, denominator)
 {
     setDebugString();
 }
@@ -65,7 +66,7 @@ void tsym::Number::tryDoubleToFraction()
 
     if (std::abs(static_cast<double>(truncated) / nFloatDigits - dValue) < ZERO_TOL) {
         /* This will also catch very low double values, which turns them into a rational zero. */
-        rational.assign(std::move(truncated), Int(nFloatDigits));
+        rational.assign(truncated, Int(nFloatDigits));
         dValue = 0.0;
     }
 }
@@ -221,7 +222,7 @@ void tsym::Number::computeNumPower(const Int& numExponent, Number& result) const
 /* For e.g. (1/2)^(2/3), this does the part (1/2)^2. */
 {
     assert(integer::fitsInto<unsigned>(integer::abs(numExponent)));
-    const unsigned exp = static_cast<unsigned>(integer::abs(numExponent));
+    const auto exp = static_cast<unsigned>(integer::abs(numExponent));
     const Int newDenom = integer::pow(denominator(), exp);
     const Int newNum = integer::pow(numerator(), exp);
 
@@ -265,7 +266,7 @@ tsym::Int tsym::Number::tryGetBase(const Int& n, const Int& denomExponent) const
         /* Result wouldn't fit into an int. */
         return 0;
 
-    const int base = static_cast<int>(exact + 0.1);
+    const auto base = static_cast<int>(exact + 0.1);
 
     if (std::abs(exact - static_cast<double>(base)) > 1.e-6)
         /* We are not too strict here, because of the following check. */
@@ -276,12 +277,12 @@ tsym::Int tsym::Number::tryGetBase(const Int& n, const Int& denomExponent) const
     return integer::pow(Int(base), static_cast<unsigned>(denomExponent)) == n ? base : 0;
 }
 
-bool tsym::Number::equal(const Number& rhs) const
+bool tsym::Number::equal(const Number& other) const
 {
-    if (areBothRational(rhs))
-        return rational == rhs.rational;
+    if (areBothRational(other))
+        return rational == other.rational;
     else
-        return equalViaDouble(rhs);
+        return equalViaDouble(other);
 }
 
 bool tsym::Number::areBothRational(const Number& other) const

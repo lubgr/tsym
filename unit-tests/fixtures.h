@@ -8,6 +8,10 @@ namespace tsym {
     class AbcFixture {
       public:
         AbcFixture();
+        AbcFixture(const AbcFixture&) = default;
+        AbcFixture(AbcFixture&&) = default;
+        AbcFixture& operator=(const AbcFixture&) = default;
+        AbcFixture& operator=(AbcFixture&&) = default;
         virtual ~AbcFixture() = default;
 
         const BasePtr a;
@@ -37,6 +41,10 @@ namespace tsym {
 
     struct TestSuiteLoggingFixture {
         explicit TestSuiteLoggingFixture(bool suppressLogs);
+        TestSuiteLoggingFixture(const TestSuiteLoggingFixture&) = delete;
+        TestSuiteLoggingFixture(TestSuiteLoggingFixture&&) = delete;
+        TestSuiteLoggingFixture& operator=(const TestSuiteLoggingFixture&) = delete;
+        TestSuiteLoggingFixture& operator=(TestSuiteLoggingFixture&&) = delete;
         virtual ~TestSuiteLoggingFixture();
     };
 

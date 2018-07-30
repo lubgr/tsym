@@ -518,7 +518,7 @@ namespace tsym {
         {
             assert(integer::fitsInto<unsigned>(integer::abs(exp)));
             const Int selectedBase = exp > 0 ? base.numerator() : base.denominator();
-            const unsigned integralExp = static_cast<unsigned>(integer::abs(exp));
+            const auto integralExp = static_cast<unsigned>(integer::abs(exp));
 
             return integer::pow(selectedBase, integralExp);
         }
@@ -635,22 +635,22 @@ namespace tsym {
         struct CacheEqualTo {
             bool operator()(const CacheKey& lhs, const CacheKey& rhs) const
             {
-                return bplist::areEqual(lhs.first, rhs.first) && lhs.second == lhs.second;
+                return bplist::areEqual(lhs.first, rhs.first) && lhs.second == rhs.second;
             }
         };
     }
 }
 
-tsym::BasePtrList tsym::productsimpl::simplify(const BasePtrList& origFactors)
+tsym::BasePtrList tsym::productsimpl::simplify(const BasePtrList& factors)
 {
     static cache::RegisteredCache<CacheKey, BasePtrList, boost::hash<CacheKey>, CacheEqualTo> cache;
     static const auto& relevantOption = options::getMaxPrimeResolution();
     static auto& map(cache.map);
-    const auto key = std::make_pair(origFactors, relevantOption);
+    const auto key = std::make_pair(factors, relevantOption);
     const auto lookup = map.find(key);
 
     if (lookup != cend(map))
         return lookup->second;
 
-    return map.insert({key, simplifyWithoutCache(origFactors)})->second;
+    return map.insert({key, simplifyWithoutCache(factors)})->second;
 }

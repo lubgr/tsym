@@ -234,6 +234,18 @@ bool tsym::Trigonometric::isThisTheInverse(Type type, Type otherType)
     return isOtherTheInverse(otherType, type);
 }
 
+namespace tsym {
+    namespace {
+        std::pair<BasePtr, BasePtr> interval(Trigonometric::Type type)
+        {
+            if (type == Trigonometric::Type::ASIN || type == Trigonometric::Type::ATAN)
+                return {timesPi(-1, 2), timesPi(1, 2)};
+            else
+                return {Numeric::zero(), timesPi(1)};
+        }
+    }
+}
+
 tsym::BasePtr tsym::Trigonometric::shiftArgIntoRange(Type type, BasePtr arg)
 /* Asin(sin(...)), acos(cos(...)) and atan(tan(...)) are handled here, where the argument is
  * numerically evaluable. First, the argument is shifted into or closely above the range of
@@ -242,34 +254,19 @@ tsym::BasePtr tsym::Trigonometric::shiftArgIntoRange(Type type, BasePtr arg)
  * argument lies within this range, it is returned. Otherwise, it is subtracted from the double
  * of the interval and in case of atan(tan(...)) premultiplied by -1. */
 {
-    BasePtr interval[2];
-    BasePtr endFactor;
+    const auto [lower, upper] = interval(type);
+    const BasePtr& endFactor = type == Type::ATAN ? Numeric::mOne() : Numeric::one();
 
-    defineIntervalAndEndFactor(type, interval, endFactor);
-
-    while (arg->numericEval() >= interval[1]->numericEval())
+    while (arg->numericEval() >= upper->numericEval())
         arg = Sum::create(arg, timesPi(-2));
 
-    while (arg->numericEval() < interval[0]->numericEval())
+    while (arg->numericEval() < lower->numericEval())
         arg = Sum::create(arg, timesPi(2));
 
-    if (arg->numericEval() >= interval[1]->numericEval())
-        arg = Sum::create(Product::create(endFactor, Numeric::two(), interval[1]), Product::minus(endFactor, arg));
+    if (arg->numericEval() >= upper->numericEval())
+        arg = Sum::create(Product::create(endFactor, Numeric::two(), upper), Product::minus(endFactor, arg));
 
     return arg;
-}
-
-void tsym::Trigonometric::defineIntervalAndEndFactor(Type type, BasePtr* interval, BasePtr& factor)
-{
-    if (type == Type::ASIN || type == Type::ATAN) {
-        interval[0] = timesPi(-1, 2);
-        interval[1] = timesPi(1, 2);
-    } else {
-        interval[0] = Numeric::zero();
-        interval[1] = timesPi(1);
-    }
-
-    factor = type == Type::ATAN ? Numeric::mOne() : Numeric::one();
 }
 
 namespace tsym {

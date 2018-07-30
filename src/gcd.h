@@ -31,6 +31,11 @@ namespace tsym {
          * Note that this class doesn't have state, making it less error prone while dealing with
          * the recursive nature of gcd algorithms. */
       public:
+        Gcd() = default;
+        Gcd(const Gcd&) = delete;
+        Gcd& operator=(const Gcd&) = delete;
+        Gcd(Gcd&&) = delete;
+        Gcd& operator=(Gcd&&) = delete;
         virtual ~Gcd() = default;
 
         BasePtr compute(const BasePtr& u, const BasePtr& v) const;
@@ -38,7 +43,7 @@ namespace tsym {
 
       private:
         BasePtr computeNumerics(const BasePtr& u, const BasePtr& v) const;
-        Int integerGcd(const Int& a, const Int& b) const;
+        Int integerGcd(const Int& u, const Int& v) const;
         bool haveCommonSymbol(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
         BasePtr gcdViaAlgo(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const;
         BasePtr integerContent(const BasePtr& u, const BasePtr& v) const;

@@ -32,7 +32,7 @@ tsym::BasePtr tsym::Sum::createSimplifiedSum(const BasePtrList& summands)
 {
     const auto res = sumsimpl::simplify(summands);
 
-    if (res.size() == 0)
+    if (res.empty())
         return Numeric::zero();
     else if (res.size() == 1)
         return res.front();
