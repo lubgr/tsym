@@ -28,6 +28,10 @@ namespace tsym {
          * Symbol or Constant. This clutters the interface a bit, but provides easy access to all
          * information without using casts. */
       public:
+        Base(const Base&) = delete;
+        Base& operator=(const Base&) = delete;
+        Base(Base&&) = delete;
+        Base& operator=(Base&&) = delete;
         virtual ~Base() = default;
 
         virtual bool isEqualDifferentBase(const Base& other) const = 0;

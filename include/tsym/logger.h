@@ -8,12 +8,13 @@ namespace tsym {
     class Logger {
       public:
         Logger() = default;
+        Logger(Logger&&) = default;
+        Logger& operator=(Logger&&) = default;
+        Logger(const Logger&) = delete;
+        Logger& operator=(const Logger&) = delete;
         virtual ~Logger() = default;
 
         struct Message {
-            Message(const Message& other) = delete;
-            Message& operator=(const Message& rhs) = delete;
-
             const std::string ident;
             const std::string file;
             const int line;
@@ -28,10 +29,6 @@ namespace tsym {
 
         static void setInstance(std::unique_ptr<const Logger> logger);
         static const Logger& getInstance();
-
-      protected:
-        Logger(const Logger&) = default;
-        Logger& operator=(const Logger&) = default;
 
       private:
         static std::unique_ptr<const Logger> instance;
