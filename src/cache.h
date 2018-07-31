@@ -11,8 +11,8 @@ namespace tsym {
         void clearRegisteredCaches();
 
         namespace detail {
-            void registerCacheClearer(uintptr_t address, std::function<void()>&& fct);
-            void deregisterCacheClearer(uintptr_t address);
+            void registerCacheClearer(const short *address, std::function<void()>&& fct);
+            void deregisterCacheClearer(const short *address);
         }
 
         template <class Key, class Value, class Hash = std::hash<Key>, class EqualTo = std::equal_to<Key>>
@@ -21,8 +21,7 @@ namespace tsym {
              * registers and unregisteres a member function reference to clear the cache. */
             RegisteredCache()
             {
-                detail::registerCacheClearer(
-                  reinterpret_cast<uintptr_t>(&map), [this]() { decltype(map){}.swap(map); });
+                detail::registerCacheClearer(&address, [this]() { decltype(map){}.swap(map); });
             }
 
             RegisteredCache(const RegisteredCache&) = delete;
@@ -32,10 +31,11 @@ namespace tsym {
 
             ~RegisteredCache()
             {
-                detail::deregisterCacheClearer(reinterpret_cast<uintptr_t>(&map));
+                detail::deregisterCacheClearer(&address);
             }
 
             std::unordered_multimap<Key, Value, Hash, EqualTo> map;
+            const short address = 0;
         };
     }
 }

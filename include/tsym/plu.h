@@ -69,6 +69,10 @@ namespace tsym {
                     , access(std::forward<Callable>(accessFct))
                 {}
 
+                VectorAccessProxy& operator=(const VectorAccessProxy&) = delete;
+                VectorAccessProxy(const VectorAccessProxy&) = default;
+                VectorAccessProxy& operator=(VectorAccessProxy&&) = delete;
+                VectorAccessProxy(VectorAccessProxy&&) = delete;
                 virtual ~VectorAccessProxy() = default;
 
                 Var& operator()(SizeType i)
@@ -97,6 +101,10 @@ namespace tsym {
                     , access(std::forward<Callable>(accessFct))
                 {}
 
+                MatrixAccessProxy& operator=(const MatrixAccessProxy&) = delete;
+                MatrixAccessProxy(const MatrixAccessProxy&) = default;
+                MatrixAccessProxy& operator=(MatrixAccessProxy&&) = delete;
+                MatrixAccessProxy(MatrixAccessProxy&&) = delete;
                 virtual ~MatrixAccessProxy() = default;
 
                 Var& operator()(SizeType i, SizeType j)
@@ -204,7 +212,7 @@ namespace tsym {
                         if (matrix(i, j) != 0)
                             lineIndices.push_back(j);
 
-                    assert(lineIndices.size() > 0);
+                    assert(!lineIndices.empty());
 
                     std::sort(begin(lineIndices), end(lineIndices), sortByComplexity);
                 }

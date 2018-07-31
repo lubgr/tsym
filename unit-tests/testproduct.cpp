@@ -26,7 +26,7 @@ struct ProductFixture : public AbcFixture {
     const BasePtr& oneThird = Numeric::third();
     const BasePtr& oneFourth = Numeric::fourth();
 
-    ~ProductFixture()
+    ~ProductFixture() override
     {
         options::setMaxPrimeResolution(primeResolutionLimit);
     }
@@ -663,16 +663,12 @@ BOOST_AUTO_TEST_CASE(piDividedByPi)
 BOOST_AUTO_TEST_CASE(orderingOfFunctionsNumbersAndSymbols)
 /* A correct ordering is 2*sqrt(2)*a*atan(a)*b*c*cos(1)*cos(d)*cos(d*e)*sin(a). */
 {
-    const BasePtr factors[] = {two, sqrtTwo, a, Trigonometric::createAtan(a), b, c, Trigonometric::createCos(one),
+    const std::vector<BasePtr> factors = {two, sqrtTwo, a, Trigonometric::createAtan(a), b, c, Trigonometric::createCos(one),
       Trigonometric::createCos(d), Trigonometric::createCos(Product::create(d, e)), Trigonometric::createSin(a)};
-    BasePtrList expected;
     const BasePtr product = Product::create({factors[1], factors[0], factors[5], factors[8], factors[9], factors[3],
       factors[6], factors[2], factors[7], factors[4]});
 
-    for (size_t i = 0; i < sizeof(factors) / sizeof(factors[0]); ++i)
-        expected.push_back(factors[i]);
-
-    BOOST_TEST(expected == product->operands(), per_element());
+    BOOST_TEST(factors == product->operands(), per_element());
 }
 
 BOOST_AUTO_TEST_CASE(productOfEqualFunctionsEqualArguments)

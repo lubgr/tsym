@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(exponentFraction)
 BOOST_AUTO_TEST_CASE(largeBaseIntegerExp)
 {
     const long maxLong = std::numeric_limits<long>::max();
-    const long lBase = static_cast<long>(std::sqrt(static_cast<double>(maxLong - 2)));
+    const auto lBase = static_cast<long>(std::sqrt(static_cast<double>(maxLong - 2)));
     const BasePtr base = Numeric::create(Int(lBase));
     const BasePtr pow = Power::create(base, two);
 

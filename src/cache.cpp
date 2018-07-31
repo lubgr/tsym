@@ -5,24 +5,24 @@
 namespace {
     auto& clearFunctions()
     {
-        static std::map<uintptr_t, std::function<void()>> clearFunctions;
+        static std::map<const short*, std::function<void()>> clearFunctions;
 
         return clearFunctions;
     }
 }
 
-void tsym::cache::detail::registerCacheClearer(uintptr_t address, std::function<void()>&& fct)
+void tsym::cache::detail::registerCacheClearer(const short *address, std::function<void()>&& fct)
 {
-    clearFunctions()[address] = fct;
+    clearFunctions()[address] = std::move(fct);
 }
 
-void tsym::cache::detail::deregisterCacheClearer(uintptr_t address)
+void tsym::cache::detail::deregisterCacheClearer(const short *address)
 {
     clearFunctions().erase(address);
 }
 
 void tsym::cache::clearRegisteredCaches()
 {
-    for (auto& clearFctEntry : clearFunctions())
-        clearFctEntry.second();
+    for (auto& [unused, clearFctEntry] : clearFunctions())
+        clearFctEntry();
 }

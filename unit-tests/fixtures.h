@@ -8,10 +8,10 @@ namespace tsym {
     class AbcFixture {
       public:
         AbcFixture();
-        AbcFixture(const AbcFixture&) = default;
-        AbcFixture(AbcFixture&&) = default;
-        AbcFixture& operator=(const AbcFixture&) = default;
-        AbcFixture& operator=(AbcFixture&&) = default;
+        AbcFixture(const AbcFixture&) = delete;
+        AbcFixture(AbcFixture&&) = delete;
+        AbcFixture& operator=(const AbcFixture&) = delete;
+        AbcFixture& operator=(AbcFixture&&) = delete;
         virtual ~AbcFixture() = default;
 
         const BasePtr a;
