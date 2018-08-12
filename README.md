@@ -135,24 +135,25 @@ std::cout << tsym::expand(c) << std::endl; /* 1/5 + a */
 The construction of expressions can be done by parsing of strings, too, by invocation of a free
 function
 ```c++
-tsym::Var parsedFromString = tsym::parse("a*cos(pi/5) + sqrt(3)*log(euler)");
+const std::optional<tsym::Var> parsedFromString = tsym::parse("a*cos(pi/5) + sqrt(3)*log(euler)");
 ```
-This can go wrong of course, so a flag reference can be passed to check the success of parsing
+This can go wrong, hence the return value.
 ```c++
-bool success;
-tsym::Var wrong = tsym::parse("a*cos(3!)", &success); /* Results in a*cos, where "cos" is a variable. */
+const auto parseAttempt = tsym::parse("a*cos(3!)");
 
-if (!success)
+if (!parseAttempt)
     std::cout << "Factorials aren't implemented" << std::endl;
 ```
-The parser does very limited error recovery, you shouldn't rely on it. Three standard operations
-for matrices are provided as free functions, i.e., solution of linear systems of equations, matrix
-inversion and computing determinants. All three use the LU decomposition and a partial pivoting
-scheme and are implemented as function templates that accept any matrix type providing element
-access via `(i, j)` or `[i][j]` operators and any vector type with `(i)` or `[i]` operators. It's
-fine to use simple container types (`std::vector<tsym::Var>`, `std::vector<std::vector<tsym::Var>`,
-plain C-style arrays, `std::array` and so on. More sophisticated matrix/vector types don't help the
-performance that is solely governed by internal simplifications.
+The parser does very limited error recovery, and partially parsed result are
+simply discarded. Three standard operations for matrices are provided as free
+functions, i.e., solution of linear systems of equations, matrix inversion and
+computing determinants. All three use the LU decomposition and a partial
+pivoting scheme and are implemented as function templates that accept any matrix
+type providing element access via `(i, j)` or `[i][j]` operators and any vector
+type with `(i)` or `[i]` operators. It's fine to use simple container types
+(`std::vector<tsym::Var>`, `std::vector<std::vector<tsym::Var>`, plain C-style
+arrays, `std::array` and so on. More sophisticated matrix/vector types don't
+help the performance that is solely governed by internal simplifications.
 ```c++
 std::vector<std::vector<tsym::Var>> A;
 boost::numeric::ublas::matrix<tsym::Var> B;

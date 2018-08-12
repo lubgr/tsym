@@ -184,39 +184,36 @@ BOOST_AUTO_TEST_CASE(atanMinusOneOverSqrtThree)
     BOOST_CHECK_EQUAL(-pi() / 6, res);
 }
 
-BOOST_AUTO_TEST_CASE(successfulParsing)
+BOOST_AUTO_TEST_CASE(successfulParsing01)
 {
-    bool success;
     const Var expected = a * b * tsym::sqrt(2) * tan(a);
-    const Var result(parse("a*b*sqrt(2)*tan(a)", &success));
+    const auto result = parse("a*b*sqrt(2)*tan(a)");
 
-    BOOST_TEST(success);
-    BOOST_CHECK_EQUAL(expected, result);
+    BOOST_TEST(result.has_value());
+    BOOST_CHECK_EQUAL(expected, result.value());
 }
 
-BOOST_AUTO_TEST_CASE(successfulParsingWithoutFlag)
+BOOST_AUTO_TEST_CASE(successfulParsing02)
 {
     const Var expected = a * b + sin(a) * cos(b);
-    const Var result(parse("a*b + sin(a)*cos(b)"));
+    const auto result = parse("a*b + sin(a)*cos(b)");
 
-    BOOST_CHECK_EQUAL(expected, result);
+    BOOST_TEST(result.has_value());
+    BOOST_CHECK_EQUAL(expected, result.value());
 }
 
 BOOST_AUTO_TEST_CASE(parsingWithError, noLogs())
 {
-    bool success;
-    parse("a*b*sqrt(2)*[[[tan(a)", &success);
+    const auto result = parse("a*b*sqrt(2)*[[[tan(a)");
 
-    BOOST_TEST(!success);
+    BOOST_TEST(!result.has_value());
 }
 
 BOOST_AUTO_TEST_CASE(parsingEmptyString, noLogs())
 {
-    bool success;
-    const Var result = parse("", &success);
+    const auto result = parse("");
 
-    BOOST_TEST(!success);
-    BOOST_CHECK_EQUAL(Var::Type::UNDEFINED, result.type());
+    BOOST_TEST(!result.has_value());
 }
 
 BOOST_AUTO_TEST_SUITE_END()

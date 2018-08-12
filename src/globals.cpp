@@ -214,14 +214,14 @@ std::vector<tsym::Var> tsym::collectSymbols(const Var& arg)
     return symbols;
 }
 
-tsym::Var tsym::parse(const std::string& str, bool* success)
+std::optional<tsym::Var> tsym::parse(const std::string& str)
 {
     parser::Result result = parser::parse(str);
 
     TSYM_DEBUG("Parsed '%s' with result: %S", str.c_str(), result.value);
 
-    if (success != nullptr)
-        *success = result.success && result.matchedWholeString;
+    if (result.success && result.matchedWholeString)
+        return Var(result.value);
 
-    return Var(result.value);
+    return std::nullopt;
 }
