@@ -32,7 +32,7 @@ tsym::Number::Number(const Int& value)
 
 tsym::Number::Number(const Int& numerator, const Int& denominator)
     /* The implementation doesn't move from input rvalues, hence const references are fine here: */
-    : rational(numerator, denominator)
+    : rational(denominator < 0 ? -numerator : numerator, integer::abs(denominator))
 {
     setDebugString();
 }
