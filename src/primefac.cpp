@@ -117,7 +117,7 @@ namespace tsym {
                 } else if (++nPrime == expDenom) {
                     target.push_back(prime);
 
-                    it = --source.erase(it - static_cast<int>(expDenom - 1), it + 1);
+                    it = std::prev(source.erase(it - static_cast<int>(expDenom - 1), it + 1));
 
                     nPrime = 0;
                 }

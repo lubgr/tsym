@@ -252,7 +252,7 @@ namespace tsym {
                     else
                         engine.invokePrint(*factor);
 
-                    if (factor != --cend(factors))
+                    if (factor != std::prev(cend(factors)))
                         engine.timesSign();
                 }
             }
