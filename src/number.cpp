@@ -8,6 +8,7 @@
 #include <limits>
 #include <sstream>
 #include "logging.h"
+#include "numberfct.h"
 #include "plaintextprintengine.h"
 #include "printer.h"
 
@@ -87,26 +88,12 @@ tsym::Number& tsym::Number::operator+=(const Number& rhs)
 
 bool tsym::Number::isThisOrOtherDouble(const Number& other) const
 {
-    return isDouble() || other.isDouble();
+    return isDouble(*this) || isDouble(other);
 }
 
 tsym::Number& tsym::Number::operator-=(const Number& rhs)
 {
-    return operator+=(rhs.flipSign());
-}
-
-tsym::Number tsym::Number::flipSign() const
-{
-    Number copy(*this);
-
-    if (isDouble())
-        copy.dValue *= -1.0;
-    else
-        copy.rational *= -1;
-
-    copy.setDebugString();
-
-    return copy;
+    return operator+=(-rhs);
 }
 
 tsym::Number& tsym::Number::operator*=(const Number& rhs)
@@ -137,7 +124,10 @@ const tsym::Number& tsym::Number::operator+() const
 
 tsym::Number tsym::Number::operator-() const
 {
-    return flipSign();
+    if (isRational(*this))
+        return {-numerator(), denominator()};
+    else
+        return {-dValue};
 }
 
 tsym::Number tsym::Number::toThe(const Number& exponent) const
@@ -160,16 +150,18 @@ bool tsym::Number::processTrivialPowers(const Number& exponent, Number& result) 
 /* If the power is evaluated within the block of trivial posssibilities, the second parameter is
  * defined and true is returned, otherwise false. */
 {
-    if (isZero() && exponent.numerator() < 0) {
+    static const Number zero(0);
+
+    if (*this == zero && exponent.numerator() < 0) {
         TSYM_ERROR("Number division by zero! Result is undefined.");
         throw std::overflow_error("Zero divisor in rational number division");
-    } else if (isZero() || isOne() || exponent.isOne()) {
+    } else if (*this == zero || *this == 1 || exponent == 1) {
         result = *this;
         return true;
-    } else if (exponent.isZero()) {
+    } else if (exponent == zero) {
         result = Number(1);
         return true;
-    } else if (lessThan(0) && !exponent.isInt()) {
+    } else if (*this < 0 && !isInt(exponent)) {
         throw std::overflow_error("Illegal power with base zero and non-integer exponent");
     } else if (*this == -1) {
         result = computeMinusOneToThe(exponent);
@@ -181,7 +173,7 @@ bool tsym::Number::processTrivialPowers(const Number& exponent, Number& result) 
 
 tsym::Number tsym::Number::computeMinusOneToThe(const Number& exponent) const
 {
-    assert(exponent.isInt());
+    assert(isInt(exponent));
 
     return exponent.numerator() % 2 == 0 ? 1 : -1;
 }
@@ -193,11 +185,11 @@ bool tsym::Number::processNegBase(const Number& exponent, Number& result) const
     if (*this > 0)
         return false;
 
-    assert(exponent.isInt());
+    assert(isInt(exponent));
 
     preFac = preFac.toThe(exponent);
 
-    result = this->abs().toThe(exponent) * preFac;
+    result = abs(*this).toThe(exponent) * preFac;
 
     return true;
 }
@@ -277,73 +269,6 @@ tsym::Int tsym::Number::tryGetBase(const Int& n, const Int& denomExponent) const
     return integer::pow(Int(base), static_cast<unsigned>(denomExponent)) == n ? base : 0;
 }
 
-bool tsym::Number::equal(const Number& other) const
-{
-    if (areBothRational(other))
-        return rational == other.rational;
-    else
-        return equalViaDouble(other);
-}
-
-bool tsym::Number::areBothRational(const Number& other) const
-{
-    return isRational() && other.isRational();
-}
-
-bool tsym::Number::equalViaDouble(const Number& rhs) const
-{
-    double dLhs = toDouble();
-    double dRhs = rhs.toDouble();
-    const double diff = std::abs(dLhs - dRhs);
-    double max = 1.0;
-
-    dLhs = std::abs(dLhs);
-    dRhs = std::abs(dRhs);
-
-    max = dLhs > max ? dLhs : max;
-    max = dRhs > max ? dRhs : max;
-
-    return diff < TOL * max;
-}
-
-bool tsym::Number::lessThan(const Number& rhs) const
-{
-    if (areBothRational(rhs))
-        return rational < rhs.rational;
-    else
-        return toDouble() < rhs.toDouble();
-}
-
-bool tsym::Number::isZero() const
-{
-    return rational == 0 && std::abs(dValue) < TOL;
-}
-
-bool tsym::Number::isOne() const
-{
-    return rational == 1;
-}
-
-bool tsym::Number::isInt() const
-{
-    return (numerator() != 0 && denominator() == 1) || isZero();
-}
-
-bool tsym::Number::isFrac() const
-{
-    return denominator() != 1;
-}
-
-bool tsym::Number::isRational() const
-{
-    return isFrac() || isInt();
-}
-
-bool tsym::Number::isDouble() const
-{
-    return rational == 0 && std::abs(dValue) > ZERO_TOL;
-}
-
 tsym::Int tsym::Number::numerator() const
 {
     return rational.numerator();
@@ -356,30 +281,41 @@ tsym::Int tsym::Number::denominator() const
 
 double tsym::Number::toDouble() const
 {
-    return isRational() ? boost::rational_cast<double>(rational) : dValue;
+    if (rational != 0)
+        return boost::rational_cast<double>(rational);
+
+    return dValue;
 }
 
-tsym::Number tsym::Number::abs() const
-{
-    return *this < 0 ? flipSign() : *this;
-}
+namespace tsym {
+    namespace {
+        bool areEqual(double lhs, double rhs)
+        {
+            const double diff = std::abs(lhs - rhs);
+            double max = 1.0;
 
-int tsym::Number::sign() const
-{
-    if (isZero())
-        return 0;
-    else
-        return *this < 0 ? -1 : 1;
+            lhs = std::abs(lhs);
+            rhs = std::abs(rhs);
+
+            max = lhs > max ? lhs : max;
+            max = rhs > max ? rhs : max;
+
+            return diff < 100. * std::numeric_limits<double>::epsilon() * max;
+        }
+    }
 }
 
 bool tsym::operator==(const Number& lhs, const Number& rhs)
 {
-    return lhs.equal(rhs);
+    if (isRational(lhs) && isRational(rhs))
+        return lhs.numerator() == rhs.numerator() && lhs.denominator() == rhs.denominator();
+    else
+        return areEqual(lhs.toDouble(), rhs.toDouble());
 }
 
 bool tsym::operator<(const Number& lhs, const Number& rhs)
 {
-    return lhs.lessThan(rhs);
+    return lhs.toDouble() < rhs.toDouble();
 }
 
 std::ostream& tsym::operator<<(std::ostream& stream, const Number& rhs)

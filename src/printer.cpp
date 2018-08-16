@@ -3,6 +3,7 @@
 #include <cassert>
 #include "base.h"
 #include "bplist.h"
+#include "numberfct.h"
 #include "numeric.h"
 #include "plaintextprintengine.h"
 #include "power.h"
@@ -87,7 +88,7 @@ namespace tsym {
 
                     const auto n = base->numericEval();
 
-                    return n.isInt() && n > 0;
+                    return isInt(n) && n > 0;
                 };
 
                 return base->isSymbol() || base->isConstant() || base->isFunction() || isPositiveInt(base);
@@ -122,7 +123,7 @@ namespace tsym {
                 if (exp->isSymbol() || exp->isConstant() || exp->isFunction())
                     return true;
                 else if (exp->isNumeric())
-                    return exp->numericEval().isInt() && exp->isPositive();
+                    return isInt(exp->numericEval()) && exp->isPositive();
                 else
                     return false;
             }
@@ -283,12 +284,12 @@ namespace tsym {
 
 template <class Engine> void tsym::printer::print(Engine& engine, const Number& number)
 {
-    if (number.isDouble())
+    if (isDouble(number))
         engine.number(number.toDouble());
-    else if (number.isInt())
+    else if (isInt(number))
         engine.number(number.numerator());
     else {
-        assert(number.isFrac());
+        assert(isFraction(number));
 
         engine.openNumerator()
           .number(number.numerator())

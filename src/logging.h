@@ -11,9 +11,7 @@ namespace logging {
     {
         boost::format format(std::forward<S>(fmt));
 
-        (void) (format % ... % args);
-
-        return boost::str(format);
+        return boost::str((format % ... % args));
     }
 }
 

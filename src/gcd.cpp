@@ -4,6 +4,7 @@
 #include <cmath>
 #include "bplist.h"
 #include "logging.h"
+#include "numberfct.h"
 #include "numeric.h"
 #include "polyinfo.h"
 #include "power.h"
@@ -55,9 +56,9 @@ tsym::BasePtr tsym::Gcd::computeNumerics(const BasePtr& u, const BasePtr& v) con
     const Number numV(v->numericEval());
     Int intGcd(1);
 
-    assert(numU.isRational() && numV.isRational());
+    assert(isRational(numU) && isRational(numV));
 
-    if (numU.isInt() && numV.isInt())
+    if (isInt(numU) && isInt(numV))
         intGcd = integerGcd(numU.numerator(), numV.numerator());
 
     return Numeric::create(intGcd);
@@ -99,7 +100,7 @@ tsym::BasePtr tsym::Gcd::integerContent(const BasePtr& u, const BasePtr& v) cons
     const Number vIntContent(integerContent(v));
     Int intGcd;
 
-    if (!uIntContent.isInt() || !vIntContent.isInt())
+    if (!isInt(uIntContent) || !isInt(vIntContent))
         return Numeric::one();
 
     intGcd = integerGcd(uIntContent.numerator(), vIntContent.numerator());
@@ -114,9 +115,9 @@ tsym::Number tsym::Gcd::integerContent(const BasePtr& poly) const
     if (poly->isSum())
         result = integerContentOfSum(poly->operands());
     else
-        result = poly->numericTerm()->numericEval().abs();
+        result = abs(poly->numericTerm()->numericEval());
 
-    return result.isInt() ? result : 1;
+    return isInt(result) ? result : 1;
 }
 
 tsym::Number tsym::Gcd::integerContentOfSum(const BasePtrList& summands) const
@@ -127,7 +128,7 @@ tsym::Number tsym::Gcd::integerContentOfSum(const BasePtrList& summands) const
     for (const auto& summand : summands) {
         intContent = integerContent(summand);
 
-        assert(intContent.isInt());
+        assert(isInt(intContent));
 
         result = integerGcd(result, intContent.numerator());
     }
@@ -162,10 +163,10 @@ tsym::Number tsym::Gcd::normalizationFactor(const BasePtr& arg, BasePtrList& L) 
 
     fac = lCoeff->numericEval();
 
-    if (!fac.isRational())
+    if (!isRational(fac))
         TSYM_ERROR("%S has a non-rational leading coefficient!", arg);
-    else if (fac.isZero())
+    else if (fac == 0)
         TSYM_ERROR("Gcd result %S has a zero leading coefficient.", arg);
 
-    return fac.sign();
+    return sign(fac);
 }

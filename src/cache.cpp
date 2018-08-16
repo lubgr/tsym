@@ -11,12 +11,12 @@ namespace {
     }
 }
 
-void tsym::cache::detail::registerCacheClearer(const short *address, std::function<void()>&& fct)
+void tsym::cache::detail::registerCacheClearer(const short* address, std::function<void()>&& fct)
 {
     clearFunctions()[address] = std::move(fct);
 }
 
-void tsym::cache::detail::deregisterCacheClearer(const short *address)
+void tsym::cache::detail::deregisterCacheClearer(const short* address)
 {
     clearFunctions().erase(address);
 }

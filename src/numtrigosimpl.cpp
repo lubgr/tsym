@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cmath>
 #include "logging.h"
+#include "numberfct.h"
 #include "numeric.h"
 #include "power.h"
 #include "product.h"
@@ -147,7 +148,7 @@ bool tsym::NumTrigoSimpl::isArgRationalNonZeroNumeric() const
 bool tsym::NumTrigoSimpl::isRationalNumeric(const BasePtr& ptr) const
 {
     if (ptr->isNumeric())
-        return ptr->numericEval().isRational();
+        return isRational(ptr->numericEval());
     else
         return false;
 }
@@ -282,7 +283,7 @@ void tsym::NumTrigoSimpl::setResult(const BasePtr& result)
 bool tsym::NumTrigoSimpl::isDoubleNumeric(const BasePtr& ptr) const
 {
     if (ptr->isNumeric())
-        return ptr->numericEval().isDouble();
+        return isDouble(ptr->numericEval());
     else
         return false;
 }
@@ -302,7 +303,7 @@ void tsym::NumTrigoSimpl::compNumerically(double (*fct)(double))
     double result;
 
     assert(arg->isNumeric());
-    assert(arg->numericEval().isDouble());
+    assert(isDouble(arg->numericEval()));
 
     result = fct(arg->numericEval().toDouble());
 

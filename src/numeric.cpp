@@ -1,6 +1,7 @@
 
 #include "numeric.h"
 #include "fraction.h"
+#include "numberfct.h"
 #include "symbolmap.h"
 
 tsym::Numeric::Numeric(Number&& number, Base::CtorKey&&)
@@ -90,7 +91,7 @@ tsym::Number tsym::Numeric::numericEval() const
 
 tsym::Fraction tsym::Numeric::normal(SymbolMap& map) const
 {
-    if (number.isRational())
+    if (isRational(number))
         return Fraction{Numeric::create(number.numerator()), Numeric::create(number.denominator())};
     else
         return Fraction{map.getTmpSymbolAndStore(clone())};
@@ -123,9 +124,9 @@ size_t tsym::Numeric::hash() const
 
 unsigned tsym::Numeric::complexity() const
 {
-    if (number.isInt())
+    if (isInt(number))
         return 1;
-    else if (number.isFrac())
+    else if (isFraction(number))
         return 2;
     else
         return 3;
@@ -143,12 +144,12 @@ bool tsym::Numeric::isNumeric() const
 
 bool tsym::Numeric::isZero() const
 {
-    return number.isZero();
+    return number == 0;
 }
 
 bool tsym::Numeric::isOne() const
 {
-    return number.isOne();
+    return number == 1;
 }
 
 bool tsym::Numeric::isConst() const

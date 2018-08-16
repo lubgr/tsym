@@ -5,6 +5,7 @@
 #include <limits>
 #include "bplist.h"
 #include "fraction.h"
+#include "numberfct.h"
 #include "numeric.h"
 #include "poly.h"
 #include "power.h"
@@ -158,15 +159,13 @@ int tsym::Sum::sign() const
 int tsym::Sum::signOfNumericParts() const
 {
     Number numericPart(0);
+    using tsym::sign;
 
     for (const auto& summand : ops)
         if (summand->isNumericallyEvaluable())
             numericPart += summand->numericEval();
 
-    if (numericPart.isZero())
-        return 0;
-    else
-        return numericPart > 0 ? 1 : -1;
+    return sign(numericPart);
 }
 
 int tsym::Sum::signOfSymbolicParts() const

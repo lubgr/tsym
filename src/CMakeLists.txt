@@ -23,6 +23,7 @@ add_library(tsym
     logger.cpp
     name.cpp
     number.cpp
+    numberfct.cpp
     numeric.cpp
     numpowersimpl.cpp
     numtrigosimpl.cpp

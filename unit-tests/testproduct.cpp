@@ -663,8 +663,9 @@ BOOST_AUTO_TEST_CASE(piDividedByPi)
 BOOST_AUTO_TEST_CASE(orderingOfFunctionsNumbersAndSymbols)
 /* A correct ordering is 2*sqrt(2)*a*atan(a)*b*c*cos(1)*cos(d)*cos(d*e)*sin(a). */
 {
-    const std::vector<BasePtr> factors = {two, sqrtTwo, a, Trigonometric::createAtan(a), b, c, Trigonometric::createCos(one),
-      Trigonometric::createCos(d), Trigonometric::createCos(Product::create(d, e)), Trigonometric::createSin(a)};
+    const std::vector<BasePtr> factors = {two, sqrtTwo, a, Trigonometric::createAtan(a), b, c,
+      Trigonometric::createCos(one), Trigonometric::createCos(d), Trigonometric::createCos(Product::create(d, e)),
+      Trigonometric::createSin(a)};
     const BasePtr product = Product::create({factors[1], factors[0], factors[5], factors[8], factors[9], factors[3],
       factors[6], factors[2], factors[7], factors[4]});
 

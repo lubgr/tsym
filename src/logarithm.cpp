@@ -4,6 +4,7 @@
 #include "constant.h"
 #include "fraction.h"
 #include "logging.h"
+#include "numberfct.h"
 #include "numeric.h"
 #include "power.h"
 #include "product.h"
@@ -54,7 +55,7 @@ bool tsym::Logarithm::isInvalidArg(const Base& arg)
     else if (arg.isNegative())
         invalid = true;
     else if (arg.isNumericallyEvaluable())
-        invalid = arg.numericEval().isZero();
+        invalid = arg.numericEval() == 0;
 
     if (invalid)
         TSYM_WARNING("Logarithm: invalid argument %S", arg);
@@ -68,7 +69,7 @@ tsym::BasePtr tsym::Logarithm::createNumerically(const BasePtr& arg)
 
     assert(nArg != 0 && nArg != 1);
 
-    if (nArg.isRational())
+    if (isRational(nArg))
         return createInstance(arg);
     else
         return Numeric::create(std::log(nArg.toDouble()));

@@ -8,6 +8,7 @@
 #include "bplist.h"
 #include "cache.h"
 #include "logging.h"
+#include "numberfct.h"
 #include "numeric.h"
 #include "polyinfo.h"
 #include "power.h"
@@ -27,7 +28,7 @@ namespace tsym {
         {
             const BasePtr quotient(Product::create(u, Power::oneOver(v)));
 
-            if (quotient->isNumeric() && quotient->numericEval().isRational())
+            if (quotient->isNumeric() && isRational(quotient->numericEval()))
                 return {quotient, Numeric::zero()};
             else
                 return {Numeric::zero(), u};
@@ -263,7 +264,7 @@ int tsym::poly::unit(const Base& polynomial, const Base& x)
     if (lCoeff->isZero())
         return 1;
     else if (lCoeff->isNumeric())
-        return lCoeff->numericEval().sign();
+        return sign(lCoeff->numericEval());
     else
         return unitFromNonNumeric(lCoeff);
 }
@@ -296,7 +297,7 @@ tsym::BasePtr tsym::poly::content(const BasePtr& polynomial, const tsym::BasePtr
 
     if (expanded->isNumeric())
         /* This include the zero case. */
-        return Numeric::create(expanded->numericEval().abs());
+        return Numeric::create(abs(expanded->numericEval()));
     else
         return nonTrivialContent(*expanded, *x, algo);
 }

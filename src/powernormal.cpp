@@ -1,5 +1,6 @@
 
 #include "powernormal.h"
+#include "numberfct.h"
 #include "power.h"
 #include "product.h"
 #include "symbolmap.h"
@@ -38,14 +39,14 @@ bool tsym::PowerNormal::isBaseOrExpUndefined() const
 
 bool tsym::PowerNormal::isRationalExpInteger() const
 {
-    return rationalExp->isNumeric() && rationalExp->numericEval().isInt();
+    return rationalExp->isNumeric() && isInt(rationalExp->numericEval());
 }
 
 tsym::Fraction tsym::PowerNormal::normalIntegerExp() const
 /* Does (a/b)^c = a^c/b^d or b^c/a^d, where c is an integer and d = abs(c). */
 {
     const Number nExp(rationalExp->numericEval());
-    const BasePtr absExp(Numeric::create(nExp.abs()));
+    const BasePtr absExp(Numeric::create(abs(nExp)));
     const BasePtr numPower(Power::create(rationalBase.num, absExp));
     const BasePtr denomPower(Power::create(rationalBase.denom, absExp));
 
@@ -71,7 +72,7 @@ tsym::Fraction tsym::PowerNormal::normalNumEvalExp()
     const Number nExp(rationalExp->numericEval());
 
     /* Should have been handled as integer exponent above. */
-    assert(!nExp.isZero());
+    assert(nExp != 0);
 
     if (nExp > 0)
         return normalNumEvalPosExp();

@@ -8,6 +8,7 @@
 #include "logging.h"
 #include "name.h"
 #include "number.h"
+#include "numberfct.h"
 #include "order.h"
 #include "poly.h"
 #include "power.h"
@@ -59,7 +60,7 @@ namespace tsym {
             if (arg.isSymbol())
                 return true;
             else if (arg.isNumeric())
-                return arg.numericEval().isRational();
+                return isRational(arg.numericEval());
             else if (arg.isPower())
                 return isValidPower(arg);
             else if (arg.isSum() || arg.isProduct())
@@ -72,7 +73,7 @@ namespace tsym {
         {
             if (hasValidType(*power.base()) && power.exp()->isNumericallyEvaluable()) {
                 auto exp = power.exp()->numericEval();
-                return exp.isInt() && integer::fitsInto<int>(exp.numerator()) && exp > 0;
+                return isInt(exp) && integer::fitsInto<int>(exp.numerator()) && exp > 0;
             }
 
             return false;

@@ -126,7 +126,7 @@ namespace tsym {
         {
             const Number sum(s1->numericEval() + s2->numericEval());
 
-            if (sum.isZero())
+            if (sum == 0)
                 return {};
             else
                 return {Numeric::create(sum)};

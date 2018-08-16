@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include "base.h"
 #include "logging.h"
+#include "numberfct.h"
 #include "numeric.h"
 #include "parser.h"
 #include "plaintextprintengine.h"
@@ -32,23 +33,23 @@ namespace tsym {
             const BasePtr& value(parsed.value);
 
             if (parsingSuccess)
-                return value->isSymbol() || (value->isNumeric() && value->numericEval().isInt());
+                return value->isSymbol() || (value->isNumeric() && isInt(value->numericEval()));
 
             return false;
         }
 
         bool isInteger(const BasePtr& rep)
         {
-            return rep->isNumeric() && rep->numericEval().isInt();
+            return rep->isNumeric() && isInt(rep->numericEval());
         }
 
         Var::Type numericType(const Number& number)
         {
-            if (number.isInt())
+            if (isInt(number))
                 return Var::Type::INT;
-            else if (number.isDouble())
+            else if (isDouble(number))
                 return Var::Type::DOUBLE;
-            else if (number.isFrac())
+            else if (isFraction(number))
                 return Var::Type::FRACTION;
 
             /* This should never happened, as the BasePtr must be Undefined in the first place. */
@@ -92,15 +93,12 @@ tsym::Var::Var(const std::string& str)
     rep = Undefined::create();
 }
 
-tsym::Var::Var(const std::string& str, Var::Sign sign)
+tsym::Var::Var(const std::string& str, [[maybe_unused]] Var::Sign sign)
 {
     const Var withoutSign(str);
     const Type type(withoutSign.type());
 
     assert(sign == Var::Sign::POSITIVE);
-
-    /* To avoid an unused variable warning: */
-    (void) sign;
 
     if (type == Type::SYMBOL) {
         rep = Symbol::createPositive(withoutSign.rep->name());

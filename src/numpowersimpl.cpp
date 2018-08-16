@@ -25,7 +25,7 @@ void tsym::NumPowerSimpl::setMaxPrimeResolution(Int limit)
 
 bool tsym::NumPowerSimpl::isInputValid()
 {
-    return !(newBase < 0 && !newExp.isInt());
+    return !(newBase < 0 && !isInt(newExp));
 }
 
 const tsym::Number& tsym::NumPowerSimpl::getNewBase()
@@ -64,7 +64,7 @@ void tsym::NumPowerSimpl::compute()
 
     if (!isInputValid())
         TSYM_ERROR("Illegal numeric power with base: %S and exponent %S", newBase, newExp);
-    else if (newBase.isDouble() || newExp.isDouble())
+    else if (isDouble(newBase) || isDouble(newExp))
         computeNonRational();
     else
         computeRational();
@@ -113,9 +113,9 @@ void tsym::NumPowerSimpl::computeNegExp()
 
     preFac = preFac.toThe(-1);
 
-    if (newBase.isZero())
+    if (newBase == 0)
         return;
-    else if (newExp.isOne())
+    else if (newExp == 1)
         newBase = newBase.toThe(-1);
     else
         newExp *= -1;
@@ -158,7 +158,7 @@ void tsym::NumPowerSimpl::computeAllPos()
 {
     if (areValuesSmallEnough())
         cancel();
-    else if (newExp.isInt())
+    else if (isInt(newExp))
         adjustExpGreaterThanOne();
 
     shiftPreFacSignBack();
@@ -202,7 +202,7 @@ void tsym::NumPowerSimpl::defPreFacPrimesInPower()
     preFacInPower = preFacInPower.toThe(exp);
 
     /* If the power isn't resolvable, no prefactor prime factorization. */
-    if (preFacInPower.isDouble())
+    if (isDouble(preFacInPower))
         return;
 
     pfPrimes = PrimeFac(preFacInPower);
@@ -229,9 +229,9 @@ void tsym::NumPowerSimpl::primesToComponents()
 {
     newBase = nbPrimes.eval();
 
-    if (newBase.isOne()) {
+    if (newBase == 1) {
         /* Adjust to the representation of simple numbers (exponent = 1, prefactor = 1). */
-        assert(newExp.isOne());
+        assert(newExp == 1);
         std::swap(newBase, preFac);
     }
 }
@@ -253,7 +253,7 @@ void tsym::NumPowerSimpl::adjustExpGreaterThanOne()
 void tsym::NumPowerSimpl::adjustExpSignAndBase()
 /* Turns a power of type (1/a)^exp into a^(-exp) or (a/b)^(-b/c) into (b/a)^(b/c). */
 {
-    if ((newBase.numerator() == 1 && !newExp.isOne()) || (newExp < 0 && newBase.isFrac())) {
+    if ((newBase.numerator() == 1 && newExp != 1) || (newExp < 0 && isFraction(newBase))) {
         newBase = newBase.toThe(-1);
         newExp *= -1;
     }
@@ -264,7 +264,7 @@ void tsym::NumPowerSimpl::shiftPreFacSignBack()
     if (!isPreFacNegative)
         return;
 
-    if (newExp.isOne())
+    if (newExp == 1)
         newBase *= -1;
     else
         preFac *= -1;

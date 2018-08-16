@@ -333,7 +333,7 @@ namespace tsym {
             const Number n2(f2->numericEval());
             const Number res(n1 * n2);
 
-            if (res.isOne())
+            if (res == 1)
                 return {};
             else
                 return {Numeric::create(res)};
@@ -413,12 +413,12 @@ namespace tsym {
 
         bool isFraction(const Base& arg)
         {
-            return arg.isNumeric() && arg.numericEval().isFrac();
+            return arg.isNumeric() && isFraction(arg.numericEval());
         }
 
         bool isInteger(const Base& arg)
         {
-            return arg.isNumeric() && arg.numericEval().isInt();
+            return arg.isNumeric() && isInt(arg.numericEval());
         }
 
         bool areContractableTrigFctPowers(const Base& f1, const Base& f2)

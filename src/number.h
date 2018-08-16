@@ -28,29 +28,16 @@ namespace tsym {
 
         Number toThe(const Number& exponent) const;
 
-        bool equal(const Number& other) const;
-        bool lessThan(const Number& rhs) const;
-        bool isZero() const;
-        bool isOne() const;
-        bool isInt() const;
-        bool isFrac() const;
-        bool isRational() const;
-        bool isDouble() const;
-
         /* Returns the numerator of a fraction or the value of an integer. */
         Int numerator() const;
         /* Returns the denominator in case of a fraction, one otherwise. */
         Int denominator() const;
         double toDouble() const;
-        Number abs() const;
-        /* Returns 0 in case of a zero number, otherwise -1 or 1: */
-        int sign() const;
 
       private:
         void setDebugString();
         void tryDoubleToFraction();
         bool isThisOrOtherDouble(const Number& other) const;
-        Number flipSign() const;
         bool processTrivialPowers(const Number& exponent, Number& result) const;
         Number computeMinusOneToThe(const Number& exponent) const;
         bool processNegBase(const Number& exponent, Number& result) const;
@@ -59,8 +46,6 @@ namespace tsym {
         void computeNumPower(const Int& numExponent, Number& result) const;
         void computeDenomPower(const Int& denomExponent, Number& result) const;
         Int tryGetBase(const Int& n, const Int& denomExponent) const;
-        bool areBothRational(const Number& other) const;
-        bool equalViaDouble(const Number& rhs) const;
 
         using Rational = boost::rational<Int>;
         Rational rational{0};
@@ -69,7 +54,7 @@ namespace tsym {
         static constexpr double TOL = 100.0 * ZERO_TOL;
 
 #ifdef TSYM_WITH_DEBUG_STRINGS
-        /* A member to be accessed by a gdb pretty printing plugin. */
+        /* A member to be leveraged for pretty printing in a debugger. */
         std::string prettyStr;
 #endif
     };

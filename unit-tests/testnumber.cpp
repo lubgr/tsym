@@ -3,6 +3,7 @@
 #include <limits>
 #include "fixtures.h"
 #include "number.h"
+#include "numberfct.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -22,21 +23,20 @@ BOOST_AUTO_TEST_CASE(defaultZero)
     const Number n;
 
     BOOST_TEST(n == 0);
-    BOOST_TEST(n.isInt());
+    BOOST_TEST(isInt(n));
 }
 
 BOOST_AUTO_TEST_CASE(one)
 {
     const Number n(1);
 
-    BOOST_TEST(n.isOne());
     BOOST_TEST(n == 1);
     BOOST_TEST(1 == n);
 }
 
 BOOST_AUTO_TEST_CASE(isRationalNumber)
 {
-    BOOST_TEST(a.isRational());
+    BOOST_TEST(isRational(a));
 }
 
 BOOST_AUTO_TEST_CASE(initialCancelation)
@@ -59,32 +59,30 @@ BOOST_AUTO_TEST_CASE(negativeDenominator)
 
 BOOST_AUTO_TEST_CASE(posDoubleToFraction)
 {
-    const Number frac = Number(0.125);
+    const auto frac = Number(0.125);
 
-    BOOST_TEST(frac.isFrac());
+    BOOST_TEST(isFraction(frac));
     BOOST_CHECK_EQUAL(Number(1, 8), frac);
 }
 
 BOOST_AUTO_TEST_CASE(zeroDoubleToFraction)
 {
-    const Number zero = Number(0.0);
+    const auto zero = Number(0.0);
 
     BOOST_CHECK_EQUAL(0, zero);
 }
 
 BOOST_AUTO_TEST_CASE(negDoubleToFraction)
 {
-    const Number frac = Number(-0.125);
+    const auto frac = Number(-0.125);
 
-    BOOST_TEST(frac.isFrac());
     BOOST_CHECK_EQUAL(Number(-1, 8), frac);
 }
 
 BOOST_AUTO_TEST_CASE(simpleFractionSum)
 {
-    const Number res = Number(1, 2) + Number(3, 8);
+    const auto res = Number(1, 2) + Number(3, 8);
 
-    BOOST_TEST(res.isFrac());
     BOOST_CHECK_EQUAL(7, res.numerator());
     BOOST_CHECK_EQUAL(8, res.denominator());
 }
@@ -93,7 +91,6 @@ BOOST_AUTO_TEST_CASE(primeFractionSum)
 {
     const Number res = Number(1, 7) + Number(1, 17);
 
-    BOOST_TEST(res.isFrac());
     BOOST_CHECK_EQUAL(24, res.numerator());
     BOOST_CHECK_EQUAL(119, res.denominator());
 }
@@ -111,7 +108,7 @@ BOOST_AUTO_TEST_CASE(sumWithDouble)
     const Number n(1.23456789);
     const Number res = a + n;
 
-    BOOST_TEST(res.isDouble());
+    BOOST_TEST(isDouble(res));
 
     BOOST_CHECK_CLOSE(1.2951739506, res.toDouble(), TOL);
 }
@@ -154,7 +151,7 @@ BOOST_AUTO_TEST_CASE(productWithDouble)
     const Number n(1.23456789);
     const Number res = b * n;
 
-    BOOST_TEST(n.isDouble());
+    BOOST_TEST(isDouble(n));
     BOOST_CHECK_CLOSE(0.09213193208955223, res.toDouble(), TOL);
 }
 
@@ -191,29 +188,29 @@ BOOST_AUTO_TEST_CASE(absValue)
     const Number positive(2, 3);
     const Number negative(-2, 3);
 
-    BOOST_CHECK_EQUAL(positive, negative.abs());
-    BOOST_CHECK_EQUAL(positive, positive.abs());
+    BOOST_CHECK_EQUAL(positive, abs(negative));
+    BOOST_CHECK_EQUAL(positive, abs(positive));
 }
 
 BOOST_AUTO_TEST_CASE(zeroSign)
 {
     const Number zero(0);
 
-    BOOST_CHECK_EQUAL(0, zero.sign());
+    BOOST_CHECK_EQUAL(0, sign(zero));
 }
 
 BOOST_AUTO_TEST_CASE(positiveSign)
 {
     const Number positive(4, 17);
 
-    BOOST_CHECK_EQUAL(1, positive.sign());
+    BOOST_CHECK_EQUAL(1, sign(positive));
 }
 
 BOOST_AUTO_TEST_CASE(negativeSign)
 {
     const Number negative(-4, 17);
 
-    BOOST_CHECK_EQUAL(-1, negative.sign());
+    BOOST_CHECK_EQUAL(-1, sign(negative));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -321,7 +318,6 @@ BOOST_AUTO_TEST_CASE(intExponent)
 
     frac = frac.toThe(4);
 
-    BOOST_TEST(frac.isFrac());
     BOOST_CHECK_EQUAL(279841, frac.numerator());
     BOOST_CHECK_EQUAL(531441, frac.denominator());
 }
@@ -333,7 +329,7 @@ BOOST_AUTO_TEST_CASE(doubleExponent)
 
     res = res.toThe(n);
 
-    BOOST_TEST(res.isDouble());
+    BOOST_TEST(isDouble(res));
     BOOST_CHECK_CLOSE(1.0893367441616877, res.toDouble(), TOL);
 }
 
@@ -343,7 +339,7 @@ BOOST_AUTO_TEST_CASE(doubleBase)
 
     n = n.toThe(three);
 
-    BOOST_TEST(n.isDouble());
+    BOOST_TEST(isDouble(n));
     BOOST_CHECK_CLOSE(1.8816763717891543, n.toDouble(), TOL);
 }
 
@@ -372,7 +368,6 @@ BOOST_AUTO_TEST_CASE(largeFracRoot)
 
     res = res.toThe(exp);
 
-    BOOST_TEST(res.isFrac());
     BOOST_CHECK_EQUAL(16, res.numerator());
     BOOST_CHECK_EQUAL(17, res.denominator());
 }
@@ -383,7 +378,7 @@ BOOST_AUTO_TEST_CASE(squareRootOfThree)
 
     res = res.toThe(half);
 
-    BOOST_TEST(res.isDouble());
+    BOOST_TEST(isDouble(res));
     BOOST_CHECK_CLOSE(std::sqrt(3.0), res.toDouble(), TOL);
 }
 
@@ -394,7 +389,7 @@ BOOST_AUTO_TEST_CASE(irrationalBaseFracRoot)
 
     res = res.toThe(third);
 
-    BOOST_TEST(res.isDouble());
+    BOOST_TEST(isDouble(res));
     BOOST_CHECK_CLOSE(2.311204240824796, res.toDouble(), TOL);
     BOOST_CHECK_EQUAL(expected, res);
 }
@@ -513,9 +508,9 @@ BOOST_AUTO_TEST_CASE(comparisonWithOtherInt)
     BOOST_TEST(six > five);
 }
 
-BOOST_AUTO_TEST_CASE(isRational)
+BOOST_AUTO_TEST_CASE(isIntegerRational)
 {
-    BOOST_TEST(five.isRational());
+    BOOST_TEST(isRational(five));
 }
 
 BOOST_AUTO_TEST_CASE(comparisonWithDouble)
@@ -531,8 +526,8 @@ BOOST_AUTO_TEST_CASE(absValue)
     const Number negative(-123);
     const Number positive(123);
 
-    BOOST_CHECK_EQUAL(positive, negative.abs());
-    BOOST_CHECK_EQUAL(positive, positive.abs());
+    BOOST_CHECK_EQUAL(positive, abs(negative));
+    BOOST_CHECK_EQUAL(positive, abs(positive));
 }
 
 BOOST_AUTO_TEST_CASE(maxAbsValue)
@@ -543,7 +538,7 @@ BOOST_AUTO_TEST_CASE(maxAbsValue)
     const Number n((Int(minLong)));
     Number result;
 
-    result = n.abs();
+    result = abs(n);
 
     BOOST_CHECK_EQUAL(expected, result);
 }
@@ -552,14 +547,14 @@ BOOST_AUTO_TEST_CASE(negativeSign)
 {
     const Number negative(-20);
 
-    BOOST_CHECK_EQUAL(-1, negative.sign());
+    BOOST_CHECK_EQUAL(-1, sign(negative));
 }
 
 BOOST_AUTO_TEST_CASE(positiveSign)
 {
     const Number positive(20);
 
-    BOOST_CHECK_EQUAL(1, positive.sign());
+    BOOST_CHECK_EQUAL(1, sign(positive));
 }
 
 BOOST_AUTO_TEST_CASE(multiplication)
@@ -578,7 +573,7 @@ BOOST_AUTO_TEST_CASE(setAndGet, noLogs())
 {
     const Number n(1.23456789);
 
-    BOOST_TEST(n.isDouble());
+    BOOST_TEST(isDouble(n));
     BOOST_CHECK_CLOSE(1.23456789, n.toDouble(), TOL);
 
     /* The (incorrect) integer return value of a double number should be zero. */
@@ -589,7 +584,7 @@ BOOST_AUTO_TEST_CASE(isNotRational)
 {
     const Number n(123.4567890);
 
-    BOOST_TEST(!n.isRational());
+    BOOST_TEST(!isRational(n));
 }
 
 BOOST_AUTO_TEST_CASE(equality)
@@ -606,22 +601,22 @@ BOOST_AUTO_TEST_CASE(absValue)
     const Number negative(-value);
     const Number positive(value);
 
-    BOOST_CHECK_EQUAL(positive, negative.abs());
-    BOOST_CHECK_EQUAL(positive, positive.abs());
+    BOOST_CHECK_EQUAL(positive, abs(negative));
+    BOOST_CHECK_EQUAL(positive, abs(positive));
 }
 
 BOOST_AUTO_TEST_CASE(negativeSign)
 {
     const Number neg(-9.87654321);
 
-    BOOST_CHECK_EQUAL(-1, neg.sign());
+    BOOST_CHECK_EQUAL(-1, sign(neg));
 }
 
 BOOST_AUTO_TEST_CASE(positiveSign)
 {
     const Number pos(9.87654321);
 
-    BOOST_CHECK_EQUAL(1, pos.sign());
+    BOOST_CHECK_EQUAL(1, sign(pos));
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -645,7 +640,7 @@ BOOST_AUTO_TEST_CASE(unaryMinus)
 {
     res = -two;
 
-    BOOST_TEST(res.isInt());
+    BOOST_TEST(isInt(res));
     BOOST_CHECK_EQUAL(-2, res.numerator());
 }
 

@@ -6,6 +6,7 @@
 #include "bplist.h"
 #include "logarithm.h"
 #include "logging.h"
+#include "numberfct.h"
 #include "numeric.h"
 #include "powernormal.h"
 #include "powersimpl.h"
@@ -150,7 +151,7 @@ unsigned tsym::Power::complexity() const
 
 bool tsym::Power::isExponentRationalNumeric() const
 {
-    return expRef->isNumericallyEvaluable() && expRef->numericEval().isRational();
+    return expRef->isNumericallyEvaluable() && isRational(expRef->numericEval());
 }
 
 bool tsym::Power::isPower() const
@@ -173,7 +174,7 @@ tsym::BasePtr tsym::Power::expand() const
 
 bool tsym::Power::isInteger(const Base& arg) const
 {
-    return arg.isNumeric() && arg.numericEval().isInt();
+    return arg.isNumeric() && isInt(arg.numericEval());
 }
 
 tsym::BasePtr tsym::Power::expandIntegerExponent() const

@@ -6,6 +6,7 @@
 #include "logarithm.h"
 #include "logging.h"
 #include "number.h"
+#include "numberfct.h"
 #include "numeric.h"
 #include "numpowersimpl.h"
 #include "power.h"
@@ -35,7 +36,7 @@ namespace tsym {
         bool doesInvolveComplexNumbers(const BasePtr& base, const BasePtr& exp)
         {
             if (base->isNegative() && exp->isNumericallyEvaluable())
-                return !exp->numericEval().isInt();
+                return !isInt(exp->numericEval());
             else
                 return false;
         }
@@ -128,7 +129,7 @@ namespace tsym {
         bool isInteger(const BasePtr& arg)
         {
             if (arg->isNumeric())
-                return arg->numericEval().isInt();
+                return isInt(arg->numericEval());
             else
                 return false;
         }
@@ -144,7 +145,7 @@ namespace tsym {
             nExp1 = exp1->numericEval();
             nExp2 = exp2->numericEval();
 
-            if (nExp1.isFrac() && nExp2.isFrac())
+            if (isFraction(nExp1) && isFraction(nExp2))
                 return nExp1.denominator() % 2 != 0 && nExp2.denominator() % 2 != 0;
             return false;
         }
@@ -160,7 +161,7 @@ namespace tsym {
 
             nExp1 = exp1->numericEval();
 
-            return nExp1.isInt() && nExp1.numerator() % 2 == 0;
+            return isInt(nExp1) && nExp1.numerator() % 2 == 0;
         }
 
         bool doContractExpSecond(const BasePtr& e1, const BasePtr& e2)
@@ -168,7 +169,7 @@ namespace tsym {
             const BasePtr newExp = Product::create(e1, e2);
 
             if (isOddInteger(e1))
-                return newExp->isNumericallyEvaluable() && newExp->numericEval().abs() != 1;
+                return newExp->isNumericallyEvaluable() && abs(newExp->numericEval()) != 1;
             else if (isEvenInteger(e1))
                 return isEvenInteger(newExp);
             else if (isFraction(e1) && (isInteger(e2) || isFraction(e2)))
@@ -191,7 +192,7 @@ namespace tsym {
 
         bool isFraction(const BasePtr& arg)
         {
-            return arg->isNumeric() && arg->numericEval().isFrac();
+            return arg->isNumeric() && isFraction(arg->numericEval());
         }
 
         BasePtrList simplifyProductBase(const BasePtr& base, const BasePtr& exp)
