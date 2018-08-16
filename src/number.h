@@ -3,6 +3,7 @@
 
 #include <boost/operators.hpp>
 #include <boost/rational.hpp>
+#include <variant>
 #include "int.h"
 
 namespace tsym {
@@ -28,7 +29,8 @@ namespace tsym {
 
         Number toThe(const Number& exponent) const;
 
-        /* Returns the numerator of a fraction or the value of an integer. */
+        /* Returns the numerator of a fraction or the value of an integer. Zero if the number is a
+         * double: */
         Int numerator() const;
         /* Returns the denominator in case of a fraction, one otherwise. */
         Int denominator() const;
@@ -45,13 +47,9 @@ namespace tsym {
         void processRationalPowers(const Number& exponent, Number& result) const;
         void computeNumPower(const Int& numExponent, Number& result) const;
         void computeDenomPower(const Int& denomExponent, Number& result) const;
-        Int tryGetBase(const Int& n, const Int& denomExponent) const;
 
         using Rational = boost::rational<Int>;
-        Rational rational{0};
-        double dValue{0.0};
-        static constexpr double ZERO_TOL = std::numeric_limits<double>::epsilon();
-        static constexpr double TOL = 100.0 * ZERO_TOL;
+        std::variant<Rational, double> rep{0};
 
 #ifdef TSYM_WITH_DEBUG_STRINGS
         /* A member to be leveraged for pretty printing in a debugger. */

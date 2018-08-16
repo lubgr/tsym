@@ -21,7 +21,7 @@ tsym::Number::Number(int numerator, int denominator)
 {}
 
 tsym::Number::Number(double value)
-    : dValue(value)
+    : rep(value)
 {
     tryDoubleToFraction();
     setDebugString();
@@ -33,7 +33,7 @@ tsym::Number::Number(const Int& value)
 
 tsym::Number::Number(const Int& numerator, const Int& denominator)
     /* The implementation doesn't move from input rvalues, hence const references are fine here: */
-    : rational(denominator < 0 ? -numerator : numerator, integer::abs(denominator))
+    : rep(std::in_place_type_t<Rational>(), denominator < 0 ? -numerator : numerator, integer::abs(denominator))
 {
     setDebugString();
 }
@@ -52,34 +52,34 @@ void tsym::Number::setDebugString()
 
 void tsym::Number::tryDoubleToFraction()
 {
+    assert(std::holds_alternative<double>(rep));
     /* We don't want to have huge fractions everywhere possible, so default number of floating point
      * digits isn't set to a too large value. */
     static const int nFloatDigits = 10000;
-    const double roundIncrement = dValue > 0.0 ? 0.5 : -0.5;
+    const auto value = std::get<double>(rep);
+    const double roundIncrement = value > 0.0 ? 0.5 : -0.5;
 
-    if (dValue > std::numeric_limits<double>::max() / nFloatDigits - roundIncrement / nFloatDigits)
+    if (value > std::numeric_limits<double>::max() / nFloatDigits - roundIncrement / nFloatDigits)
         /* The product for constructing a fraction doesn't fit into a double. */
         return;
-    else if (dValue < std::numeric_limits<double>::lowest() / nFloatDigits - roundIncrement / nFloatDigits)
+    else if (value < std::numeric_limits<double>::lowest() / nFloatDigits - roundIncrement / nFloatDigits)
         return;
 
-    auto truncated = Int(dValue * nFloatDigits + roundIncrement);
+    auto truncated = Int(value * nFloatDigits + roundIncrement);
 
-    if (std::abs(static_cast<double>(truncated) / nFloatDigits - dValue) < ZERO_TOL) {
+    if (std::abs(static_cast<double>(truncated) / nFloatDigits - value) < std::numeric_limits<double>::epsilon())
         /* This will also catch very low double values, which turns them into a rational zero. */
-        rational.assign(truncated, Int(nFloatDigits));
-        dValue = 0.0;
-    }
+        rep.emplace<Rational>(truncated, Int(nFloatDigits));
 }
 
 tsym::Number& tsym::Number::operator+=(const Number& rhs)
 {
     if (isThisOrOtherDouble(rhs)) {
-        dValue = toDouble() + rhs.toDouble();
-        rational = 0;
+        rep.emplace<double>(toDouble() + rhs.toDouble());
+
         tryDoubleToFraction();
     } else
-        rational += rhs.rational;
+        rep.emplace<Rational>(std::get<Rational>(rep) + std::get<Rational>(rhs.rep));
 
     setDebugString();
 
@@ -99,11 +99,11 @@ tsym::Number& tsym::Number::operator-=(const Number& rhs)
 tsym::Number& tsym::Number::operator*=(const Number& rhs)
 {
     if (isThisOrOtherDouble(rhs)) {
-        dValue = toDouble() * rhs.toDouble();
-        rational = 0;
+        rep.emplace<double>(toDouble() * rhs.toDouble());
+
         tryDoubleToFraction();
     } else
-        rational *= rhs.rational;
+        rep.emplace<Rational>(std::get<Rational>(rep) * std::get<Rational>(rhs.rep));
 
     setDebugString();
 
@@ -127,7 +127,7 @@ tsym::Number tsym::Number::operator-() const
     if (isRational(*this))
         return {-numerator(), denominator()};
     else
-        return {-dValue};
+        return {-toDouble()};
 }
 
 tsym::Number tsym::Number::toThe(const Number& exponent) const
@@ -159,7 +159,7 @@ bool tsym::Number::processTrivialPowers(const Number& exponent, Number& result) 
         result = *this;
         return true;
     } else if (exponent == zero) {
-        result = Number(1);
+        result = 1;
         return true;
     } else if (*this < 0 && !isInt(exponent)) {
         throw std::overflow_error("Illegal power with base zero and non-integer exponent");
@@ -197,7 +197,7 @@ bool tsym::Number::processNegBase(const Number& exponent, Number& result) const
 bool tsym::Number::processIrrationalPowers(const Number& exponent, Number& result) const
 {
     if (isThisOrOtherDouble(exponent)) {
-        result = Number(std::pow(toDouble(), exponent.toDouble()));
+        result = {std::pow(toDouble(), exponent.toDouble())};
         return true;
     } else
         return false;
@@ -220,9 +220,41 @@ void tsym::Number::computeNumPower(const Int& numExponent, Number& result) const
 
     if (numExponent < 0)
         /* The method takes care of negative a numerator. */
-        result = Number(newDenom, newNum);
+        result = {newDenom, newNum};
     else
-        result = Number(newNum, newDenom);
+        result = {newNum, newDenom};
+}
+
+namespace tsym {
+    namespace {
+        Int tryGetBase(const Int& n, const Int& denomExponent)
+        /* Returns a in a^(1/denomExponent) = n, if that's an exact solution. Otherwise, returns 0. n
+         * and denomExponent are both positive. */
+        {
+            /* The following integer base can only be a solution, if the double resulting from the std::pow
+             * call is more or less exactly an integer. That's why 0.1 is added instead of the usual 0.5 for
+             * rounding. The purpose is to avoid truncation errors due to e.g. (int)(6.000001 + 0.5) = 7. On
+             * the other hand, (int)(5.50001 + 0.5) = 6 isn't a desired result, because 5.50001 will never
+             * lead to an exact integer solution of the power. Thus, it is save to cast the double power
+             * result to an integer after only adding 0.1 (which is somewhat arbitrary, could be any value
+             * less than 0.5). */
+            const double exact = std::pow(static_cast<double>(n), 1.0 / static_cast<double>(denomExponent));
+
+            if (exact > std::numeric_limits<int>::max())
+                /* Result wouldn't fit into an int. */
+                return 0;
+
+            const auto base = static_cast<int>(exact + 0.1);
+
+            if (std::abs(exact - static_cast<double>(base)) > 1.e-6)
+                /* We are not too strict here, because of the following check. */
+                return 0;
+
+            assert(denomExponent > 0 && integer::fitsInto<unsigned>(denomExponent));
+
+            return integer::pow(Int(base), static_cast<unsigned>(denomExponent)) == n ? base : 0;
+        }
+    }
 }
 
 void tsym::Number::computeDenomPower(const Int& denomExponent, Number& result) const
@@ -236,55 +268,33 @@ void tsym::Number::computeDenomPower(const Int& denomExponent, Number& result) c
     if (denomExponent == 1)
         return;
     else if (numTest == 0 || denomTest == 0)
-        result = Number(std::pow(result.toDouble(), 1.0 / static_cast<double>(denomExponent)));
+        result = {std::pow(result.toDouble(), 1.0 / static_cast<double>(denomExponent))};
     else
-        result = Number(numTest, denomTest);
-}
-
-tsym::Int tsym::Number::tryGetBase(const Int& n, const Int& denomExponent) const
-/* Returns a in a^(1/denomExponent) = n, if that's an exact solution. Otherwise, returns 0. n
- * and denomExponent are both positive. */
-{
-    /* The following integer base can only be a solution, if the double resulting from the std::pow
-     * call is more or less exactly an integer. That's why 0.1 is added instead of the usual 0.5 for
-     * rounding. The purpose is to avoid truncation errors due to e.g. (int)(6.000001 + 0.5) = 7. On
-     * the other hand, (int)(5.50001 + 0.5) = 6 isn't a desired result, because 5.50001 will never
-     * lead to an exact integer solution of the power. Thus, it is save to cast the double power
-     * result to an integer after only adding 0.1 (which is somewhat arbitrary, could be any value
-     * less than 0.5). */
-    const double exact = std::pow(static_cast<double>(n), 1.0 / static_cast<double>(denomExponent));
-
-    if (exact > std::numeric_limits<int>::max())
-        /* Result wouldn't fit into an int. */
-        return 0;
-
-    const auto base = static_cast<int>(exact + 0.1);
-
-    if (std::abs(exact - static_cast<double>(base)) > 1.e-6)
-        /* We are not too strict here, because of the following check. */
-        return 0;
-
-    assert(denomExponent > 0 && integer::fitsInto<unsigned>(denomExponent));
-
-    return integer::pow(Int(base), static_cast<unsigned>(denomExponent)) == n ? base : 0;
+        result = {numTest, denomTest};
 }
 
 tsym::Int tsym::Number::numerator() const
 {
-    return rational.numerator();
+    if (std::holds_alternative<Rational>(rep))
+        return std::get<Rational>(rep).numerator();
+    else
+        return 0;
 }
 
 tsym::Int tsym::Number::denominator() const
 {
-    return rational.denominator();
+    if (std::holds_alternative<Rational>(rep))
+        return std::get<Rational>(rep).denominator();
+    else
+        return 1;
 }
 
 double tsym::Number::toDouble() const
 {
-    if (rational != 0)
-        return boost::rational_cast<double>(rational);
-
-    return dValue;
+    if (std::holds_alternative<Rational>(rep))
+        return boost::rational_cast<double>(std::get<Rational>(rep));
+    else
+        return std::get<double>(rep);
 }
 
 namespace tsym {
