@@ -1,5 +1,5 @@
 
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.9)
 project(tsym VERSION 0.2.0 DESCRIPTION "Tiny symbolic library" LANGUAGES CXX)
 
 option(BUILD_SHARED_LIBS "Build as shared library" ON)
@@ -40,6 +40,7 @@ target_compile_options(tsym-internal-config
 
 target_link_libraries(tsym-internal-config
     INTERFACE
+    $<$<OR:$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:Clang>>:-stdlib=libc++>
     $<$<CONFIG:COVERAGE>:--coverage>
     $<$<CONFIG:PROFILE>:-pg>
     $<$<CONFIG:SANITIZER>:-fsanitize=address,undefined>)
