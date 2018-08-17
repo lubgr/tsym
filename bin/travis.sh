@@ -80,7 +80,18 @@ elif [ "${MODE}" = "ANALYSIS" ]; then
     buildDir "compile-database-${COMPILER}"
     build "${COMPILER}"
     popd
-    travis_wait 40 ./bin/staticcheck.sh "${buildDir}/compile_commands.json" || EXIT=1
+
+    staticCheckOutput=static-check-output
+    ./bin/staticcheck.sh "${buildDir}/compile_commands.json" &> "${staticCheckOutput}" &
+    staticCheckPid=$!
+
+    for interval in $(seq 4); do
+        sleep 10
+        echo "Waiting for clang-tidy..."
+    done
+
+    wait $staticCheckPid || EXIT=1
+    cat "${staticCheckOutput}"
 fi
 
 exit ${EXIT}
