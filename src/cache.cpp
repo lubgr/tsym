@@ -23,6 +23,6 @@ void tsym::cache::detail::deregisterCacheClearer(const short* address)
 
 void tsym::cache::clearRegisteredCaches()
 {
-    for (auto& [unused, clearFctEntry] : clearFunctions())
+    for ([[maybe_unused]] auto& [unused, clearFctEntry] : clearFunctions())
         clearFctEntry();
 }
