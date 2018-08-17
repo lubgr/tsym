@@ -32,10 +32,6 @@ install:
   - ./bin/travis-setup.sh
   - travis_fold end "setup-script"
   - export CLANGVER=6.0
-  - dpkg-query -L clang-6.0
-  - dpkg-query -L clang-tidy-6.0
-  - dpkg-query -L clang-tools-6.0
-  - dpkg-query -L clang-format-6.0
   - export PATH="/usr/lib/llvm-${CLANGVER}/bin/:${PATH}"
 
 addons:
@@ -57,15 +53,15 @@ matrix:
   include:
     - env:
           - MODE=RELEASE
-          - COMPILER="g++-7 g++-8 clang++-${CLANGVER}"
+          - COMPILER="g++-7 g++-8 clang++"
 
     - env:
           - MODE=DEBUG
-          - COMPILER="clang++-${CLANGVER}"
+          - COMPILER="clang++"
 
     - env:
           - MODE=PROFILING
-          - COMPILER="g++-7"
+          - COMPILER="g++-8"
 
     - env:
           - MODE=INTEGRATION
