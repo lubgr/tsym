@@ -32,6 +32,8 @@ install:
   - ./bin/travis-setup.sh
   - travis_fold end "setup-script"
   - dpkg-query -L clang-6.0
+  - dpkg-query -L clang-tidy-6.0
+  - dpkg-query -L clang-tools-6.0
 
 addons:
   apt:
@@ -41,6 +43,8 @@ addons:
     packages:
       - g++-7
       - clang-6.0
+      - clang-tidy-6.0
+      - clang-tools-6.0
       - lcov
       - valgrind
 
@@ -48,11 +52,11 @@ matrix:
   include:
     - env:
           - MODE=RELEASE
-          - COMPILER="g++-7 clang++ clang++-6.0"
+          - COMPILER="g++-7 clang++-6.0"
 
     - env:
           - MODE=DEBUG
-          - COMPILER="clang++"
+          - COMPILER="clang++-6.0"
 
     - env:
           - MODE=PROFILING

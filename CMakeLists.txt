@@ -32,7 +32,6 @@ target_include_directories(tsym-internal-config
 
 target_compile_options(tsym-internal-config
     INTERFACE
-    $<$<OR:$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:Clang>>:-stdlib=libc++>
     $<$<OR:$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
     -Wall -Wextra -pedantic -Wconversion -Wsign-conversion -Wsign-compare -Wold-style-cast>
     $<$<CONFIG:PROFILE>:-pg>
@@ -41,7 +40,6 @@ target_compile_options(tsym-internal-config
 
 target_link_libraries(tsym-internal-config
     INTERFACE
-    $<$<OR:$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:Clang>>:-stdlib=libc++>
     $<$<CONFIG:COVERAGE>:--coverage>
     $<$<CONFIG:PROFILE>:-pg>
     $<$<CONFIG:SANITIZER>:-fsanitize=address,undefined>)
