@@ -80,7 +80,7 @@ elif [ "${MODE}" = "ANALYSIS" ]; then
     buildDir "compile-database-${COMPILER}"
     build "${COMPILER}"
     popd
-    ./bin/staticcheck.sh "${buildDir}/compile_commands.json" || EXIT=1
+    travis_wait 40 ./bin/staticcheck.sh "${buildDir}/compile_commands.json" || EXIT=1
 fi
 
 exit ${EXIT}

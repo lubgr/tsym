@@ -61,7 +61,7 @@ matrix:
 
     - env:
           - MODE=PROFILING
-          - COMPILER="g++-8"
+          - COMPILER="g++-7"
 
     - env:
           - MODE=INTEGRATION
