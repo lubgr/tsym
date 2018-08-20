@@ -85,9 +85,9 @@ elif [ "${MODE}" = "ANALYSIS" ]; then
     ./bin/staticcheck.sh "${buildDir}/compile_commands.json" &> "${staticCheckOutput}" &
     staticCheckPid=$!
 
-    for interval in $(seq 4); do
-        sleep 10
-        echo "Waiting for clang-tidy..."
+    for interval in $(seq 40); do
+        sleep 60
+        echo "Waiting for static analysis output..."
     done
 
     wait $staticCheckPid || EXIT=1
