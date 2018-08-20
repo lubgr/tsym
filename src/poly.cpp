@@ -28,7 +28,7 @@ namespace tsym {
         {
             const BasePtr quotient(Product::create(u, Power::oneOver(v)));
 
-            if (quotient->isNumeric() && isRational(quotient->numericEval()))
+            if (quotient->isNumeric() && quotient->numericEval().isRational())
                 return {quotient, Numeric::zero()};
             else
                 return {Numeric::zero(), u};

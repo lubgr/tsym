@@ -47,7 +47,7 @@ namespace tsym {
         {
             if (isInt(number))
                 return Var::Type::INT;
-            else if (isDouble(number))
+            else if (number.isDouble())
                 return Var::Type::DOUBLE;
             else if (isFraction(number))
                 return Var::Type::FRACTION;

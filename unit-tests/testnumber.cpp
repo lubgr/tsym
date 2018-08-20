@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(one)
 
 BOOST_AUTO_TEST_CASE(isRationalNumber)
 {
-    BOOST_TEST(isRational(a));
+    BOOST_TEST(a.isRational());
 }
 
 BOOST_AUTO_TEST_CASE(initialCancelation)
@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(sumWithDouble)
     const Number n(1.23456789);
     const Number res = a + n;
 
-    BOOST_TEST(isDouble(res));
+    BOOST_TEST(res.isDouble());
 
     BOOST_CHECK_CLOSE(1.2951739506, res.toDouble(), TOL);
 }
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE(productWithDouble)
     const Number n(1.23456789);
     const Number res = b * n;
 
-    BOOST_TEST(isDouble(n));
+    BOOST_TEST(n.isDouble());
     BOOST_CHECK_CLOSE(0.09213193208955223, res.toDouble(), TOL);
 }
 
@@ -329,7 +329,7 @@ BOOST_AUTO_TEST_CASE(doubleExponent)
 
     res = res.toThe(n);
 
-    BOOST_TEST(isDouble(res));
+    BOOST_TEST(res.isDouble());
     BOOST_CHECK_CLOSE(1.0893367441616877, res.toDouble(), TOL);
 }
 
@@ -339,7 +339,7 @@ BOOST_AUTO_TEST_CASE(doubleBase)
 
     n = n.toThe(three);
 
-    BOOST_TEST(isDouble(n));
+    BOOST_TEST(n.isDouble());
     BOOST_CHECK_CLOSE(1.8816763717891543, n.toDouble(), TOL);
 }
 
@@ -378,7 +378,7 @@ BOOST_AUTO_TEST_CASE(squareRootOfThree)
 
     res = res.toThe(half);
 
-    BOOST_TEST(isDouble(res));
+    BOOST_TEST(res.isDouble());
     BOOST_CHECK_CLOSE(std::sqrt(3.0), res.toDouble(), TOL);
 }
 
@@ -389,7 +389,7 @@ BOOST_AUTO_TEST_CASE(irrationalBaseFracRoot)
 
     res = res.toThe(third);
 
-    BOOST_TEST(isDouble(res));
+    BOOST_TEST(res.isDouble());
     BOOST_CHECK_CLOSE(2.311204240824796, res.toDouble(), TOL);
     BOOST_CHECK_EQUAL(expected, res);
 }
@@ -510,7 +510,7 @@ BOOST_AUTO_TEST_CASE(comparisonWithOtherInt)
 
 BOOST_AUTO_TEST_CASE(isIntegerRational)
 {
-    BOOST_TEST(isRational(five));
+    BOOST_TEST(five.isRational());
 }
 
 BOOST_AUTO_TEST_CASE(comparisonWithDouble)
@@ -573,7 +573,7 @@ BOOST_AUTO_TEST_CASE(setAndGet, noLogs())
 {
     const Number n(1.23456789);
 
-    BOOST_TEST(isDouble(n));
+    BOOST_TEST(n.isDouble());
     BOOST_CHECK_CLOSE(1.23456789, n.toDouble(), TOL);
 
     /* The (incorrect) integer return value of a double number should be zero. */
@@ -584,7 +584,7 @@ BOOST_AUTO_TEST_CASE(isNotRational)
 {
     const Number n(123.4567890);
 
-    BOOST_TEST(!isRational(n));
+    BOOST_TEST(!n.isRational());
 }
 
 BOOST_AUTO_TEST_CASE(equality)

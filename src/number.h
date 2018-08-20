@@ -29,6 +29,8 @@ namespace tsym {
 
         Number toThe(const Number& exponent) const;
 
+        bool isRational() const;
+        bool isDouble() const;
         /* Returns the numerator of a fraction or the value of an integer. Zero if the number is a
          * double: */
         Int numerator() const;
@@ -49,11 +51,11 @@ namespace tsym {
         void computeDenomPower(const Int& denomExponent, Number& result) const;
 
         using Rational = boost::rational<Int>;
-        std::variant<Rational, double> rep{0};
+        std::variant<Rational, double> rep{Rational{0}};
 
 #ifdef TSYM_WITH_DEBUG_STRINGS
         /* A member to be leveraged for pretty printing in a debugger. */
-        std::string prettyStr;
+        std::string prettyStr{"0"};
 #endif
     };
 

@@ -28,11 +28,11 @@ struct NumPowerSimplFixture {
 
     void check(const Number& expected, const Number& given)
     {
-        if (isRational(expected) && isRational(given)) {
+        if (expected.isRational() && given.isRational()) {
             BOOST_CHECK_EQUAL(expected, given);
         } else {
-            BOOST_TEST(isDouble(expected));
-            BOOST_TEST(isDouble(given));
+            BOOST_TEST(expected.isDouble());
+            BOOST_TEST(given.isDouble());
             BOOST_CHECK_CLOSE(expected.toDouble(), given.toDouble(), TOL);
         }
     }

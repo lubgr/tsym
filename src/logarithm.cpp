@@ -4,7 +4,6 @@
 #include "constant.h"
 #include "fraction.h"
 #include "logging.h"
-#include "numberfct.h"
 #include "numeric.h"
 #include "power.h"
 #include "product.h"
@@ -69,7 +68,7 @@ tsym::BasePtr tsym::Logarithm::createNumerically(const BasePtr& arg)
 
     assert(nArg != 0 && nArg != 1);
 
-    if (isRational(nArg))
+    if (nArg.isRational())
         return createInstance(arg);
     else
         return Numeric::create(std::log(nArg.toDouble()));

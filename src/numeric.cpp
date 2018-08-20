@@ -91,7 +91,7 @@ tsym::Number tsym::Numeric::numericEval() const
 
 tsym::Fraction tsym::Numeric::normal(SymbolMap& map) const
 {
-    if (isRational(number))
+    if (number.isRational())
         return Fraction{Numeric::create(number.numerator()), Numeric::create(number.denominator())};
     else
         return Fraction{map.getTmpSymbolAndStore(clone())};

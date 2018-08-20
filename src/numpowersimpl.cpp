@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cmath>
 #include "logging.h"
+#include "numberfct.h"
 
 void tsym::NumPowerSimpl::setPower(const Number& base, const Number& exp)
 {
@@ -64,7 +65,7 @@ void tsym::NumPowerSimpl::compute()
 
     if (!isInputValid())
         TSYM_ERROR("Illegal numeric power with base: %S and exponent %S", newBase, newExp);
-    else if (isDouble(newBase) || isDouble(newExp))
+    else if (newBase.isDouble() || newExp.isDouble())
         computeNonRational();
     else
         computeRational();
@@ -202,7 +203,7 @@ void tsym::NumPowerSimpl::defPreFacPrimesInPower()
     preFacInPower = preFacInPower.toThe(exp);
 
     /* If the power isn't resolvable, no prefactor prime factorization. */
-    if (isDouble(preFacInPower))
+    if (preFacInPower.isDouble())
         return;
 
     pfPrimes = PrimeFac(preFacInPower);

@@ -148,7 +148,7 @@ bool tsym::NumTrigoSimpl::isArgRationalNonZeroNumeric() const
 bool tsym::NumTrigoSimpl::isRationalNumeric(const BasePtr& ptr) const
 {
     if (ptr->isNumeric())
-        return isRational(ptr->numericEval());
+        return ptr->numericEval().isRational();
     else
         return false;
 }
@@ -283,7 +283,7 @@ void tsym::NumTrigoSimpl::setResult(const BasePtr& result)
 bool tsym::NumTrigoSimpl::isDoubleNumeric(const BasePtr& ptr) const
 {
     if (ptr->isNumeric())
-        return isDouble(ptr->numericEval());
+        return ptr->numericEval().isDouble();
     else
         return false;
 }
@@ -303,7 +303,7 @@ void tsym::NumTrigoSimpl::compNumerically(double (*fct)(double))
     double result;
 
     assert(arg->isNumeric());
-    assert(isDouble(arg->numericEval()));
+    assert(arg->numericEval().isDouble());
 
     result = fct(arg->numericEval().toDouble());
 

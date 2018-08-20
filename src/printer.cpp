@@ -284,7 +284,7 @@ namespace tsym {
 
 template <class Engine> void tsym::printer::print(Engine& engine, const Number& number)
 {
-    if (isDouble(number))
+    if (number.isDouble())
         engine.number(number.toDouble());
     else if (isInt(number))
         engine.number(number.numerator());

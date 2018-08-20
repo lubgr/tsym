@@ -52,7 +52,7 @@ void tsym::Number::setDebugString()
 
 void tsym::Number::tryDoubleToFraction()
 {
-    assert(std::holds_alternative<double>(rep));
+    assert(isDouble());
     /* We don't want to have huge fractions everywhere possible, so default number of floating point
      * digits isn't set to a too large value. */
     static const int nFloatDigits = 10000;
@@ -88,7 +88,7 @@ tsym::Number& tsym::Number::operator+=(const Number& rhs)
 
 bool tsym::Number::isThisOrOtherDouble(const Number& other) const
 {
-    return isDouble(*this) || isDouble(other);
+    return isDouble() || other.isDouble();
 }
 
 tsym::Number& tsym::Number::operator-=(const Number& rhs)
@@ -124,7 +124,7 @@ const tsym::Number& tsym::Number::operator+() const
 
 tsym::Number tsym::Number::operator-() const
 {
-    if (isRational(*this))
+    if (isRational())
         return {-numerator(), denominator()};
     else
         return {-toDouble()};
@@ -273,9 +273,19 @@ void tsym::Number::computeDenomPower(const Int& denomExponent, Number& result) c
         result = {numTest, denomTest};
 }
 
+bool tsym::Number::isRational() const
+{
+    return std::holds_alternative<Rational>(rep);
+}
+
+bool tsym::Number::isDouble() const
+{
+    return std::holds_alternative<double>(rep);
+}
+
 tsym::Int tsym::Number::numerator() const
 {
-    if (std::holds_alternative<Rational>(rep))
+    if (isRational())
         return std::get<Rational>(rep).numerator();
     else
         return 0;
@@ -283,7 +293,7 @@ tsym::Int tsym::Number::numerator() const
 
 tsym::Int tsym::Number::denominator() const
 {
-    if (std::holds_alternative<Rational>(rep))
+    if (isRational())
         return std::get<Rational>(rep).denominator();
     else
         return 1;
@@ -291,7 +301,7 @@ tsym::Int tsym::Number::denominator() const
 
 double tsym::Number::toDouble() const
 {
-    if (std::holds_alternative<Rational>(rep))
+    if (isRational())
         return boost::rational_cast<double>(std::get<Rational>(rep));
     else
         return std::get<double>(rep);
@@ -317,7 +327,7 @@ namespace tsym {
 
 bool tsym::operator==(const Number& lhs, const Number& rhs)
 {
-    if (isRational(lhs) && isRational(rhs))
+    if (lhs.isRational() && rhs.isRational())
         return lhs.numerator() == rhs.numerator() && lhs.denominator() == rhs.denominator();
     else
         return areEqual(lhs.toDouble(), rhs.toDouble());

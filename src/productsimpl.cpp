@@ -8,6 +8,7 @@
 #include "cache.h"
 #include "logging.h"
 #include "number.h"
+#include "numberfct.h"
 #include "numeric.h"
 #include "numpowersimpl.h"
 #include "options.h"

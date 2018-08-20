@@ -56,7 +56,7 @@ tsym::BasePtr tsym::Gcd::computeNumerics(const BasePtr& u, const BasePtr& v) con
     const Number numV(v->numericEval());
     Int intGcd(1);
 
-    assert(isRational(numU) && isRational(numV));
+    assert(numU.isRational() && numV.isRational());
 
     if (isInt(numU) && isInt(numV))
         intGcd = integerGcd(numU.numerator(), numV.numerator());
@@ -163,7 +163,7 @@ tsym::Number tsym::Gcd::normalizationFactor(const BasePtr& arg, BasePtrList& L) 
 
     fac = lCoeff->numericEval();
 
-    if (!isRational(fac))
+    if (!fac.isRational())
         TSYM_ERROR("%S has a non-rational leading coefficient!", arg);
     else if (fac == 0)
         TSYM_ERROR("Gcd result %S has a zero leading coefficient.", arg);

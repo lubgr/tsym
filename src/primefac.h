@@ -4,7 +4,6 @@
 #include <vector>
 #include "int.h"
 #include "number.h"
-#include "numberfct.h"
 #include "simpleprimepolicy.h"
 
 namespace tsym {
@@ -23,7 +22,7 @@ namespace tsym {
         PrimeFac() = default;
         template <template <class> class PrimeFacPolicy = SimplePrimePolicy> explicit PrimeFac(const Number& n)
         {
-            if (isDouble(n) || n < 0)
+            if (n.isDouble() || n < 0)
                 return;
             else
                 factorize<PrimeFacPolicy<Int>>(n);

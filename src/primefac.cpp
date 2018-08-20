@@ -6,6 +6,7 @@
 #include <boost/range/algorithm_ext/erase.hpp>
 #include <boost/range/numeric.hpp>
 #include <limits>
+#include "numberfct.h"
 
 namespace tsym {
     namespace {

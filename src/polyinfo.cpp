@@ -60,7 +60,7 @@ namespace tsym {
             if (arg.isSymbol())
                 return true;
             else if (arg.isNumeric())
-                return isRational(arg.numericEval());
+                return arg.numericEval().isRational();
             else if (arg.isPower())
                 return isValidPower(arg);
             else if (arg.isSum() || arg.isProduct())

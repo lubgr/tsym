@@ -151,7 +151,7 @@ unsigned tsym::Power::complexity() const
 
 bool tsym::Power::isExponentRationalNumeric() const
 {
-    return expRef->isNumericallyEvaluable() && isRational(expRef->numericEval());
+    return expRef->isNumericallyEvaluable() && expRef->numericEval().isRational();
 }
 
 bool tsym::Power::isPower() const
