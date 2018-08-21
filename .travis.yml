@@ -73,5 +73,9 @@ matrix:
           - COMPILER="g++-7"
           - MODE=ANALYSIS
 
+    - env:
+          - COMPILER="g++-7"
+          - MODE=TEST-ANALYSIS
+
 script:
   - ./bin/travis.sh

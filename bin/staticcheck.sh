@@ -56,6 +56,13 @@ fi
 
 echo ''
 
+# Limit the scope to either unit tests or src directory to not timeout on travis:
+if [ "${MODE}" = "ANALYSIS" ]; then
+    SRC="src/"
+elif [ "${MODE}" = "TEST-ANALYSIS" ]; then
+    SRC="unit-tests/"
+fi
+
 if which $CLANGTIDY &> /dev/null; then
     for file in `find ${SRC} -iname '*.cpp'`; do
         $CLANGTIDY -quiet -header-filter='tsym' -p "${CDB}" "${file}"
