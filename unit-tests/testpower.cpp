@@ -27,7 +27,12 @@ struct PowerFixture : public AbcFixture {
     const BasePtr sqrtTwo = Power::sqrt(two);
     const double TOL = 1.e-10;
 
-    ~PowerFixture()
+    PowerFixture() = default;
+    PowerFixture(const PowerFixture&) = delete;
+    PowerFixture(PowerFixture&&) = delete;
+    PowerFixture& operator=(const PowerFixture&) = delete;
+    PowerFixture& operator=(PowerFixture&&) = delete;
+    ~PowerFixture() override
     {
         options::setMaxPrimeResolution(defaultPrimeFacLimit);
     }

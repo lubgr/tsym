@@ -28,7 +28,7 @@ namespace tsym {
                 insCount = n;
             }
 
-            c = std::move(result);
+            c = std::forward<Container>(result);
         }
 
         void duplicate(std::vector<Int>& primes, const Int& n)

@@ -26,6 +26,11 @@ struct ProductFixture : public AbcFixture {
     const BasePtr& oneThird = Numeric::third();
     const BasePtr& oneFourth = Numeric::fourth();
 
+    ProductFixture() = default;
+    ProductFixture(const ProductFixture&) = delete;
+    ProductFixture(ProductFixture&&) = delete;
+    ProductFixture& operator=(const ProductFixture&) = delete;
+    ProductFixture& operator=(ProductFixture&&) = delete;
     ~ProductFixture() override
     {
         options::setMaxPrimeResolution(primeResolutionLimit);
