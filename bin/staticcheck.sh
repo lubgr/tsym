@@ -9,7 +9,6 @@ CDB=$1
 CPPCHECK=cppcheck
 CLANGTIDY=clang-tidy
 CPPCLEAN=cppclean
-OCLINT=oclint
 FMTSCRIPT=./bin/format.sh
 CONFIGDIR=misc
 
@@ -41,16 +40,6 @@ if which $CPPCLEAN &> /dev/null; then
     | grep -v 'unable to find'
 else
     echo "$CPPCLEAN not found"
-    EXIT=1
-fi
-
-echo ''
-
-if which $OCLINT &> /dev/null; then
-    $OCLINT `find $SRC -iname '*.cpp' -or -iname '*.h'` -max-priority-3=0 -- \
-        -std=c++17 -x c++ $INCLUDE $SYSTEM_INCLUDE | grep -v '|P3\]'
-else
-    echo "$OCLINT not found"
     EXIT=1
 fi
 

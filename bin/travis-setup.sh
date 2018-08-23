@@ -21,5 +21,4 @@ elif [ "${MODE}" = "ANALYSIS" ]; then
     CPPCHECKVER=1.82
     wget -qO- https://github.com/danmar/cppcheck/archive/${CPPCHECKVER}.tar.gz | tar xz
     sudo make -C ./cppcheck-${CPPCHECKVER} SRCDIR=build CFGDIR=/usr/share/cppcheck/cfg HAVE_RULES=yes install
-    wget -qO- https://github.com/oclint/oclint/releases/download/v${OCLINTVER}/oclint-${OCLINTVER}-x86_64-linux-4.4.0-93-generic.tar.gz | tar xz
 fi
