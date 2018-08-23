@@ -2,12 +2,16 @@
 
 set -e
 
-if [ "${MODE}" != "ANALYSIS" ]; then
-    pushd ${BOOSTDIR}
+pushd ${BOOSTDIR}
+if [ "${MODE}" = "ANALYSIS" ]; then
+    targetDir="/usr/local/include"
+    sudo mkdir -p "${targetDir}"
+    sudo cp -r boost "${targetDir}"
+else
     ./bootstrap.sh debug-symbols=off cflags="${CPPFLAGS} ${CFLAGS} -std=c99 -O2" cxxflags="${CPPFLAGS} ${CXXFLAGS} -std=c++14 -O2"
     sudo ./b2 -d0 --with-test link=static install --prefix=/usr/local
-    popd
 fi
+popd
 
 if [ "${MODE}" = "PROFILING" ]; then
     gem install coveralls-lcov
