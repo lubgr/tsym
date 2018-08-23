@@ -46,7 +46,7 @@ target_link_libraries(tsym-internal-config
 add_subdirectory(include)
 add_subdirectory(src)
 
-if(${BUILD_TESTING})
+if(${BUILD_TESTING} AND (${PROJECT_SOURCE_DIR} STREQUAL ${CMAKE_SOURCE_DIR}))
     enable_testing()
     add_subdirectory(unit-tests)
 endif()
