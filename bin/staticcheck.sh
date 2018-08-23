@@ -48,20 +48,13 @@ echo ''
 
 if which $OCLINT &> /dev/null; then
     $OCLINT `find $SRC -iname '*.cpp' -or -iname '*.h'` -max-priority-3=0 -- \
-        -std=c++14 -x c++ $INCLUDE $SYSTEM_INCLUDE | grep -v '|P3\]'
+        -std=c++17 -x c++ $INCLUDE $SYSTEM_INCLUDE | grep -v '|P3\]'
 else
     echo "$OCLINT not found"
     EXIT=1
 fi
 
 echo ''
-
-# Limit the scope to either unit tests or src directory to not timeout on travis:
-if [ "${MODE}" = "ANALYSIS" ]; then
-    SRC="src/"
-elif [ "${MODE}" = "TEST-ANALYSIS" ]; then
-    SRC="unit-tests/"
-fi
 
 if which $CLANGTIDY &> /dev/null; then
     for file in `find ${SRC} -iname '*.cpp'`; do

@@ -81,7 +81,7 @@ elif [ "${MODE}" = "INTEGRATION" ]; then
     mkdir -p "${buildDirRoot}"
     CXX="${COMPILER}" ./test-all.sh "${buildDirRoot}" || EXIT=1
     popd
-elif [ "${MODE}" = "ANALYSIS" -o "${MODE}" = "TEST-ANALYSIS" ]; then
+elif [ "${MODE}" = "ANALYSIS" ]; then
     buildDir "compile-database-${COMPILER}"
     configure "${COMPILER}"
     popd

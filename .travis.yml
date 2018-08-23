@@ -25,7 +25,7 @@ install:
   - export BOOSTVER=1_68_0
   - export BOOSTDIR="${PWD}/boost_${BOOSTVER}"
   - wget -qO- https://downloads.sourceforge.net/project/boost/boost/${BOOSTVER//_/.}/boost_${BOOSTVER}.tar.bz2 | tar xj
-  - export OCLINTVER=0.13.1
+  - export OCLINTVER=0.13
   - export OCLINT_HOME="$HOME/oclint-${OCLINTVER}"
   - export PATH="${PATH}:${PWD}/oclint-${OCLINTVER}/bin"
   - travis_fold start "setup-script"
@@ -71,10 +71,6 @@ matrix:
     - env:
           - COMPILER="clang++"
           - MODE=ANALYSIS
-
-    - env:
-          - COMPILER="clang++"
-          - MODE=TEST-ANALYSIS
 
 script:
   - ./bin/travis.sh
