@@ -81,17 +81,7 @@ elif [ "${MODE}" = "ANALYSIS" -o "${MODE}" = "TEST-ANALYSIS" ]; then
     build "${COMPILER}"
     popd
 
-    staticCheckOutput=static-check-output
-    ./bin/staticcheck.sh "${buildDir}/compile_commands.json" &> "${staticCheckOutput}" &
-    staticCheckPid=$!
-
-    for interval in $(seq 40); do
-        sleep 60
-        echo "Waiting for static analysis output..."
-    done
-
-    wait $staticCheckPid || EXIT=1
-    cat "${staticCheckOutput}"
+    ./bin/staticcheck.sh "${buildDir}/compile_commands.json" || EXIT=1
 fi
 
 exit ${EXIT}
