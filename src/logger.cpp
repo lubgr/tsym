@@ -12,7 +12,7 @@ void tsym::Logger::info(const Message&) const
 
 void tsym::Logger::warning(const Message& msg) const
 {
-    std::cout << msg.payload << std::endl;
+    std::cout << msg.payload << "\n";
 }
 
 void tsym::Logger::error(const Message& msg) const

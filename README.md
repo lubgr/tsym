@@ -76,7 +76,7 @@ int main(int argc, char **argv)
     tsym::Var b("b_{subscript}");
     tsym::Var fraction(2, 3);
 
-    std::cout << a + b*fraction << std::endl;
+    std::cout << a + b*fraction << "\n";
 }
 ```
 Variable names and subscripts must be ASCII characters or numbers. A variable name can't start with
@@ -90,7 +90,7 @@ tsym::Var b; /* Initialized to zero by default constructor. */
 
 b = 2*a + a/1.2345 - largeInt;
 
-std::cout << b << std::endl;
+std::cout << b << "\n";
 
 /* Careful - this will be zero, because 2/3 is evaluated first and as plain integral type: */
 b = 2/3*a;
@@ -109,9 +109,9 @@ tsym::Var b("b");
 tsym::Var c = 2*tsym::Var("a")/b/5;
 
 if (tsym::has(c, b) && c.type() == tsym::Var::Type::PRODUCT)
-    std::cout << "c contains " << b << " and is a " << c.type() << std::endl;
+    std::cout << "c contains " << b << " and is a " << c.type() << "\n";
 
-std::cout << tsym::numerator(c) << ", " << tsym::denominator(c) << std::endl; /* 2*a, 5*b */
+std::cout << tsym::numerator(c) << ", " << tsym::denominator(c) << "\n"; /* 2*a, 5*b */
 
 tsym::collectSymbols(c); /* Returns a vector containing the symbols a and b. */
 tsym::operands(c); /* Returns a vector with a, b^(-1) and the fraction 2/5. */
@@ -125,12 +125,12 @@ tsym::Var a = tsym::Var("a");
 tsym::Var b = tsym::Var("b");
 tsym::Var c = a/b + 1/(5*b);
 
-std::cout << tsym::subst(c, b, tsym::Var(1, 3)) << std::endl; /* 3/5 + 3a */
-std::cout << tsym::diff(c, b) << std::endl; /* (-1/5)/b^2 - a/b^2 */
+std::cout << tsym::subst(c, b, tsym::Var(1, 3)) << "\n"; /* 3/5 + 3a */
+std::cout << tsym::diff(c, b) << "\n"; /* (-1/5)/b^2 - a/b^2 */
 
 c = c*b;
 
-std::cout << tsym::expand(c) << std::endl; /* 1/5 + a */
+std::cout << tsym::expand(c) << "\n"; /* 1/5 + a */
 ```
 The construction of expressions can be done by parsing of strings, too, by invocation of a free
 function
@@ -142,7 +142,7 @@ This can go wrong, hence the return value.
 const auto parseAttempt = tsym::parse("a*cos(3!)");
 
 if (!parseAttempt)
-    std::cout << "Factorials aren't implemented" << std::endl;
+    std::cout << "Factorials aren't implemented\n";
 ```
 The parser does very limited error recovery, and partially parsed result are
 simply discarded. Three standard operations for matrices are provided as free
