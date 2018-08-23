@@ -69,11 +69,11 @@ matrix:
           - COMPILER="g++-7"
 
     - env:
-          - COMPILER="g++-7"
+          - COMPILER="clang++"
           - MODE=ANALYSIS
 
     - env:
-          - COMPILER="g++-7"
+          - COMPILER="clang++"
           - MODE=TEST-ANALYSIS
 
 script:

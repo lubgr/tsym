@@ -9,7 +9,7 @@ buildDir() {
     pushd "${buildDir}"
 }
 
-build() {
+configure() {
     CXX=$1
 
     cmake \
@@ -17,6 +17,11 @@ build() {
         -D BUILD_TESTING=ON\
         -D CMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE}"\
         ..
+}
+
+build() {
+    configure $1
+
     make tsym tests
     SUCCESS=$?
 
@@ -78,7 +83,7 @@ elif [ "${MODE}" = "INTEGRATION" ]; then
     popd
 elif [ "${MODE}" = "ANALYSIS" -o "${MODE}" = "TEST-ANALYSIS" ]; then
     buildDir "compile-database-${COMPILER}"
-    build "${COMPILER}"
+    configure "${COMPILER}"
     popd
 
     ./bin/staticcheck.sh "${buildDir}/compile_commands.json" || EXIT=1
