@@ -4,6 +4,7 @@
 #include <cassert>
 #include <cmath>
 #include <exception>
+#include <functional>
 #include <iostream>
 #include <limits>
 #include <sstream>
@@ -56,7 +57,7 @@ void tsym::Number::tryDoubleToFraction()
     /* We don't want to have huge fractions everywhere possible, so default number of floating point
      * digits isn't set to a too large value. */
     static const int nFloatDigits = 10000;
-    const auto value = std::get<double>(rep);
+    const double value = getDouble();
     const double roundIncrement = value > 0.0 ? 0.5 : -0.5;
 
     if (value > std::numeric_limits<double>::max() / nFloatDigits - roundIncrement / nFloatDigits)
@@ -72,23 +73,21 @@ void tsym::Number::tryDoubleToFraction()
         rep.emplace<Rational>(truncated, Int(nFloatDigits));
 }
 
+double tsym::Number::getDouble() const
+{
+    return std::get<double>(rep);
+}
+
 tsym::Number& tsym::Number::operator+=(const Number& rhs)
 {
-    if (isThisOrOtherDouble(rhs)) {
-        rep.emplace<double>(toDouble() + rhs.toDouble());
+    rep = std::visit(Operate<std::plus<>>{}, rep, rhs.rep);
 
+    if (isDouble())
         tryDoubleToFraction();
-    } else
-        rep.emplace<Rational>(std::get<Rational>(rep) + std::get<Rational>(rhs.rep));
 
     setDebugString();
 
     return *this;
-}
-
-bool tsym::Number::isThisOrOtherDouble(const Number& other) const
-{
-    return isDouble() || other.isDouble();
 }
 
 tsym::Number& tsym::Number::operator-=(const Number& rhs)
@@ -98,12 +97,10 @@ tsym::Number& tsym::Number::operator-=(const Number& rhs)
 
 tsym::Number& tsym::Number::operator*=(const Number& rhs)
 {
-    if (isThisOrOtherDouble(rhs)) {
-        rep.emplace<double>(toDouble() * rhs.toDouble());
+    rep = std::visit(Operate<std::multiplies<>>{}, rep, rhs.rep);
 
+    if (isDouble())
         tryDoubleToFraction();
-    } else
-        rep.emplace<Rational>(std::get<Rational>(rep) * std::get<Rational>(rhs.rep));
 
     setDebugString();
 
@@ -132,43 +129,31 @@ tsym::Number tsym::Number::operator-() const
 
 tsym::Number tsym::Number::toThe(const Number& exponent) const
 {
-    Number res;
-
-    if (processTrivialPowers(exponent, res))
-        return res;
-    else if (processNegBase(exponent, res))
-        return res;
-    else if (processIrrationalPowers(exponent, res))
-        return res;
+    if (auto result = computeTrivialPower(exponent))
+        return *result;
+    else if ((result = computeNegBasePower(exponent)))
+        return *result;
+    else if ((result = computeIrrationalPower(exponent)))
+        return *result;
     else
-        processRationalPowers(exponent, res);
-
-    return res;
+        return computeRationalPower(exponent);
 }
 
-bool tsym::Number::processTrivialPowers(const Number& exponent, Number& result) const
-/* If the power is evaluated within the block of trivial posssibilities, the second parameter is
- * defined and true is returned, otherwise false. */
+std::optional<tsym::Number> tsym::Number::computeTrivialPower(const Number& exponent) const
 {
-    static const Number zero(0);
+    if (*this == 0 && exponent.numerator() < 0)
+        throw std::overflow_error("0 divisor in rational number division");
 
-    if (*this == zero && exponent.numerator() < 0) {
-        TSYM_ERROR("Number division by zero! Result is undefined.");
-        throw std::overflow_error("Zero divisor in rational number division");
-    } else if (*this == zero || *this == 1 || exponent == 1) {
-        result = *this;
-        return true;
-    } else if (exponent == zero) {
-        result = 1;
-        return true;
-    } else if (*this < 0 && !isInt(exponent)) {
+    if (*this == 0 || *this == 1 || exponent == 1)
+        return *this;
+    else if (exponent == 0)
+        return 1;
+    else if (*this < 0 && !isInt(exponent))
         throw std::overflow_error("Illegal power with base zero and non-integer exponent");
-    } else if (*this == -1) {
-        result = computeMinusOneToThe(exponent);
-        return true;
-    }
+    else if (*this == -1)
+        return computeMinusOneToThe(exponent);
 
-    return false;
+    return std::nullopt;
 }
 
 tsym::Number tsym::Number::computeMinusOneToThe(const Number& exponent) const
@@ -178,39 +163,38 @@ tsym::Number tsym::Number::computeMinusOneToThe(const Number& exponent) const
     return exponent.numerator() % 2 == 0 ? 1 : -1;
 }
 
-bool tsym::Number::processNegBase(const Number& exponent, Number& result) const
+std::optional<tsym::Number> tsym::Number::computeNegBasePower(const Number& exponent) const
 {
-    Number preFac(-1);
-
     if (*this > 0)
-        return false;
+        return std::nullopt;
 
     assert(isInt(exponent));
 
+    Number preFac(-1);
+
     preFac = preFac.toThe(exponent);
 
-    result = abs(*this).toThe(exponent) * preFac;
-
-    return true;
+    return abs(*this).toThe(exponent) * preFac;
 }
 
-bool tsym::Number::processIrrationalPowers(const Number& exponent, Number& result) const
+std::optional<tsym::Number> tsym::Number::computeIrrationalPower(const Number& exponent) const
 {
-    if (isThisOrOtherDouble(exponent)) {
-        result = {std::pow(toDouble(), exponent.toDouble())};
-        return true;
-    } else
-        return false;
+    if (isDouble() || exponent.isDouble())
+        return {std::pow(toDouble(), exponent.toDouble())};
+
+    return std::nullopt;
 }
 
-void tsym::Number::processRationalPowers(const Number& exponent, Number& result) const
+tsym::Number tsym::Number::computeRationalPower(const Number& exponent) const
 {
     /* The base is positive and neither 1 or 0. The exponent is positive or negative. */
-    computeNumPower(exponent.numerator(), result);
+    auto result = computeNumPower(exponent.numerator());
     computeDenomPower(exponent.denominator(), result);
+
+    return result;
 }
 
-void tsym::Number::computeNumPower(const Int& numExponent, Number& result) const
+tsym::Number tsym::Number::computeNumPower(const Int& numExponent) const
 /* For e.g. (1/2)^(2/3), this does the part (1/2)^2. */
 {
     assert(integer::fitsInto<unsigned>(integer::abs(numExponent)));
@@ -220,9 +204,9 @@ void tsym::Number::computeNumPower(const Int& numExponent, Number& result) const
 
     if (numExponent < 0)
         /* The method takes care of negative a numerator. */
-        result = {newDenom, newNum};
+        return {newDenom, newNum};
     else
-        result = {newNum, newDenom};
+        return {newNum, newDenom};
 }
 
 namespace tsym {
@@ -286,15 +270,20 @@ bool tsym::Number::isDouble() const
 tsym::Int tsym::Number::numerator() const
 {
     if (isRational())
-        return std::get<Rational>(rep).numerator();
+        return getRational().numerator();
     else
         return 0;
+}
+
+tsym::Number::Rational tsym::Number::getRational() const
+{
+    return std::get<Rational>(rep);
 }
 
 tsym::Int tsym::Number::denominator() const
 {
     if (isRational())
-        return std::get<Rational>(rep).denominator();
+        return getRational().denominator();
     else
         return 1;
 }
@@ -302,9 +291,9 @@ tsym::Int tsym::Number::denominator() const
 double tsym::Number::toDouble() const
 {
     if (isRational())
-        return boost::rational_cast<double>(std::get<Rational>(rep));
+        return boost::rational_cast<double>(getRational());
     else
-        return std::get<double>(rep);
+        return getDouble();
 }
 
 namespace tsym {

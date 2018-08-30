@@ -3,6 +3,7 @@
 
 #include <boost/operators.hpp>
 #include <boost/rational.hpp>
+#include <optional>
 #include <variant>
 #include "int.h"
 
@@ -39,19 +40,41 @@ namespace tsym {
         double toDouble() const;
 
       private:
+        using Rational = boost::rational<Int>;
+        using Rep = std::variant<Rational, double>;
+
+        template <class Operation> struct Operate {
+            template <class T> Rep operator()(const T& lhs, const T& rhs)
+            {
+                return Operation{}(lhs, rhs);
+            }
+
+            Rep operator()(const Rational& lhs, double rhs)
+            {
+                return Operation{}(boost::rational_cast<double>(lhs), rhs);
+            }
+
+            Rep operator()(double lhs, const Rational& rhs)
+            {
+                return Operation{}(lhs, boost::rational_cast<double>(rhs));
+            }
+        };
+
         void setDebugString();
         void tryDoubleToFraction();
-        bool isThisOrOtherDouble(const Number& other) const;
-        bool processTrivialPowers(const Number& exponent, Number& result) const;
+        double getDouble() const;
+
+        std::optional<Number> computeTrivialPower(const Number& exponent) const;
         Number computeMinusOneToThe(const Number& exponent) const;
-        bool processNegBase(const Number& exponent, Number& result) const;
-        bool processIrrationalPowers(const Number& exponent, Number& result) const;
-        void processRationalPowers(const Number& exponent, Number& result) const;
-        void computeNumPower(const Int& numExponent, Number& result) const;
+        std::optional<Number> computeNegBasePower(const Number& exponent) const;
+        std::optional<Number> computeIrrationalPower(const Number& exponent) const;
+        Number computeRationalPower(const Number& exponent) const;
+        Number computeNumPower(const Int& numExponent) const;
         void computeDenomPower(const Int& denomExponent, Number& result) const;
 
-        using Rational = boost::rational<Int>;
-        std::variant<Rational, double> rep{Rational{0}};
+        Rational getRational() const;
+
+        Rep rep{Rational{0}};
 
 #ifdef TSYM_WITH_DEBUG_STRINGS
         /* A member to be leveraged for pretty printing in a debugger. */
