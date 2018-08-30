@@ -124,7 +124,7 @@ namespace tsym {
 
         BasePtrList simplTwoNumerics(const BasePtr& s1, const BasePtr& s2)
         {
-            const Number sum(s1->numericEval() + s2->numericEval());
+            const Number sum(*s1->numericEval() + *s2->numericEval());
 
             if (sum == 0)
                 return {};

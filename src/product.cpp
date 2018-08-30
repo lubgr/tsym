@@ -69,17 +69,17 @@ bool tsym::Product::sameType(const Base& other) const
     return other.isProduct();
 }
 
-tsym::Number tsym::Product::numericEval() const
+std::optional<tsym::Number> tsym::Product::numericEval() const
 {
-    Number res(1);
+    Number result(1);
 
     for (const auto& factor : ops)
-        if (factor->isNumericallyEvaluable())
-            res *= factor->numericEval();
+        if (const auto numFactor = factor->numericEval())
+            result *= *numFactor;
         else
-            throw std::logic_error("Product isn't numerically evaluable");
+            return std::nullopt;
 
-    return res;
+    return result;
 }
 
 tsym::Fraction tsym::Product::normal(SymbolMap& map) const

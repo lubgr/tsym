@@ -87,16 +87,15 @@ bool tsym::Power::sameType(const Base& other) const
     return other.isPower();
 }
 
-tsym::Number tsym::Power::numericEval() const
+std::optional<tsym::Number> tsym::Power::numericEval() const
 {
-    Number nExp;
-    Number res;
+    const auto nExp = expRef->numericEval();
+    const auto res = baseRef->numericEval();
 
-    nExp = expRef->numericEval();
-    res = baseRef->numericEval();
-    res = res.toThe(nExp);
+    if (nExp && res)
+        return res->toThe(*nExp);
 
-    return res;
+    return std::nullopt;
 }
 
 tsym::Fraction tsym::Power::normal(SymbolMap& map) const
@@ -126,8 +125,11 @@ bool tsym::Power::isPositive() const
 {
     if (baseRef->isPositive())
         return true;
-    else if (isExponentRationalNumeric())
-        return expRef->numericEval().numerator() % 2 == 0;
+
+    // return expRef->isNumericallyEvaluable() && expRef->numericEval().isRational();
+
+    else if (const auto num = expRef->numericEval())
+        return num->isRational() && num->numerator() % 2 == 0;
     else
         return false;
 }
@@ -147,11 +149,6 @@ size_t tsym::Power::hash() const
 unsigned tsym::Power::complexity() const
 {
     return 5 + baseRef->complexity() + 2 * expRef->complexity();
-}
-
-bool tsym::Power::isExponentRationalNumeric() const
-{
-    return expRef->isNumericallyEvaluable() && expRef->numericEval().isRational();
 }
 
 bool tsym::Power::isPower() const
@@ -174,7 +171,10 @@ tsym::BasePtr tsym::Power::expand() const
 
 bool tsym::Power::isInteger(const Base& arg) const
 {
-    return arg.isNumeric() && isInt(arg.numericEval());
+    if (const auto num = arg.numericEval())
+        return isInt(*num);
+
+    return false;
 }
 
 tsym::BasePtr tsym::Power::expandIntegerExponent() const
@@ -190,7 +190,7 @@ tsym::BasePtr tsym::Power::expandIntegerExponent() const
 
 tsym::BasePtr tsym::Power::expandSumBaseIntExp() const
 {
-    const Int nExp(expRef->numericEval().numerator());
+    const Int nExp(expRef->numericEval()->numerator());
     BasePtrList sums;
     BasePtr res;
 
@@ -233,7 +233,7 @@ int tsym::Power::degree(const Base& variable) const
     if (isEqual(variable))
         return 1;
     else if (isInteger(*expRef))
-        nExp = expRef->numericEval().numerator();
+        nExp = expRef->numericEval()->numerator();
 
     int baseDegree = baseRef->degree(variable);
 

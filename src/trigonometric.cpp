@@ -82,8 +82,8 @@ tsym::BasePtr tsym::Trigonometric::createAtan2(const BasePtr& y, const BasePtr& 
 {
     if (x->isUndefined() || y->isUndefined())
         return Undefined::create();
-    else if (x->isNumericallyEvaluable() && y->isNumericallyEvaluable())
-        return createAtan2Numerically(y, x);
+    else if (const auto xNum = x->numericEval(), yNum = y->numericEval(); xNum && yNum)
+        return createAtan2Numerically(*yNum, *xNum, y, x);
     else
         return createInstance(Type::ATAN2, {y, x});
 }
@@ -305,10 +305,9 @@ tsym::BasePtr tsym::Trigonometric::createFromTrigoNoInverse(Type type, const Bas
         return createInstance(type, {arg});
 }
 
-tsym::BasePtr tsym::Trigonometric::createAtan2Numerically(const BasePtr& y, const BasePtr& x)
+tsym::BasePtr tsym::Trigonometric::createAtan2Numerically(
+  const Number& yNum, const Number& xNum, const BasePtr& y, const BasePtr& x)
 {
-    const Number yNum(y->numericEval());
-    const Number xNum(x->numericEval());
     BasePtr increment;
 
     if (xNum == 0 && yNum > 0)
@@ -353,11 +352,11 @@ tsym::BasePtr tsym::Trigonometric::shiftAtanResultIntoRange(BasePtr result, Base
 {
     BasePtr increment(timesPi(2));
 
-    assert(result->isNumericallyEvaluable());
+    assert(result->numericEval());
 
     if (result->isNumeric() && !result->isZero()) {
-        increment = Numeric::create(increment->numericEval());
-        summand = Numeric::create(summand->numericEval());
+        increment = Numeric::create(*increment->numericEval());
+        summand = Numeric::create(*summand->numericEval());
     }
 
     result = Sum::create(result, summand);
@@ -365,7 +364,7 @@ tsym::BasePtr tsym::Trigonometric::shiftAtanResultIntoRange(BasePtr result, Base
     while (result->isNegative())
         result = Sum::create(result, increment);
 
-    while (result->numericEval() >= increment->numericEval())
+    while (*result->numericEval() >= *increment->numericEval())
         /* This shouldn't happen, as atan returns values < Pi/2, and even incrementoing this with Pi
          * doesn't lead to values greater than 2*Pi. */
         result = Sum::create(result, Product::minus(increment));
@@ -396,43 +395,36 @@ std::string tsym::Trigonometric::getStr(Type type)
     }
 }
 
-tsym::Number tsym::Trigonometric::numericEval() const
+std::optional<tsym::Number> tsym::Trigonometric::numericEval() const
 {
-    if (!isNumericallyEvaluable())
-        throw std::logic_error("Trigonometric function can't be numerically evaluated");
+    const auto nArg = arg1->numericEval();
 
-    return checkedNumericEval();
-}
+    if (!nArg)
+        return std::nullopt;
 
-tsym::Number tsym::Trigonometric::checkedNumericEval() const
-{
-    double (*fct)(double) = nullptr;
+    const double value = nArg->toDouble();
 
     switch (type) {
         case Type::SIN:
-            fct = &std::sin;
-            break;
+            return std::sin(value);
         case Type::COS:
-            fct = &std::cos;
-            break;
+            return std::cos(value);
         case Type::TAN:
-            fct = &std::tan;
-            break;
+            return std::tan(value);
         case Type::ASIN:
-            fct = &std::asin;
-            break;
+            return std::asin(value);
         case Type::ACOS:
-            fct = &std::acos;
-            break;
+            return std::acos(value);
         case Type::ATAN:
-            fct = &std::atan;
-            break;
+            return std::atan(value);
         case Type::ATAN2:
-            TSYM_ERROR("A numerically evaluable atan2 should be simplified to an atan function");
-            return std::atan2(arg1->numericEval().toDouble(), arg2->numericEval().toDouble());
+            if (const auto secondArgNum = arg2->numericEval()) {
+                TSYM_ERROR("A numerically evaluable atan2 should have been simplified to an atan function");
+                return std::atan2(value, secondArgNum->toDouble());
+            }
     }
 
-    return fct(arg1->numericEval().toDouble());
+    return std::nullopt;
 }
 
 tsym::Fraction tsym::Trigonometric::normal(SymbolMap& map) const

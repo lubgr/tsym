@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE(twoNumericFactors)
     const BasePtr p = Product::create(two, three);
 
     BOOST_TEST(p->isNumeric());
-    BOOST_CHECK_EQUAL(6, p->numericEval());
+    BOOST_CHECK_EQUAL(6, p->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(twoNumericFactorsResultingInOne)
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(twoNumericFactorsResultingInOne)
     const BasePtr p = Product::create(two, Numeric::half());
 
     BOOST_TEST(p->isNumeric());
-    BOOST_CHECK_EQUAL(1, p->numericEval());
+    BOOST_CHECK_EQUAL(1, p->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(numberTimesNumericPower)
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(numberTimesNumericPower)
     BOOST_TEST(p->isProduct());
     BOOST_TEST(p->isConst());
 
-    BOOST_CHECK_EQUAL(2, p->operands().front()->numericEval());
+    BOOST_CHECK_EQUAL(2, p->operands().front()->numericEval().value());
     BOOST_TEST(p->operands().back()->isNumericPower());
 }
 
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(numericPowersEqualBase)
     const BasePtr p = Product::create(sqrtTwo, twoToTheThird);
 
     BOOST_TEST(p->isNumericPower());
-    BOOST_CHECK_CLOSE(std::pow(2, 5.0 / 6.0), p->numericEval().toDouble(), 1.e-10);
+    BOOST_CHECK_CLOSE(std::pow(2, 5.0 / 6.0), p->numericEval().value().toDouble(), 1.e-10);
 }
 
 BOOST_AUTO_TEST_CASE(numericPowersDifferentExpSameBase)
@@ -211,9 +211,9 @@ BOOST_AUTO_TEST_CASE(numericPowersDifferentExpSameBase)
 
     BOOST_TEST(res->isPower());
     BOOST_TEST(res->isNumericPower());
-    BOOST_CHECK_EQUAL(2, res->base()->numericEval());
+    BOOST_CHECK_EQUAL(2, res->base()->numericEval().value());
 
-    BOOST_CHECK_EQUAL(expectedExp, res->exp()->numericEval());
+    BOOST_CHECK_EQUAL(expectedExp, res->exp()->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(numericPowersDifferentExpDifferentBase)
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE(differentNumericPowerProduct)
 
     BOOST_TEST(p->isNumericPower());
     BOOST_CHECK_EQUAL(six, p->base());
-    BOOST_CHECK_EQUAL(Number(1, 2), p->exp()->numericEval());
+    BOOST_CHECK_EQUAL(Number(1, 2), p->exp()->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(simpleNumericPowersDifferentExpSign)
@@ -502,7 +502,7 @@ BOOST_AUTO_TEST_CASE(equalSymbolBasesToPower)
     const BasePtr res = Product::create(a, a);
 
     BOOST_TEST(res->isPower());
-    BOOST_CHECK_EQUAL(2, res->exp()->numericEval());
+    BOOST_CHECK_EQUAL(2, res->exp()->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(equalPowerBasesToPower)
@@ -513,7 +513,7 @@ BOOST_AUTO_TEST_CASE(equalPowerBasesToPower)
     const BasePtr res = Product::create(pow1, pow2);
 
     BOOST_TEST(res->isPower());
-    BOOST_CHECK_EQUAL(5, res->exp()->numericEval());
+    BOOST_CHECK_EQUAL(5, res->exp()->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(equalPowerBasesToOne)
@@ -533,7 +533,7 @@ BOOST_AUTO_TEST_CASE(equalSumBasesToPower)
     const BasePtr res = Product::create(pow1, sum);
 
     BOOST_TEST(res->isPower());
-    BOOST_CHECK_EQUAL(4, res->exp()->numericEval());
+    BOOST_CHECK_EQUAL(4, res->exp()->numericEval().value());
     BOOST_CHECK_EQUAL(sum, res->base());
 }
 
@@ -695,7 +695,7 @@ BOOST_AUTO_TEST_CASE(numericEvaluation)
     const BasePtr res = Product::minus(two, sqrtThree, Power::create(four, oneThird), pi);
 
     BOOST_TEST(res->isNumericallyEvaluable());
-    BOOST_CHECK_EQUAL(expected, res->numericEval());
+    BOOST_CHECK_EQUAL(expected, res->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(equalNonNumericBaseNumExp)

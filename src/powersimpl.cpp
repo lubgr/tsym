@@ -35,8 +35,8 @@ namespace tsym {
 
         bool doesInvolveComplexNumbers(const BasePtr& base, const BasePtr& exp)
         {
-            if (base->isNegative() && exp->isNumericallyEvaluable())
-                return !isInt(exp->numericEval());
+            if (const auto nExp = exp->numericEval(); base->isNegative() && nExp)
+                return !isInt(*nExp);
             else
                 return false;
         }
@@ -51,10 +51,12 @@ namespace tsym {
 
         BasePtrList simplifyNumericPower(const BasePtr& base, const BasePtr& exp)
         {
-            const Number nBase(base->numericEval());
-            const Number nExp(exp->numericEval());
+            const auto nBase(base->numericEval());
+            const auto nExp(exp->numericEval());
 
-            return simplifyNumericPower(nBase, nExp);
+            assert(nBase && nExp);
+
+            return simplifyNumericPower(*nBase, *nExp);
         }
 
         BasePtrList simplifyNumericPower(const Number& base, const Number& exp)
@@ -128,40 +130,36 @@ namespace tsym {
 
         bool isInteger(const BasePtr& arg)
         {
-            if (arg->isNumeric())
-                return isInt(arg->numericEval());
+            if (const auto num = arg->numericEval())
+                return isInt(*num);
             else
                 return false;
         }
 
         bool areTwoFractionExpWithOddDenom(const BasePtr& exp1, const BasePtr& exp2)
         {
-            Number nExp1;
-            Number nExp2;
-
             if (!exp1->isNumeric() || !exp2->isNumeric())
                 return false;
 
-            nExp1 = exp1->numericEval();
-            nExp2 = exp2->numericEval();
+            const auto nExp1 = exp1->numericEval();
+            const auto nExp2 = exp2->numericEval();
 
-            if (isFraction(nExp1) && isFraction(nExp2))
-                return nExp1.denominator() % 2 != 0 && nExp2.denominator() % 2 != 0;
+            if (isFraction(*nExp1) && isFraction(*nExp2))
+                return nExp1->denominator() % 2 != 0 && nExp2->denominator() % 2 != 0;
+
             return false;
         }
 
         bool doesChangeSign(const BasePtr& base, const BasePtr& exp1)
         {
-            Number nExp1;
-
             if (!base->isNegative())
                 return false;
             else if (!exp1->isNumeric())
                 return false;
 
-            nExp1 = exp1->numericEval();
+            const auto nExp1 = exp1->numericEval();
 
-            return isInt(nExp1) && nExp1.numerator() % 2 == 0;
+            return isInt(*nExp1) && nExp1->numerator() % 2 == 0;
         }
 
         bool doContractExpSecond(const BasePtr& e1, const BasePtr& e2)
@@ -169,7 +167,7 @@ namespace tsym {
             const BasePtr newExp = Product::create(e1, e2);
 
             if (isOddInteger(e1))
-                return newExp->isNumericallyEvaluable() && abs(newExp->numericEval()) != 1;
+                return newExp->isNumericallyEvaluable() && abs(*newExp->numericEval()) != 1;
             else if (isEvenInteger(e1))
                 return isEvenInteger(newExp);
             else if (isFraction(e1) && (isInteger(e2) || isFraction(e2)))
@@ -182,17 +180,17 @@ namespace tsym {
 
         bool isOddInteger(const BasePtr& arg)
         {
-            return isInteger(arg) && arg->numericEval().numerator() % 2 != 0;
+            return isInteger(arg) && arg->numericEval()->numerator() % 2 != 0;
         }
 
         bool isEvenInteger(const BasePtr& arg)
         {
-            return isInteger(arg) && arg->numericEval().numerator() % 2 == 0;
+            return isInteger(arg) && arg->numericEval()->numerator() % 2 == 0;
         }
 
         bool isFraction(const BasePtr& arg)
         {
-            return arg->isNumeric() && isFraction(arg->numericEval());
+            return arg->isNumeric() && isFraction(*arg->numericEval());
         }
 
         BasePtrList simplifyProductBase(const BasePtr& base, const BasePtr& exp)

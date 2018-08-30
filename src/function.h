@@ -15,14 +15,6 @@ namespace tsym {
         Function(Function&&) = delete;
         Function& operator=(Function&&) = delete;
 
-        Number numericEval() const override = 0;
-        Fraction normal(SymbolMap& map) const override = 0;
-        BasePtr diffWrtSymbol(const Base& symbol) const override = 0;
-        BasePtr subst(const Base& from, const BasePtr& to) const override = 0;
-        bool isPositive() const override = 0;
-        bool isNegative() const override = 0;
-        unsigned complexity() const override = 0;
-
         bool isEqualDifferentBase(const Base& other) const override;
         bool sameType(const Base& other) const override;
         std::string typeStr() const override;

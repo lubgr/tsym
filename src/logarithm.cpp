@@ -64,7 +64,7 @@ bool tsym::Logarithm::isInvalidArg(const Base& arg)
 
 tsym::BasePtr tsym::Logarithm::createNumerically(const BasePtr& arg)
 {
-    const Number nArg(arg->numericEval());
+    const Number nArg = *arg->numericEval();
 
     assert(nArg != 0 && nArg != 1);
 
@@ -87,19 +87,12 @@ tsym::BasePtr tsym::Logarithm::createFromPower(const BasePtr& arg)
     return Product::create(arg->exp(), create(arg->base()));
 }
 
-tsym::Number tsym::Logarithm::numericEval() const
+std::optional<tsym::Number> tsym::Logarithm::numericEval() const
 {
-    if (!isNumericallyEvaluable())
-        throw std::logic_error("Logarithm argument can't be numerically evaluated");
-
-    return checkedNumericEval();
-}
-
-tsym::Number tsym::Logarithm::checkedNumericEval() const
-{
-    const double result = std::log(arg->numericEval().toDouble());
-
-    return Number(result);
+    if (const auto nArg = arg->numericEval())
+        return std::log(nArg->toDouble());
+    else
+        return std::nullopt;
 }
 
 tsym::Fraction tsym::Logarithm::normal(SymbolMap& map) const

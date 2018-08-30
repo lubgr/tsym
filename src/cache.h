@@ -11,8 +11,8 @@ namespace tsym {
         void clearRegisteredCaches();
 
         namespace detail {
-            void registerCacheClearer(const short *address, std::function<void()>&& fct);
-            void deregisterCacheClearer(const short *address);
+            void registerCacheClearer(const short* address, std::function<void()>&& fct);
+            void deregisterCacheClearer(const short* address);
         }
 
         template <class Key, class Value, class Hash = std::hash<Key>, class EqualTo = std::equal_to<Key>>

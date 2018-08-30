@@ -35,9 +35,9 @@ bool tsym::Undefined::sameType(const Base& other) const
     return other.isUndefined();
 }
 
-tsym::Number tsym::Undefined::numericEval() const
+std::optional<tsym::Number> tsym::Undefined::numericEval() const
 {
-    throw std::logic_error("Undefined can't be numerically evaluated");
+    return std::nullopt;
 }
 
 tsym::Fraction tsym::Undefined::normal(SymbolMap&) const

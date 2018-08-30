@@ -33,14 +33,17 @@ namespace tsym {
             const BasePtr& value(parsed.value);
 
             if (parsingSuccess)
-                return value->isSymbol() || (value->isNumeric() && isInt(value->numericEval()));
+                return value->isSymbol() || (value->isNumeric() && isInt(*value->numericEval()));
 
             return false;
         }
 
         bool isInteger(const BasePtr& rep)
         {
-            return rep->isNumeric() && isInt(rep->numericEval());
+            if (const auto num = rep->numericEval())
+                return isInt(*num);
+
+            return false;
         }
 
         Var::Type numericType(const Number& number)
@@ -156,7 +159,7 @@ tsym::Var tsym::Var::operator-() const
 tsym::Var::Type tsym::Var::type() const
 {
     if (rep->isNumeric())
-        return numericType(rep->numericEval());
+        return numericType(*rep->numericEval());
 
     const auto lookup = typeStringMap().find(rep->typeStr());
 
@@ -172,11 +175,11 @@ tsym::Var::operator int() const
 
     if (!isInteger(rep))
         throw std::domain_error(errorMessage);
-    else if (!integer::fitsInto<int>(rep->numericEval().numerator()))
+    else if (!integer::fitsInto<int>(rep->numericEval()->numerator()))
         throw std::overflow_error(errorMessage);
 
     try {
-        result = static_cast<int>(rep->numericEval().numerator());
+        result = static_cast<int>(rep->numericEval().value().numerator());
     } catch (const std::exception& e) {
         TSYM_ERROR("Conversion from %S to int failed: %s", *this, e.what());
         throw std::domain_error(errorMessage);
@@ -190,7 +193,7 @@ tsym::Var::operator double() const
     if (!rep->isNumeric())
         throw std::domain_error("Illegal conversion to double requested");
 
-    return rep->numericEval().toDouble();
+    return rep->numericEval()->toDouble();
 }
 
 const tsym::BasePtr& tsym::Var::get() const

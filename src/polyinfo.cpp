@@ -60,7 +60,7 @@ namespace tsym {
             if (arg.isSymbol())
                 return true;
             else if (arg.isNumeric())
-                return arg.numericEval().isRational();
+                return arg.numericEval()->isRational();
             else if (arg.isPower())
                 return isValidPower(arg);
             else if (arg.isSum() || arg.isProduct())
@@ -71,10 +71,8 @@ namespace tsym {
 
         bool isValidPower(const Base& power)
         {
-            if (hasValidType(*power.base()) && power.exp()->isNumericallyEvaluable()) {
-                auto exp = power.exp()->numericEval();
-                return isInt(exp) && integer::fitsInto<int>(exp.numerator()) && exp > 0;
-            }
+            if (const auto exp = power.exp()->numericEval(); hasValidType(*power.base()) && exp)
+                return isInt(*exp) && integer::fitsInto<int>(exp->numerator()) && *exp > 0;
 
             return false;
         }

@@ -27,7 +27,7 @@ namespace tsym {
                 if (base.isSymbol())
                     symbol(base);
                 else if (base.isNumeric())
-                    printer::print(engine, base.numericEval());
+                    printer::print(engine, *base.numericEval());
                 else if (base.isPower())
                     power(base.base(), base.exp());
                 else if (base.isSum())
@@ -83,12 +83,10 @@ namespace tsym {
             bool isScalarPowerBase(const BasePtr& base)
             {
                 const auto isPositiveInt = [](const auto& base) {
-                    if (!base->isNumeric())
-                        return false;
+                    if (const auto n = base->numericEval())
+                        return isInt(*n) && *n > 0;
 
-                    const auto n = base->numericEval();
-
-                    return isInt(n) && n > 0;
+                    return false;
                 };
 
                 return base->isSymbol() || base->isConstant() || base->isFunction() || isPositiveInt(base);
@@ -123,7 +121,7 @@ namespace tsym {
                 if (exp->isSymbol() || exp->isConstant() || exp->isFunction())
                     return true;
                 else if (exp->isNumeric())
-                    return isInt(exp->numericEval()) && exp->isPositive();
+                    return isInt(*exp->numericEval()) && exp->isPositive();
                 else
                     return false;
             }
@@ -211,8 +209,10 @@ namespace tsym {
                 const auto fracFactor = frac.first.front()->numericEval();
                 frac.first.pop_front();
 
-                frac.first.push_front(Numeric::create(fracFactor.numerator()));
-                frac.second.push_front(Numeric::create(fracFactor.denominator()));
+                assert(fracFactor);
+
+                frac.first.push_front(Numeric::create(fracFactor->numerator()));
+                frac.second.push_front(Numeric::create(fracFactor->denominator()));
 
                 return frac;
             }

@@ -51,17 +51,17 @@ bool tsym::Sum::sameType(const Base& other) const
     return other.isSum();
 }
 
-tsym::Number tsym::Sum::numericEval() const
+std::optional<tsym::Number> tsym::Sum::numericEval() const
 {
-    Number res(0);
+    Number result(0);
 
     for (const auto& summand : ops)
-        if (summand->isNumericallyEvaluable())
-            res += summand->numericEval();
+        if (const auto numSummand = summand->numericEval())
+            result += *numSummand;
         else
-            throw std::logic_error("Sum isn't numerically evaluable");
+            return std::nullopt;
 
-    return res;
+    return result;
 }
 
 tsym::Fraction tsym::Sum::normal(SymbolMap& map) const
@@ -162,8 +162,8 @@ int tsym::Sum::signOfNumericParts() const
     using tsym::sign;
 
     for (const auto& summand : ops)
-        if (summand->isNumericallyEvaluable())
-            numericPart += summand->numericEval();
+        if (const auto num = summand->numericEval())
+            numericPart += *num;
 
     return sign(numericPart);
 }

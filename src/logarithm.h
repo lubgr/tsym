@@ -16,7 +16,7 @@ namespace tsym {
         Logarithm& operator=(Logarithm&&) = delete;
         ~Logarithm() override = default;
 
-        Number numericEval() const override;
+        std::optional<Number> numericEval() const override;
         Fraction normal(SymbolMap& map) const override;
         BasePtr diffWrtSymbol(const Base& symbol) const override;
         BasePtr subst(const Base& from, const BasePtr& to) const override;
@@ -31,7 +31,6 @@ namespace tsym {
         static BasePtr createFromConstant(const BasePtr& arg);
         static BasePtr createFromPower(const BasePtr& arg);
 
-        Number checkedNumericEval() const;
         bool checkSign(bool (Base::*method)() const) const;
 
         const BasePtr& arg;

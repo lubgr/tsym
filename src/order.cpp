@@ -80,10 +80,12 @@ bool tsym::doPermuteBothSymbol(const Base& left, const Base& right)
 
 bool tsym::doPermuteBothNumeric(const Base& left, const Base& right)
 {
-    const Number nLeft(left.numericEval());
-    const Number nRight(right.numericEval());
+    const auto nLeft(left.numericEval());
+    const auto nRight(right.numericEval());
 
-    return doPermuteBothNumber(nLeft, nRight);
+    assert(nLeft && nRight);
+
+    return doPermuteBothNumber(*nLeft, *nRight);
 }
 
 bool tsym::doPermuteBothNumber(const Number& left, const Number& right)

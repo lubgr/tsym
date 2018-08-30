@@ -197,15 +197,16 @@ BOOST_AUTO_TEST_CASE(numericEval)
     const BasePtr log = Logarithm::create(arg);
     const double expected = std::log(2.0 + M_E);
 
-    BOOST_CHECK_EQUAL(expected, log->numericEval());
+    BOOST_CHECK_EQUAL(expected, log->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(invalidNumericEval)
 {
     const BasePtr arg = Product::create(two, a);
     const BasePtr log = Logarithm::create(arg);
+    const auto num = log->numericEval();
 
-    BOOST_CHECK_THROW(log->numericEval(), std::logic_error);
+    BOOST_CHECK(!num);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

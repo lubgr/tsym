@@ -28,7 +28,7 @@ namespace tsym {
         {
             const BasePtr quotient(Product::create(u, Power::oneOver(v)));
 
-            if (quotient->isNumeric() && quotient->numericEval().isRational())
+            if (const auto num = quotient->numericEval(); num && num->isRational())
                 return {quotient, Numeric::zero()};
             else
                 return {Numeric::zero(), u};
@@ -176,7 +176,7 @@ namespace tsym {
 
         int minDegreeOfPower(const Base& power, const tsym::Base& variable)
         {
-            const Int largeExp = power.exp()->numericEval().numerator();
+            const Int largeExp = power.exp()->numericEval()->numerator();
             const BasePtr base(power.base());
             int exp;
 
@@ -264,7 +264,7 @@ int tsym::poly::unit(const Base& polynomial, const Base& x)
     if (lCoeff->isZero())
         return 1;
     else if (lCoeff->isNumeric())
-        return sign(lCoeff->numericEval());
+        return sign(*lCoeff->numericEval());
     else
         return unitFromNonNumeric(lCoeff);
 }
@@ -297,7 +297,7 @@ tsym::BasePtr tsym::poly::content(const BasePtr& polynomial, const tsym::BasePtr
 
     if (expanded->isNumeric())
         /* This include the zero case. */
-        return Numeric::create(abs(expanded->numericEval()));
+        return Numeric::create(abs(*expanded->numericEval()));
     else
         return nonTrivialContent(*expanded, *x, algo);
 }

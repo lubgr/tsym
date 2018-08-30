@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(numericEvaluability)
 
 BOOST_AUTO_TEST_CASE(numericEvaluation)
 {
-    BOOST_CHECK_THROW(undefined->numericEval(), std::logic_error);
+    BOOST_CHECK_THROW(undefined->numericEval().value(), std::bad_optional_access);
 }
 
 BOOST_AUTO_TEST_CASE(equalityOtherUndefined, noLogs())

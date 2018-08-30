@@ -64,20 +64,20 @@ BOOST_AUTO_TEST_CASE(numericEvaluationPi)
 {
     const double TOL = 1.e-12;
 
-    BOOST_CHECK_CLOSE(M_PI, pi->numericEval().toDouble(), TOL);
+    BOOST_CHECK_CLOSE(M_PI, pi->numericEval().value().toDouble(), TOL);
 
     /* Should work with the internal tolerance of the Number class, too. */
-    BOOST_CHECK_EQUAL(M_PI, pi->numericEval());
+    BOOST_CHECK_EQUAL(M_PI, pi->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(numericEvaluationE)
 {
     const double TOL = 1.e-12;
 
-    BOOST_CHECK_CLOSE(M_E, euler->numericEval().toDouble(), TOL);
+    BOOST_CHECK_CLOSE(M_E, euler->numericEval()->toDouble(), TOL);
 
     /* Should work with the internal tolerance of the Number class, too. */
-    BOOST_CHECK_EQUAL(M_E, euler->numericEval());
+    BOOST_CHECK_EQUAL(M_E, *euler->numericEval());
 }
 
 BOOST_AUTO_TEST_CASE(numericTerm)

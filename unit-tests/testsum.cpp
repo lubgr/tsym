@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(twoNumericSummands)
     const BasePtr sum = Sum::create(two, three);
 
     BOOST_TEST(sum->isNumeric());
-    BOOST_CHECK_EQUAL(5, sum->numericEval());
+    BOOST_CHECK_EQUAL(5, sum->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(twoNumericSummandsResultingInZero)
@@ -428,8 +428,7 @@ BOOST_AUTO_TEST_CASE(simpleNumericEvaluation)
     const BasePtr sum = Sum::create(sqrtTwo, Constant::createE());
     const double expected = std::sqrt(2.0) + M_E;
 
-    BOOST_TEST(sum->isNumericallyEvaluable());
-    BOOST_CHECK_EQUAL(expected, sum->numericEval());
+    BOOST_CHECK_EQUAL(expected, sum->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(numericEvaluation)
@@ -446,8 +445,7 @@ BOOST_AUTO_TEST_CASE(numericEvaluation)
 
     res = Sum::create(summands);
 
-    BOOST_TEST(res->isNumericallyEvaluable());
-    BOOST_CHECK_EQUAL(expected, res->numericEval());
+    BOOST_CHECK_EQUAL(expected, res->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(contractableSinCosSquareWithoutPrefactor)

@@ -79,7 +79,7 @@ namespace tsym {
         void atan();
 
         const BasePtr Pi{Constant::createPi()};
-        const Number PI{Pi->numericEval()};
+        const Number PI{*Pi->numericEval()};
 
         Trigonometric::Type type{Trigonometric::Type::SIN};
         bool isSimplified = false;

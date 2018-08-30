@@ -52,8 +52,8 @@ tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v, const BaseP
 
 tsym::BasePtr tsym::Gcd::computeNumerics(const BasePtr& u, const BasePtr& v) const
 {
-    const Number numU(u->numericEval());
-    const Number numV(v->numericEval());
+    const Number numU(u->numericEval().value_or(1));
+    const Number numV(v->numericEval().value_or(1));
     Int intGcd(1);
 
     assert(numU.isRational() && numV.isRational());
@@ -115,7 +115,7 @@ tsym::Number tsym::Gcd::integerContent(const BasePtr& poly) const
     if (poly->isSum())
         result = integerContentOfSum(poly->operands());
     else
-        result = abs(poly->numericTerm()->numericEval());
+        result = abs(poly->numericTerm()->numericEval().value_or(1));
 
     return isInt(result) ? result : 1;
 }
@@ -149,7 +149,6 @@ tsym::BasePtr tsym::Gcd::normalize(const BasePtr& result, const BasePtrList& L) 
 tsym::Number tsym::Gcd::normalizationFactor(const BasePtr& arg, BasePtrList& L) const
 {
     BasePtr lCoeff;
-    Number fac;
 
     if (L.empty())
         lCoeff = arg;
@@ -161,7 +160,7 @@ tsym::Number tsym::Gcd::normalizationFactor(const BasePtr& arg, BasePtrList& L) 
     if (!lCoeff->isNumeric())
         return normalizationFactor(lCoeff, L);
 
-    fac = lCoeff->numericEval();
+    const Number fac = *lCoeff->numericEval();
 
     if (!fac.isRational())
         TSYM_ERROR("%S has a non-rational leading coefficient!", arg);

@@ -39,13 +39,16 @@ bool tsym::PowerNormal::isBaseOrExpUndefined() const
 
 bool tsym::PowerNormal::isRationalExpInteger() const
 {
-    return rationalExp->isNumeric() && isInt(rationalExp->numericEval());
+    if (const auto num = rationalExp->numericEval())
+        return isInt(*num);
+
+    return false;
 }
 
 tsym::Fraction tsym::PowerNormal::normalIntegerExp() const
 /* Does (a/b)^c = a^c/b^d or b^c/a^d, where c is an integer and d = abs(c). */
 {
-    const Number nExp(rationalExp->numericEval());
+    const Number nExp(*rationalExp->numericEval());
     const BasePtr absExp(Numeric::create(abs(nExp)));
     const BasePtr numPower(Power::create(rationalBase.num, absExp));
     const BasePtr denomPower(Power::create(rationalBase.denom, absExp));
@@ -69,7 +72,7 @@ tsym::Fraction tsym::PowerNormal::normalNonIntegerExp()
 
 tsym::Fraction tsym::PowerNormal::normalNumEvalExp()
 {
-    const Number nExp(rationalExp->numericEval());
+    const Number nExp(*rationalExp->numericEval());
 
     /* Should have been handled as integer exponent above. */
     assert(nExp != 0);

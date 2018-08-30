@@ -330,8 +330,8 @@ namespace tsym {
 
         BasePtrList simplTwoNumerics(const BasePtr& f1, const BasePtr& f2)
         {
-            const Number n1(f1->numericEval());
-            const Number n2(f2->numericEval());
+            const Number n1(*f1->numericEval());
+            const Number n2(*f2->numericEval());
             const Number res(n1 * n2);
 
             if (res == 1)
@@ -362,9 +362,9 @@ namespace tsym {
 
         BasePtrList simplNumAndNumPow(const BasePtr& numeric, const BasePtr& numPow)
         {
-            const Number base(numPow->base()->numericEval());
-            const Number exp(numPow->exp()->numericEval());
-            const Number preFactor(numeric->numericEval());
+            const Number base(*numPow->base()->numericEval());
+            const Number exp(*numPow->exp()->numericEval());
+            const Number preFactor(*numeric->numericEval());
 
             return simplNumAndNumPow(preFactor, base, exp);
         }
@@ -414,12 +414,18 @@ namespace tsym {
 
         bool isFraction(const Base& arg)
         {
-            return arg.isNumeric() && isFraction(arg.numericEval());
+            if (const auto num = arg.numericEval())
+                return isFraction(*num);
+
+            return false;
         }
 
         bool isInteger(const Base& arg)
         {
-            return arg.isNumeric() && isInt(arg.numericEval());
+            if (const auto num = arg.numericEval())
+                return isInt(*num);
+
+            return false;
         }
 
         bool areContractableTrigFctPowers(const Base& f1, const Base& f2)
@@ -447,9 +453,9 @@ namespace tsym {
 
         BasePtrList simplTwoEqualExp(const BasePtr& f1, const BasePtr& f2)
         {
-            const Number base1(f1->base()->numericEval());
-            const Number base2(f2->base()->numericEval());
-            const Number& exp(f1->exp()->numericEval());
+            const auto base1(*f1->base()->numericEval());
+            const auto base2(*f2->base()->numericEval());
+            const auto exp(*f1->exp()->numericEval());
 
             return simplNumAndNumPow(1, base1 * base2, exp);
         }
@@ -464,9 +470,9 @@ namespace tsym {
         BasePtrList simplTwoZeroSumExp(const BasePtr& f1, const BasePtr& f2)
         {
             /* f1 and f2 are both numeric powers. */
-            const Number base1(f1->base()->numericEval());
+            const Number base1(*f1->base()->numericEval());
             const BasePtr exp1(f1->exp());
-            Number base2(f2->base()->numericEval());
+            Number base2(*f2->base()->numericEval());
 
             base2 = base2.toThe(-1);
 
@@ -478,7 +484,7 @@ namespace tsym {
         bool areNumPowersWithEqualExpDenom(const Base& f1, const Base& f2)
         {
             if (f1.isNumericPower() && f2.isNumericPower())
-                return f1.exp()->numericEval().denominator() == f2.exp()->numericEval().denominator();
+                return f1.exp()->numericEval()->denominator() == f2.exp()->numericEval()->denominator();
             else
                 return false;
         }
@@ -488,7 +494,7 @@ namespace tsym {
          * multiplication. */
         {
             assert(f1->isNumericPower() && f2->isNumericPower());
-            const BasePtr newExp(Numeric::create(1, f1->exp()->numericEval().denominator()));
+            const BasePtr newExp(Numeric::create(1, f1->exp()->numericEval()->denominator()));
             const Int& limit(options::getMaxPrimeResolution());
             const Int denom[] = {evalDenomExpNumerator(f1), evalDenomExpNumerator(f2)};
             const Int num[] = {evalNumExpNumerator(f1), evalNumExpNumerator(f2)};
@@ -509,10 +515,10 @@ namespace tsym {
 
         Int evalNumExpNumerator(const BasePtr& numPow)
         {
-            const Int exp(numPow->exp()->numericEval().numerator());
-            const Number base(numPow->base()->numericEval());
+            const Int exp(numPow->exp()->numericEval()->numerator());
+            const auto base(numPow->base()->numericEval());
 
-            return evalExpNumerator(base, exp);
+            return evalExpNumerator(*base, exp);
         }
 
         Int evalExpNumerator(const Number& base, const Int& exp)
@@ -526,8 +532,8 @@ namespace tsym {
 
         Int evalDenomExpNumerator(const BasePtr& numPow)
         {
-            const Number base(numPow->base()->numericEval().toThe(-1));
-            const Int exp(numPow->exp()->numericEval().numerator());
+            const Number base(numPow->base()->numericEval()->toThe(-1));
+            const Int exp(numPow->exp()->numericEval()->numerator());
 
             return evalExpNumerator(base, exp);
         }
@@ -559,7 +565,7 @@ namespace tsym {
         void contractNumerics(BasePtrList& u)
         {
             const auto result = boost::accumulate(u, Number{1},
-              [](const auto& n, const auto& factor) { return factor->isNumeric() ? n * factor->numericEval() : n; });
+              [](const auto& n, const auto& factor) { return factor->isNumeric() ? n * (*factor->numericEval()) : n; });
 
             u.remove_if([](const auto& factor) { return factor->isNumeric(); });
 

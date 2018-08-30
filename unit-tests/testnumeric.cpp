@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE(creationByNumber)
     const BasePtr ptr = Numeric::create(half);
 
     BOOST_TEST(ptr->isNumeric());
-    BOOST_CHECK_EQUAL(half, ptr->numericEval());
+    BOOST_CHECK_EQUAL(half, ptr->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(creationByIntegerClass)
@@ -38,7 +38,7 @@ BOOST_AUTO_TEST_CASE(creationByInt)
     const BasePtr ptr = Numeric::one();
 
     BOOST_TEST(ptr->isNumeric());
-    BOOST_CHECK_EQUAL(1, ptr->numericEval());
+    BOOST_CHECK_EQUAL(1, ptr->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(creationByFraction)
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(creationByFraction)
     const BasePtr res = Numeric::fourth();
 
     BOOST_TEST(res->isNumeric());
-    BOOST_CHECK_EQUAL(Number(1, 4), res->numericEval());
+    BOOST_CHECK_EQUAL(Number(1, 4), res->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(creationByDouble)
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(creationByDouble)
     const BasePtr res = Numeric::create(value);
 
     BOOST_TEST(res->isNumeric());
-    BOOST_CHECK_EQUAL(value, res->numericEval());
+    BOOST_CHECK_EQUAL(value, res->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(numericEvaluation)
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(numericEvaluation)
     const BasePtr frac = Numeric::create(2, 3);
 
     BOOST_TEST(frac->isNumericallyEvaluable());
-    BOOST_CHECK_EQUAL(expected, frac->numericEval());
+    BOOST_CHECK_EQUAL(expected, frac->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(typeString)

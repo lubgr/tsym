@@ -837,34 +837,36 @@ BOOST_AUTO_TEST_CASE(numericEvaluation)
     BasePtr fct;
 
     fct = Trigonometric::createSin(arg);
-    BOOST_CHECK_EQUAL(std::sin(dArg), fct->numericEval());
+    BOOST_CHECK_EQUAL(std::sin(dArg), fct->numericEval().value());
 
     fct = Trigonometric::createCos(arg);
-    BOOST_CHECK_EQUAL(std::cos(dArg), fct->numericEval());
+    BOOST_CHECK_EQUAL(std::cos(dArg), fct->numericEval().value());
 
     fct = Trigonometric::createTan(arg);
-    BOOST_CHECK_EQUAL(std::tan(dArg), fct->numericEval());
+    BOOST_CHECK_EQUAL(std::tan(dArg), fct->numericEval().value());
 
     fct = Trigonometric::createAsin(arg);
-    BOOST_CHECK_EQUAL(std::asin(dArg), fct->numericEval());
+    BOOST_CHECK_EQUAL(std::asin(dArg), fct->numericEval().value());
 
     fct = Trigonometric::createAcos(arg);
-    BOOST_CHECK_EQUAL(std::acos(dArg), fct->numericEval());
+    BOOST_CHECK_EQUAL(std::acos(dArg), fct->numericEval().value());
 
     fct = Trigonometric::createAtan(arg);
-    BOOST_CHECK_EQUAL(std::atan(dArg), fct->numericEval());
+    BOOST_CHECK_EQUAL(std::atan(dArg), fct->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(numericEvaluationAtan2)
 {
     const BasePtr atan2 = Trigonometric::createAtan2(sqrtTwo, five);
 
-    BOOST_CHECK_EQUAL(std::atan2(std::sqrt(2.0), 5), atan2->numericEval());
+    BOOST_CHECK_EQUAL(std::atan2(std::sqrt(2.0), 5), atan2->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(illegalNumericEvaluation)
 {
-    BOOST_CHECK_THROW(sinA->numericEval(), std::logic_error);
+    const auto num = sinA->numericEval();
+
+    BOOST_CHECK_THROW(num.value(), std::bad_optional_access);
 }
 
 BOOST_AUTO_TEST_CASE(sinOfLogarithm)

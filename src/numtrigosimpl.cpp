@@ -147,8 +147,8 @@ bool tsym::NumTrigoSimpl::isArgRationalNonZeroNumeric() const
 
 bool tsym::NumTrigoSimpl::isRationalNumeric(const BasePtr& ptr) const
 {
-    if (ptr->isNumeric())
-        return ptr->numericEval().isRational();
+    if (const auto num = ptr->numericEval())
+        return num->isRational();
     else
         return false;
 }
@@ -163,7 +163,7 @@ void tsym::NumTrigoSimpl::prepareSinCosTan()
 
 void tsym::NumTrigoSimpl::adjustNumericArg()
 {
-    const Number n(arg->numericEval());
+    const Number n(*arg->numericEval());
 
     arg = Product::create(Numeric::create(n / PI), Pi);
 }
@@ -205,7 +205,7 @@ void tsym::NumTrigoSimpl::sin()
 unsigned tsym::NumTrigoSimpl::getQuadrant() const
 {
     const BasePtr piMultiple(Product::create(arg, Power::oneOver(Pi)));
-    const Number fac(piMultiple->numericEval());
+    const Number fac(*piMultiple->numericEval());
 
     assert(fac >= 0 && fac < 2);
 
@@ -265,7 +265,7 @@ const tsym::BasePtr* tsym::NumTrigoSimpl::getValue(const std::unordered_map<Base
 
 const tsym::BasePtr* tsym::NumTrigoSimpl::getValueNumEval(const std::unordered_map<BasePtr, BasePtr>& table) const
 {
-    const Number nArg(arg->numericEval());
+    const Number nArg(*arg->numericEval());
 
     for (const auto& entry : table)
         if (nArg == entry.first->numericEval())
@@ -283,7 +283,7 @@ void tsym::NumTrigoSimpl::setResult(const BasePtr& result)
 bool tsym::NumTrigoSimpl::isDoubleNumeric(const BasePtr& ptr) const
 {
     if (ptr->isNumeric())
-        return ptr->numericEval().isDouble();
+        return ptr->numericEval()->isDouble();
     else
         return false;
 }
@@ -303,9 +303,9 @@ void tsym::NumTrigoSimpl::compNumerically(double (*fct)(double))
     double result;
 
     assert(arg->isNumeric());
-    assert(arg->numericEval().isDouble());
+    assert(arg->numericEval()->isDouble());
 
-    result = fct(arg->numericEval().toDouble());
+    result = fct(arg->numericEval()->toDouble());
 
     setResult(Numeric::create(result));
 }
@@ -396,7 +396,7 @@ void tsym::NumTrigoSimpl::computeAsinAcosAtan()
 
 bool tsym::NumTrigoSimpl::isInverseArgOutOfRange() const
 {
-    const Number nArg(arg->numericEval());
+    const Number nArg(*arg->numericEval());
 
     if (type == Trigonometric::Type::ATAN)
         return false;
@@ -408,9 +408,7 @@ bool tsym::NumTrigoSimpl::isInverseArgOutOfRange() const
 
 void tsym::NumTrigoSimpl::prepareAsinAcosAtan()
 {
-    const Number nArg(arg->numericEval());
-
-    if (nArg < 0) {
+    if (const auto nArg = arg->numericEval(); nArg < 0) {
         arg = Product::minus(arg);
         sign = -1;
     }
@@ -442,7 +440,7 @@ void tsym::NumTrigoSimpl::asin()
 
 const tsym::BasePtr* tsym::NumTrigoSimpl::getKey(const std::unordered_map<BasePtr, BasePtr>& table) const
 {
-    const Number nArg(arg->numericEval());
+    const Number nArg(*arg->numericEval());
 
     for (const auto& entry : table)
         if (entry.second->isUndefined())
@@ -471,7 +469,7 @@ void tsym::NumTrigoSimpl::acosFromAsinResult()
     const BasePtr piHalf(timesPi(1, 2));
 
     if (isDoubleNumeric(res))
-        res = Numeric::create(0.5 * PI - res->numericEval());
+        res = Numeric::create(0.5 * PI - *res->numericEval());
     else
         res = Sum::create(piHalf, Product::minus(res));
 }

@@ -107,9 +107,9 @@ bool tsym::Symbol::sameType(const Base& other) const
     return other.isSymbol();
 }
 
-tsym::Number tsym::Symbol::numericEval() const
+std::optional<tsym::Number> tsym::Symbol::numericEval() const
 {
-    throw std::logic_error("Symbol can't be numerically evaluated");
+    return std::nullopt;
 }
 
 tsym::Fraction tsym::Symbol::normal(SymbolMap&) const

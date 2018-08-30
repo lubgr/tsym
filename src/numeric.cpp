@@ -84,7 +84,7 @@ bool tsym::Numeric::sameType(const Base& other) const
     return other.isNumeric();
 }
 
-tsym::Number tsym::Numeric::numericEval() const
+std::optional<tsym::Number> tsym::Numeric::numericEval() const
 {
     return number;
 }

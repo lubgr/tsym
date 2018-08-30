@@ -44,7 +44,7 @@ bool tsym::Constant::sameType(const Base& other) const
     return other.isConstant();
 }
 
-tsym::Number tsym::Constant::numericEval() const
+std::optional<tsym::Number> tsym::Constant::numericEval() const
 {
     switch (type) {
         case Type::PI:
@@ -52,7 +52,7 @@ tsym::Number tsym::Constant::numericEval() const
         case Type::E:
             return M_E;
         default:
-            return 0.0;
+            return std::nullopt;
     }
 }
 

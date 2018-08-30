@@ -31,7 +31,7 @@ namespace tsym {
         Trigonometric& operator=(Trigonometric&&) = delete;
         ~Trigonometric() override = default;
 
-        Number numericEval() const override;
+        std::optional<Number> numericEval() const override;
         Fraction normal(SymbolMap& map) const override;
         BasePtr diffWrtSymbol(const Base& symbol) const override;
         BasePtr subst(const Base& from, const BasePtr& to) const override;
@@ -55,12 +55,12 @@ namespace tsym {
         static bool isThisTheInverse(Type type, Type otherType);
         static BasePtr shiftArgIntoRange(Type type, BasePtr arg);
         static BasePtr createFromTrigoNoInverse(Type type, const BasePtr& arg);
-        static BasePtr createAtan2Numerically(const BasePtr& y, const BasePtr& x);
+        static BasePtr createAtan2Numerically(
+          const Number& yNum, const Number& xNum, const BasePtr& y, const BasePtr& x);
         static BasePtr simplAtan2(const BasePtr& y, const BasePtr& x, const BasePtr& increment);
         static BasePtr shiftAtanResultIntoRange(BasePtr result, BasePtr summand);
         static std::string getStr(Type type);
 
-        Number checkedNumericEval() const;
         Fraction normalAtan2(SymbolMap& map) const;
         Fraction normalOtherThanAtan2(SymbolMap& map) const;
         BasePtr diffWrtSymbol(const Base& arg, const Base& symbol) const;

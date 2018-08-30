@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(integerOnly)
     const BasePtr res = Power::create(three, four);
 
     BOOST_TEST(res->isNumeric());
-    BOOST_CHECK_EQUAL(81, res->numericEval());
+    BOOST_CHECK_EQUAL(81, res->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(exponentFraction)
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(fracBaseToIntWithNegExp)
     const BasePtr pow = Power::create(baseFrac, oneFifth);
 
     BOOST_TEST(pow->isPower());
-    BOOST_CHECK_EQUAL(12345, pow->base()->numericEval());
+    BOOST_CHECK_EQUAL(12345, pow->base()->numericEval().value());
     BOOST_CHECK_EQUAL(minusOneFifth, pow->exp());
 }
 
@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE(resolvableExpFracBaseInt)
     const BasePtr res = Power::create(eight, exp);
 
     BOOST_TEST(res->isNumeric());
-    BOOST_CHECK_EQUAL(2, res->numericEval());
+    BOOST_CHECK_EQUAL(2, res->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(simpleSplittableExpFracBaseInt)
@@ -231,7 +231,7 @@ BOOST_AUTO_TEST_CASE(splittableExpFracBaseInt)
 
     BOOST_TEST(res->isProduct());
     BOOST_CHECK_EQUAL(2, res->operands().size());
-    BOOST_CHECK_EQUAL(4, res->operands().front()->numericEval());
+    BOOST_CHECK_EQUAL(4, res->operands().front()->numericEval().value());
     BOOST_CHECK_EQUAL(expectedPow, res->operands().back());
 }
 
@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE(splittableExpSqrtBaseInt)
 
     BOOST_TEST(res->isProduct());
     BOOST_CHECK_EQUAL(2, res->operands().size());
-    BOOST_CHECK_EQUAL(7, res->operands().front()->numericEval());
+    BOOST_CHECK_EQUAL(7, res->operands().front()->numericEval().value());
     BOOST_CHECK_EQUAL(expectedPow, res->operands().back());
 }
 
@@ -387,7 +387,7 @@ BOOST_AUTO_TEST_CASE(simpleUnresolvableExpFrac)
 
     BOOST_TEST(pow->isPower());
     BOOST_TEST(pow->isNumericPower());
-    BOOST_CHECK_CLOSE(std::sqrt(2.0), pow->numericEval().toDouble(), TOL);
+    BOOST_CHECK_CLOSE(std::sqrt(2.0), pow->numericEval().value().toDouble(), TOL);
 }
 
 BOOST_AUTO_TEST_CASE(intBaseDoubleExp)
@@ -398,7 +398,7 @@ BOOST_AUTO_TEST_CASE(intBaseDoubleExp)
 
     /* Uses the internal tolerance. */
     BOOST_CHECK_EQUAL(expected, pow);
-    BOOST_CHECK_CLOSE(1.0893418703486832, pow->numericEval().toDouble(), TOL);
+    BOOST_CHECK_CLOSE(1.0893418703486832, pow->numericEval().value().toDouble(), TOL);
 }
 
 BOOST_AUTO_TEST_CASE(doubleBaseDoubleExpToInt)
@@ -418,7 +418,7 @@ BOOST_AUTO_TEST_CASE(unresolvableExpFrac)
     BOOST_TEST(pow->isPower());
     BOOST_TEST(pow->isNumericPower());
 
-    BOOST_CHECK_CLOSE(std::pow(7.0, 1.0 / 3.0), pow->numericEval().toDouble(), TOL);
+    BOOST_CHECK_CLOSE(std::pow(7.0, 1.0 / 3.0), pow->numericEval().value().toDouble(), TOL);
 }
 
 BOOST_AUTO_TEST_CASE(negFractionBaseWithNegFractionExp)
@@ -561,7 +561,7 @@ BOOST_AUTO_TEST_CASE(zeroExponent)
     const BasePtr res = Power::create(a, zero);
 
     BOOST_TEST(res->isNumeric());
-    BOOST_CHECK_EQUAL(1, res->numericEval());
+    BOOST_CHECK_EQUAL(1, res->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(symbolicPowerBaseSymbolExp)
@@ -634,8 +634,8 @@ BOOST_AUTO_TEST_CASE(multiplySymbolExp)
     BOOST_TEST(res->base()->isNumeric());
     BOOST_TEST(res->exp()->isPower());
 
-    BOOST_CHECK_EQUAL(2, res->base()->numericEval());
-    BOOST_CHECK_EQUAL(2, res->exp()->exp()->numericEval());
+    BOOST_CHECK_EQUAL(2, res->base()->numericEval().value());
+    BOOST_CHECK_EQUAL(2, res->exp()->exp()->numericEval().value());
 }
 
 BOOST_AUTO_TEST_CASE(multiplyExpWithZeroExp)
@@ -676,8 +676,9 @@ BOOST_AUTO_TEST_CASE(multiplyNumericExpToDouble)
 BOOST_AUTO_TEST_CASE(wrongDoubleEvaluationRequest)
 {
     const BasePtr pow = Power::create(a, two);
+    const auto num = pow->numericEval();
 
-    BOOST_CHECK_THROW(pow->numericEval(), std::logic_error);
+    BOOST_CHECK(!num);
 }
 
 BOOST_AUTO_TEST_CASE(multiplyExponentsByCreation)

@@ -2,6 +2,7 @@
 #define TSYM_BASE_H
 
 #include <memory>
+#include <optional>
 #include <string>
 #include "baseptrlist.h"
 
@@ -36,7 +37,7 @@ namespace tsym {
 
         virtual bool isEqualDifferentBase(const Base& other) const = 0;
         virtual bool sameType(const Base& other) const = 0;
-        virtual Number numericEval() const = 0;
+        virtual std::optional<Number> numericEval() const = 0;
         virtual Fraction normal(SymbolMap& map) const = 0;
         virtual BasePtr diffWrtSymbol(const Base& symbol) const = 0;
         virtual std::string typeStr() const = 0;
