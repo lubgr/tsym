@@ -38,6 +38,6 @@ popd
  # Don't export this one earlier, it changes the cmake install prefix
 export DESTDIR
 
-for testscript in */test.sh; do
+for testscript in "${CURRENT_DIR}"/*/test.sh; do
     "${testscript}"
 done
