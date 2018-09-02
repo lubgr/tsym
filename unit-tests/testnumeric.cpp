@@ -63,7 +63,6 @@ BOOST_AUTO_TEST_CASE(numericEvaluation)
     const Number expected(2, 3);
     const BasePtr frac = Numeric::create(2, 3);
 
-    BOOST_TEST(frac->isNumericallyEvaluable());
     BOOST_CHECK_EQUAL(expected, frac->numericEval().value());
 }
 

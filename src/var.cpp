@@ -108,7 +108,7 @@ tsym::Var::Var(const std::string& str, [[maybe_unused]] Var::Sign sign)
         return;
     }
 
-    if (type == Type::INT && withoutSign.rep->numericEval() < 0)
+    if (type == Type::INT && *withoutSign.rep->numericEval() < 0)
         TSYM_WARNING("Ignore positive flag for negative int (%S)", withoutSign);
 
     rep = withoutSign.rep;

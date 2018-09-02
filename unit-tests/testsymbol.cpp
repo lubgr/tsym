@@ -1,5 +1,6 @@
 
 #include "fixtures.h"
+#include "number.h"
 #include "symbol.h"
 #include "tsymtests.h"
 
@@ -20,7 +21,7 @@ BOOST_AUTO_TEST_CASE(numericEvaluation)
 {
     const BasePtr ptr = Symbol::create("dummy");
 
-    BOOST_TEST(!ptr->isNumericallyEvaluable());
+    BOOST_TEST(!ptr->numericEval());
 }
 
 BOOST_AUTO_TEST_CASE(typeString)

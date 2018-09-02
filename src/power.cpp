@@ -125,9 +125,6 @@ bool tsym::Power::isPositive() const
 {
     if (baseRef->isPositive())
         return true;
-
-    // return expRef->isNumericallyEvaluable() && expRef->numericEval().isRational();
-
     else if (const auto num = expRef->numericEval())
         return num->isRational() && num->numerator() % 2 == 0;
     else

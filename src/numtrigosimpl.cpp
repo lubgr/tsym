@@ -92,7 +92,7 @@ void tsym::NumTrigoSimpl::setArg(const Number& arg)
 
 void tsym::NumTrigoSimpl::setArg(const BasePtr& arg)
 {
-    assert(arg->isNumericallyEvaluable());
+    assert(arg->numericEval());
 
     this->arg = arg;
     origArg = arg;
@@ -440,14 +440,14 @@ void tsym::NumTrigoSimpl::asin()
 
 const tsym::BasePtr* tsym::NumTrigoSimpl::getKey(const std::unordered_map<BasePtr, BasePtr>& table) const
 {
-    const Number nArg(*arg->numericEval());
+    const auto num = arg->numericEval();
 
     for (const auto& entry : table)
         if (entry.second->isUndefined())
             continue;
         else if (arg->isEqual(*entry.second))
             return &entry.first;
-        else if (nArg == entry.second->numericEval())
+        else if (num == entry.second->numericEval())
             return &entry.first;
 
     return nullptr;

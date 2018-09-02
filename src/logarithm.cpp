@@ -53,8 +53,8 @@ bool tsym::Logarithm::isInvalidArg(const Base& arg)
         ;
     else if (arg.isNegative())
         invalid = true;
-    else if (arg.isNumericallyEvaluable())
-        invalid = arg.numericEval() == 0;
+    else if (arg.numericEval() == 0)
+        invalid = true;
 
     if (invalid)
         TSYM_WARNING("Logarithm: invalid argument %S", arg);

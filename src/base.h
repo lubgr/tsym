@@ -49,7 +49,6 @@ namespace tsym {
 
         virtual bool isZero() const;
         virtual bool isOne() const;
-        virtual bool isNumericallyEvaluable() const;
         virtual bool isUndefined() const;
         virtual bool isSymbol() const;
         virtual bool isNumeric() const;

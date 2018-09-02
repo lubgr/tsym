@@ -96,7 +96,7 @@ tsym::BasePtr tsym::Trigonometric::create(Type type, const BasePtr& arg)
         return createFromFunction(type, arg);
     else if (doesSymmetryApply(arg))
         return createBySymmetry(type, arg);
-    else if (arg->isNumericallyEvaluable())
+    else if (arg->numericEval())
         return createNumerically(type, arg);
     else
         return createInstance(type, {arg});
@@ -142,7 +142,7 @@ tsym::BasePtr tsym::Trigonometric::createNumerically(Type type, const BasePtr& a
 {
     NumTrigoSimpl numTrigo;
 
-    assert(arg->isNumericallyEvaluable());
+    assert(arg->numericEval());
 
     numTrigo.setType(type);
     numTrigo.setArg(arg);
@@ -202,7 +202,7 @@ tsym::BasePtr tsym::Trigonometric::createFromTrigo(Type type, const BasePtr& arg
     else if (isTanOfAtan2(type, otherType))
         /* Must be handeled separately due to different function argument: */
         return atan2ArgEval(other->arg1, other->arg2);
-    else if (isThisTheInverse(type, otherType) && arg->isNumericallyEvaluable())
+    else if (isThisTheInverse(type, otherType) && arg->numericEval())
         /* If the argument lies in an invalid range for the inner trigonometric function, the result
          * has been Undefined in the first place, thus no additional checks necessary here. */
         return shiftArgIntoRange(type, other->arg1);
@@ -511,16 +511,20 @@ bool tsym::Trigonometric::isPositive() const
 {
     if (type == Type::ATAN)
         return arg1->isPositive();
-    else
-        return isNumericallyEvaluable() ? numericEval() > 0 : false;
+    else if (const auto num = numericEval())
+        return num > 0;
+
+    return false;
 }
 
 bool tsym::Trigonometric::isNegative() const
 {
     if (type == Type::ATAN)
         return arg1->isNegative();
-    else
-        return isNumericallyEvaluable() ? numericEval() < 0 : false;
+    else if (const auto num = numericEval())
+        return num < 0;
+
+    return false;
 }
 
 unsigned tsym::Trigonometric::complexity() const

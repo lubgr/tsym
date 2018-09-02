@@ -10,6 +10,16 @@ bool tsym::isInt(const Number& n)
     return n.isRational() && n.denominator() == 1;
 }
 
+bool tsym::isOddInt(const Number& n)
+{
+    return isInt(n) && n.numerator() % 2 != 0;
+}
+
+bool tsym::isEvenInt(const Number& n)
+{
+    return isInt(n) && n.numerator() % 2 == 0;
+}
+
 bool tsym::isFraction(const Number& n)
 {
     return n.denominator() != 1;

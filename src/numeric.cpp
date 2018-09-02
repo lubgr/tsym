@@ -132,11 +132,6 @@ unsigned tsym::Numeric::complexity() const
         return 3;
 }
 
-bool tsym::Numeric::isNumericallyEvaluable() const
-{
-    return true;
-}
-
 bool tsym::Numeric::isNumeric() const
 {
     return true;

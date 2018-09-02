@@ -34,7 +34,6 @@ namespace tsym {
         unsigned complexity() const override;
         size_t hash() const override;
 
-        bool isNumericallyEvaluable() const override;
         bool isConstant() const override;
         const Name& name() const override;
 

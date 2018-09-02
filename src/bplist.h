@@ -23,7 +23,6 @@ namespace tsym {
         bool hasUndefinedElements(const BasePtrList& list);
         bool hasZeroElements(const BasePtrList& list);
         bool hasSumElements(const BasePtrList& list);
-        bool areElementsNumericallyEvaluable(const BasePtrList& list);
         bool areAllElementsConst(const BasePtrList& list);
         unsigned complexitySum(const BasePtrList& list);
 

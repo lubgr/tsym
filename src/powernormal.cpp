@@ -64,7 +64,7 @@ tsym::Fraction tsym::PowerNormal::normalIntegerExp() const
 
 tsym::Fraction tsym::PowerNormal::normalNonIntegerExp()
 {
-    if (rationalExp->isNumericallyEvaluable())
+    if (rationalExp->numericEval())
         return normalNumEvalExp();
     else
         return normalNonNumEvalExp();
@@ -72,12 +72,10 @@ tsym::Fraction tsym::PowerNormal::normalNonIntegerExp()
 
 tsym::Fraction tsym::PowerNormal::normalNumEvalExp()
 {
-    const Number nExp(*rationalExp->numericEval());
-
     /* Should have been handled as integer exponent above. */
-    assert(nExp != 0);
+    assert(rationalExp->numericEval() != 0);
 
-    if (nExp > 0)
+    if (rationalExp->isPositive())
         return normalNumEvalPosExp();
     else
         return normalNumEvalNegExp();

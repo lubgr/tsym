@@ -61,11 +61,6 @@ bool tsym::bplist::hasSumElements(const BasePtrList& list)
     return boost::algorithm::any_of(list, std::mem_fn(&Base::isSum));
 }
 
-bool tsym::bplist::areElementsNumericallyEvaluable(const BasePtrList& list)
-{
-    return boost::algorithm::all_of(list, std::mem_fn(&Base::isNumericallyEvaluable));
-}
-
 bool tsym::bplist::areAllElementsConst(const BasePtrList& list)
 {
     return boost::algorithm::all_of(list, std::mem_fn(&Base::isConst));

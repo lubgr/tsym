@@ -95,11 +95,6 @@ unsigned tsym::Constant::complexity() const
     return 4;
 }
 
-bool tsym::Constant::isNumericallyEvaluable() const
-{
-    return true;
-}
-
 bool tsym::Constant::isConstant() const
 {
     return true;

@@ -10,7 +10,7 @@ BOOST_FIXTURE_TEST_SUITE(TestUndefined, AbcFixture)
 
 BOOST_AUTO_TEST_CASE(numericalEvaluation)
 {
-    BOOST_TEST(!undefined->isNumericallyEvaluable());
+    BOOST_TEST(!undefined->numericEval());
 }
 
 BOOST_AUTO_TEST_CASE(typeString)
@@ -38,11 +38,6 @@ BOOST_AUTO_TEST_CASE(constTerm)
 BOOST_AUTO_TEST_CASE(nonConstTerm)
 {
     BOOST_TEST(undefined->nonConstTerm()->isUndefined());
-}
-
-BOOST_AUTO_TEST_CASE(numericEvaluability)
-{
-    BOOST_TEST(!undefined->isNumericallyEvaluable());
 }
 
 BOOST_AUTO_TEST_CASE(numericEvaluation)

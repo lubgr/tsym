@@ -12,3 +12,11 @@ bool tsym::operator!=(const BasePtr& lhs, const BasePtr& rhs)
 {
     return lhs->isDifferent(*rhs);
 }
+
+std::ostream& tsym::operator<<(std::ostream& os, const std::optional<Number>& rhs)
+{
+    if (rhs)
+        return os << *rhs;
+    else
+        return os << "std::nullopt";
+}

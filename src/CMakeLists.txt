@@ -9,6 +9,7 @@ set_source_files_properties(version.cpp
 
 add_library(tsym
     base.cpp
+    basefct.cpp
     baseptr.cpp
     baseptrlist.cpp
     bplist.cpp

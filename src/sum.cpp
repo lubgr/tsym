@@ -123,12 +123,18 @@ std::string tsym::Sum::typeStr() const
 
 bool tsym::Sum::isPositive() const
 {
-    return isNumericallyEvaluable() ? numericEval() > 0 : sign() == 1;
+    if (const auto num = numericEval())
+        return num > 0;
+
+    return sign() == 1;
 }
 
 bool tsym::Sum::isNegative() const
 {
-    return isNumericallyEvaluable() ? numericEval() < 0 : sign() == -1;
+    if (const auto num = numericEval())
+        return num < 0;
+
+    return sign() == -1;
 }
 
 size_t tsym::Sum::hash() const
@@ -173,7 +179,7 @@ int tsym::Sum::signOfSymbolicParts() const
     int symbolicSign = 0;
 
     for (const auto& summand : ops)
-        if (summand->isNumericallyEvaluable())
+        if (summand->numericEval())
             continue;
         else if (summand->isPositive() && symbolicSign >= 0)
             symbolicSign = 1;

@@ -29,14 +29,6 @@ bool tsym::Base::isOne() const
     return false;
 }
 
-bool tsym::Base::isNumericallyEvaluable() const
-{
-    if (ops.empty())
-        return false;
-    else
-        return bplist::areElementsNumericallyEvaluable(ops);
-}
-
 bool tsym::Base::isUndefined() const
 {
     return false;

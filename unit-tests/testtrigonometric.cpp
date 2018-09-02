@@ -3,6 +3,7 @@
 #include "constant.h"
 #include "fixtures.h"
 #include "logarithm.h"
+#include "number.h"
 #include "numeric.h"
 #include "power.h"
 #include "product.h"
@@ -802,7 +803,7 @@ BOOST_AUTO_TEST_CASE(numEvalPossibilityRequest)
 {
     const BasePtr sin = Trigonometric::createSin(eight);
 
-    BOOST_TEST(sin->isNumericallyEvaluable());
+    BOOST_TEST(sin->numericEval());
 }
 
 BOOST_AUTO_TEST_CASE(numericTerm)

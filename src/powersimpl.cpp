@@ -2,6 +2,7 @@
 #include "powersimpl.h"
 #include <cassert>
 #include <cmath>
+#include "basefct.h"
 #include "constant.h"
 #include "logarithm.h"
 #include "logging.h"
@@ -22,13 +23,10 @@ namespace tsym {
         BasePtrList simplifyPowerBase(const BasePtr& powBase, const BasePtr& e2);
         bool doContractExpFirst(const BasePtr& base, const BasePtr& e1, const BasePtr& e2);
         bool areTwoIntegerExp(const BasePtr& exp1, const BasePtr& exp2);
-        bool isInteger(const BasePtr& arg);
         bool areTwoFractionExpWithOddDenom(const BasePtr& exp1, const BasePtr& exp2);
         bool doesChangeSign(const BasePtr& base, const BasePtr& exp1);
         bool doContractExpSecond(const BasePtr& e1, const BasePtr& e2);
-        bool isOddInteger(const BasePtr& arg);
-        bool isEvenInteger(const BasePtr& arg);
-        bool isFraction(const BasePtr& arg);
+        bool doContractExpSecond(const Number& e1, const Number& e2);
         BasePtrList simplifyProductBase(const BasePtr& base, const BasePtr& exp);
         BasePtrList simplifyConstantBase(const BasePtr& base, const BasePtr& exp);
         bool isBaseEulerConstantAndExpLogarithm(const BasePtr& base, const BasePtr& exp);
@@ -125,15 +123,7 @@ namespace tsym {
 
         bool areTwoIntegerExp(const BasePtr& exp1, const BasePtr& exp2)
         {
-            return isInteger(exp1) && isInteger(exp2);
-        }
-
-        bool isInteger(const BasePtr& arg)
-        {
-            if (const auto num = arg->numericEval())
-                return isInt(*num);
-            else
-                return false;
+            return isInteger(*exp1) && isInteger(*exp2);
         }
 
         bool areTwoFractionExpWithOddDenom(const BasePtr& exp1, const BasePtr& exp2)
@@ -157,46 +147,38 @@ namespace tsym {
             else if (!exp1->isNumeric())
                 return false;
 
-            const auto nExp1 = exp1->numericEval();
-
-            return isInt(*nExp1) && nExp1->numerator() % 2 == 0;
+            return isEvenInt(*exp1->numericEval());
         }
 
         bool doContractExpSecond(const BasePtr& e1, const BasePtr& e2)
         {
-            const BasePtr newExp = Product::create(e1, e2);
+            const auto e1Num = e1->numericEval();
+            const auto e2Num = e2->numericEval();
 
-            if (isOddInteger(e1))
-                return newExp->isNumericallyEvaluable() && abs(*newExp->numericEval()) != 1;
-            else if (isEvenInteger(e1))
-                return isEvenInteger(newExp);
-            else if (isFraction(e1) && (isInteger(e2) || isFraction(e2)))
+            if (e1Num && e2Num)
+                return doContractExpSecond(*e1Num, *e2Num);
+
+            return false;
+        }
+
+        bool doContractExpSecond(const Number& e1, const Number& e2)
+        {
+            const Number newExp = e1 * e2;
+
+            if (isOddInt(e1))
+                return abs(newExp) != 1;
+            else if (isEvenInt(e1))
+                return isEvenInt(newExp);
+            else if (isFraction(e1) && (isInt(e2) || isFraction(e2)))
                 return isFraction(newExp);
-            else if (e1->isNumericallyEvaluable() && e2->isNumericallyEvaluable())
-                return !isEvenInteger(e1);
-            else
-                return false;
-        }
 
-        bool isOddInteger(const BasePtr& arg)
-        {
-            return isInteger(arg) && arg->numericEval()->numerator() % 2 != 0;
-        }
-
-        bool isEvenInteger(const BasePtr& arg)
-        {
-            return isInteger(arg) && arg->numericEval()->numerator() % 2 == 0;
-        }
-
-        bool isFraction(const BasePtr& arg)
-        {
-            return arg->isNumeric() && isFraction(*arg->numericEval());
+            return !isEvenInt(e1);
         }
 
         BasePtrList simplifyProductBase(const BasePtr& base, const BasePtr& exp)
         /* Performs (a*b)^c = a^c*b^c if possible. */
         {
-            const bool doExpandAll = isInteger(exp);
+            const bool doExpandAll = isInteger(*exp);
             BasePtrList simplified;
             BasePtrList keep;
 

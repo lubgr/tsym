@@ -694,7 +694,6 @@ BOOST_AUTO_TEST_CASE(numericEvaluation)
     const Number expected(-2.0 * std::sqrt(3.0) * std::pow(4.0, 1.0 / 3.0) * M_PI);
     const BasePtr res = Product::minus(two, sqrtThree, Power::create(four, oneThird), pi);
 
-    BOOST_TEST(res->isNumericallyEvaluable());
     BOOST_CHECK_EQUAL(expected, res->numericEval().value());
 }
 

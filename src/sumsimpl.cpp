@@ -197,12 +197,10 @@ namespace tsym {
         {
             if (!s1->isPower() || !s2->isPower())
                 return false;
-            else if (!s1->exp()->isNumericallyEvaluable() || !s2->exp()->isNumericallyEvaluable())
-                return false;
             else if (s1->exp()->numericEval() == 2 && s2->exp()->numericEval() == 2)
                 return areSinAndCos(s1->base(), s2->base());
-            else
-                return false;
+
+            return false;
         }
 
         bool areSinAndCos(const BasePtr& s1, const BasePtr& s2)
