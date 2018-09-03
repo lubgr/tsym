@@ -20,3 +20,11 @@ std::ostream& tsym::operator<<(std::ostream& os, const std::optional<Number>& rh
     else
         return os << "std::nullopt";
 }
+
+std::ostream& tsym::operator<<(std::ostream& os, const std::optional<BasePtr>& rhs)
+{
+    if (rhs)
+        return os << *rhs;
+    else
+        return os << "std::nullopt";
+}

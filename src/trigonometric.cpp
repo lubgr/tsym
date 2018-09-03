@@ -140,16 +140,12 @@ tsym::BasePtr tsym::Trigonometric::createBySymmetry(Type type, const BasePtr& ne
 
 tsym::BasePtr tsym::Trigonometric::createNumerically(Type type, const BasePtr& arg)
 {
-    NumTrigoSimpl numTrigo;
+    NumTrigoSimpl numTrigo(arg, type);
 
     assert(arg->numericEval());
 
-    numTrigo.setType(type);
-    numTrigo.setArg(arg);
-    numTrigo.compute();
-
-    if (numTrigo.hasSimplifiedResult())
-        return numTrigo.get();
+    if (const auto simplified = numTrigo.simplify())
+        return *simplified;
     else if (arg->isNegative())
         return createNumericallyBySymmetry(type, arg);
     else
@@ -331,17 +327,14 @@ tsym::BasePtr tsym::Trigonometric::simplAtan2(const BasePtr& y, const BasePtr& x
 {
     const BasePtr atan2Arg(atan2ArgEval(y, x));
     const Trigonometric* trigo(tryCast(atan2Arg));
-    NumTrigoSimpl numTrigo;
 
     if (trigo != nullptr && trigo->type == Type::TAN)
         return trigo->arg1;
 
-    numTrigo.setType(Type::ATAN);
-    numTrigo.setArg(atan2ArgEval(y, x));
-    numTrigo.compute();
+    NumTrigoSimpl numTrigo(atan2ArgEval(y, x), Type::ATAN);
 
-    if (numTrigo.hasSimplifiedResult())
-        return shiftAtanResultIntoRange(numTrigo.get(), increment);
+    if (const auto simplified = numTrigo.simplify())
+        return shiftAtanResultIntoRange(*simplified, increment);
     else if (atan2Arg->isNegative())
         return createBySymmetry(Type::ATAN, atan2Arg);
     else

@@ -18,7 +18,7 @@ struct NumTrigoSimplFixture : public AbcFixture {
     const BasePtr sqrtTwo = Power::sqrt(two);
     const BasePtr sqrtThree = Power::sqrt(three);
     const BasePtr sqrtSix = Power::sqrt(six);
-    NumTrigoSimpl nts{};
+    BasePtr arg{};
 
     void check(const BasePtr& expectedSin, const BasePtr& expectedCos, const BasePtr& expectedTan)
     {
@@ -29,14 +29,15 @@ struct NumTrigoSimplFixture : public AbcFixture {
 
     void check(Trigonometric::Type type, const BasePtr& expected)
     {
-        nts.setType(type);
-        nts.compute();
+        NumTrigoSimpl nts(arg, type);
+        const auto result = nts.simplify();
 
-        BOOST_TEST(nts.hasSimplifiedResult());
+        BOOST_TEST(result);
+
         if (expected->isUndefined()) {
-            BOOST_TEST(nts.get()->isUndefined());
+            BOOST_TEST(result.value()->isUndefined());
         } else {
-            BOOST_CHECK_EQUAL(expected, nts.get());
+            BOOST_CHECK_EQUAL(expected, result.value());
         }
     }
 
@@ -56,12 +57,9 @@ struct NumTrigoSimplFixture : public AbcFixture {
 
     void checkUnsimplified(Trigonometric::Type type)
     {
-        nts.setType(type);
-        nts.compute();
-        BOOST_TEST(!nts.hasSimplifiedResult());
+        NumTrigoSimpl nts(arg, type);
 
-        /* Requesting the result should give an Undefined. */
-        BOOST_TEST(nts.get()->isUndefined());
+        BOOST_TEST(!nts.simplify());
     }
 };
 
@@ -70,7 +68,7 @@ BOOST_FIXTURE_TEST_SUITE(TestNumTrigoSimpl, NumTrigoSimplFixture)
 BOOST_AUTO_TEST_CASE(triviallyZero)
 /* Sin/cos/tan(0) = 0, 1, 0. */
 {
-    nts.setArg(zero);
+    arg = zero;
 
     check(zero, one, zero);
 }
@@ -78,7 +76,7 @@ BOOST_AUTO_TEST_CASE(triviallyZero)
 BOOST_AUTO_TEST_CASE(eightPi)
 /* Sin/cos/tan(8*Pi) = 0, 1, 0. */
 {
-    nts.setArg(Product::create(eight, pi));
+    arg = Product::create(eight, pi);
 
     check(zero, one, zero);
 }
@@ -86,7 +84,7 @@ BOOST_AUTO_TEST_CASE(eightPi)
 BOOST_AUTO_TEST_CASE(minusTwoPi)
 /* Sin/cos/tan(-2*Pi) = 0, 1, 0. */
 {
-    nts.setArg(Product::create(Numeric::create(-2), pi));
+    arg = Product::create(Numeric::create(-2), pi);
 
     check(zero, one, zero);
 }
@@ -94,7 +92,7 @@ BOOST_AUTO_TEST_CASE(minusTwoPi)
 BOOST_AUTO_TEST_CASE(minusPi)
 /* Sin/cos/tan(-Pi) = 0, -1, 0. */
 {
-    nts.setArg(Product::minus(pi));
+    arg = Product::minus(pi);
 
     check(zero, minusOne, zero);
 }
@@ -104,7 +102,7 @@ BOOST_AUTO_TEST_CASE(piFourth)
 {
     const BasePtr sinCos = Power::create(two, Numeric::create(-1, 2));
 
-    nts.setArg(Product::create(pi, Numeric::fourth()));
+    arg = Product::create(pi, Numeric::fourth());
 
     check(sinCos, sinCos, one);
 }
@@ -115,7 +113,7 @@ BOOST_AUTO_TEST_CASE(threeFourthPi)
     const BasePtr expectedSin = Power::oneOver(sqrtTwo);
     const BasePtr expectedCos = Product::minus(expectedSin);
 
-    nts.setArg(Product::create(Numeric::create(3, 4), pi));
+    arg = Product::create(Numeric::create(3, 4), pi);
 
     check(expectedSin, expectedCos, minusOne);
 }
@@ -125,7 +123,7 @@ BOOST_AUTO_TEST_CASE(fiveFourthPi)
 {
     const BasePtr expectedSinCos = Product::minus(Power::oneOver(sqrtTwo));
 
-    nts.setArg(Product::create(Numeric::create(5, 4), pi));
+    arg = Product::create(Numeric::create(5, 4), pi);
 
     check(expectedSinCos, expectedSinCos, one);
 }
@@ -136,7 +134,7 @@ BOOST_AUTO_TEST_CASE(sevenFourthPi)
     const BasePtr expectedCos = Power::oneOver(sqrtTwo);
     const BasePtr expectedSin = Product::minus(expectedCos);
 
-    nts.setArg(Product::create(Numeric::create(7, 4), pi));
+    arg = Product::create(Numeric::create(7, 4), pi);
 
     check(expectedSin, expectedCos, minusOne);
 }
@@ -148,7 +146,7 @@ BOOST_AUTO_TEST_CASE(threePiOverEight)
     const BasePtr expectedCos = Product::create(half, Power::sqrt(Sum::create(two, Product::minus(sqrtTwo))));
     const BasePtr expectedTan = Sum::create(one, sqrtTwo);
 
-    nts.setArg(Product::create(Numeric::create(3, 8), pi));
+    arg = Product::create(Numeric::create(3, 8), pi);
 
     check(expectedSin, expectedCos, expectedTan);
 }
@@ -160,7 +158,7 @@ BOOST_AUTO_TEST_CASE(cosLeadsToNewAdjustment)
     const BasePtr expectedSin = Product::create(Numeric::create(-1, 2), sqrtThree);
     const BasePtr expectedTan = Product::minus(sqrtThree);
 
-    nts.setArg(Product::create(Numeric::create(5, 3), pi));
+    arg = Product::create(Numeric::create(5, 3), pi);
 
     check(expectedSin, half, expectedTan);
 }
@@ -168,7 +166,7 @@ BOOST_AUTO_TEST_CASE(cosLeadsToNewAdjustment)
 BOOST_AUTO_TEST_CASE(unresolvableNumeric, noLogs())
 /* Sin/cos/tan(1/4) shouldn't be simplified. */
 {
-    nts.setArg(Numeric::fourth());
+    arg = Numeric::fourth();
 
     checkUnsimplified();
 }
@@ -176,7 +174,7 @@ BOOST_AUTO_TEST_CASE(unresolvableNumeric, noLogs())
 BOOST_AUTO_TEST_CASE(unresolvableNumericPower, noLogs())
 /* Sin/cos/tan(sqrt(2)) shouldn't be simplified. */
 {
-    nts.setArg(sqrtTwo);
+    arg = sqrtTwo;
 
     checkUnsimplified();
 }
@@ -188,7 +186,7 @@ BOOST_AUTO_TEST_CASE(exactFromDouble)
     const BasePtr expectedCos = Product::create(Numeric::fourth(), Sum::create(sqrtSix, sqrtTwo));
     const BasePtr expectedTan = Sum::create(two, Product::minus(sqrtThree));
 
-    nts.setArg(Number(M_PI / 12.0));
+    arg = Numeric::create(Number(M_PI / 12.0));
 
     check(expectedSin, expectedCos, expectedTan);
 }
@@ -198,10 +196,9 @@ BOOST_AUTO_TEST_CASE(exactFromNumericallyEvaluable)
  * class will lead to an exact result. */
 {
     const BasePtr expectedSin = Power::oneOver(sqrtTwo);
-    const BasePtr arg = Product::create(
-      {Numeric::create(0.176351684975302), sqrtThree, Power::create(Numeric::create(17), Numeric::third())});
 
-    nts.setArg(arg);
+    arg = Product::create(
+      {Numeric::create(0.176351684975302), sqrtThree, Power::create(Numeric::create(17), Numeric::third())});
 
     check(Trigonometric::Type::SIN, expectedSin);
 }
@@ -209,12 +206,12 @@ BOOST_AUTO_TEST_CASE(exactFromNumericallyEvaluable)
 BOOST_AUTO_TEST_CASE(numericEvaluation)
 /* Sin/cos/tan(1.23456789) should be evaluated to a plain Numeric. */
 {
-    const double arg = 1.23456789;
-    const double expectedSin = std::sin(arg);
-    const double expectedCos = std::cos(arg);
-    const double expectedTan = std::tan(arg);
+    const double doubleArg = 1.23456789;
+    const double expectedSin = std::sin(doubleArg);
+    const double expectedCos = std::cos(doubleArg);
+    const double expectedTan = std::tan(doubleArg);
 
-    nts.setArg(Number(arg));
+    arg = Numeric::create(doubleArg);
 
     /* The comparison will be evaluated with the internal double comparison tolerance of the Number
      * class. */
@@ -224,12 +221,12 @@ BOOST_AUTO_TEST_CASE(numericEvaluation)
 BOOST_AUTO_TEST_CASE(numEvalSecondQuadrant)
 /* Sin/cos/tan(2.3456789) should be evaluated to a plain Numeric. */
 {
-    const double arg = 3.456789;
-    const double expectedSin = std::sin(arg);
-    const double expectedCos = std::cos(arg);
-    const double expectedTan = std::tan(arg);
+    const double doubleArg = 3.456789;
+    const double expectedSin = std::sin(doubleArg);
+    const double expectedCos = std::cos(doubleArg);
+    const double expectedTan = std::tan(doubleArg);
 
-    nts.setArg(arg);
+    arg = Numeric::create(doubleArg);
 
     check(Numeric::create(expectedSin), Numeric::create(expectedCos), Numeric::create(expectedTan));
 }
@@ -237,7 +234,7 @@ BOOST_AUTO_TEST_CASE(numEvalSecondQuadrant)
 BOOST_AUTO_TEST_CASE(undefinedTan)
 /* Tan(Pi/2) = Undefined. */
 {
-    nts.setArg(Product::create(half, pi));
+    arg = Product::create(half, pi);
 
     check(one, zero, undefined);
 }
@@ -245,7 +242,7 @@ BOOST_AUTO_TEST_CASE(undefinedTan)
 BOOST_AUTO_TEST_CASE(inverseZero)
 /* Asin/acos/atan(0) = 0, Pi/2, 0. */
 {
-    nts.setArg(zero);
+    arg = zero;
 
     checkInverse(zero, Product::create(half, pi), zero);
 }
@@ -255,7 +252,7 @@ BOOST_AUTO_TEST_CASE(inverseOneOverSqrtTwo, noLogs())
 {
     const BasePtr piFourth = Product::create(pi, Numeric::fourth());
 
-    nts.setArg(Power::oneOver(sqrtTwo));
+    arg = Power::oneOver(sqrtTwo);
 
     check(Trigonometric::Type::ASIN, piFourth);
     check(Trigonometric::Type::ACOS, piFourth);
@@ -265,11 +262,10 @@ BOOST_AUTO_TEST_CASE(inverseOneOverSqrtTwo, noLogs())
 BOOST_AUTO_TEST_CASE(inverseNegativeArg, noLogs())
 /* Asin/acos/atan(-1/sqrt(2)) = -Pi/4, 3*Pi/4, unsimplified. */
 {
-    const BasePtr arg = Product::minus(Power::oneOver(sqrtTwo));
     const BasePtr expectedAsin = Product::create(Numeric::create(-1, 4), pi);
     const BasePtr expectedAcos = Product::create(Numeric::create(3, 4), pi);
 
-    nts.setArg(arg);
+    arg = Product::minus(Power::oneOver(sqrtTwo));
 
     check(Trigonometric::Type::ASIN, expectedAsin);
     check(Trigonometric::Type::ACOS, expectedAcos);
@@ -279,11 +275,10 @@ BOOST_AUTO_TEST_CASE(inverseNegativeArg, noLogs())
 BOOST_AUTO_TEST_CASE(inverseFromSum, noLogs())
 /* Asin/acos/atan((sqrt(6) - sqrt(2))/4  = Pi/12, 5*Pi/12, unsimplified. */
 {
-    const BasePtr arg = Product::create(Numeric::fourth(), Sum::create(sqrtSix, Product::minus(sqrtTwo)));
     const BasePtr expectedAsin = Product::create(Numeric::create(1, 12), pi);
     const BasePtr expectedAcos = Product::create(Numeric::create(5, 12), pi);
 
-    nts.setArg(arg);
+    arg = Product::create(Numeric::fourth(), Sum::create(sqrtSix, Product::minus(sqrtTwo)));
 
     check(Trigonometric::Type::ASIN, expectedAsin);
     check(Trigonometric::Type::ACOS, expectedAcos);
@@ -293,11 +288,10 @@ BOOST_AUTO_TEST_CASE(inverseFromSum, noLogs())
 BOOST_AUTO_TEST_CASE(inverseNegativeSum, noLogs())
 /* Asin/acos/atan(-(sqrt(6) + sqrt(2))/4) = -5/12*pi, 11/12*pi, unsimplified. */
 {
-    const BasePtr arg = Product::create(Numeric::create(-1, 4), Sum::create(sqrtSix, sqrtTwo));
     const BasePtr expectedAsin = Product::create(Numeric::create(-5, 12), pi);
     const BasePtr expectedAcos = Product::create(Numeric::create(11, 12), pi);
 
-    nts.setArg(arg);
+    arg = Product::create(Numeric::create(-1, 4), Sum::create(sqrtSix, sqrtTwo));
 
     check(Trigonometric::Type::ASIN, expectedAsin);
     check(Trigonometric::Type::ACOS, expectedAcos);
@@ -309,7 +303,7 @@ BOOST_AUTO_TEST_CASE(atanNegativeArg)
 {
     const BasePtr expected = Product::create(Numeric::create(-1, 3), pi);
 
-    nts.setArg(Product::minus(sqrtThree));
+    arg = Product::minus(sqrtThree);
 
     check(Trigonometric::Type::ATAN, expected);
 }
@@ -318,9 +312,8 @@ BOOST_AUTO_TEST_CASE(atanNegativeSum)
 /* Atan(-sqrt(2) - 1) = -3/8*pi. */
 {
     const BasePtr expected = Product::create(Numeric::create(-3, 8), pi);
-    const BasePtr arg = Product::minus(Sum::create(sqrtTwo, one));
 
-    nts.setArg(arg);
+    arg = Product::minus(Sum::create(sqrtTwo, one));
 
     check(Trigonometric::Type::ATAN, expected);
 }
@@ -329,12 +322,12 @@ BOOST_AUTO_TEST_CASE(inverseExactFromDouble)
 /* The same as before, but the argument is a double. This implies, that the inverse tangent
  * evaluates to a double, and is thus simplified. */
 {
-    const double arg = 0.25 * (std::sqrt(6.0) - std::sqrt(2.0));
+    const double doubleArg = 0.25 * (std::sqrt(6.0) - std::sqrt(2.0));
     const BasePtr expectedAsin = Product::create(Numeric::create(1, 12), pi);
     const BasePtr expectedAcos = Product::create(Numeric::create(5, 12), pi);
-    const BasePtr expectedAtan = Numeric::create(std::atan(arg));
+    const BasePtr expectedAtan = Numeric::create(std::atan(doubleArg));
 
-    nts.setArg(arg);
+    arg = Numeric::create(doubleArg);
 
     checkInverse(expectedAsin, expectedAcos, expectedAtan);
 }
@@ -343,9 +336,8 @@ BOOST_AUTO_TEST_CASE(inverseFromSumAtan)
 /* Asin/acos/atan(sqrt(2) + 1) = undefined, undefined, 3/8*Pi. */
 {
     const BasePtr expectedAtan = Product::create(Numeric::create(3, 8), pi);
-    const BasePtr arg = Sum::create(sqrtTwo, one);
 
-    nts.setArg(arg);
+    arg = Sum::create(sqrtTwo, one);
 
     checkInverse(undefined, undefined, expectedAtan);
 }
@@ -354,11 +346,11 @@ BOOST_AUTO_TEST_CASE(inverseExactFromDoubleAtan)
 /* Asin/acos/atan(2 - sqrt(3)) = 0.27126(...), 1.2995(...), 1/12*Pi. */
 {
     const BasePtr expectedAtan = Product::create(Numeric::create(1, 12), pi);
-    const double arg = 2.0 - std::sqrt(3.0);
-    const BasePtr expectedAsin = Numeric::create(std::asin(arg));
-    const BasePtr expectedAcos = Numeric::create(std::acos(arg));
+    const double doubleArg = 2.0 - std::sqrt(3.0);
+    const BasePtr expectedAsin = Numeric::create(std::asin(doubleArg));
+    const BasePtr expectedAcos = Numeric::create(std::acos(doubleArg));
 
-    nts.setArg(arg);
+    arg = Numeric::create(doubleArg);
 
     checkInverse(expectedAsin, expectedAcos, expectedAtan);
 }
@@ -367,9 +359,7 @@ BOOST_AUTO_TEST_CASE(noSimplification, noLogs())
 /* Sin/cos/tan aren't simplified for a numerically evaluable argument, that isn't in the
  * exact tables. */
 {
-    const BasePtr arg = Product::create(sqrtTwo, pi);
-
-    nts.setArg(arg);
+    arg = Product::create(sqrtTwo, pi);
 
     checkUnsimplified(Trigonometric::Type::SIN);
     checkUnsimplified(Trigonometric::Type::COS);
@@ -379,9 +369,7 @@ BOOST_AUTO_TEST_CASE(noSimplification, noLogs())
 BOOST_AUTO_TEST_CASE(noSimplificationInverse, noLogs())
 /* The same for inverse functions. */
 {
-    const BasePtr arg = Product::create(sqrtTwo, Numeric::create(1, 10), pi);
-
-    nts.setArg(arg);
+    arg = Product::create(sqrtTwo, Numeric::create(1, 10), pi);
 
     checkUnsimplified(Trigonometric::Type::ASIN);
     checkUnsimplified(Trigonometric::Type::ACOS);
@@ -390,18 +378,10 @@ BOOST_AUTO_TEST_CASE(noSimplificationInverse, noLogs())
 
 BOOST_AUTO_TEST_CASE(noSimplificationLargeInput, noLogs())
 {
-    BasePtrList fac;
-    BasePtr arg;
-
-    fac.push_back(Numeric::create(1, 20));
-    fac.push_back(pi);
-    fac.push_back(sqrtThree);
-    fac.push_back(Power::create(four, Numeric::create(-1, 5)));
-    fac.push_back(Power::create(six, Numeric::create(-1, 10)));
+    const BasePtrList fac{Numeric::create(1, 20), pi, sqrtThree, Power::create(four, Numeric::create(-1, 5)),
+      Power::create(six, Numeric::create(-1, 10))};
 
     arg = Product::create(fac);
-
-    nts.setArg(arg);
 
     checkUnsimplified(Trigonometric::Type::SIN);
     checkUnsimplified(Trigonometric::Type::COS);
@@ -414,9 +394,7 @@ BOOST_AUTO_TEST_CASE(noSimplificationLargeInput, noLogs())
 BOOST_AUTO_TEST_CASE(greaterThanRange, noLogs())
 /* Asin/acos aren't defined for arguments < -1. */
 {
-    const BasePtr arg = Product::create(Numeric::create(-17), sqrtTwo);
-
-    nts.setArg(arg);
+    arg = Product::create(Numeric::create(-17), sqrtTwo);
 
     check(Trigonometric::Type::ASIN, undefined);
     check(Trigonometric::Type::ACOS, undefined);
@@ -426,11 +404,11 @@ BOOST_AUTO_TEST_CASE(greaterThanRange, noLogs())
 BOOST_AUTO_TEST_CASE(lessThanRange)
 /* The same for arguments > 1. */
 {
-    const double arg = 1.0000001;
+    const double doubleArg = 1.0000001;
 
-    nts.setArg(arg);
+    arg = Numeric::create(doubleArg);
 
-    checkInverse(undefined, undefined, Numeric::create(std::atan(arg)));
+    checkInverse(undefined, undefined, Numeric::create(std::atan(doubleArg)));
 }
 
 BOOST_AUTO_TEST_CASE(largeNumericEvaluationToExact)
@@ -438,10 +416,9 @@ BOOST_AUTO_TEST_CASE(largeNumericEvaluationToExact)
  * class will lead to an exact result. */
 {
     const BasePtr piFourth = Product::create(pi, Numeric::fourth());
-    const BasePtr arg = Product::create({Numeric::create(0.6258398439057556), Power::sqrt(five), Power::oneOver(pi),
-      Power::create(four, Numeric::third())});
 
-    nts.setArg(arg);
+    arg = Product::create({Numeric::create(0.6258398439057556), Power::sqrt(five), Power::oneOver(pi),
+      Power::create(four, Numeric::third())});
 
     check(Trigonometric::Type::ASIN, piFourth);
 }
@@ -449,7 +426,7 @@ BOOST_AUTO_TEST_CASE(largeNumericEvaluationToExact)
 BOOST_AUTO_TEST_CASE(inverseUnresolvableNumeric, noLogs())
 /* Asin/acos/atan(-1/10) shouldn't be simplified. */
 {
-    nts.setArg(Numeric::create(-1, 10));
+    arg = Numeric::create(-1, 10);
 
     checkUnsimplified(Trigonometric::Type::ASIN);
     checkUnsimplified(Trigonometric::Type::ACOS);

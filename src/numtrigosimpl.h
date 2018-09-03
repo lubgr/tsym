@@ -1,6 +1,7 @@
 #ifndef TSYM_NUMTRIGOSIMPL_H
 #define TSYM_NUMTRIGOSIMPL_H
 
+#include <optional>
 #include <unordered_map>
 #include <vector>
 #include "constant.h"
@@ -9,10 +10,8 @@
 
 namespace tsym {
     /* Simplification class for trigonometric functions with arguments, that can be evaluated to a
-     * numeric, e.g. Pi/4, sqrt(2), plain Numbers or any combination of these expressions. After
-     * setting type and argument, the simplification can be invoked with the method compute(). Then,
-     * the result can be accessed via a getter, but one should query beforehand, whether a
-     * simplification could be found. Examples of the simplification are:
+     * numeric, e.g. Pi/4, sqrt(2), plain Numbers or any combination of these expressions. Examples
+     * of the simplification are:
      *
      * - Sin(Pi/4) = 1/sqrt(2)
      * - Atan(1/sqrt(3)) = Pi/6
@@ -22,17 +21,13 @@ namespace tsym {
      * Everything else is not simplified. */
     class NumTrigoSimpl {
       public:
-        NumTrigoSimpl() = default;
+        explicit NumTrigoSimpl(BasePtr arg);
+        NumTrigoSimpl(BasePtr arg, Trigonometric::Type type);
 
-        void setType(Trigonometric::Type type);
-        void setArg(const Number& arg);
-        void setArg(const BasePtr& arg);
-
-        void compute();
-        bool hasSimplifiedResult() const;
-        BasePtr get() const;
+        std::optional<BasePtr> simplify();
 
       private:
+        void resetAndCompute();
         void reset();
         void detour();
         bool isNotAnInverseFct() const;
@@ -49,21 +44,20 @@ namespace tsym {
         void setSinSign(unsigned quadrant);
         void shiftToFirstQuadrant(unsigned quadrant);
         void compShiftedSin();
-        const BasePtr* getValue(const std::unordered_map<BasePtr, BasePtr>& table) const;
-        const BasePtr* getValueNumEval(const std::unordered_map<BasePtr, BasePtr>& table) const;
-        void setResult(const BasePtr& result);
+        void resultTimesSign();
+        std::optional<BasePtr> getValue(const std::unordered_map<BasePtr, BasePtr>& table) const;
+        std::optional<BasePtr> getValueNumEval(const std::unordered_map<BasePtr, BasePtr>& table) const;
         bool isDoubleNumeric(const BasePtr& ptr) const;
         void compNumericalSin();
         void compNumerically(double (*fct)(double));
+        void setTimesSign(const BasePtr& newResult);
 
         void cos();
 
         void tan();
         void setTanSign(unsigned quadrant);
         void tanViaSinCos();
-        void setSinForTan(BasePtr& result, bool& simplified);
-        void setCosForTan(BasePtr& result, bool& simplified);
-        void setForTan(Trigonometric::Type type, BasePtr& result, bool& simplified);
+        std::optional<BasePtr> computeForTan(Trigonometric::Type type) const;
 
         void computeAsinAcosAtan();
         bool isInverseArgOutOfRange() const;
@@ -71,7 +65,7 @@ namespace tsym {
         void detourAsinAcosAtan();
 
         void asin();
-        const BasePtr* getKey(const std::unordered_map<BasePtr, BasePtr>& table) const;
+        std::optional<BasePtr> getKey(const std::unordered_map<BasePtr, BasePtr>& table) const;
 
         void acos();
         void acosFromAsinResult();
@@ -81,12 +75,11 @@ namespace tsym {
         const BasePtr Pi{Constant::createPi()};
         const Number PI{*Pi->numericEval()};
 
-        Trigonometric::Type type{Trigonometric::Type::SIN};
-        bool isSimplified = false;
+        Trigonometric::Type type;
         int sign = 1;
-        BasePtr origArg{};
-        BasePtr arg{};
-        BasePtr res{};
+        BasePtr origArg;
+        BasePtr arg;
+        std::optional<BasePtr> result = std::nullopt;
     };
 }
 

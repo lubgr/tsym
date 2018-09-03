@@ -14,6 +14,7 @@ namespace tsym {
     bool operator!=(const BasePtr& lhs, const BasePtr& rhs);
 
     std::ostream& operator<<(std::ostream& os, const std::optional<Number>& rhs);
+    std::ostream& operator<<(std::ostream& os, const std::optional<BasePtr>& rhs);
 }
 
 using boost::test_tools::per_element;
