@@ -49,7 +49,7 @@ namespace tsym {
         std::optional<BasePtr> getValueNumEval(const std::unordered_map<BasePtr, BasePtr>& table) const;
         bool isDoubleNumeric(const BasePtr& ptr) const;
         void compNumericalSin();
-        void compNumerically(double (*fct)(double));
+        template <class Fct> void compNumerically(Fct&& eval);
         void setTimesSign(const BasePtr& newResult);
 
         void cos();

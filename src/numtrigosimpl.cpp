@@ -295,15 +295,15 @@ void tsym::NumTrigoSimpl::compNumericalSin()
     arg = Product::create(arg, Power::oneOver(Pi));
     arg = Product::create(arg, Numeric::create(PI));
 
-    compNumerically(&std::sin);
+    compNumerically([](auto arg) { return std::sin(arg); });
 }
 
-void tsym::NumTrigoSimpl::compNumerically(double (*fct)(double))
+template <class Fct> void tsym::NumTrigoSimpl::compNumerically(Fct&& eval)
 {
     assert(arg->isNumeric());
     assert(arg->numericEval()->isDouble());
 
-    const double numericResult = fct(arg->numericEval()->toDouble());
+    const double numericResult = std::forward<Fct>(eval)(arg->numericEval()->toDouble());
 
     setTimesSign(Numeric::create(numericResult));
 }
@@ -414,7 +414,7 @@ void tsym::NumTrigoSimpl::asin()
         resultTimesSign();
     else if (isDoubleNumeric(origArg)) {
         reset();
-        compNumerically(&std::asin);
+        compNumerically([](auto arg) { return std::asin(arg); });
     }
 }
 
@@ -460,6 +460,6 @@ void tsym::NumTrigoSimpl::atan()
         resultTimesSign();
     else if (isDoubleNumeric(origArg)) {
         reset();
-        compNumerically(&std::atan);
+        compNumerically([](auto arg) { return std::atan(arg); });
     }
 }
