@@ -163,7 +163,7 @@ BOOST_AUTO_TEST_CASE(cosLeadsToNewAdjustment)
     check(expectedSin, half, expectedTan);
 }
 
-BOOST_AUTO_TEST_CASE(unresolvableNumeric, noLogs())
+BOOST_AUTO_TEST_CASE(unresolvableNumeric)
 /* Sin/cos/tan(1/4) shouldn't be simplified. */
 {
     arg = Numeric::fourth();
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(unresolvableNumeric, noLogs())
     checkUnsimplified();
 }
 
-BOOST_AUTO_TEST_CASE(unresolvableNumericPower, noLogs())
+BOOST_AUTO_TEST_CASE(unresolvableNumericPower)
 /* Sin/cos/tan(sqrt(2)) shouldn't be simplified. */
 {
     arg = sqrtTwo;
@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE(inverseZero)
     checkInverse(zero, Product::create(half, pi), zero);
 }
 
-BOOST_AUTO_TEST_CASE(inverseOneOverSqrtTwo, noLogs())
+BOOST_AUTO_TEST_CASE(inverseOneOverSqrtTwo)
 /* Asin/acos/atan(1/sqrt(2)) = Pi/4, Pi/4, unsimplified. */
 {
     const BasePtr piFourth = Product::create(pi, Numeric::fourth());
@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE(inverseOneOverSqrtTwo, noLogs())
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-BOOST_AUTO_TEST_CASE(inverseNegativeArg, noLogs())
+BOOST_AUTO_TEST_CASE(inverseNegativeArg)
 /* Asin/acos/atan(-1/sqrt(2)) = -Pi/4, 3*Pi/4, unsimplified. */
 {
     const BasePtr expectedAsin = Product::create(Numeric::create(-1, 4), pi);
@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE(inverseNegativeArg, noLogs())
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-BOOST_AUTO_TEST_CASE(inverseFromSum, noLogs())
+BOOST_AUTO_TEST_CASE(inverseFromSum)
 /* Asin/acos/atan((sqrt(6) - sqrt(2))/4  = Pi/12, 5*Pi/12, unsimplified. */
 {
     const BasePtr expectedAsin = Product::create(Numeric::create(1, 12), pi);
@@ -285,7 +285,7 @@ BOOST_AUTO_TEST_CASE(inverseFromSum, noLogs())
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-BOOST_AUTO_TEST_CASE(inverseNegativeSum, noLogs())
+BOOST_AUTO_TEST_CASE(inverseNegativeSum)
 /* Asin/acos/atan(-(sqrt(6) + sqrt(2))/4) = -5/12*pi, 11/12*pi, unsimplified. */
 {
     const BasePtr expectedAsin = Product::create(Numeric::create(-5, 12), pi);
@@ -355,7 +355,7 @@ BOOST_AUTO_TEST_CASE(inverseExactFromDoubleAtan)
     checkInverse(expectedAsin, expectedAcos, expectedAtan);
 }
 
-BOOST_AUTO_TEST_CASE(noSimplification, noLogs())
+BOOST_AUTO_TEST_CASE(noSimplification)
 /* Sin/cos/tan aren't simplified for a numerically evaluable argument, that isn't in the
  * exact tables. */
 {
@@ -366,7 +366,7 @@ BOOST_AUTO_TEST_CASE(noSimplification, noLogs())
     checkUnsimplified(Trigonometric::Type::TAN);
 }
 
-BOOST_AUTO_TEST_CASE(noSimplificationInverse, noLogs())
+BOOST_AUTO_TEST_CASE(noSimplificationInverse)
 /* The same for inverse functions. */
 {
     arg = Product::create(sqrtTwo, Numeric::create(1, 10), pi);
@@ -376,7 +376,7 @@ BOOST_AUTO_TEST_CASE(noSimplificationInverse, noLogs())
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-BOOST_AUTO_TEST_CASE(noSimplificationLargeInput, noLogs())
+BOOST_AUTO_TEST_CASE(noSimplificationLargeInput)
 {
     const BasePtrList fac{Numeric::create(1, 20), pi, sqrtThree, Power::create(four, Numeric::create(-1, 5)),
       Power::create(six, Numeric::create(-1, 10))};
@@ -391,7 +391,7 @@ BOOST_AUTO_TEST_CASE(noSimplificationLargeInput, noLogs())
     checkUnsimplified(Trigonometric::Type::ATAN);
 }
 
-BOOST_AUTO_TEST_CASE(greaterThanRange, noLogs())
+BOOST_AUTO_TEST_CASE(greaterThanRange)
 /* Asin/acos aren't defined for arguments < -1. */
 {
     arg = Product::create(Numeric::create(-17), sqrtTwo);
@@ -423,7 +423,7 @@ BOOST_AUTO_TEST_CASE(largeNumericEvaluationToExact)
     check(Trigonometric::Type::ASIN, piFourth);
 }
 
-BOOST_AUTO_TEST_CASE(inverseUnresolvableNumeric, noLogs())
+BOOST_AUTO_TEST_CASE(inverseUnresolvableNumeric)
 /* Asin/acos/atan(-1/10) shouldn't be simplified. */
 {
     arg = Numeric::create(-1, 10);
