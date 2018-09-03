@@ -31,13 +31,11 @@ tsym::BasePtr tsym::SubresultantGcd::gcd(const BasePtr& u, const BasePtr& v, con
     int delta = U->degree(*x) - V->degree(*x) + 1;
     BasePtr beta(Power::create(Numeric::mOne(), Numeric::create(delta)));
     BasePtr psi(Numeric::mOne());
-    BasePtr remainder;
     BasePtr tmp;
-    int deltaP;
     int i = 0;
 
     while (true) {
-        remainder = poly::pseudoRemainder(U, V, x);
+        const BasePtr remainder = poly::pseudoRemainder(U, V, x);
 
         if (remainder->isZero()) {
             U = V;
@@ -48,7 +46,7 @@ tsym::BasePtr tsym::SubresultantGcd::gcd(const BasePtr& u, const BasePtr& v, con
         }
 
         if (++i > 1) {
-            deltaP = delta;
+            const int deltaP = delta;
             delta = U->degree(*x) - V->degree(*x) + 1;
 
             tmp = Product::minus(U->leadingCoeff(*x));

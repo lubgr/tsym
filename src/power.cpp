@@ -189,12 +189,11 @@ tsym::BasePtr tsym::Power::expandSumBaseIntExp() const
 {
     const Int nExp(expRef->numericEval()->numerator());
     BasePtrList sums;
-    BasePtr res;
 
     for (Int i(0); i < integer::abs(nExp); ++i)
         sums.push_back(baseRef);
 
-    res = bplist::expandAsProduct(sums);
+    auto res = bplist::expandAsProduct(sums);
 
     if (nExp < 0)
         res = Power::oneOver(res);
@@ -232,7 +231,7 @@ int tsym::Power::degree(const Base& variable) const
     else if (isInteger(*expRef))
         nExp = expRef->numericEval()->numerator();
 
-    int baseDegree = baseRef->degree(variable);
+    const int baseDegree = baseRef->degree(variable);
 
     if (baseDegree == 0)
         return 0;

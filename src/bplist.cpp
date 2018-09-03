@@ -98,12 +98,9 @@ namespace tsym {
          * while the latter is saved as a product. */
         {
             BasePtrList scalarFactors;
-            BasePtr expanded;
 
             for (const auto& item : list) {
-                expanded = item->expand();
-
-                if (expanded->isSum())
+                if (const auto expanded = item->expand(); expanded->isSum())
                     sums.push_back(expanded);
                 else
                     scalarFactors.push_back(expanded);

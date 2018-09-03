@@ -42,22 +42,19 @@ namespace tsym {
             BasePtr remainder(u);
             int m = u->degree(x);
             int n = v->degree(x);
-            BasePtrList d;
-            BasePtr tmp;
-            BasePtr c;
 
             assert(x.isSymbol());
 
             while (m >= n) {
                 assert(m >= 0 && n >= 0);
 
-                d = poly::divide(remainder->leadingCoeff(x), v->leadingCoeff(x), bplist::rest(L));
+                const auto d = poly::divide(remainder->leadingCoeff(x), v->leadingCoeff(x), bplist::rest(L));
 
                 if (!d.back()->isZero())
                     return {quotient->expand(), remainder};
 
-                c = d.front();
-                tmp = Power::create(x.clone(), Numeric::create(m - n));
+                const auto& c = d.front();
+                const auto tmp = Power::create(x.clone(), Numeric::create(m - n));
                 quotient = Sum::create(quotient, Product::create(c, tmp));
 
                 remainder = Sum::create(remainder, Product::minus(c, v, tmp))->expand();
@@ -87,7 +84,6 @@ namespace tsym {
             const int n = v->degree(x);
             BasePtr quotient(Numeric::zero());
             BasePtr remainder(u->expand());
-            BasePtr lCoeffR;
             BasePtr tmp;
             int m = u->degree(x);
             int sigma = 0;
@@ -95,7 +91,7 @@ namespace tsym {
             assert(!v->expand()->isZero());
 
             while (m >= n) {
-                lCoeffR = remainder->coeff(x, m);
+                const auto lCoeffR = remainder->coeff(x, m);
 
                 tmp = Product::create(lCoeffR, Power::create(x.clone(), Numeric::create(m - n)));
 
@@ -178,13 +174,13 @@ namespace tsym {
         {
             const Int largeExp = power.exp()->numericEval()->numerator();
             const BasePtr base(power.base());
-            int exp;
 
             if (!integer::fitsInto<int>(largeExp)) {
                 TSYM_ERROR("%S: Exponent doesn't fit into primitive int! Return 0 (min. degree).", power);
                 return 0;
-            } else
-                exp = static_cast<int>(largeExp);
+            }
+
+            int exp = static_cast<int>(largeExp);
 
             if (base->isEqual(variable))
                 return exp;
@@ -216,9 +212,8 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v)
 {
     static cache::RegisteredCache<BasePtrList, BasePtrList> cache;
     static auto& map(cache.map);
-    const auto lookup = map.find({u, v});
 
-    if (lookup != cend(map))
+    if (const auto lookup = map.find({u, v}); lookup != cend(map))
         return lookup->second;
 
     auto result = divide(u, v, polyinfo::listOfSymbols(*u, *v));

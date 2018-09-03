@@ -82,22 +82,18 @@ tsym::Fraction tsym::Sum::toCommonDenom(const std::vector<Fraction>& operands) c
     auto it(cbegin(operands));
     BasePtr denom(it->denom);
     BasePtr num(it->num);
-    BasePtr oneOverGcd;
-    BasePtr nextDenom;
-    BasePtr nextNum;
-    BasePtr lcm;
 
     for (++it; it != cend(operands); ++it) {
-        nextNum = it->num;
-        nextDenom = it->denom;
+        const BasePtr nextNum = it->num;
+        const BasePtr nextDenom = it->denom;
 
         if (denom->isEqual(*nextDenom)) {
             num = create(num, nextNum);
             continue;
         }
 
-        oneOverGcd = Power::oneOver(poly::gcd(denom, nextDenom));
-        lcm = Product::create(nextDenom, oneOverGcd)->expand();
+        const BasePtr oneOverGcd = Power::oneOver(poly::gcd(denom, nextDenom));
+        const BasePtr lcm = Product::create(nextDenom, oneOverGcd)->expand();
 
         num = create(Product::create(num, lcm)->expand(), Product::create(nextNum, denom, oneOverGcd)->expand());
         denom = Product::create(denom, lcm)->expand();

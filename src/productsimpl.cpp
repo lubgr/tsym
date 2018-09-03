@@ -117,15 +117,14 @@ namespace tsym {
          * made, to ensure correct simplification of every possible combination of factors. */
         {
             bool hasChanged = false;
-            auto it1 = begin(u);
-            decltype(it1) it2;
-            BasePtrList res;
             bool found;
 
-            while (it1 != end(u)) {
-                for (found = false, it2 = it1, ++it2; it2 != end(u); ++it2)
+            for (auto it1 = begin(u); it1 != end(u);) {
+                auto it2 = next(it1);
+
+                for (found = false; it2 != end(u); ++it2)
                     if ((check)(**it1, **it2)) {
-                        res = (simpl)(*it1, *it2);
+                        const auto res = (simpl)(*it1, *it2);
 
                         if (res.size() == 2 && res.front()->isEqual(**it1) && res.back()->isEqual(**it2))
                             continue;
@@ -165,17 +164,12 @@ namespace tsym {
             const BasePtr newArg(f1->base()->operands().front());
             const BasePtr sin(trigSymbReplacement(Trigonometric::Type::SIN, newArg));
             const BasePtr cos(trigSymbReplacement(Trigonometric::Type::COS, newArg));
-            BasePtr r1(trigFunctionPowerReplacement(f1, sin, cos));
-            BasePtr r2(trigFunctionPowerReplacement(f2, sin, cos));
-            BasePtrList res;
+            const BasePtr r1(trigFunctionPowerReplacement(f1, sin, cos));
+            const BasePtr r2(trigFunctionPowerReplacement(f2, sin, cos));
+            BasePtrList res = simplTwoFactors(r1, r2);
+            const BasePtr exp1 = res.front()->exp();
+            const BasePtr exp2 = res.back()->exp();
             BasePtr newExp;
-            BasePtr exp1;
-            BasePtr exp2;
-
-            res = simplTwoFactors(r1, r2);
-
-            exp1 = res.front()->exp();
-            exp2 = res.back()->exp();
 
             if (res.size() == 2 && exp1->isEqual(*Product::minus(exp2))) {
                 /* A combination of sin and cos should lead to tan or 1/tan. */
@@ -260,9 +254,7 @@ namespace tsym {
             const BasePtrList q1p1{q1, p1};
             BasePtrList pRest(bplist::rest(p));
             BasePtrList qRest(bplist::rest(q));
-            BasePtrList res;
-
-            res = simplTwoFactors(p1, q1);
+            BasePtrList res = simplTwoFactors(p1, q1);
 
             if (res.empty())
                 return merge(pRest, qRest);
@@ -372,16 +364,13 @@ namespace tsym {
         BasePtrList simplNumAndNumPow(const Number& preFactor, const Number& base, const Number& exp)
         {
             NumPowerSimpl numericPow;
-            BasePtr newBase;
-            BasePtr newExp;
-            BasePtr preFac;
 
             numericPow.setPower(base, exp);
             numericPow.setPreFac(preFactor);
 
-            newBase = Numeric::create(numericPow.getNewBase());
-            newExp = Numeric::create(numericPow.getNewExp());
-            preFac = Numeric::create(numericPow.getPreFactor());
+            const BasePtr newBase = Numeric::create(numericPow.getNewBase());
+            const BasePtr newExp = Numeric::create(numericPow.getNewExp());
+            const BasePtr preFac = Numeric::create(numericPow.getPreFactor());
 
             if (preFac->isOne())
                 return {Power::create(newBase, newExp)};
@@ -498,14 +487,9 @@ namespace tsym {
             const Int& limit(options::getMaxPrimeResolution());
             const Int denom[] = {evalDenomExpNumerator(f1), evalDenomExpNumerator(f2)};
             const Int num[] = {evalNumExpNumerator(f1), evalNumExpNumerator(f2)};
-            Number newBase;
-            Int newDenom;
-            Int newNum;
-
-            newNum = num[0] * num[1];
-            newDenom = denom[0] * denom[1];
-
-            newBase = Number(newNum, newDenom);
+            const Int newNum = num[0] * num[1];
+            const Int newDenom = denom[0] * denom[1];
+            const Number newBase = Number(newNum, newDenom);
 
             if (newBase.numerator() > limit || newBase.denominator() > limit)
                 return {f1, f2};
@@ -654,9 +638,8 @@ tsym::BasePtrList tsym::productsimpl::simplify(const BasePtrList& factors)
     static const auto& relevantOption = options::getMaxPrimeResolution();
     static auto& map(cache.map);
     const auto key = std::make_pair(factors, relevantOption);
-    const auto lookup = map.find(key);
 
-    if (lookup != cend(map))
+    if (const auto lookup = map.find(key); lookup != cend(map))
         return lookup->second;
 
     return map.insert({key, simplifyWithoutCache(factors)})->second;

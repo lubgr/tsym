@@ -193,9 +193,8 @@ tsym::BasePtr tsym::Base::normalViaCache() const
     static cache::RegisteredCache<BasePtr, BasePtr> cache;
     static auto& map(cache.map);
     const BasePtr key = clone();
-    const auto lookup = map.find(key);
 
-    if (lookup != cend(map))
+    if (const auto lookup = map.find(key); lookup != cend(map))
         return lookup->second;
 
     return map.insert({key, normalWithoutCache()})->second;

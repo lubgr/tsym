@@ -5,9 +5,7 @@
 
 const tsym::BasePtr& tsym::SymbolMap::getTmpSymbolAndStore(const BasePtr& ptr)
 {
-    const auto lookup = rep.find(ptr);
-
-    if (lookup != cend(rep))
+    if (const auto lookup = rep.find(ptr); lookup != cend(rep))
         return lookup->second;
 
     return rep.insert({ptr, Symbol::createTmpSymbol(ptr->isPositive())}).first->second;

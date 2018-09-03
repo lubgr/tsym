@@ -78,9 +78,7 @@ namespace tsym {
             const BasePtrList q1p1{q1, p1};
             BasePtrList pRest(bplist::rest(p));
             BasePtrList qRest(bplist::rest(q));
-            BasePtrList res;
-
-            res = simplTwoSummands(p1, q1);
+            BasePtrList res = simplTwoSummands(p1, q1);
 
             if (res.empty())
                 return merge(pRest, qRest);
@@ -226,9 +224,7 @@ namespace tsym {
         {
             const BasePtrList uRest(bplist::rest(u));
             const BasePtr u1(u.front());
-            BasePtrList simplRest;
-
-            simplRest = simplWithoutCache(uRest);
+            const BasePtrList simplRest = simplWithoutCache(uRest);
 
             if (u1->isSum())
                 return merge(u1->operands(), simplRest);
@@ -242,9 +238,8 @@ tsym::BasePtrList tsym::sumsimpl::simplify(const BasePtrList& summands)
 {
     static cache::RegisteredCache<BasePtrList, BasePtrList> cache;
     static auto& map(cache.map);
-    const auto lookup = map.find(summands);
 
-    if (lookup != cend(map))
+    if (const auto lookup = map.find(summands); lookup != cend(map))
         return lookup->second;
 
     const auto result = simplWithoutCache(summands);

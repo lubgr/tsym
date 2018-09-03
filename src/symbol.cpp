@@ -61,9 +61,8 @@ tsym::BasePtr tsym::Symbol::createNonEmptyName(const Name& name, bool positive)
     using Key = std::pair<Name, bool>;
     static std::unordered_map<Key, BasePtr, boost::hash<Key>> pool;
     const auto key = std::make_pair(name, positive);
-    const auto lookup = pool.find(key);
 
-    if (lookup != cend(pool))
+    if (const auto lookup = pool.find(key); lookup != cend(pool))
         return lookup->second;
 
     return pool.insert({key, std::make_shared<const Symbol>(name, positive, Base::CtorKey{})}).first->second;

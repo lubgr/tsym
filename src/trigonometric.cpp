@@ -395,9 +395,7 @@ std::optional<tsym::Number> tsym::Trigonometric::numericEval() const
     if (!nArg)
         return std::nullopt;
 
-    const double value = nArg->toDouble();
-
-    switch (type) {
+    switch (const double value = nArg->toDouble(); type) {
         case Type::SIN:
             return std::sin(value);
         case Type::COS:
