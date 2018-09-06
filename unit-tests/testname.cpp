@@ -1,5 +1,6 @@
 
 #include "name.h"
+#include "namefct.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -11,8 +12,8 @@ BOOST_AUTO_TEST_CASE(emptyName)
     const Name empty("");
 
     BOOST_TEST(empty.plain().empty());
-    BOOST_TEST(empty.unicode().empty());
-    BOOST_TEST(empty.tex().empty());
+    BOOST_TEST(unicode(empty).empty());
+    BOOST_TEST(tex(empty).empty());
 }
 
 BOOST_AUTO_TEST_CASE(simpleString)
@@ -21,7 +22,7 @@ BOOST_AUTO_TEST_CASE(simpleString)
     const Name a(varName);
 
     BOOST_CHECK_EQUAL(varName, a.plain());
-    BOOST_CHECK_EQUAL(varName, a.tex());
+    BOOST_CHECK_EQUAL(varName, tex(a));
 }
 
 BOOST_AUTO_TEST_CASE(varWithSubscriptChar)
@@ -30,7 +31,7 @@ BOOST_AUTO_TEST_CASE(varWithSubscriptChar)
     const Name n("U", "x");
 
     BOOST_CHECK_EQUAL(expected, n.plain());
-    BOOST_CHECK_EQUAL(expected, n.tex());
+    BOOST_CHECK_EQUAL(expected, tex(n));
 }
 
 BOOST_AUTO_TEST_CASE(varWithSubscriptString)
@@ -40,7 +41,7 @@ BOOST_AUTO_TEST_CASE(varWithSubscriptString)
     const Name n("U", "xyz");
 
     BOOST_CHECK_EQUAL(expectedPlain, n.plain());
-    BOOST_CHECK_EQUAL(expectedTex, n.tex());
+    BOOST_CHECK_EQUAL(expectedTex, tex(n));
 }
 
 BOOST_AUTO_TEST_CASE(varWithSubAndSuperscriptChar)
@@ -50,7 +51,7 @@ BOOST_AUTO_TEST_CASE(varWithSubAndSuperscriptChar)
     const Name n("ABC", "d", "e");
 
     BOOST_CHECK_EQUAL(expectedPlain, n.plain());
-    BOOST_CHECK_EQUAL(expectedTex, n.tex());
+    BOOST_CHECK_EQUAL(expectedTex, tex(n));
 }
 
 BOOST_AUTO_TEST_CASE(varWithSubCharAndSuperString)
@@ -60,7 +61,7 @@ BOOST_AUTO_TEST_CASE(varWithSubCharAndSuperString)
     const Name n("ABC", "d", "efg");
 
     BOOST_CHECK_EQUAL(expectedPlain, n.plain());
-    BOOST_CHECK_EQUAL(expectedTex, n.tex());
+    BOOST_CHECK_EQUAL(expectedTex, tex(n));
 }
 
 BOOST_AUTO_TEST_CASE(greekLowerCaseLetter)
@@ -68,7 +69,7 @@ BOOST_AUTO_TEST_CASE(greekLowerCaseLetter)
     const Name gamma("gamma");
 
     BOOST_CHECK_EQUAL("gamma", gamma.plain());
-    BOOST_CHECK_EQUAL("\\gamma", gamma.tex());
+    BOOST_CHECK_EQUAL("\\gamma", tex(gamma));
 }
 
 BOOST_AUTO_TEST_CASE(greekUpperCaseLetter)
@@ -76,7 +77,7 @@ BOOST_AUTO_TEST_CASE(greekUpperCaseLetter)
     const Name xi("Xi");
 
     BOOST_CHECK_EQUAL("Xi", xi.plain());
-    BOOST_CHECK_EQUAL("\\Xi", xi.tex());
+    BOOST_CHECK_EQUAL("\\Xi", tex(xi));
 }
 
 BOOST_AUTO_TEST_CASE(texRepresentationOfPhi)
@@ -84,7 +85,7 @@ BOOST_AUTO_TEST_CASE(texRepresentationOfPhi)
     const std::string expected("\\varphi");
     const Name phi("phi");
 
-    BOOST_CHECK_EQUAL(expected, phi.tex());
+    BOOST_CHECK_EQUAL(expected, tex(phi));
 }
 
 BOOST_AUTO_TEST_CASE(comparisonOperators)

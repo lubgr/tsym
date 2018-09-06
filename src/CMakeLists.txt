@@ -23,6 +23,7 @@ add_library(tsym
     logarithm.cpp
     logger.cpp
     name.cpp
+    namefct.cpp
     number.cpp
     numberfct.cpp
     numeric.cpp

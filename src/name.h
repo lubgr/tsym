@@ -21,20 +21,8 @@ namespace tsym {
         const std::string& getSuperscript() const;
 
         const std::string& plain() const;
-        std::string unicode() const;
-        std::string tex() const;
-
-        bool equal(const Name& rhs) const;
-        bool lessThan(const Name& rhs) const;
 
       private:
-        bool isGreekLetter() const;
-        size_t greekAlphabetIndex() const;
-        std::string unicodeForGreekLetter() const;
-        bool startsWithCapitalLetter() const;
-        std::string getGreekTexLetter() const;
-        std::string texAppendix(const std::string& term, const std::string& connection) const;
-
         std::string name;
         std::string subscript;
         std::string superscript;

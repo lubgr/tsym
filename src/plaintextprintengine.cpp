@@ -2,6 +2,7 @@
 #include "plaintextprintengine.h"
 #include "logging.h"
 #include "name.h"
+#include "namefct.h"
 
 tsym::PlaintextPrintEngine::PlaintextPrintEngine(std::ostream& out, CharSet charset)
     : PrintEngine<PlaintextPrintEngine>(out)
@@ -13,7 +14,7 @@ tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::symbol(const Name& name)
     if (charset == CharSet::ASCII)
         out << name.plain();
     else
-        out << name.unicode();
+        out << unicode(name);
 
     return *this;
 }
