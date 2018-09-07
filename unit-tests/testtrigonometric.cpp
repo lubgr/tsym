@@ -41,7 +41,7 @@ BOOST_AUTO_TEST_CASE(constRequest)
 
 BOOST_AUTO_TEST_CASE(sinFunctionName)
 {
-    const Name expected("sin");
+    const Name expected{"sin"};
 
     BOOST_CHECK_EQUAL(expected, sinA->name());
 }
@@ -56,7 +56,7 @@ BOOST_AUTO_TEST_CASE(typeString)
 BOOST_AUTO_TEST_CASE(cosFunctionName)
 {
     const BasePtr cos = Trigonometric::createCos(a);
-    const Name expected("cos");
+    const Name expected{"cos"};
 
     BOOST_CHECK_EQUAL(expected, cos->name());
 }
@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(cosFunctionName)
 BOOST_AUTO_TEST_CASE(tanFunctionName)
 {
     const BasePtr tan = Trigonometric::createTan(a);
-    const Name expected("tan");
+    const Name expected{"tan"};
 
     BOOST_CHECK_EQUAL(expected, tan->name());
 }
@@ -72,7 +72,7 @@ BOOST_AUTO_TEST_CASE(tanFunctionName)
 BOOST_AUTO_TEST_CASE(asinFunctionName)
 {
     const BasePtr asin = Trigonometric::createAsin(a);
-    const Name expected("asin");
+    const Name expected{"asin"};
 
     BOOST_CHECK_EQUAL(expected, asin->name());
 }
@@ -80,7 +80,7 @@ BOOST_AUTO_TEST_CASE(asinFunctionName)
 BOOST_AUTO_TEST_CASE(acosFunctionName)
 {
     const BasePtr acos = Trigonometric::createAcos(a);
-    const Name expected("acos");
+    const Name expected{"acos"};
 
     BOOST_CHECK_EQUAL(expected, acos->name());
 }
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(acosFunctionName)
 BOOST_AUTO_TEST_CASE(atanFunctionName)
 {
     const BasePtr atan = Trigonometric::createAtan(a);
-    const Name expected("atan");
+    const Name expected{"atan"};
 
     BOOST_CHECK_EQUAL(expected, atan->name());
 }
@@ -96,7 +96,7 @@ BOOST_AUTO_TEST_CASE(atanFunctionName)
 BOOST_AUTO_TEST_CASE(atan2FunctionName)
 {
     const BasePtr atan = Trigonometric::createAtan2(b, a);
-    const Name expected("atan2");
+    const Name expected{"atan2"};
 
     BOOST_CHECK_EQUAL(expected, atan->name());
 }
@@ -397,7 +397,7 @@ BOOST_AUTO_TEST_CASE(atanOfTan)
 {
     const BasePtr tan = Trigonometric::createTan(a);
     const BasePtr atan = Trigonometric::createAtan(tan);
-    const Name expected("atan");
+    const Name expected{"atan"};
 
     BOOST_TEST(atan->isFunction());
     BOOST_CHECK_EQUAL(expected, atan->name());
@@ -874,7 +874,7 @@ BOOST_AUTO_TEST_CASE(sinOfLogarithm)
 {
     const BasePtr log = Logarithm::create(a);
     const BasePtr result = Trigonometric::createSin(log);
-    const Name expectedSinName("sin");
+    const Name expectedSinName{"sin"};
 
     BOOST_TEST(result->isFunction());
     BOOST_CHECK_EQUAL(expectedSinName, result->name());

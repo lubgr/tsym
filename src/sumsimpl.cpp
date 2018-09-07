@@ -203,8 +203,8 @@ namespace tsym {
 
         bool areSinAndCos(const BasePtr& s1, const BasePtr& s2)
         {
-            const Name sin("sin");
-            const Name cos("cos");
+            const Name sin{"sin"};
+            const Name cos{"cos"};
 
             if (!s1->isFunction() || !s2->isFunction())
                 return false;

@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(positiveSimpleSymbol)
 
 BOOST_AUTO_TEST_CASE(positiveSymbolWithLongName)
 {
-    const Name name("Abcde", "1234", "f");
+    const Name name{"Abcde", "1234", "f"};
     const BasePtr positive = Symbol::createPositive(name);
 
     checkPos(positive);

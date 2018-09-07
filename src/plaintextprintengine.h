@@ -5,7 +5,7 @@
 #include "printengine.h"
 
 namespace tsym {
-    class Name;
+    struct Name;
 }
 
 namespace tsym {

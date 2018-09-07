@@ -299,7 +299,7 @@ BOOST_AUTO_TEST_CASE(atan2NormalizeFunctionArgs)
 {
     const BasePtr orig = Trigonometric::createAtan2(Sum::create(b, argToZero), a);
     const BasePtr result = orig->normal();
-    const Name expectedFctName("atan2");
+    const Name expectedFctName{"atan2"};
 
     BOOST_TEST(result->isFunction());
     BOOST_CHECK_EQUAL(expectedFctName, result->name());

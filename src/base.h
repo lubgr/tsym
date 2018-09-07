@@ -10,7 +10,7 @@ namespace tsym {
     class SymbolMap;
     class Number;
     struct Fraction;
-    class Name;
+    struct Name;
 }
 
 namespace tsym {

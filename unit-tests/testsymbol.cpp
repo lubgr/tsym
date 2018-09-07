@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_SUITE(TestSymbol)
 BOOST_AUTO_TEST_CASE(creationByString)
 {
     const BasePtr ptr = Symbol::create("abc");
-    const Name expected("abc");
+    const Name expected{"abc"};
 
     BOOST_TEST(ptr->isSymbol());
     BOOST_CHECK_EQUAL(expected, ptr->name());
@@ -41,8 +41,7 @@ BOOST_AUTO_TEST_CASE(emptyName, noLogs())
 
 BOOST_AUTO_TEST_CASE(nameReservedForTemporaries, noLogs())
 {
-    const Name name("tmp#99999999999");
-
+    const Name name{"tmp#99999999999"};
     const BasePtr tmp = Symbol::create(name);
 
     BOOST_TEST(tmp->isSymbol());

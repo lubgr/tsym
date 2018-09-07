@@ -1,71 +1,54 @@
 
 #include "name.h"
-
-tsym::Name::Name(const std::string& name)
-    : name(name)
-    , plainText(name)
-{}
-
-tsym::Name::Name(const std::string& name, const std::string& subscript)
-    : name(name)
-    , subscript(subscript)
-    , plainText(name)
-{
-    if (!subscript.empty())
-        plainText.append("_").append(subscript);
-}
-
-tsym::Name::Name(const std::string& name, const std::string& subscript, const std::string& superscript)
-    : name(name)
-    , subscript(subscript)
-    , superscript(superscript)
-    , plainText(name)
-{
-    if (!subscript.empty())
-        plainText.append("_").append(subscript);
-
-    if (!superscript.empty())
-        plainText.append("_").append(superscript);
-}
-
-const std::string& tsym::Name::getName() const
-{
-    return name;
-}
-
-const std::string& tsym::Name::getSubscript() const
-{
-    return subscript;
-}
-
-const std::string& tsym::Name::getSuperscript() const
-{
-    return superscript;
-}
-
-const std::string& tsym::Name::plain() const
-{
-    return plainText;
-}
+#include <boost/functional/hash.hpp>
+#include <ostream>
+#include <tuple>
+#include "namefct.h"
 
 bool tsym::operator==(const Name& lhs, const Name& rhs)
 {
-    return lhs.plain() == rhs.plain();
+    return std::tie(lhs.value, lhs.subscript, lhs.superscript) == std::tie(rhs.value, rhs.subscript, rhs.superscript);
+}
+
+bool tsym::operator!=(const Name& lhs, const Name& rhs)
+{
+    return !(lhs == rhs);
 }
 
 bool tsym::operator<(const Name& lhs, const Name& rhs)
 {
-    return lhs.plain() < rhs.plain();
+    return std::tie(lhs.value, lhs.subscript, lhs.superscript) < std::tie(rhs.value, rhs.subscript, rhs.superscript);
+}
+
+bool tsym::operator<=(const Name& lhs, const Name& rhs)
+{
+    return !(lhs > rhs);
+}
+
+bool tsym::operator>(const Name& lhs, const Name& rhs)
+{
+    return rhs < lhs;
+}
+
+bool tsym::operator>=(const Name& lhs, const Name& rhs)
+{
+    return !(lhs < rhs);
 }
 
 std::ostream& tsym::operator<<(std::ostream& stream, const Name& name)
 {
-    return stream << name.plain();
+    return stream << concat(name);
 }
 
 size_t tsym::hash_value(const Name& name)
 {
-    return std::hash<std::string>{}(name.plain());
+    size_t seed = 0;
+
+    boost::hash_combine(seed, std::hash<std::string>{}(name.value));
+    boost::hash_combine(seed, std::hash<std::string>{}(name.subscript));
+    boost::hash_combine(seed, std::hash<std::string>{}(name.superscript));
+
+    return seed;
 }
 
 size_t std::hash<tsym::Name>::operator()(const tsym::Name& name) const

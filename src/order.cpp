@@ -67,8 +67,8 @@ bool tsym::doPermuteSameType(const Base& left, const Base& right)
 
 bool tsym::doPermuteBothSymbol(const Base& left, const Base& right)
 {
-    const Name& lName(left.name());
-    const Name& rName(right.name());
+    const Name& lName{left.name()};
+    const Name& rName{right.name()};
 
     if (lName == rName)
         if (left.isPositive() != right.isPositive())
@@ -133,16 +133,16 @@ bool tsym::doPermuteBothSum(const Base& left, const Base& right)
 
 bool tsym::doPermuteBothConstant(const Base& left, const Base& right)
 {
-    const Name& lName(left.name());
-    const Name& rName(right.name());
+    const Name& lName{left.name()};
+    const Name& rName{right.name()};
 
     return lName > rName;
 }
 
 bool tsym::doPermuteBothFunction(const Base& left, const Base& right)
 {
-    const Name& lName(left.name());
-    const Name& rName(right.name());
+    const Name& lName{left.name()};
+    const Name& rName{right.name()};
 
     if (lName != rName)
         return lName > rName;
@@ -233,8 +233,8 @@ bool tsym::doPermuteLeftSum(const Base& left, const Base& right)
 
 bool tsym::doPermuteLeftFunctionRightSymbol(const Base& left, const Base& right)
 {
-    const Name& lName(left.name());
-    const Name& rName(right.name());
+    const Name& lName{left.name()};
+    const Name& rName{right.name()};
 
     if (lName == rName)
         return false;

@@ -6,6 +6,7 @@
 #include "fraction.h"
 #include "logarithm.h"
 #include "logging.h"
+#include "namefct.h"
 #include "parser.h"
 #include "power.h"
 #include "symbolmap.h"
@@ -192,7 +193,7 @@ tsym::Var tsym::denominator(const Var& arg)
 
 std::string tsym::name(const Var& arg)
 {
-    return arg.get()->name().plain();
+    return concat(arg.get()->name());
 }
 
 std::vector<tsym::Var> tsym::operands(const Var& arg)

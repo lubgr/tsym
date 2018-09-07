@@ -605,7 +605,7 @@ BOOST_AUTO_TEST_CASE(zeroBaseToNegExponent, noLogs())
 BOOST_AUTO_TEST_CASE(identity)
 {
     const BasePtr res = Power::create(a, one);
-    const Name expected("a");
+    const Name expected{"a"};
 
     BOOST_TEST(res->isSymbol());
     BOOST_CHECK_EQUAL(expected, res->name());
@@ -751,13 +751,13 @@ BOOST_AUTO_TEST_CASE(applyExponentToProduct)
 
     fac = *it;
     BOOST_TEST(fac->isPower());
-    BOOST_TEST(fac->base()->name() == Name("a"));
+    BOOST_TEST(fac->base()->name() == Name{"a"});
     BOOST_CHECK_EQUAL(three, fac->exp());
 
     ++it;
     fac = *it;
     BOOST_TEST(fac->isPower());
-    BOOST_TEST(fac->base()->name() == Name("b"));
+    BOOST_TEST(fac->base()->name() == Name{"b"});
     BOOST_CHECK_EQUAL(six, fac->exp());
 }
 

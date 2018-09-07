@@ -148,11 +148,10 @@ namespace tsym {
 
         bool isContractableTrigFctPower(const Base& pow)
         {
-            static Name trigoNames[3] = {Name("sin"), Name("cos"), Name("tan")};
             const Name& name(pow.base()->name());
 
             if (pow.base()->isFunction() && pow.exp()->numericEval())
-                return name == trigoNames[0] || name == trigoNames[1] || name == trigoNames[2];
+                return name == Name{"sin"} || name == Name{"cos"} || name == Name{"tan"};
 
             return false;
         }
@@ -203,12 +202,12 @@ namespace tsym {
 
         BasePtr trigFunctionPowerReplacement(const BasePtr& pow, const BasePtr& sin, const BasePtr& cos)
         {
-            if (pow->base()->name() == Name("sin"))
+            if (pow->base()->name() == Name{"sin"})
                 return Power::create(sin, pow->exp());
-            else if (pow->base()->name() == Name("cos"))
+            else if (pow->base()->name() == Name{"cos"})
                 return Power::create(cos, pow->exp());
 
-            assert(pow->base()->name() == Name("tan"));
+            assert(pow->base()->name() == Name{"tan"});
 
             return Power::create(Product::create(sin, Power::oneOver(cos)), pow->exp());
         }

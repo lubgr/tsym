@@ -7,21 +7,21 @@
 
 tsym::Constant::Constant(Type type, Name&& name, Base::CtorKey&&)
     : type(type)
-    , constantName(std::move(name))
+    , constantName{std::move(name)}
 {
     setDebugString();
 }
 
 const tsym::BasePtr& tsym::Constant::createPi()
 {
-    static const BasePtr instance = create(Type::PI, Name("pi"));
+    static const BasePtr instance = create(Type::PI, Name{"pi"});
 
     return instance;
 }
 
 const tsym::BasePtr& tsym::Constant::createE()
 {
-    static const BasePtr instance = create(Type::E, Name("e"));
+    static const BasePtr instance = create(Type::E, Name{"e"});
 
     return instance;
 }

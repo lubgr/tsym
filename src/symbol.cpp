@@ -12,14 +12,14 @@
 unsigned tsym::Symbol::tmpCounter = 0;
 
 tsym::Symbol::Symbol(Name name, bool positive, Base::CtorKey&&)
-    : symbolName(std::move(name))
+    : symbolName{std::move(name)}
     , positive(positive)
 {
     setDebugString();
 }
 
 tsym::Symbol::Symbol(unsigned tmpId, bool positive, Base::CtorKey&&)
-    : symbolName(std::string(tmpSymbolNamePrefix) + std::to_string(tmpId))
+    : symbolName{std::string(tmpSymbolNamePrefix) + std::to_string(tmpId)}
     , positive(positive)
 {
     setDebugString();
@@ -27,13 +27,13 @@ tsym::Symbol::Symbol(unsigned tmpId, bool positive, Base::CtorKey&&)
 
 tsym::Symbol::~Symbol()
 {
-    if (symbolName.getName().find(tmpSymbolNamePrefix) == 0)
+    if (symbolName.value.find(tmpSymbolNamePrefix) == 0)
         --tmpCounter;
 }
 
 tsym::BasePtr tsym::Symbol::create(const std::string& name)
 {
-    return create(Name(name));
+    return create(Name{name});
 }
 
 tsym::BasePtr tsym::Symbol::create(const Name& name)
@@ -43,13 +43,13 @@ tsym::BasePtr tsym::Symbol::create(const Name& name)
 
 tsym::BasePtr tsym::Symbol::create(const Name& name, bool positive)
 {
-    if (name.getName().empty()) {
+    if (name.value.empty()) {
         TSYM_ERROR("Creating Symbol with empty name, return Undefined instead");
         return Undefined::create();
-    } else if (name.getName().find(tmpSymbolNamePrefix) == 0) {
+    } else if (name.value.find(tmpSymbolNamePrefix) == 0) {
         TSYM_ERROR("Instantiation of a non-temporary Symbol containing the temporary name prefix %s,"
                    " return true temporary Symbol",
-          name.getName());
+          name.value);
         return createTmpSymbol(positive);
     }
 
@@ -70,7 +70,7 @@ tsym::BasePtr tsym::Symbol::createNonEmptyName(const Name& name, bool positive)
 
 tsym::BasePtr tsym::Symbol::createPositive(const std::string& name)
 {
-    return createPositive(Name(name));
+    return createPositive(Name{name});
 }
 
 tsym::BasePtr tsym::Symbol::createPositive(const Name& name)

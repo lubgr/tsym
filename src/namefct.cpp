@@ -92,18 +92,29 @@ namespace tsym {
 
 std::string tsym::unicode(const Name& name)
 {
-    if (!isGreekLetter(name.getName()))
-        return name.plain();
+    if (!isGreekLetter(name.value))
+        return concat(name);
     else
-        return unicodeForGreekLetter(name.getName());
+        return unicodeForGreekLetter(name.value);
 }
 
 std::string tsym::tex(const Name& name)
 {
-    std::string result = isGreekLetter(name.getName()) ? getGreekTexLetter(name.getName()) : name.getName();
+    std::string result = isGreekLetter(name.value) ? getGreekTexLetter(name.value) : name.value;
 
-    result.append(texAppendix(name.getSubscript(), "_"));
-    result.append(texAppendix(name.getSuperscript(), "^"));
+    result.append(texAppendix(name.subscript, "_"));
+    result.append(texAppendix(name.superscript, "^"));
+
+    return result;
+}
+
+std::string tsym::concat(const Name& name, char delimiter)
+{
+    std::string result(name.value);
+
+    for (const auto& appendix : {name.subscript, name.superscript})
+        if (!appendix.empty())
+            result.append(1, delimiter).append(appendix);
 
     return result;
 }

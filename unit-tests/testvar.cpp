@@ -58,12 +58,12 @@ BOOST_AUTO_TEST_CASE(emptyStringCreation, noLogs())
 BOOST_AUTO_TEST_CASE(simpleSubcriptParsing)
 {
     const Var var("a_b");
-    const Name fullName(var.get()->name());
+    const Name fullName{var.get()->name()};
 
     BOOST_CHECK_EQUAL("a_b", name(var));
-    BOOST_CHECK_EQUAL("a", fullName.getName());
-    BOOST_CHECK_EQUAL("b", fullName.getSubscript());
-    BOOST_CHECK_EQUAL("", fullName.getSuperscript());
+    BOOST_CHECK_EQUAL("a", fullName.value);
+    BOOST_CHECK_EQUAL("b", fullName.subscript);
+    BOOST_CHECK_EQUAL("", fullName.superscript);
 }
 
 BOOST_AUTO_TEST_CASE(subscriptParsing)
@@ -71,9 +71,9 @@ BOOST_AUTO_TEST_CASE(subscriptParsing)
     const Var var("abc_{10}");
     const Name name(var.get()->name());
 
-    BOOST_CHECK_EQUAL("abc", name.getName());
-    BOOST_CHECK_EQUAL("10", name.getSubscript());
-    BOOST_TEST(name.getSuperscript().empty());
+    BOOST_CHECK_EQUAL("abc", name.value);
+    BOOST_CHECK_EQUAL("10", name.subscript);
+    BOOST_TEST(name.superscript.empty());
 }
 
 BOOST_AUTO_TEST_CASE(smallIntParsing)

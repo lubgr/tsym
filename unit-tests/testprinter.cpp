@@ -134,7 +134,7 @@ BOOST_AUTO_TEST_CASE(positiveSymbolWithSubAndSuperscript)
 #else
       "a_b_c";
 #endif
-    const Name name("a", "b", "c");
+    const Name name{"a", "b", "c"};
     const BasePtr aPos = Symbol::createPositive(name);
 
     BOOST_CHECK_EQUAL(expected, print(*aPos));

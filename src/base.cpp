@@ -170,7 +170,7 @@ tsym::BasePtr tsym::Base::exp() const
 
 const tsym::Name& tsym::Base::name() const
 {
-    static const Name empty("");
+    static const Name empty{""};
 
     return empty;
 }

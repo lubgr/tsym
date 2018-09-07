@@ -48,9 +48,9 @@ BOOST_AUTO_TEST_CASE(number)
 
 BOOST_AUTO_TEST_CASE(name)
 {
-    const size_t textualHash = std::hash<Name>{}(Name("a", "b", "c"));
-    const size_t shortTextualHash = std::hash<Name>{}(Name("a"));
-    const size_t numericHash = std::hash<Name>{}(Name("123"));
+    const size_t textualHash = std::hash<Name>{}(Name{"a", "b", "c"});
+    const size_t shortTextualHash = std::hash<Name>{}(Name{"a"});
+    const size_t numericHash = std::hash<Name>{}(Name{"123"});
 
     BOOST_TEST(textualHash != numericHash);
     BOOST_TEST(textualHash != shortTextualHash);

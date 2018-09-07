@@ -12,7 +12,7 @@ tsym::PlaintextPrintEngine::PlaintextPrintEngine(std::ostream& out, CharSet char
 tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::symbol(const Name& name)
 {
     if (charset == CharSet::ASCII)
-        out << name.plain();
+        out << concat(name);
     else
         out << unicode(name);
 

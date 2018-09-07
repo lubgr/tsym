@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(typeRequest)
 
 BOOST_AUTO_TEST_CASE(getNameFromPi)
 {
-    const Name expected("pi");
+    const Name expected{"pi"};
     Name name;
 
     name = pi->name();
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(getNameFromPi)
 
 BOOST_AUTO_TEST_CASE(getNameFromE)
 {
-    const Name expected("e");
+    const Name expected{"e"};
     Name name;
 
     name = euler->name();

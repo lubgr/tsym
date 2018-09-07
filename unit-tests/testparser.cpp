@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE(wrongSymbolWithNumberStart)
 BOOST_AUTO_TEST_CASE(symbolWithShortSupscript)
 {
     const parser::Result result = parser::parse("aBc123_a");
-    const Name name("aBc123", "a");
+    const Name name{"aBc123", "a"};
     const BasePtr expected = Symbol::create(name);
 
     checkSuccess(expected, result);
@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE(symbolWithShortSupscript)
 BOOST_AUTO_TEST_CASE(symbolWithLongSupscript)
 {
     const parser::Result result = parser::parse("aBc123_{aA321}");
-    const Name name("aBc123", "aA321");
+    const Name name{"aBc123", "aA321"};
     const BasePtr expected = Symbol::create(name);
 
     checkSuccess(expected, result);
@@ -236,7 +236,7 @@ BOOST_AUTO_TEST_CASE(symbolWithLongSupscript)
 BOOST_AUTO_TEST_CASE(symbolWithShortSubscriptInBraces)
 {
     const parser::Result result = parser::parse("abcdefghijk_{1}");
-    const Name name("abcdefghijk", "1");
+    const Name name{"abcdefghijk", "1"};
     const BasePtr expected = Symbol::create(name);
 
     checkSuccess(expected, result);
@@ -259,7 +259,7 @@ BOOST_AUTO_TEST_CASE(symbolWithEmptySubscriptInBraces)
 BOOST_AUTO_TEST_CASE(symbolWithLongSubscriptWithoutBraces)
 {
     const parser::Result result = parser::parse("aBc123_abc");
-    const BasePtr expected = Symbol::create(Name("aBc123", "a"));
+    const BasePtr expected = Symbol::create(Name{"aBc123", "a"});
 
     check({expected, true, false}, result);
 }

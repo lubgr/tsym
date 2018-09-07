@@ -6,7 +6,7 @@
 
 tsym::Function::Function(const BasePtrList& args, const std::string& name)
     : Base(args)
-    , functionName(name)
+    , functionName{name}
 {}
 
 bool tsym::Function::isEqualDifferentBase(const Base& other) const

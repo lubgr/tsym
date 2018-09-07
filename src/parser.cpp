@@ -128,7 +128,7 @@ namespace tsym {
 
                 assert(size == 1 || size == 2);
 
-                const Name name(nameSubscript.front(), size == 2 ? nameSubscript.back() : "");
+                const Name name{nameSubscript.front(), size == 2 ? nameSubscript.back() : ""};
 
                 stack.push(Symbol::create(name));
             }
