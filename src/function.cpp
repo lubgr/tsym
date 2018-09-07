@@ -4,9 +4,9 @@
 #include "bplist.h"
 #include "numeric.h"
 
-tsym::Function::Function(const BasePtrList& args, const std::string& name)
+tsym::Function::Function(const BasePtrList& args, Name&& name)
     : Base(args)
-    , functionName{name}
+    , functionName{std::move(name)}
 {}
 
 bool tsym::Function::isEqualDifferentBase(const Base& other) const

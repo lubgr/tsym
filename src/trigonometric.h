@@ -59,7 +59,6 @@ namespace tsym {
           const Number& yNum, const Number& xNum, const BasePtr& y, const BasePtr& x);
         static BasePtr simplAtan2(const BasePtr& y, const BasePtr& x, const BasePtr& increment);
         static BasePtr shiftAtanResultIntoRange(BasePtr result, BasePtr summand);
-        static std::string getStr(Type type);
 
         Fraction normalAtan2(SymbolMap& map) const;
         Fraction normalOtherThanAtan2(SymbolMap& map) const;

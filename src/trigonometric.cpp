@@ -33,11 +33,34 @@ namespace tsym {
         {
             return Product::create(y, Power::oneOver(x));
         }
+
+        Name nameBy(Trigonometric::Type type)
+        {
+            switch (type) {
+                case Trigonometric::Type::SIN:
+                    return {"sin"};
+                case Trigonometric::Type::COS:
+                    return {"cos"};
+                case Trigonometric::Type::TAN:
+                    return {"tan"};
+                case Trigonometric::Type::ASIN:
+                    return {"asin"};
+                case Trigonometric::Type::ACOS:
+                    return {"acos"};
+                case Trigonometric::Type::ATAN:
+                    return {"atan"};
+                case Trigonometric::Type::ATAN2:
+                    return {"atan2"};
+                default:
+                    TSYM_CRITICAL("Unknown trigonometric function type!");
+                    return {"Unknown"};
+            }
+        }
     }
 }
 
 tsym::Trigonometric::Trigonometric(const BasePtrList& args, Type type, Base::CtorKey&&)
-    : Function(args, getStr(type))
+    : Function(args, nameBy(type))
     , arg1(ops.front())
     ,
     /* Points to ops.front() except for atan2: */
@@ -363,29 +386,6 @@ tsym::BasePtr tsym::Trigonometric::shiftAtanResultIntoRange(BasePtr result, Base
         result = Sum::create(result, Product::minus(increment));
 
     return result;
-}
-
-std::string tsym::Trigonometric::getStr(Type type)
-{
-    switch (type) {
-        case Type::SIN:
-            return "sin";
-        case Type::COS:
-            return "cos";
-        case Type::TAN:
-            return "tan";
-        case Type::ASIN:
-            return "asin";
-        case Type::ACOS:
-            return "acos";
-        case Type::ATAN:
-            return "atan";
-        case Type::ATAN2:
-            return "atan2";
-        default:
-            TSYM_CRITICAL("Unknown trigonometric function type!");
-            return "Unknown";
-    }
 }
 
 std::optional<tsym::Number> tsym::Trigonometric::numericEval() const

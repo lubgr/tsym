@@ -12,7 +12,7 @@
 #include "undefined.h"
 
 tsym::Logarithm::Logarithm(const BasePtr& arg, Base::CtorKey&&)
-    : Function({arg}, "log")
+    : Function({arg}, {"log"})
     , arg(ops.front())
 {
     setDebugString();

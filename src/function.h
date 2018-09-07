@@ -27,7 +27,7 @@ namespace tsym {
         const Name& name() const override;
 
       protected:
-        Function(const BasePtrList& args, const std::string& name);
+        Function(const BasePtrList& args, Name&& name);
         ~Function() override = default;
 
       private:
