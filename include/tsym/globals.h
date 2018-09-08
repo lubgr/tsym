@@ -3,6 +3,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 #include "var.h"
 
@@ -45,7 +46,7 @@ namespace tsym {
     std::vector<Var> operands(const Var& arg);
     std::vector<Var> collectSymbols(const Var& arg);
 
-    std::optional<Var> parse(const std::string& str);
+    std::optional<Var> parse(std::string_view str);
 }
 
 #endif

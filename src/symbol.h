@@ -2,6 +2,7 @@
 #define TSYM_SYMBOL_H
 
 #include <string>
+#include <string_view>
 #include "base.h"
 #include "name.h"
 
@@ -9,9 +10,9 @@ namespace tsym {
     class Symbol : public Base {
         /* Symbols are compared by their name and a their positive flag. */
       public:
-        static BasePtr create(const std::string& name);
+        static BasePtr create(std::string_view name);
         static BasePtr create(const Name& name);
-        static BasePtr createPositive(const std::string& name);
+        static BasePtr createPositive(std::string_view name);
         static BasePtr createPositive(const Name& name);
         static BasePtr createTmpSymbol(bool positive = false);
 

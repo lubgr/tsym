@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(negInteger)
 
 BOOST_AUTO_TEST_CASE(numericPosFloat)
 {
-    const std::string input("1.23456789");
+    const std::string_view input("1.23456789");
     const BasePtr expected = Numeric::create(1.23456789);
     const parser::Result result = parser::parse(input);
 
@@ -77,7 +77,7 @@ BOOST_AUTO_TEST_CASE(numericPosFloat)
 
 BOOST_AUTO_TEST_CASE(numericPosFloatNoDigitsAfterPeriod)
 {
-    const std::string input("987.");
+    const std::string_view input("987.");
     const BasePtr expected = Numeric::create(987);
     const parser::Result result = parser::parse(input);
 
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(numericPosFloatNoDigitsAfterPeriod)
 
 BOOST_AUTO_TEST_CASE(numericPosScientificLowerEPosExp)
 {
-    const std::string input("1.234e56");
+    const std::string_view input("1.234e56");
     const BasePtr expected = Numeric::create(1.234e56);
     const parser::Result result = parser::parse(input);
 
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(numericPosScientificLowerEPosExp)
 
 BOOST_AUTO_TEST_CASE(numericPosScientificUpperEPosExp)
 {
-    const std::string input(".34E+12");
+    const std::string_view input(".34E+12");
     const BasePtr expected = Numeric::create(0.34e12);
     const parser::Result result = parser::parse(input);
 
@@ -104,7 +104,7 @@ BOOST_AUTO_TEST_CASE(numericPosScientificUpperEPosExp)
 
 BOOST_AUTO_TEST_CASE(numericPosScientificZeroExp)
 {
-    const std::string input(".34E+0");
+    const std::string_view input(".34E+0");
     const BasePtr expected = Numeric::create(0.34);
     const parser::Result result = parser::parse(input);
 
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE(numericPosScientificZeroExp)
 
 BOOST_AUTO_TEST_CASE(numericPosScientificLowerENegExp)
 {
-    const std::string input("1.234E56");
+    const std::string_view input("1.234E56");
     const BasePtr expected = Numeric::create(1.234e56);
     const parser::Result result = parser::parse(input);
 
@@ -122,7 +122,7 @@ BOOST_AUTO_TEST_CASE(numericPosScientificLowerENegExp)
 
 BOOST_AUTO_TEST_CASE(numericPosScientificUpperENegExp)
 {
-    const std::string input("1.234E-56");
+    const std::string_view input("1.234E-56");
     const BasePtr expected = Numeric::create(1.234e-56);
     const parser::Result result = parser::parse(input);
 
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(numericPosScientificUpperENegExp)
 
 BOOST_AUTO_TEST_CASE(numericPosScientificUpperEPosExpNoPeriod)
 {
-    const std::string input("123E2");
+    const std::string_view input("123E2");
     const BasePtr expected = Numeric::create(12300.0);
     const parser::Result result = parser::parse(input);
 
@@ -140,7 +140,7 @@ BOOST_AUTO_TEST_CASE(numericPosScientificUpperEPosExpNoPeriod)
 
 BOOST_AUTO_TEST_CASE(numericNegFloat)
 {
-    const std::string input("-123456.789");
+    const std::string_view input("-123456.789");
     const BasePtr expected = Numeric::create(-123456.789);
     const parser::Result result = parser::parse(input);
 
@@ -149,7 +149,7 @@ BOOST_AUTO_TEST_CASE(numericNegFloat)
 
 BOOST_AUTO_TEST_CASE(numericNegScientificLowerEPosExp)
 {
-    const std::string input("-123.E-2");
+    const std::string_view input("-123.E-2");
     const BasePtr expected = Numeric::create(-1.23);
     const parser::Result result = parser::parse(input);
 
@@ -158,7 +158,7 @@ BOOST_AUTO_TEST_CASE(numericNegScientificLowerEPosExp)
 
 BOOST_AUTO_TEST_CASE(numericNegScientificLowerENegExp)
 {
-    const std::string input("-2.345e-2");
+    const std::string_view input("-2.345e-2");
     const BasePtr expected = Numeric::create(-2.345e-2);
     const parser::Result result = parser::parse(input);
 
@@ -167,7 +167,7 @@ BOOST_AUTO_TEST_CASE(numericNegScientificLowerENegExp)
 
 BOOST_AUTO_TEST_CASE(numericNegScientificUpperEPosExp)
 {
-    const std::string input("-543.210e3");
+    const std::string_view input("-543.210e3");
     const BasePtr expected = Numeric::create(-543.210e3);
     const parser::Result result = parser::parse(input);
 
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(numericNegScientificUpperEPosExp)
 
 BOOST_AUTO_TEST_CASE(numericNegScientificLowerEPosExpNoPeriod)
 {
-    const std::string input("-2e2");
+    const std::string_view input("-2e2");
     const BasePtr expected = Numeric::create(-200);
     const parser::Result result = parser::parse(input);
 
@@ -185,7 +185,7 @@ BOOST_AUTO_TEST_CASE(numericNegScientificLowerEPosExpNoPeriod)
 
 BOOST_AUTO_TEST_CASE(symbol)
 {
-    const std::string input = "a";
+    const std::string_view input = "a";
     const parser::Result result = parser::parse(input);
 
     checkSuccess(a, result);
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(symbol)
 
 BOOST_AUTO_TEST_CASE(symbolInSpaces)
 {
-    const std::string input = "  a  ";
+    const std::string_view input = "  a  ";
     const parser::Result result = parser::parse(input);
 
     checkSuccess(a, result);
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE(symbolInSpaces)
 
 BOOST_AUTO_TEST_CASE(symbolInSpacesAndWhitespace)
 {
-    const std::string input = " \n    a  \t   ";
+    const std::string_view input = " \n    a  \t   ";
     const parser::Result result = parser::parse(input);
 
     checkSuccess(a, result);
@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE(symbolWithWhitespaceInside)
 
 BOOST_AUTO_TEST_CASE(sumOfInts)
 {
-    const std::string input("2+5");
+    const std::string_view input("2+5");
     const parser::Result result = parser::parse(input);
 
     checkSuccess(seven, result);
@@ -309,7 +309,7 @@ BOOST_AUTO_TEST_CASE(sumOfInts)
 
 BOOST_AUTO_TEST_CASE(sumOfIntsWithSpaces)
 {
-    const std::string input("1 + 7");
+    const std::string_view input("1 + 7");
     const parser::Result result = parser::parse(input);
 
     checkSuccess(eight, result);
@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE(sumOfIntsWithSpaces)
 
 BOOST_AUTO_TEST_CASE(productOfInts)
 {
-    const std::string input("3*7");
+    const std::string_view input("3*7");
     const parser::Result result = parser::parse(input);
 
     checkSuccess(Numeric::create(21), result);
@@ -325,7 +325,7 @@ BOOST_AUTO_TEST_CASE(productOfInts)
 
 BOOST_AUTO_TEST_CASE(productOfIntsWithSpaces)
 {
-    const std::string input("\n 3*  7");
+    const std::string_view input("\n 3*  7");
     const parser::Result result = parser::parse(input);
 
     checkSuccess(Numeric::create(21), result);
@@ -333,7 +333,7 @@ BOOST_AUTO_TEST_CASE(productOfIntsWithSpaces)
 
 BOOST_AUTO_TEST_CASE(productOfIntsWithParentheses)
 {
-    const std::string input("3*(7)");
+    const std::string_view input("3*(7)");
     const parser::Result result = parser::parse(input);
 
     checkSuccess(Numeric::create(21), result);
@@ -640,8 +640,8 @@ BOOST_AUTO_TEST_CASE(unaryMinusInParentheses)
 
 BOOST_AUTO_TEST_CASE(posLargeInteger)
 {
-    const std::string intStr("12039182309810923809182093021938409283409820394");
-    const BasePtr expected = Numeric::create(Int(intStr.c_str()));
+    const char* intStr("12039182309810923809182093021938409283409820394");
+    const BasePtr expected = Numeric::create(Int(intStr));
     const parser::Result result = parser::parse(intStr);
 
     checkSuccess(expected, result);
@@ -649,8 +649,8 @@ BOOST_AUTO_TEST_CASE(posLargeInteger)
 
 BOOST_AUTO_TEST_CASE(negLargeInteger)
 {
-    const std::string intStr("-2039384092840928309482309480980928309482093480923840928309420938");
-    const BasePtr expected = Numeric::create(Int(intStr.c_str()));
+    const char* intStr = "-2039384092840928309482309480980928309482093480923840928309420938";
+    const BasePtr expected = Numeric::create(Int(intStr));
     const parser::Result result = parser::parse(intStr);
 
     checkSuccess(expected, result);
@@ -849,8 +849,8 @@ BOOST_AUTO_TEST_CASE(mixedTerm01)
 
 BOOST_AUTO_TEST_CASE(mixedTerm02)
 {
-    const std::string inputWithFrac("a*atan(1/sqrt(17))*cos(c*d)*sin(a*b)^2*tan(a*b)");
-    const std::string inputWithoutFrac("a*atan(17^(-1/2))*cos(c*d)*sin(a*b)^2*tan(a*b)");
+    const std::string_view inputWithFrac("a*atan(1/sqrt(17))*cos(c*d)*sin(a*b)^2*tan(a*b)");
+    const std::string_view inputWithoutFrac("a*atan(17^(-1/2))*cos(c*d)*sin(a*b)^2*tan(a*b)");
     const BasePtr expected = Product::create({a, Trigonometric::createAtan(Power::sqrt(Numeric::create(1, 17))),
       Trigonometric::createCos(Product::create(c, d)),
       Power::create(Trigonometric::createSin(Product::create(a, b)), two),

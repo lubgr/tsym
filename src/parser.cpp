@@ -255,21 +255,21 @@ namespace tsym {
             Rule summand;
         };
 
-        tsym::parser::Result parseAsciiOnly(const std::string& inputStr)
+        tsym::parser::Result parseAsciiOnly(std::string_view inputStr)
         {
-            QiParser<std::string::const_iterator> parser;
+            QiParser<std::string_view::const_iterator> parser;
 
             return parser.parse(cbegin(inputStr), cend(inputStr));
         }
 
-        bool isAsciiOnly(const std::string& inputStr)
+        bool isAsciiOnly(std::string_view inputStr)
         {
             return boost::algorithm::all_of(inputStr, [](auto ch) { return ch >= 0; });
         }
     }
 }
 
-tsym::parser::Result tsym::parser::parse(const std::string& inputStr)
+tsym::parser::Result tsym::parser::parse(std::string_view inputStr)
 {
     if (isAsciiOnly(inputStr))
         return parseAsciiOnly(inputStr);

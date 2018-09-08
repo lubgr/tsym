@@ -215,11 +215,11 @@ std::vector<tsym::Var> tsym::collectSymbols(const Var& arg)
     return symbols;
 }
 
-std::optional<tsym::Var> tsym::parse(const std::string& str)
+std::optional<tsym::Var> tsym::parse(std::string_view str)
 {
     parser::Result result = parser::parse(str);
 
-    TSYM_DEBUG("Parsed '%s' with result: %S", str.c_str(), result.value);
+    TSYM_DEBUG("Parsed '%S' with result: %S", str, result.value);
 
     if (result.success && result.matchedWholeString)
         return Var(result.value);

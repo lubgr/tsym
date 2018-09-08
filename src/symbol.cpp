@@ -31,9 +31,9 @@ tsym::Symbol::~Symbol()
         --tmpCounter;
 }
 
-tsym::BasePtr tsym::Symbol::create(const std::string& name)
+tsym::BasePtr tsym::Symbol::create(std::string_view name)
 {
-    return create(Name{name});
+    return create(Name{std::string(name)});
 }
 
 tsym::BasePtr tsym::Symbol::create(const Name& name)
@@ -68,9 +68,9 @@ tsym::BasePtr tsym::Symbol::createNonEmptyName(const Name& name, bool positive)
     return pool.insert({key, std::make_shared<const Symbol>(name, positive, Base::CtorKey{})}).first->second;
 }
 
-tsym::BasePtr tsym::Symbol::createPositive(const std::string& name)
+tsym::BasePtr tsym::Symbol::createPositive(std::string_view name)
 {
-    return createPositive(Name{name});
+    return createPositive(Name{std::string(name)});
 }
 
 tsym::BasePtr tsym::Symbol::createPositive(const Name& name)

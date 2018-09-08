@@ -9,14 +9,14 @@
 
 namespace tsym {
     namespace {
-        bool isGreekLetter(const std::string& str);
-        size_t greekAlphabetIndex(const std::string& str);
-        std::string unicodeForGreekLetter(const std::string& str);
-        bool startsWithCapitalLetter(const std::string& str);
-        std::string getGreekTexLetter(const std::string& str);
-        std::string texAppendix(const std::string& term, const std::string& connection);
+        bool isGreekLetter(std::string_view str);
+        size_t greekAlphabetIndex(std::string_view str);
+        std::string unicodeForGreekLetter(std::string_view str);
+        bool startsWithCapitalLetter(std::string_view str);
+        std::string getGreekTexLetter(std::string_view str);
+        std::string texAppendix(std::string_view term, char connection);
 
-        bool isGreekLetter(const std::string& str)
+        bool isGreekLetter(std::string_view str)
         {
             if (str.length() <= 1)
                 return false;
@@ -24,7 +24,7 @@ namespace tsym {
                 return greekAlphabetIndex(str) != static_cast<size_t>(-1);
         }
 
-        size_t greekAlphabetIndex(const std::string& str)
+        size_t greekAlphabetIndex(std::string_view str)
         {
             static const std::vector<std::string_view> alphabet{"alpha", "beta", "gamma", "delta", "epsilon", "zeta",
               "eta", "theta", "iota", "kappa", "lambda", "my", "ny", "xi", "omikron", "pi", "rho", "sigma", "tau",
@@ -40,7 +40,7 @@ namespace tsym {
             return static_cast<size_t>(-1);
         }
 
-        std::string unicodeForGreekLetter(const std::string& str)
+        std::string unicodeForGreekLetter(std::string_view str)
         {
 #ifndef TSYM_ASCII_ONLY
             const size_t index = greekAlphabetIndex(str);
@@ -58,12 +58,12 @@ namespace tsym {
 #endif
         }
 
-        bool startsWithCapitalLetter(const std::string& str)
+        bool startsWithCapitalLetter(std::string_view str)
         {
             return static_cast<char>(std::tolower(str[0])) != str[0];
         }
 
-        std::string getGreekTexLetter(const std::string& str)
+        std::string getGreekTexLetter(std::string_view str)
         {
             std::string result("\\");
 
@@ -73,17 +73,20 @@ namespace tsym {
             return result.append(str);
         }
 
-        std::string texAppendix(const std::string& term, const std::string& connection)
+        std::string texAppendix(std::string_view term, char connection)
         {
             std::string appendix;
 
             if (!term.empty())
-                appendix.append(connection);
+                appendix.push_back(connection);
 
             if (term.length() == 1)
                 appendix.append(term);
-            else if (term.length() > 1)
-                appendix.append("{").append(term).append("}");
+            else if (term.length() > 1) {
+                appendix.push_back('{');
+                appendix.append(term);
+                appendix.push_back('}');
+            }
 
             return appendix;
         }
@@ -102,8 +105,8 @@ std::string tsym::tex(const Name& name)
 {
     std::string result = isGreekLetter(name.value) ? getGreekTexLetter(name.value) : name.value;
 
-    result.append(texAppendix(name.subscript, "_"));
-    result.append(texAppendix(name.superscript, "^"));
+    result.append(texAppendix(name.subscript, '_'));
+    result.append(texAppendix(name.superscript, '^'));
 
     return result;
 }

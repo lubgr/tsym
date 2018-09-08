@@ -80,7 +80,7 @@ tsym::Var::Var(int numerator, int denominator)
     rep(Numeric::create(numerator, denominator))
 {}
 
-tsym::Var::Var(const std::string& str)
+tsym::Var::Var(std::string_view str)
 {
     const parser::Result parsed = parser::parse(str);
 
@@ -89,14 +89,14 @@ tsym::Var::Var(const std::string& str)
         return;
     }
 
-    TSYM_ERROR("Parsing symbol or integer from '%s' failed, result: %S (%S). "
+    TSYM_ERROR("Parsing symbol or integer from '%S' failed, result: %S (%S). "
                "Create undefined Var object.",
       str, parsed.value, Var(parsed.value).type());
 
     rep = Undefined::create();
 }
 
-tsym::Var::Var(const std::string& str, [[maybe_unused]] Var::Sign sign)
+tsym::Var::Var(std::string_view str, [[maybe_unused]] Var::Sign sign)
 {
     const Var withoutSign(str);
     const Type type(withoutSign.type());

@@ -1,6 +1,7 @@
 #ifndef TSYM_PARSER_H
 #define TSYM_PARSER_H
 
+#include <string_view>
 #include "baseptr.h"
 
 namespace tsym {
@@ -30,7 +31,7 @@ namespace tsym {
          *
          * This might in many cases be not very accurate, but provides a simple procedure for wrong
          * input.  */
-        Result parse(const std::string& inputStr);
+        Result parse(std::string_view inputStr);
     }
 }
 
