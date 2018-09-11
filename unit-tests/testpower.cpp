@@ -387,7 +387,7 @@ BOOST_AUTO_TEST_CASE(simpleUnresolvableExpFrac)
     const BasePtr pow = Power::sqrt(two);
 
     BOOST_TEST(pow->isPower());
-    BOOST_TEST(pow->isNumericPower());
+    BOOST_TEST(isNumericPower(*pow));
     BOOST_CHECK_CLOSE(std::sqrt(2.0), pow->numericEval().value().toDouble(), TOL);
 }
 
@@ -417,7 +417,7 @@ BOOST_AUTO_TEST_CASE(unresolvableExpFrac)
     const BasePtr pow = Power::create(seven, oneThird);
 
     BOOST_TEST(pow->isPower());
-    BOOST_TEST(pow->isNumericPower());
+    BOOST_TEST(isNumericPower(*pow));
 
     BOOST_CHECK_CLOSE(std::pow(7.0, 1.0 / 3.0), pow->numericEval().value().toDouble(), TOL);
 }

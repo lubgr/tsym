@@ -32,3 +32,11 @@ bool tsym::isZero(const Base& expr)
 {
     return expr.isNumeric() && isEqual<0>(expr);
 }
+
+bool tsym::isNumericPower(const Base& expr)
+{
+    if (expr.isPower())
+        return expr.base()->isNumeric() && expr.exp()->isNumeric();
+
+    return false;
+}

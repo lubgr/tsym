@@ -339,7 +339,7 @@ namespace tsym {
 
             if (constant->isSum())
                 return {numeric, constant};
-            else if (constant->isNumericPower())
+            else if (isNumericPower(*constant))
                 return simplNumAndNumPow(numeric, constant);
             else if (constant->isPower())
                 return {numeric, constant};
@@ -420,9 +420,9 @@ namespace tsym {
 
         bool areNumPowersWithEqualExp(const Base& f1, const Base& f2)
         {
-            if (!f1.isNumericPower())
+            if (!isNumericPower(f1))
                 return false;
-            else if (!f2.isNumericPower())
+            else if (!isNumericPower(f2))
                 return false;
 
             const auto exp1 = f1.exp();
@@ -463,7 +463,7 @@ namespace tsym {
 
         bool areNumPowersWithEqualExpDenom(const Base& f1, const Base& f2)
         {
-            if (f1.isNumericPower() && f2.isNumericPower())
+            if (isNumericPower(f1) && isNumericPower(f2))
                 return f1.exp()->numericEval()->denominator() == f2.exp()->numericEval()->denominator();
             else
                 return false;
@@ -473,7 +473,7 @@ namespace tsym {
         /* This method has to manually perform an evaluation of integer exponentiation and
          * multiplication. */
         {
-            assert(f1->isNumericPower() && f2->isNumericPower());
+            assert(isNumericPower(*f1) && isNumericPower(*f2));
             const BasePtr newExp(Numeric::create(1, f1->exp()->numericEval()->denominator()));
             const Int& limit(options::getMaxPrimeResolution());
             const Int denom[] = {evalDenomExpNumerator(f1), evalDenomExpNumerator(f2)};
@@ -568,7 +568,7 @@ namespace tsym {
          * isConst(), this must be caught here. */
         {
             if (arg->isConst())
-                return arg->isNumeric() || arg->isNumericPower();
+                return arg->isNumeric() || isNumericPower(*arg);
 
             return false;
         }

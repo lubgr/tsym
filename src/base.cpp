@@ -39,11 +39,6 @@ bool tsym::Base::isPower() const
     return false;
 }
 
-bool tsym::Base::isNumericPower() const
-{
-    return false;
-}
-
 bool tsym::Base::isSum() const
 {
     return false;

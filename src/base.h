@@ -51,7 +51,6 @@ namespace tsym {
         virtual bool isSymbol() const;
         virtual bool isNumeric() const;
         virtual bool isPower() const;
-        virtual bool isNumericPower() const;
         virtual bool isSum() const;
         virtual bool isProduct() const;
         virtual bool isFunction() const;

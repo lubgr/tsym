@@ -154,11 +154,6 @@ bool tsym::Power::isPower() const
     return true;
 }
 
-bool tsym::Power::isNumericPower() const
-{
-    return baseRef->isNumeric() && expRef->isNumeric();
-}
-
 tsym::BasePtr tsym::Power::expand() const
 {
     if (isInteger(*expRef))

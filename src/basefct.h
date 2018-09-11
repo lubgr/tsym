@@ -12,6 +12,8 @@ namespace tsym {
      * could be evaluated to approx. zero/one: */
     bool isOne(const Base& expr);
     bool isZero(const Base& expr);
+
+    bool isNumericPower(const Base& expr);
 }
 
 #endif

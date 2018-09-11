@@ -34,7 +34,6 @@ namespace tsym {
         size_t hash() const override;
 
         bool isPower() const override;
-        bool isNumericPower() const override;
         BasePtr expand() const override;
         BasePtr subst(const Base& from, const BasePtr& to) const override;
         BasePtr coeff(const Base& variable, int exp) const override;

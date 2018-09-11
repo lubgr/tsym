@@ -91,7 +91,7 @@ BOOST_AUTO_TEST_CASE(numberTimesNumericPower)
     BOOST_TEST(p->isConst());
 
     BOOST_CHECK_EQUAL(2, p->operands().front()->numericEval().value());
-    BOOST_TEST(p->operands().back()->isNumericPower());
+    BOOST_TEST(isNumericPower(*p->operands().back()));
 }
 
 BOOST_AUTO_TEST_CASE(numberTimesResolvableNumPow)
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(numericPowersEqualBase)
     const BasePtr twoToTheThird = Power::create(two, Numeric::third());
     const BasePtr p = Product::create(sqrtTwo, twoToTheThird);
 
-    BOOST_TEST(p->isNumericPower());
+    BOOST_TEST(isNumericPower(*p));
     BOOST_CHECK_CLOSE(std::pow(2, 5.0 / 6.0), p->numericEval().value().toDouble(), 1.e-10);
 }
 
@@ -211,7 +211,7 @@ BOOST_AUTO_TEST_CASE(numericPowersDifferentExpSameBase)
     const BasePtr res = Product::create(np1, np2);
 
     BOOST_TEST(res->isPower());
-    BOOST_TEST(res->isNumericPower());
+    BOOST_TEST(isNumericPower(*res));
     BOOST_CHECK_EQUAL(2, res->base()->numericEval().value());
 
     BOOST_CHECK_EQUAL(expectedExp, res->exp()->numericEval().value());
@@ -282,7 +282,7 @@ BOOST_AUTO_TEST_CASE(differentNumericPowerProduct)
 {
     const BasePtr p = Product::create(sqrtTwo, sqrtThree);
 
-    BOOST_TEST(p->isNumericPower());
+    BOOST_TEST(isNumericPower(*p));
     BOOST_CHECK_EQUAL(six, p->base());
     BOOST_CHECK_EQUAL(Number(1, 2), p->exp()->numericEval().value());
 }
