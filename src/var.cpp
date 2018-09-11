@@ -3,6 +3,7 @@
 #include <map>
 #include <stdexcept>
 #include "base.h"
+#include "basefct.h"
 #include "logging.h"
 #include "numberfct.h"
 #include "numeric.h"
@@ -34,14 +35,6 @@ namespace tsym {
 
             if (parsingSuccess)
                 return value->isSymbol() || (value->isNumeric() && isInt(*value->numericEval()));
-
-            return false;
-        }
-
-        bool isInteger(const BasePtr& rep)
-        {
-            if (const auto num = rep->numericEval())
-                return isInt(*num);
 
             return false;
         }
@@ -173,7 +166,7 @@ tsym::Var::operator int() const
     static const char* errorMessage = "Illegal integer request";
     int result = 0;
 
-    if (!isInteger(rep))
+    if (!isInteger(*rep))
         throw std::domain_error(errorMessage);
     else if (!integer::fitsInto<int>(rep->numericEval()->numerator()))
         throw std::overflow_error(errorMessage);

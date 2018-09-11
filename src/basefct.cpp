@@ -40,3 +40,32 @@ bool tsym::isNumericPower(const Base& expr)
 
     return false;
 }
+
+bool tsym::isFractionNumeric(const Base& arg)
+{
+    if (const auto num = arg.numericEval())
+        return isFraction(*num);
+
+    return false;
+}
+
+bool tsym::isRationalNumeric(const Base& expr)
+{
+    if (const auto num = expr.numericEval())
+        return num->isRational();
+    else
+        return false;
+}
+
+bool tsym::isDoubleNumeric(const Base& expr)
+{
+    if (expr.isNumeric())
+        return expr.numericEval()->isDouble();
+    else
+        return false;
+}
+
+bool tsym::isNegativeNumeric(const Base& expr)
+{
+    return expr.isNumeric() && expr.isNegative();
+}

@@ -14,6 +14,10 @@ namespace tsym {
     bool isZero(const Base& expr);
 
     bool isNumericPower(const Base& expr);
+    bool isFractionNumeric(const Base& arg);
+    bool isRationalNumeric(const Base& expr);
+    bool isDoubleNumeric(const Base& expr);
+    bool isNegativeNumeric(const Base& ptr);
 }
 
 #endif

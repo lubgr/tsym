@@ -143,15 +143,7 @@ bool tsym::NumTrigoSimpl::isArgRationalNonZeroNumeric() const
     if (isZero(*arg))
         return false;
     else
-        return isRationalNumeric(arg);
-}
-
-bool tsym::NumTrigoSimpl::isRationalNumeric(const BasePtr& ptr) const
-{
-    if (const auto num = ptr->numericEval())
-        return num->isRational();
-    else
-        return false;
+        return isRationalNumeric(*arg);
 }
 
 void tsym::NumTrigoSimpl::prepareSinCosTan()
@@ -247,7 +239,7 @@ void tsym::NumTrigoSimpl::compShiftedSin()
 
     if (result)
         resultTimesSign();
-    else if (isDoubleNumeric(origArg))
+    else if (isDoubleNumeric(*origArg))
         compNumericalSin();
 }
 
@@ -279,14 +271,6 @@ std::optional<tsym::BasePtr> tsym::NumTrigoSimpl::getValueNumEval(
             return result;
 
     return std::nullopt;
-}
-
-bool tsym::NumTrigoSimpl::isDoubleNumeric(const BasePtr& ptr) const
-{
-    if (ptr->isNumeric())
-        return ptr->numericEval()->isDouble();
-    else
-        return false;
 }
 
 void tsym::NumTrigoSimpl::compNumericalSin()
@@ -413,7 +397,7 @@ void tsym::NumTrigoSimpl::asin()
 {
     if ((result = getKey(sineTable())))
         resultTimesSign();
-    else if (isDoubleNumeric(origArg)) {
+    else if (isDoubleNumeric(*origArg)) {
         reset();
         compNumerically([](auto arg) { return std::asin(arg); });
     }
@@ -449,7 +433,7 @@ void tsym::NumTrigoSimpl::acosFromAsinResult()
 {
     const BasePtr piHalf(timesPi(1, 2));
 
-    if (isDoubleNumeric(*result))
+    if (isDoubleNumeric(**result))
         result = Numeric::create(0.5 * PI - *(*result)->numericEval());
     else
         result = Sum::create(piHalf, Product::minus(*result));
@@ -459,7 +443,7 @@ void tsym::NumTrigoSimpl::atan()
 {
     if ((result = getKey(tanTable())))
         resultTimesSign();
-    else if (isDoubleNumeric(origArg)) {
+    else if (isDoubleNumeric(*origArg)) {
         reset();
         compNumerically([](auto arg) { return std::atan(arg); });
     }

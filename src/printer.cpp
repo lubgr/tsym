@@ -58,15 +58,10 @@ namespace tsym {
             {
                 if (exp->isEqual(*Numeric::half()))
                     engine.openSquareRoot().invokePrint(base).closeSquareRoot();
-                else if (isNegativeNumeric(exp) && powerAsFraction == PowerAsFraction::TRUE)
+                else if (isNegativeNumeric(*exp) && powerAsFraction == PowerAsFraction::TRUE)
                     powerNegNumericExp(base, exp);
                 else
                     standardPower(base, exp);
-            }
-
-            bool isNegativeNumeric(const BasePtr& ptr)
-            {
-                return ptr->isNumeric() && ptr->isNegative();
             }
 
             void powerNegNumericExp(const BasePtr& base, const BasePtr& exp)
@@ -197,7 +192,7 @@ namespace tsym {
                 for (const auto& origFactor : origFactors) {
                     const auto& exp = origFactor->exp();
 
-                    if (isNegativeNumeric(exp)) {
+                    if (isNegativeNumeric(*exp)) {
                         frac.second.push_back(Power::create(origFactor->base(), Product::minus(exp)));
                     } else
                         frac.first.push_back(origFactor);

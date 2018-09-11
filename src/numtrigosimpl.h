@@ -33,7 +33,6 @@ namespace tsym {
         bool isNotAnInverseFct() const;
         void computeSinCosTan();
         bool isArgRationalNonZeroNumeric() const;
-        bool isRationalNumeric(const BasePtr& ptr) const;
         void prepareSinCosTan();
         void adjustNumericArg();
         void adjustArgRange();
@@ -47,7 +46,6 @@ namespace tsym {
         void resultTimesSign();
         std::optional<BasePtr> getValue(const std::unordered_map<BasePtr, BasePtr>& table) const;
         std::optional<BasePtr> getValueNumEval(const std::unordered_map<BasePtr, BasePtr>& table) const;
-        bool isDoubleNumeric(const BasePtr& ptr) const;
         void compNumericalSin();
         template <class Fct> void compNumerically(Fct&& eval);
         void setTimesSign(const BasePtr& newResult);

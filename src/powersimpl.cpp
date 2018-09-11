@@ -22,7 +22,6 @@ namespace tsym {
         const BasePtr& one();
         BasePtrList simplifyPowerBase(const BasePtr& powBase, const BasePtr& e2);
         bool doContractExpFirst(const BasePtr& base, const BasePtr& e1, const BasePtr& e2);
-        bool areTwoIntegerExp(const BasePtr& exp1, const BasePtr& exp2);
         bool areTwoFractionExpWithOddDenom(const BasePtr& exp1, const BasePtr& exp2);
         bool doesChangeSign(const BasePtr& base, const BasePtr& exp1);
         bool doContractExpSecond(const BasePtr& e1, const BasePtr& e2);
@@ -111,7 +110,7 @@ namespace tsym {
 
         bool doContractExpFirst(const BasePtr& base, const BasePtr& e1, const BasePtr& e2)
         {
-            if (areTwoIntegerExp(e1, e2))
+            if (isInteger(*e1) && isInteger(*e2))
                 return true;
             else if (areTwoFractionExpWithOddDenom(e1, e2))
                 return true;
@@ -119,11 +118,6 @@ namespace tsym {
                 return true;
             else
                 return false;
-        }
-
-        bool areTwoIntegerExp(const BasePtr& exp1, const BasePtr& exp2)
-        {
-            return isInteger(*exp1) && isInteger(*exp2);
         }
 
         bool areTwoFractionExpWithOddDenom(const BasePtr& exp1, const BasePtr& exp2)

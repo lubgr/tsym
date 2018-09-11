@@ -162,14 +162,6 @@ tsym::BasePtr tsym::Power::expand() const
         return clone();
 }
 
-bool tsym::Power::isInteger(const Base& arg) const
-{
-    if (const auto num = arg.numericEval())
-        return isInt(*num);
-
-    return false;
-}
-
 tsym::BasePtr tsym::Power::expandIntegerExponent() const
 {
     if (baseRef->isSum())

@@ -45,7 +45,6 @@ namespace tsym {
         BasePtrList simplNumAndNumPow(const Number& preFactor, const Number& base, const Number& exp);
         bool haveEqualBases(const Base& f1, const Base& f2);
         BasePtrList simplTwoEqualBases(const BasePtr& f1, const BasePtr& f2);
-        bool isFraction(const Base& arg);
         bool areNumPowersWithEqualExp(const Base& f1, const Base& f2);
         BasePtrList simplTwoEqualExp(const BasePtr& f1, const BasePtr& f2);
         bool areNumPowersWithZeroSumExp(const Base& f1, const Base& f2);
@@ -393,19 +392,11 @@ namespace tsym {
                 /* If base < 0, both exponents can't be part of an undefined power expressions (fraction or
                  * double exponent), thus the addition of exponents must be valid, too. */
                 ;
-            else if (isFraction(*e1) && isFraction(*e2) && isInteger(*newExp))
+            else if (isFractionNumeric(*e1) && isFractionNumeric(*e2) && isInteger(*newExp))
                 /* Exponent addition would hide the fact that the power factors could be undefined. */
                 return {f1, f2};
 
             return {Power::create(newBase, newExp)};
-        }
-
-        bool isFraction(const Base& arg)
-        {
-            if (const auto num = arg.numericEval())
-                return isFraction(*num);
-
-            return false;
         }
 
         bool areContractableTrigFctPowers(const Base& f1, const Base& f2)
