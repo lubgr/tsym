@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cmath>
 #include <limits>
+#include "basefct.h"
 #include "bplist.h"
 #include "logarithm.h"
 #include "logging.h"
@@ -45,14 +46,14 @@ tsym::BasePtr tsym::Power::sqrt(const BasePtr& base)
 tsym::BasePtr tsym::Power::createNotUndefined(const BasePtr& base, const BasePtr& exponent)
 {
     /* Handle trivial cases first. */
-    if (exponent->isZero() || base->isOne())
+    if (isZero(*exponent) || isOne(*base))
         return Numeric::one();
-    else if (base->isZero() && exponent->isNegative()) {
+    else if (isZero(*base) && exponent->isNegative()) {
         TSYM_WARNING("Division by zero during Power creation!");
         return Undefined::create();
-    } else if (base->isZero())
+    } else if (isZero(*base))
         return Numeric::zero();
-    else if (exponent->isOne())
+    else if (isOne(*exponent))
         return base;
 
     return createNonTrivial(base, exponent);
@@ -68,9 +69,9 @@ tsym::BasePtr tsym::Power::createNonTrivial(const BasePtr& base, const BasePtr& 
     }
 
     /* Handle trivial cases again. */
-    if (res.back()->isOne())
+    if (isOne(*res.back()))
         return res.front();
-    else if (res.front()->isOne())
+    else if (isOne(*res.front()))
         /* Will probably never be the case, just a security check. */
         return Numeric::one();
 

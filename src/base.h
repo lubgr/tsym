@@ -47,8 +47,6 @@ namespace tsym {
         virtual unsigned complexity() const = 0;
         virtual size_t hash() const = 0;
 
-        virtual bool isZero() const;
-        virtual bool isOne() const;
         virtual bool isUndefined() const;
         virtual bool isSymbol() const;
         virtual bool isNumeric() const;

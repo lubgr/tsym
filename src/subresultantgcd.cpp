@@ -1,5 +1,6 @@
 
 #include "subresultantgcd.h"
+#include "basefct.h"
 #include "bplist.h"
 #include "logging.h"
 #include "numeric.h"
@@ -37,7 +38,7 @@ tsym::BasePtr tsym::SubresultantGcd::gcd(const BasePtr& u, const BasePtr& v, con
     while (true) {
         const BasePtr remainder = poly::pseudoRemainder(U, V, x);
 
-        if (remainder->isZero()) {
+        if (isZero(*remainder)) {
             U = V;
             break;
         } else if (remainder->isUndefined()) {

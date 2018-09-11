@@ -1,6 +1,7 @@
 
 #include "fraction.h"
 #include <utility>
+#include "basefct.h"
 #include "logging.h"
 #include "numeric.h"
 #include "poly.h"
@@ -33,11 +34,11 @@ namespace tsym {
 
 tsym::Fraction tsym::cancel(const Fraction& f)
 {
-    if (f.denom->isOne())
+    if (isOne(*f.denom))
         return Fraction{f.num};
-    else if (f.num->isZero())
+    else if (isZero(*f.num))
         return Fraction{f.num};
-    else if (f.denom->expand()->isZero()) {
+    else if (isZero(*f.denom->expand())) {
         TSYM_WARNING("Zero f.denom encountered during fraction cancellation");
         return Fraction{Undefined::create()};
     } else

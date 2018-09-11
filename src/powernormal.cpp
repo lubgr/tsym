@@ -1,5 +1,6 @@
 
 #include "powernormal.h"
+#include "basefct.h"
 #include "numberfct.h"
 #include "power.h"
 #include "product.h"
@@ -33,8 +34,8 @@ tsym::Fraction tsym::PowerNormal::normal()
 
 bool tsym::PowerNormal::isBaseOrExpUndefined() const
 {
-    return rationalBase.num->isUndefined() || rationalBase.denom->isUndefined() || rationalBase.denom->isZero()
-      || rationalBase.denom->expand()->isZero() || rationalExp->isUndefined();
+    return rationalBase.num->isUndefined() || rationalBase.denom->isUndefined() || isZero(*rationalBase.denom)
+      || isZero(*rationalBase.denom->expand()) || rationalExp->isUndefined();
 }
 
 bool tsym::PowerNormal::isRationalExpInteger() const
@@ -93,7 +94,7 @@ tsym::BasePtr tsym::PowerNormal::evaluatePow(const BasePtr& base, const BasePtr&
 {
     const BasePtr evaluatedPow(Power::create(base, exp));
 
-    return evaluatedPow->isOne() ? evaluatedPow : map.getTmpSymbolAndStore(evaluatedPow);
+    return isOne(*evaluatedPow) ? evaluatedPow : map.getTmpSymbolAndStore(evaluatedPow);
 }
 
 tsym::Fraction tsym::PowerNormal::normalNumEvalNegExp()

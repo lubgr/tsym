@@ -1,6 +1,7 @@
 
 #include "logarithm.h"
 #include <cmath>
+#include "basefct.h"
 #include "constant.h"
 #include "fraction.h"
 #include "logging.h"
@@ -22,7 +23,7 @@ tsym::BasePtr tsym::Logarithm::create(const BasePtr& arg)
 {
     if (isInvalidArg(*arg))
         return Undefined::create();
-    else if (arg->isOne())
+    else if (isOne(*arg))
         return Numeric::zero();
     else if (arg->isNumeric())
         return createNumerically(arg);
@@ -45,7 +46,7 @@ bool tsym::Logarithm::isInvalidArg(const Base& arg)
 
     if (arg.isUndefined())
         invalid = true;
-    else if (arg.isZero())
+    else if (isZero(arg))
         invalid = true;
     else if (arg.isPower() && arg.base()->isEqual(*Constant::createE()))
         /* Catches log(e^(-n)) with n being a large Numeric, which would numerically be evaluated to

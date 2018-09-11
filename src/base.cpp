@@ -19,16 +19,6 @@ tsym::Base::Base(BasePtrList operands)
     : ops(std::move(operands))
 {}
 
-bool tsym::Base::isZero() const
-{
-    return false;
-}
-
-bool tsym::Base::isOne() const
-{
-    return false;
-}
-
 bool tsym::Base::isUndefined() const
 {
     return false;

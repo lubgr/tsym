@@ -5,6 +5,7 @@
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm_ext/push_back.hpp>
 #include <boost/range/numeric.hpp>
+#include "basefct.h"
 #include "cache.h"
 #include "logging.h"
 #include "numeric.h"
@@ -53,7 +54,9 @@ bool tsym::bplist::hasUndefinedElements(const BasePtrList& list)
 
 bool tsym::bplist::hasZeroElements(const BasePtrList& list)
 {
-    return boost::algorithm::any_of(list, std::mem_fn(&Base::isZero));
+    using boost::adaptors::indirected;
+
+    return boost::algorithm::any_of(list | indirected, isZero);
 }
 
 bool tsym::bplist::hasSumElements(const BasePtrList& list)

@@ -1,5 +1,6 @@
 
 #include <cmath>
+#include "basefct.h"
 #include "constant.h"
 #include "fixtures.h"
 #include "logarithm.h"
@@ -32,7 +33,7 @@ BOOST_AUTO_TEST_CASE(logOfOne)
 {
     const BasePtr result = Logarithm::create(one);
 
-    BOOST_TEST(result->isZero());
+    BOOST_TEST(isZero(*result));
 }
 
 BOOST_AUTO_TEST_CASE(logOfUndefinedArg, noLogs())
@@ -49,7 +50,7 @@ BOOST_AUTO_TEST_CASE(logOfE)
     const BasePtr arg = euler;
     const BasePtr result = Logarithm::create(arg);
 
-    BOOST_TEST(result->isOne());
+    BOOST_TEST(isOne(*result));
 }
 
 BOOST_AUTO_TEST_CASE(logOfPi)

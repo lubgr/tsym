@@ -2,6 +2,7 @@
 #include "numtrigosimpl.h"
 #include <cassert>
 #include <cmath>
+#include "basefct.h"
 #include "logging.h"
 #include "numberfct.h"
 #include "numeric.h"
@@ -139,7 +140,7 @@ void tsym::NumTrigoSimpl::computeSinCosTan()
 
 bool tsym::NumTrigoSimpl::isArgRationalNonZeroNumeric() const
 {
-    if (arg->isZero())
+    if (isZero(*arg))
         return false;
     else
         return isRationalNumeric(arg);
@@ -351,7 +352,7 @@ void tsym::NumTrigoSimpl::tanViaSinCos()
     const auto sine = computeForTan(Trigonometric::Type::SIN);
     const auto cosine = computeForTan(Trigonometric::Type::COS);
 
-    if (cosine && (*cosine)->isZero())
+    if (cosine && isZero(**cosine))
         /* This should't happen, because tan(Pi/2) is in the tanTable. */
         result = Undefined::create();
     else if (cosine && sine)

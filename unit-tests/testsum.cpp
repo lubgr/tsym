@@ -1,6 +1,7 @@
 
 #include <cmath>
 #include <limits>
+#include "basefct.h"
 #include "constant.h"
 #include "fixtures.h"
 #include "logarithm.h"
@@ -66,14 +67,14 @@ BOOST_AUTO_TEST_CASE(twoNumericSummandsResultingInZero)
     const BasePtr minusTwo = Numeric::create(-2);
     const BasePtr res = Sum::create(two, minusTwo);
 
-    BOOST_TEST(res->isZero());
+    BOOST_TEST(isZero(*res));
 }
 
 BOOST_AUTO_TEST_CASE(zeroPlusZero)
 {
     const BasePtr res = Sum::create(zero, zero);
 
-    BOOST_TEST(res->isZero());
+    BOOST_TEST(isZero(*res));
 }
 
 BOOST_AUTO_TEST_CASE(symbolPlusZero)
@@ -189,7 +190,7 @@ BOOST_AUTO_TEST_CASE(collectProductOfPower)
     const BasePtr p2 = Product::minus(p1);
     const BasePtr res = Sum::create(p1, p2);
 
-    BOOST_TEST(res->isZero());
+    BOOST_TEST(isZero(*res));
 }
 
 BOOST_AUTO_TEST_CASE(twoSums)
@@ -453,7 +454,7 @@ BOOST_AUTO_TEST_CASE(contractableSinCosSquareWithoutPrefactor)
 {
     const BasePtr result = Sum::create(Power::create(sinA, two), Power::create(cosA, two));
 
-    BOOST_TEST(result->isOne());
+    BOOST_TEST(isOne(*result));
 }
 
 BOOST_AUTO_TEST_CASE(contractableSinCosSquarePrefactorMinusOne)

@@ -137,16 +137,6 @@ bool tsym::Numeric::isNumeric() const
     return true;
 }
 
-bool tsym::Numeric::isZero() const
-{
-    return number == 0;
-}
-
-bool tsym::Numeric::isOne() const
-{
-    return number == 1;
-}
-
 bool tsym::Numeric::isConst() const
 {
     return true;

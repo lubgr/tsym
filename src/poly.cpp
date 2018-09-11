@@ -5,6 +5,7 @@
 #include <boost/range/algorithm/transform.hpp>
 #include <boost/range/numeric.hpp>
 #include <cassert>
+#include "basefct.h"
 #include "bplist.h"
 #include "cache.h"
 #include "logging.h"
@@ -50,7 +51,7 @@ namespace tsym {
 
                 const auto d = poly::divide(remainder->leadingCoeff(x), v->leadingCoeff(x), bplist::rest(L));
 
-                if (!d.back()->isZero())
+                if (!isZero(*d.back()))
                     return {quotient->expand(), remainder};
 
                 const auto& c = d.front();
@@ -59,7 +60,7 @@ namespace tsym {
 
                 remainder = Sum::create(remainder, Product::minus(c, v, tmp))->expand();
 
-                if (remainder->isZero())
+                if (isZero(*remainder))
                     break;
 
                 m = remainder->degree(x);
@@ -88,7 +89,7 @@ namespace tsym {
             int m = u->degree(x);
             int sigma = 0;
 
-            assert(!v->expand()->isZero());
+            assert(!isZero(*v->expand()));
 
             while (m >= n) {
                 const auto lCoeffR = remainder->coeff(x, m);
@@ -100,7 +101,7 @@ namespace tsym {
 
                 remainder = Sum::create(Product::create(lCoeffV, remainder), Product::minus(v, tmp))->expand();
 
-                if (remainder->isZero())
+                if (isZero(*remainder))
                     break;
 
                 ++sigma;
@@ -234,7 +235,7 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v, const B
         return divideEmptyList(u, v);
     else if (v->isEqual(*u))
         return {Numeric::one(), zero};
-    else if (u->isZero())
+    else if (isZero(*u))
         return {zero, zero};
     else
         return divideNonEmpty(u, v, L);
@@ -256,7 +257,7 @@ int tsym::poly::unit(const Base& polynomial, const Base& x)
     const BasePtr expanded(polynomial.expand());
     const BasePtr lCoeff(expanded->leadingCoeff(x));
 
-    if (lCoeff->isZero())
+    if (isZero(*lCoeff))
         return 1;
     else if (lCoeff->isNumeric())
         return sign(*lCoeff->numericEval());

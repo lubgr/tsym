@@ -11,3 +11,24 @@ bool tsym::isInteger(const Base& expr)
 
     return false;
 }
+
+namespace tsym {
+    namespace {
+        template <int n> bool isEqual(const Base& expr)
+        {
+            static const Number i{n};
+
+            return expr.numericEval() == i;
+        }
+    }
+}
+
+bool tsym::isOne(const Base& expr)
+{
+    return expr.isNumeric() && isEqual<1>(expr);
+}
+
+bool tsym::isZero(const Base& expr)
+{
+    return expr.isNumeric() && isEqual<0>(expr);
+}

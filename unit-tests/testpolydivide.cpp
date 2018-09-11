@@ -1,4 +1,5 @@
 
+#include "basefct.h"
 #include "fixtures.h"
 #include "numeric.h"
 #include "poly.h"
@@ -47,7 +48,7 @@ BOOST_AUTO_TEST_CASE(twoFractionsEmptyContainer)
     const BasePtrList result = poly::divide(Numeric::third(), Numeric::create(4, 5), {});
 
     BOOST_CHECK_EQUAL(expected, result.front());
-    BOOST_TEST(result.back()->isZero());
+    BOOST_TEST(isZero(*result.back()));
 }
 
 BOOST_AUTO_TEST_CASE(fractionCoeff)
@@ -115,7 +116,7 @@ BOOST_AUTO_TEST_CASE(noQuotient)
 
     res = poly::divide(dividend, divisor, {a, b});
 
-    BOOST_TEST(res.front()->isZero());
+    BOOST_TEST(isZero(*res.front()));
     BOOST_CHECK_EQUAL(dividend, res.back());
 }
 
@@ -131,7 +132,7 @@ BOOST_AUTO_TEST_CASE(quotientWithRationalCoeff)
     res = poly::divide(u, v, {a, b});
 
     BOOST_CHECK_EQUAL(expected, res.front());
-    BOOST_TEST(res.back()->isZero());
+    BOOST_TEST(isZero(*res.back()));
 }
 
 BOOST_AUTO_TEST_CASE(multipleVarsNoRemainder)
@@ -143,7 +144,7 @@ BOOST_AUTO_TEST_CASE(multipleVarsNoRemainder)
     const BasePtrList res = poly::divide(dividend, p2, vars);
 
     BOOST_CHECK_EQUAL(p1, res.front());
-    BOOST_TEST(res.back()->isZero());
+    BOOST_TEST(isZero(*res.back()));
 }
 
 BOOST_AUTO_TEST_CASE(hugeExpandedPolynomials, *label("expensive"))

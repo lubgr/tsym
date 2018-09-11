@@ -1,4 +1,5 @@
 
+#include "basefct.h"
 #include "constant.h"
 #include "fixtures.h"
 #include "logarithm.h"
@@ -27,14 +28,14 @@ BOOST_AUTO_TEST_CASE(numeric)
     const BasePtr num = Numeric::create(11, 17);
     const BasePtr result = num->diff(*a);
 
-    BOOST_TEST(result->isZero());
+    BOOST_TEST(isZero(*result));
 }
 
 BOOST_AUTO_TEST_CASE(constant)
 {
     const BasePtr result = pi->diff(*a);
 
-    BOOST_TEST(result->isZero());
+    BOOST_TEST(isZero(*result));
 }
 
 BOOST_AUTO_TEST_CASE(undefinedWrtSymbol)
@@ -55,7 +56,7 @@ BOOST_AUTO_TEST_CASE(symbolWrtOtherSymbol)
 {
     const BasePtr result = a->diff(*b);
 
-    BOOST_TEST(result->isZero());
+    BOOST_TEST(isZero(*result));
 }
 
 BOOST_AUTO_TEST_CASE(wrongArguments, noLogs())
@@ -130,7 +131,7 @@ BOOST_AUTO_TEST_CASE(logOfSymbolWrtToDifferentSymbol)
     const BasePtr log = Logarithm::create(a);
     const BasePtr result = log->diff(*b);
 
-    BOOST_TEST(result->isZero());
+    BOOST_TEST(isZero(*result));
 }
 
 BOOST_AUTO_TEST_CASE(sinOfSum)

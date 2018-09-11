@@ -1,6 +1,7 @@
 
 #include <cmath>
 #include <limits>
+#include "basefct.h"
 #include "constant.h"
 #include "fixtures.h"
 #include "numeric.h"
@@ -60,7 +61,7 @@ BOOST_AUTO_TEST_CASE(zero)
     const BasePtr p1 = Product::create(a, b);
     const BasePtr p2 = Product::create(p1, Numeric::zero());
 
-    BOOST_TEST(p2->isZero());
+    BOOST_TEST(isZero(*p2));
 }
 
 BOOST_AUTO_TEST_CASE(twoNumericFactors)
@@ -522,7 +523,7 @@ BOOST_AUTO_TEST_CASE(equalPowerBasesToOne)
     const BasePtr pow = Power::oneOver(a);
     const BasePtr res = Product::create(pow, a);
 
-    BOOST_TEST(res->isOne());
+    BOOST_TEST(isOne(*res));
 }
 
 BOOST_AUTO_TEST_CASE(equalSumBasesToPower)

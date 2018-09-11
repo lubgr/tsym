@@ -3,6 +3,7 @@
 #include <boost/range/algorithm/find_if.hpp>
 #include <boost/range/numeric.hpp>
 #include <vector>
+#include "basefct.h"
 #include "bplist.h"
 #include "fraction.h"
 #include "power.h"
@@ -84,7 +85,7 @@ std::optional<tsym::Number> tsym::Product::numericEval() const
 
 tsym::Fraction tsym::Product::normal(SymbolMap& map) const
 {
-    if (expand()->isZero())
+    if (isZero(*expand()))
         return {Numeric::zero()};
     else
         return cancel(normalAndSplitIntoFraction(map));

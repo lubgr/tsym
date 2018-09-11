@@ -4,6 +4,7 @@
 #include <boost/range/algorithm/find_if.hpp>
 #include <boost/range/numeric.hpp>
 #include <cassert>
+#include "basefct.h"
 #include "bplist.h"
 #include "cache.h"
 #include "logging.h"
@@ -45,7 +46,6 @@ namespace tsym {
         bool haveEqualBases(const Base& f1, const Base& f2);
         BasePtrList simplTwoEqualBases(const BasePtr& f1, const BasePtr& f2);
         bool isFraction(const Base& arg);
-        bool isInteger(const Base& arg);
         bool areNumPowersWithEqualExp(const Base& f1, const Base& f2);
         BasePtrList simplTwoEqualExp(const BasePtr& f1, const BasePtr& f2);
         bool areNumPowersWithZeroSumExp(const Base& f1, const Base& f2);
@@ -257,7 +257,7 @@ namespace tsym {
 
             if (res.empty())
                 return merge(pRest, qRest);
-            else if (res.size() == 1 && res.front()->isOne())
+            else if (res.size() == 1 && isOne(*res.front()))
                 return merge(pRest, qRest);
             else if (res.size() == 1)
                 return bplist::join(std::move(res), merge(pRest, qRest));
@@ -273,9 +273,9 @@ namespace tsym {
 
         BasePtrList simplTwoFactorsWithoutProduct(const BasePtr& f1, const BasePtr& f2)
         {
-            if (f1->isOne())
+            if (isOne(*f1))
                 return {f2};
-            else if (f2->isOne())
+            else if (isOne(*f2))
                 return {f1};
             else if (f1->isConst() && f2->isConst())
                 /* Here, we differ from Cohen's algorithm, as numerics and constant powers (sqrt(2) etc.)are
@@ -371,7 +371,7 @@ namespace tsym {
             const BasePtr newExp = Numeric::create(numericPow.getNewExp());
             const BasePtr preFac = Numeric::create(numericPow.getPreFactor());
 
-            if (preFac->isOne())
+            if (isOne(*preFac))
                 return {Power::create(newBase, newExp)};
             else
                 return {preFac, Power::create(newBase, newExp)};
@@ -404,14 +404,6 @@ namespace tsym {
         {
             if (const auto num = arg.numericEval())
                 return isFraction(*num);
-
-            return false;
-        }
-
-        bool isInteger(const Base& arg)
-        {
-            if (const auto num = arg.numericEval())
-                return isInt(*num);
 
             return false;
         }
@@ -452,7 +444,7 @@ namespace tsym {
         {
             const BasePtr sum(Sum::create(f1.exp(), f2.exp()));
 
-            return sum->isZero();
+            return isZero(*sum);
         }
 
         BasePtrList simplTwoZeroSumExp(const BasePtr& f1, const BasePtr& f2)

@@ -1,6 +1,7 @@
 
 #include <cmath>
 #include <limits>
+#include "basefct.h"
 #include "bplist.h"
 #include "constant.h"
 #include "fixtures.h"
@@ -580,7 +581,7 @@ BOOST_AUTO_TEST_CASE(zeroBaseToPosExponent)
 {
     const BasePtr res = Power::create(zero, aPos);
 
-    BOOST_TEST(res->isZero());
+    BOOST_TEST(isZero(*res));
 }
 
 BOOST_AUTO_TEST_CASE(zeroBaseToUnclearExponent)
@@ -588,7 +589,7 @@ BOOST_AUTO_TEST_CASE(zeroBaseToUnclearExponent)
 {
     const BasePtr res = Power::create(zero, a);
 
-    BOOST_TEST(res->isZero());
+    BOOST_TEST(isZero(*res));
 }
 
 BOOST_AUTO_TEST_CASE(zeroBaseToNegExponent, noLogs())

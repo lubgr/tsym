@@ -70,7 +70,7 @@ namespace tsym {
             newBase = Numeric::create(numericPow.getNewBase());
             newExp = Numeric::create(numericPow.getNewExp());
 
-            if (preFac->isOne())
+            if (isOne(*preFac))
                 return {newBase, newExp};
             else
                 return {Product::create(preFac, Power::create(newBase, newExp)), one()};
@@ -102,7 +102,7 @@ namespace tsym {
 
             newExp = Product::create(e1, e2);
 
-            if (newExp->isZero())
+            if (isZero(*newExp))
                 /* For very small numeric exponents, this could be the case. */
                 return {one(), one()};
 

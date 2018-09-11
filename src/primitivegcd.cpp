@@ -1,5 +1,6 @@
 
 #include "primitivegcd.h"
+#include "basefct.h"
 #include "bplist.h"
 #include "logging.h"
 #include "numeric.h"
@@ -16,11 +17,11 @@ tsym::BasePtr tsym::PrimitiveGcd::gcdAlgo(const BasePtr& u, const BasePtr& v, co
     BasePtr uPrimPart(poly::divide(u, uContent, L).front());
     BasePtr vPrimPart(poly::divide(v, vContent, L).front());
 
-    while (!vPrimPart->isZero()) {
+    while (!isZero(*vPrimPart)) {
         const auto remainder = poly::pseudoRemainder(uPrimPart, vPrimPart, x);
         BasePtr rPrimPart;
 
-        if (remainder->isZero())
+        if (isZero(*remainder))
             rPrimPart = Numeric::zero();
         else if (remainder->isUndefined()) {
             TSYM_WARNING("Undefined remainder during primitive gcd computation, return 1.");

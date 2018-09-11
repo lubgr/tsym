@@ -3,6 +3,7 @@
 #include <boost/range/numeric.hpp>
 #include <cassert>
 #include <limits>
+#include "basefct.h"
 #include "bplist.h"
 #include "fraction.h"
 #include "numberfct.h"
@@ -68,7 +69,7 @@ tsym::Fraction tsym::Sum::normal(SymbolMap& map) const
 {
     std::vector<Fraction> fractions;
 
-    if (expand()->isZero())
+    if (isZero(*expand()))
         return Fraction{Numeric::zero()};
 
     for (const auto& summand : ops)

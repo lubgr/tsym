@@ -2,6 +2,7 @@
 #include "gcd.h"
 #include <cassert>
 #include <cmath>
+#include "basefct.h"
 #include "bplist.h"
 #include "logging.h"
 #include "numberfct.h"
@@ -30,13 +31,13 @@ tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v, const BaseP
 
     assert((L.empty() && uExp->isNumeric() && vExp->isNumeric()) || !L.empty());
 
-    if (uExp->isOne() || vExp->isOne())
+    if (isOne(*uExp) || isOne(*vExp))
         ;
-    else if (uExp->isZero() && vExp->isZero())
+    else if (isZero(*uExp) && isZero(*vExp))
         return Undefined::create();
-    else if (uExp->isZero())
+    else if (isZero(*uExp))
         result = vExp;
-    else if (vExp->isZero())
+    else if (isZero(*vExp))
         result = uExp;
     else if (uExp->isEqual(*vExp))
         result = uExp;

@@ -5,6 +5,7 @@
 #include <boost/range/adaptors.hpp>
 #include <boost/range/algorithm/find_if.hpp>
 #include <cassert>
+#include "basefct.h"
 #include "logging.h"
 #include "name.h"
 #include "number.h"
@@ -89,7 +90,7 @@ namespace tsym {
 
 bool tsym::polyinfo::isInputValid(const Base& u, const Base& v)
 {
-    if (u.isZero() && v.isZero())
+    if (isZero(u) && isZero(v))
         return false;
     else
         return hasValidType(u) && hasValidType(v);

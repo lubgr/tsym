@@ -54,8 +54,6 @@ namespace tsym {
         size_t hash() const override;
 
         bool isNumeric() const override;
-        bool isZero() const override;
-        bool isOne() const override;
         bool isConst() const override;
         BasePtr numericTerm() const override;
         BasePtr nonNumericTerm() const override;

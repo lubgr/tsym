@@ -1,5 +1,6 @@
 
 #include <memory>
+#include "basefct.h"
 #include "constant.h"
 #include "fixtures.h"
 #include "fraction.h"
@@ -153,7 +154,7 @@ BOOST_AUTO_TEST_CASE(simpleSumToZero)
 {
     const BasePtr result = argToZero->normal();
 
-    BOOST_TEST(result->isZero());
+    BOOST_TEST(isZero(*result));
 }
 
 BOOST_AUTO_TEST_CASE(simpleSumWithFractionCoeff)
@@ -313,7 +314,7 @@ BOOST_AUTO_TEST_CASE(trigonometricFunctionArgToZero)
     const BasePtr orig = Trigonometric::createSin(argToZero);
     const BasePtr result = orig->normal();
 
-    BOOST_TEST(result->isZero());
+    BOOST_TEST(isZero(*result));
 }
 
 BOOST_AUTO_TEST_CASE(logarithmicFunctionArgToZero, noLogs())

@@ -1,4 +1,5 @@
 
+#include "basefct.h"
 #include "baseptr.h"
 #include "constant.h"
 #include "fixtures.h"
@@ -127,11 +128,9 @@ BOOST_AUTO_TEST_CASE(sinToZero)
 /* Sin(a) = 0 for a = Pi. */
 {
     const BasePtr orig = Trigonometric::createSin(a);
-    BasePtr res;
+    const BasePtr res = orig->subst(*a, pi);
 
-    res = orig->subst(*a, pi);
-
-    BOOST_TEST(res->isZero());
+    BOOST_TEST(isZero(*res));
 }
 
 BOOST_AUTO_TEST_CASE(asinToUndefined)
@@ -181,7 +180,7 @@ BOOST_AUTO_TEST_CASE(logToZero)
 
     res = orig->subst(*a, one);
 
-    BOOST_TEST(res->isZero());
+    BOOST_TEST(isZero(*res));
 }
 
 BOOST_AUTO_TEST_CASE(logEqualArg)

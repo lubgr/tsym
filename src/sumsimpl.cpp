@@ -1,6 +1,7 @@
 
 #include "sumsimpl.h"
 #include <cassert>
+#include "basefct.h"
 #include "bplist.h"
 #include "cache.h"
 #include "logging.h"
@@ -82,7 +83,7 @@ namespace tsym {
 
             if (res.empty())
                 return merge(pRest, qRest);
-            else if (res.size() == 1 && res.front()->isZero())
+            else if (res.size() == 1 && isZero(*res.front()))
                 return merge(pRest, qRest);
             else if (res.size() == 1)
                 return bplist::join(std::move(res), merge(pRest, qRest));
@@ -98,9 +99,9 @@ namespace tsym {
 
         BasePtrList simplTwoSummandsWithoutSum(const BasePtr& s1, const BasePtr& s2)
         {
-            if (s1->isZero())
+            if (isZero(*s1))
                 return {s2};
-            else if (s2->isZero())
+            else if (isZero(*s2))
                 return {s1};
             else if (s1->isNumeric() && s2->isNumeric())
                 return simplTwoNumerics(s1, s2);
@@ -135,7 +136,7 @@ namespace tsym {
             const BasePtr nonConst1(s1->nonConstTerm());
             const BasePtr nonConst2(s2->nonConstTerm());
 
-            if (nonConst1->isOne() || nonConst2->isOne())
+            if (isOne(*nonConst1) || isOne(*nonConst2))
                 return false;
             else
                 return nonConst1->isEqual(*nonConst2);
@@ -172,7 +173,7 @@ namespace tsym {
             const BasePtr product(Product::create(n, s1->nonNumericTerm()));
 
             /* This check has to be done to avoid useless zero summands (a + b - b = a + 0). */
-            if (product->isZero())
+            if (isZero(*product))
                 return {};
             else
                 return {product};

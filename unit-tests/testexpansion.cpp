@@ -1,4 +1,5 @@
 
+#include "basefct.h"
 #include "constant.h"
 #include "fixtures.h"
 #include "numeric.h"
@@ -239,8 +240,8 @@ BOOST_AUTO_TEST_CASE(expansionLeadsToZero)
     const BasePtr orig =
       Sum::create({Product::create(a, b), Product::minus(b, c), Product::create(b, Sum::create(c, Product::minus(a)))});
 
-    BOOST_TEST(!orig->isZero());
-    BOOST_TEST(orig->expand()->isZero());
+    BOOST_TEST(!isZero(*orig));
+    BOOST_TEST(isZero(*orig->expand()));
 }
 
 BOOST_AUTO_TEST_CASE(sumPowerOfThree)

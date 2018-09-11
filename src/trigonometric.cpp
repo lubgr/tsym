@@ -2,6 +2,7 @@
 #include "trigonometric.h"
 #include <cassert>
 #include <cmath>
+#include "basefct.h"
 #include "bplist.h"
 #include "constant.h"
 #include "fraction.h"
@@ -370,7 +371,7 @@ tsym::BasePtr tsym::Trigonometric::shiftAtanResultIntoRange(BasePtr result, Base
 
     assert(result->numericEval());
 
-    if (result->isNumeric() && !result->isZero()) {
+    if (result->isNumeric() && !isZero(*result)) {
         increment = Numeric::create(*increment->numericEval());
         summand = Numeric::create(*summand->numericEval());
     }

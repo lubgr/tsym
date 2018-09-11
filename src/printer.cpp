@@ -2,6 +2,7 @@
 #include "printer.h"
 #include <cassert>
 #include "base.h"
+#include "basefct.h"
 #include "bplist.h"
 #include "numberfct.h"
 #include "numeric.h"
@@ -108,7 +109,7 @@ namespace tsym {
 
             void powerExponent(const BasePtr& exp)
             {
-                if (exp->isOne())
+                if (isOne(*exp))
                     return;
                 else if (isScalarPowerExp(exp))
                     engine.openScalarExponent().invokePrint(exp).closeScalarExponent();
@@ -238,9 +239,9 @@ namespace tsym {
 
                 if (factors.empty())
                     engine.invokePrint(first);
-                else if (Product::minus(first)->isOne())
+                else if (isOne(*Product::minus(first)))
                     engine.unaryMinusSign();
-                else if (first->isOne())
+                else if (isOne(*first))
                     ;
                 else if (precedence(first) < productPrecedence)
                     engine.openParentheses().invokePrint(first).closeParentheses().timesSign();
