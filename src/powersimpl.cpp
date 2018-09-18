@@ -58,16 +58,11 @@ namespace tsym {
 
         BasePtrList simplifyNumericPower(const Number& base, const Number& exp)
         {
-            NumPowerSimpl numericPow;
-            BasePtr newBase;
-            BasePtr newExp;
-            BasePtr preFac;
+            const NumPowerSimpl numericPow({base, exp});
 
-            numericPow.setPower(base, exp);
-
-            preFac = Numeric::create(numericPow.getPreFactor());
-            newBase = Numeric::create(numericPow.getNewBase());
-            newExp = Numeric::create(numericPow.getNewExp());
+            const BasePtr preFac = Numeric::create(numericPow.getPreFactor());
+            const BasePtr newBase = Numeric::create(numericPow.getNewBase());
+            const BasePtr newExp = Numeric::create(numericPow.getNewExp());
 
             if (isOne(*preFac))
                 return {newBase, newExp};

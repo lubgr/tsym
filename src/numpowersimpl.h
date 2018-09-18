@@ -29,24 +29,22 @@ namespace tsym {
          * resulting number n (in case the power could be resolved to a number, e.g. 4^(1/2) = 2) is
          * 1*n^1. */
       public:
-        NumPowerSimpl() = default;
+        struct Payload {
+            Number base;
+            Number exp;
+            Number preFactor{1};
+        };
 
-        void setPower(const Number& base, const Number& exp);
-        /* The prefactor is one when not specified: */
-        void setPreFac(const Number& fac);
-        /* Modify the default limit up to which prime factorization is performed for simplification: */
-        void setMaxPrimeResolution(Int limit);
+        explicit NumPowerSimpl(Payload data);
+        NumPowerSimpl(Payload data, Int maxPrimeResolutionLimit);
 
-        bool isInputValid();
-        const Number& getNewBase();
-        const Number& getNewExp();
-        const Number& getPreFactor();
+        bool isInputValid() const;
+        const Number& getNewBase() const;
+        const Number& getNewExp() const;
+        const Number& getPreFactor() const;
 
       private:
-        const Number& get(const Number& component);
-        void computeAndSetFlag();
         void compute();
-        void initFromOrig();
         void computeNonRational();
         void computeRational();
         void computeNegOrPosExp();
@@ -67,13 +65,8 @@ namespace tsym {
         void adjustExpSignAndBase();
         void shiftPreFacSignBack();
 
-        Number origBase{0};
-        Number origExp{0};
-        Number origPreFac{1};
-        Number newBase{0};
-        Number newExp{0};
-        Number preFac{0};
-        bool needsComputation = true;
+        Payload orig;
+        Payload result;
         bool isPreFacNegative = false;
         PrimeFac nbPrimes;
         PrimeFac pfPrimes;

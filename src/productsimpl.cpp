@@ -361,10 +361,7 @@ namespace tsym {
 
         BasePtrList simplNumAndNumPow(const Number& preFactor, const Number& base, const Number& exp)
         {
-            NumPowerSimpl numericPow;
-
-            numericPow.setPower(base, exp);
-            numericPow.setPreFac(preFactor);
+            const NumPowerSimpl numericPow({base, exp, preFactor});
 
             const BasePtr newBase = Numeric::create(numericPow.getNewBase());
             const BasePtr newExp = Numeric::create(numericPow.getNewExp());
