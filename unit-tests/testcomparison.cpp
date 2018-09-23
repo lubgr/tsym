@@ -160,7 +160,7 @@ BOOST_AUTO_TEST_CASE(equalContainer)
 {
     const BasePtrList container{ten, a, Product::create(two, b), Sum::create(three, c)};
 
-    BOOST_TEST(bplist::areEqual(container, container));
+    BOOST_TEST(areEqual(container, container));
 }
 
 BOOST_AUTO_TEST_CASE(differentContainer)
@@ -173,8 +173,8 @@ BOOST_AUTO_TEST_CASE(differentContainer)
     c1.push_back(Trigonometric::createSin(a));
     c2.push_back(Product::create(b, c));
 
-    BOOST_TEST(!bplist::areEqual(c1, c2));
-    BOOST_TEST(!bplist::areEqual(c2, c1));
+    BOOST_TEST(!areEqual(c1, c2));
+    BOOST_TEST(!areEqual(c2, c1));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

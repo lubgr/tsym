@@ -521,5 +521,5 @@ bool tsym::Trigonometric::isNegative() const
 
 unsigned tsym::Trigonometric::complexity() const
 {
-    return 6 + bplist::complexitySum(ops);
+    return 6 + complexitySum(ops);
 }

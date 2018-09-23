@@ -12,7 +12,7 @@ std::ostream& tsym::operator<<(std::ostream& stream, const BasePtrList& items)
     stream << "[ ";
 
     for (const auto& item : items) {
-        printer::print(engine, *item);
+        print(engine, *item);
 
         if (&item != &*(prev(end(items))))
             stream << "   ";
@@ -30,5 +30,5 @@ size_t std::hash<tsym::BasePtrList>::operator()(const tsym::BasePtrList& list) c
 
 bool std::equal_to<tsym::BasePtrList>::operator()(const tsym::BasePtrList& lhs, const tsym::BasePtrList& rhs) const
 {
-    return tsym::bplist::areEqual(lhs, rhs);
+    return tsym::areEqual(lhs, rhs);
 }

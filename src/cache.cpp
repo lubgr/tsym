@@ -11,17 +11,17 @@ namespace {
     }
 }
 
-void tsym::cache::detail::registerCacheClearer(const short* address, std::function<void()>&& fct)
+void tsym::detail::registerCacheClearer(const short* address, std::function<void()>&& fct)
 {
     clearFunctions()[address] = std::move(fct);
 }
 
-void tsym::cache::detail::deregisterCacheClearer(const short* address)
+void tsym::detail::deregisterCacheClearer(const short* address)
 {
     clearFunctions().erase(address);
 }
 
-void tsym::cache::clearRegisteredCaches()
+void tsym::clearRegisteredCaches()
 {
     for ([[maybe_unused]] auto& [unused, clearFctEntry] : clearFunctions())
         clearFctEntry();

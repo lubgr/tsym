@@ -12,32 +12,26 @@
 #include "product.h"
 #include "sum.h"
 
-tsym::BasePtrList tsym::bplist::join(BasePtr&& first, BasePtrList&& second)
+tsym::BasePtrList tsym::join(BasePtr&& first, BasePtrList&& second)
 {
     second.push_front(std::move(first));
 
     return std::move(second);
 }
 
-tsym::BasePtrList tsym::bplist::join(BasePtrList&& first, BasePtrList&& second)
+tsym::BasePtrList tsym::join(BasePtrList&& first, BasePtrList&& second)
 {
     first.splice(end(first), std::move(second));
 
     return std::move(first);
 }
 
-bool tsym::bplist::areEqual(const BasePtrList& list1, const BasePtrList& list2)
+bool tsym::areEqual(const BasePtrList& list1, const BasePtrList& list2)
 {
     return boost::equal(list1, list2, [](const auto& bp1, const auto bp2) { return bp1->isEqual(*bp2); });
 }
 
-bool tsym::bplist::has(const BasePtrList& list, const Base& element)
-{
-    return boost::algorithm::any_of(
-      list, [&element](const auto item) { return item->isEqual(element) || item->has(element); });
-}
-
-tsym::BasePtrList tsym::bplist::rest(BasePtrList list)
+tsym::BasePtrList tsym::rest(BasePtrList list)
 {
     if (list.empty())
         TSYM_WARNING("Requesting rest of an empty list!");
@@ -47,35 +41,35 @@ tsym::BasePtrList tsym::bplist::rest(BasePtrList list)
     return list;
 }
 
-bool tsym::bplist::hasUndefinedElements(const BasePtrList& list)
+bool tsym::hasUndefinedElements(const BasePtrList& list)
 {
     return boost::algorithm::any_of(list, std::mem_fn(&Base::isUndefined));
 }
 
-bool tsym::bplist::hasZeroElements(const BasePtrList& list)
+bool tsym::hasZeroElements(const BasePtrList& list)
 {
     using boost::adaptors::indirected;
 
     return boost::algorithm::any_of(list | indirected, isZero);
 }
 
-bool tsym::bplist::hasSumElements(const BasePtrList& list)
+bool tsym::hasSumElements(const BasePtrList& list)
 {
     return boost::algorithm::any_of(list, std::mem_fn(&Base::isSum));
 }
 
-bool tsym::bplist::areAllElementsConst(const BasePtrList& list)
+bool tsym::areAllElementsConst(const BasePtrList& list)
 {
     return boost::algorithm::all_of(list, std::mem_fn(&Base::isConst));
 }
 
-unsigned tsym::bplist::complexitySum(const BasePtrList& list)
+unsigned tsym::complexitySum(const BasePtrList& list)
 {
     return boost::accumulate(
       list, 0u, [](unsigned complexity, const auto& item) { return complexity + item->complexity(); });
 }
 
-tsym::BasePtrList tsym::bplist::getConstElements(const BasePtrList& list)
+tsym::BasePtrList tsym::getConstElements(const BasePtrList& list)
 {
     BasePtrList items;
 
@@ -84,7 +78,7 @@ tsym::BasePtrList tsym::bplist::getConstElements(const BasePtrList& list)
     return items;
 }
 
-tsym::BasePtrList tsym::bplist::getNonConstElements(const BasePtrList& list)
+tsym::BasePtrList tsym::getNonConstElements(const BasePtrList& list)
 {
     using boost::adaptors::filtered;
     BasePtrList items;
@@ -150,9 +144,9 @@ namespace tsym {
     }
 }
 
-tsym::BasePtr tsym::bplist::expandAsProduct(const BasePtrList& list)
+tsym::BasePtr tsym::expandAsProduct(const BasePtrList& list)
 {
-    static cache::RegisteredCache<BasePtrList, BasePtr> cache;
+    static RegisteredCache<BasePtrList, BasePtr> cache;
     static auto& map(cache.map);
     const auto lookup = map.find(list);
     BasePtr expanded;
@@ -172,13 +166,13 @@ tsym::BasePtr tsym::bplist::expandAsProduct(const BasePtrList& list)
     return map.insert({list, std::move(expanded)})->second;
 }
 
-void tsym::bplist::subst(BasePtrList& list, const Base& from, const BasePtr& to)
+void tsym::subst(BasePtrList& list, const Base& from, const BasePtr& to)
 {
     for (auto& item : list)
         item = item->subst(from, to);
 }
 
-tsym::BasePtrList tsym::bplist::subst(const BasePtrList& list, const Base& from, const BasePtr& to)
+tsym::BasePtrList tsym::subst(const BasePtrList& list, const Base& from, const BasePtr& to)
 {
     BasePtrList res;
 

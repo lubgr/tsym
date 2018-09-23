@@ -18,7 +18,7 @@ struct PrinterFixture : public AbcFixture {
 
     template <class Engine, class T> std::string print(Engine& engine, const T& toBePrinted)
     {
-        printer::print(engine, toBePrinted);
+        tsym::print(engine, toBePrinted);
 
         return stream.str();
     }
@@ -34,7 +34,7 @@ struct PrinterFixture : public AbcFixture {
     {
         PlaintextPrintEngine engine(stream);
 
-        printer::printDebug(engine, *toBePrinted);
+        tsym::printDebug(engine, *toBePrinted);
 
         return stream.str();
     }

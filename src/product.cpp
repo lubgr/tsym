@@ -20,9 +20,9 @@ tsym::Product::Product(const BasePtrList& factors, Base::CtorKey&&)
 
 tsym::BasePtr tsym::Product::create(const BasePtrList& factors)
 {
-    if (bplist::hasUndefinedElements(factors))
+    if (hasUndefinedElements(factors))
         return Undefined::create();
-    else if (bplist::hasZeroElements(factors))
+    else if (hasZeroElements(factors))
         return Numeric::zero();
     else if (factors.size() == 1)
         return factors.front();
@@ -32,32 +32,32 @@ tsym::BasePtr tsym::Product::create(const BasePtrList& factors)
 
 tsym::BasePtr tsym::Product::createSimplifiedProduct(const BasePtrList& factors)
 {
-    const BasePtrList res = productsimpl::simplify(factors);
+    const BasePtrList res = simplifyProduct(factors);
 
     if (res.empty())
         return Numeric::one();
     else if (res.size() == 1)
         return res.front();
     else if (needsExpansion(res))
-        return bplist::expandAsProduct(res);
+        return expandAsProduct(res);
     else
         return std::make_shared<const Product>(res, Base::CtorKey{});
 }
 
 bool tsym::Product::needsExpansion(const BasePtrList& factors)
 {
-    const BasePtrList constFac(bplist::getConstElements(factors));
-    const BasePtrList nonConstFac(bplist::getNonConstElements(factors));
+    const BasePtrList constFac(getConstElements(factors));
+    const BasePtrList nonConstFac(getNonConstElements(factors));
 
     if (constFac.empty())
         return false;
-    else if (bplist::hasSumElements(nonConstFac))
+    else if (hasSumElements(nonConstFac))
         /* Only expand one single non-const sum, e.g. 2*sqrt(2)*(a + b). */
         return nonConstFac.size() == 1;
 
     /* This catches (2 + sqrt(2))*a, but also trivial expressions like 2*a. Expanding them does no
      * harm, though. */
-    return bplist::hasSumElements(constFac);
+    return hasSumElements(constFac);
 }
 
 bool tsym::Product::isEqualDifferentBase(const Base& other) const
@@ -146,7 +146,7 @@ size_t tsym::Product::hash() const
 
 unsigned tsym::Product::complexity() const
 {
-    return 5 + bplist::complexitySum(ops);
+    return 5 + complexitySum(ops);
 }
 
 int tsym::Product::sign() const
@@ -181,36 +181,38 @@ tsym::BasePtr tsym::Product::nonNumericTerm() const
     if (ops.front()->isNumeric())
         /* We should to go through automatic simplification again, because the factor list could be
          * e.g. of size 1. */
-        return create(bplist::rest(ops));
+        return create(rest(ops));
     else
         return clone();
 }
 
 tsym::BasePtr tsym::Product::constTerm() const
 {
-    const BasePtrList constItems(bplist::getConstElements(ops));
+    const BasePtrList constItems(getConstElements(ops));
 
     return constItems.empty() ? Numeric::one() : create(constItems);
 }
 
 tsym::BasePtr tsym::Product::nonConstTerm() const
 {
-    const BasePtrList nonConstItems(bplist::getNonConstElements(ops));
+    const BasePtrList nonConstItems(getNonConstElements(ops));
 
     return nonConstItems.empty() ? Numeric::one() : create(nonConstItems);
 }
 
 tsym::BasePtr tsym::Product::expand() const
 {
-    return bplist::expandAsProduct(ops);
+    return expandAsProduct(ops);
 }
 
 tsym::BasePtr tsym::Product::subst(const Base& from, const BasePtr& to) const
 {
+    using tsym::subst;
+
     if (isEqual(from))
         return to;
     else
-        return create(bplist::subst(ops, from, to));
+        return create(subst(ops, from, to));
 }
 
 tsym::BasePtr tsym::Product::coeff(const Base& variable, int exp) const

@@ -52,8 +52,8 @@ void tsym::PrimeFac::toThe(const Int& exponent)
         numPrimes.clear();
         denomPrimes.clear();
     } else {
-        duplicate(numPrimes, integer::abs(exponent));
-        duplicate(denomPrimes, integer::abs(exponent));
+        duplicate(numPrimes, abs(exponent));
+        duplicate(denomPrimes, abs(exponent));
     }
 
     if (exponent < 0)

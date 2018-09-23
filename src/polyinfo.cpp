@@ -73,7 +73,7 @@ namespace tsym {
         bool isValidPower(const Base& power)
         {
             if (const auto exp = power.exp()->numericEval(); hasValidType(*power.base()) && exp)
-                return isInt(*exp) && integer::fitsInto<int>(exp->numerator()) && *exp > 0;
+                return isInt(*exp) && fitsInto<int>(exp->numerator()) && *exp > 0;
 
             return false;
         }
@@ -88,7 +88,7 @@ namespace tsym {
     }
 }
 
-bool tsym::polyinfo::isInputValid(const Base& u, const Base& v)
+bool tsym::poly::isInputValid(const Base& u, const Base& v)
 {
     if (isZero(u) && isZero(v))
         return false;
@@ -141,7 +141,7 @@ namespace tsym {
     }
 }
 
-tsym::BasePtrList tsym::polyinfo::listOfSymbols(const Base& u, const Base& v)
+tsym::BasePtrList tsym::poly::listOfSymbols(const Base& u, const Base& v)
 {
     BasePtrList symbolList;
 
@@ -165,7 +165,7 @@ namespace tsym {
     }
 }
 
-tsym::BasePtr tsym::polyinfo::mainSymbol(const BasePtrList& symbolList, const Base& u, const Base& v)
+tsym::BasePtr tsym::poly::mainSymbol(const BasePtrList& symbolList, const Base& u, const Base& v)
 {
     if (hasCommonSymbol(symbolList, u, v))
         return symbolList.front();

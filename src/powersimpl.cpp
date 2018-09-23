@@ -100,7 +100,7 @@ namespace tsym {
                 /* For very small numeric exponents, this could be the case. */
                 return {one(), one()};
 
-            return powersimpl::simplify(newBase, newExp);
+            return simplifyPower(newBase, newExp);
         }
 
         bool doContractExpFirst(const BasePtr& base, const BasePtr& e1, const BasePtr& e2)
@@ -203,7 +203,7 @@ namespace tsym {
     }
 }
 
-tsym::BasePtrList tsym::powersimpl::simplify(const BasePtr& base, const BasePtr& exp)
+tsym::BasePtrList tsym::simplifyPower(const BasePtr& base, const BasePtr& exp)
 {
     if (doesInvolveComplexNumbers(base, exp))
         return {Undefined::create(), one()};

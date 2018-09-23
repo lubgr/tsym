@@ -22,9 +22,7 @@ namespace tsym {
      * An additional feature is the automatic simplification of appropiate products of trigonometric
      * functions: sin(a)/cos(a) = tan(a) and cos(a)/sin(a) = 1/tan(a). This has to be done in
      * advance to Cohen's algorithm to ensure its proper functionality. */
-    namespace productsimpl {
-        BasePtrList simplify(const BasePtrList& factors);
-    }
+    BasePtrList simplifyProduct(const BasePtrList& factors);
 }
 
 #endif

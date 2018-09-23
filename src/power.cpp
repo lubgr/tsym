@@ -61,7 +61,7 @@ tsym::BasePtr tsym::Power::createNotUndefined(const BasePtr& base, const BasePtr
 
 tsym::BasePtr tsym::Power::createNonTrivial(const BasePtr& base, const BasePtr& exponent)
 {
-    const auto res = powersimpl::simplify(base, exponent);
+    const auto res = simplifyPower(base, exponent);
 
     if (res.size() != 2) {
         TSYM_ERROR("Obtained wrong list from powersimpl: %S. Return Undefined", res);
@@ -178,10 +178,10 @@ tsym::BasePtr tsym::Power::expandSumBaseIntExp() const
     const Int nExp(expRef->numericEval()->numerator());
     BasePtrList sums;
 
-    for (Int i(0); i < integer::abs(nExp); ++i)
+    for (Int i(0); i < abs(nExp); ++i)
         sums.push_back(baseRef);
 
-    auto res = bplist::expandAsProduct(sums);
+    auto res = expandAsProduct(sums);
 
     if (nExp < 0)
         res = Power::oneOver(res);
@@ -223,7 +223,7 @@ int tsym::Power::degree(const Base& variable) const
 
     if (baseDegree == 0)
         return 0;
-    else if (integer::fitsInto<int>(nExp)
+    else if (fitsInto<int>(nExp)
       && static_cast<double>(nExp) < std::numeric_limits<int>::max() / static_cast<double>(baseDegree)
       && static_cast<double>(nExp) > std::numeric_limits<int>::min() / static_cast<double>(baseDegree))
         return static_cast<int>(nExp) * baseDegree;

@@ -49,7 +49,7 @@ namespace tsym {
             while (m >= n) {
                 assert(m >= 0 && n >= 0);
 
-                const auto d = poly::divide(remainder->leadingCoeff(x), v->leadingCoeff(x), bplist::rest(L));
+                const auto d = poly::divide(remainder->leadingCoeff(x), v->leadingCoeff(x), rest(L));
 
                 if (!isZero(*d.back()))
                     return {quotient->expand(), remainder};
@@ -71,7 +71,7 @@ namespace tsym {
 
         BasePtrList pseudoDivideImpl(const BasePtr& u, const BasePtr& v, const Base& x, bool computeQuotient)
         {
-            if (polyinfo::isInputValid(*u, *v))
+            if (poly::isInputValid(*u, *v))
                 return pseudoDivideChecked(u, v, x, computeQuotient);
 
             TSYM_ERROR("Invalid polyn. pseudo-division: %S, %S. Return Undefined quotient/remainder.", u, v);
@@ -176,7 +176,7 @@ namespace tsym {
             const Int largeExp = power.exp()->numericEval()->numerator();
             const BasePtr base(power.base());
 
-            if (!integer::fitsInto<int>(largeExp)) {
+            if (!fitsInto<int>(largeExp)) {
                 TSYM_ERROR("%S: Exponent doesn't fit into primitive int! Return 0 (min. degree).", power);
                 return 0;
             }
@@ -211,13 +211,13 @@ namespace tsym {
 
 tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v)
 {
-    static cache::RegisteredCache<BasePtrList, BasePtrList> cache;
+    static RegisteredCache<BasePtrList, BasePtrList> cache;
     static auto& map(cache.map);
 
     if (const auto lookup = map.find({u, v}); lookup != cend(map))
         return lookup->second;
 
-    auto result = divide(u, v, polyinfo::listOfSymbols(*u, *v));
+    auto result = divide(u, v, poly::listOfSymbols(*u, *v));
 
     return map.insert({{u, v}, result})->second;
 }
@@ -228,7 +228,7 @@ tsym::BasePtrList tsym::poly::divide(const BasePtr& u, const BasePtr& v, const B
 {
     const BasePtr& zero(Numeric::zero());
 
-    if (!polyinfo::isInputValid(*u, *v)) {
+    if (!poly::isInputValid(*u, *v)) {
         TSYM_ERROR("Invalid polynomial division: %S, %S. Return Undefined quotient and remainder.", u, v);
         return {Undefined::create(), Undefined::create()};
     } else if (L.empty())
@@ -267,7 +267,7 @@ int tsym::poly::unit(const Base& polynomial, const Base& x)
 
 tsym::BasePtr tsym::poly::gcd(const BasePtr& u, const BasePtr& v)
 {
-    static cache::RegisteredCache<BasePtrList, BasePtr> cache;
+    static RegisteredCache<BasePtrList, BasePtr> cache;
     static auto& map(cache.map);
     const auto lookup = map.find({u, v});
 

@@ -51,6 +51,7 @@ namespace tsym {
         Number integerContentOfSum(const BasePtrList& summands) const;
         BasePtr normalize(const BasePtr& result, const BasePtrList& L) const;
         Number normalizationFactor(const BasePtr& arg, BasePtrList& L) const;
+
         virtual BasePtr gcdAlgo(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const = 0;
     };
 }

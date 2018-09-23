@@ -19,7 +19,7 @@ add_library(tsym
     function.cpp
     gcd.cpp
     globals.cpp
-    integer.cpp
+    int.cpp
     logarithm.cpp
     logger.cpp
     name.cpp

@@ -138,10 +138,9 @@ void tsym::NumPowerSimpl::computeAllPos()
 
 bool tsym::NumPowerSimpl::areValuesSmallEnough() const
 {
-    if (integer::abs(result.base.numerator()) > maxPrimeLimit || result.base.denominator() > maxPrimeLimit)
+    if (abs(result.base.numerator()) > maxPrimeLimit || result.base.denominator() > maxPrimeLimit)
         return false;
-    else if (integer::abs(result.preFactor.numerator()) > maxPrimeLimit
-      || result.preFactor.denominator() > maxPrimeLimit)
+    else if (abs(result.preFactor.numerator()) > maxPrimeLimit || result.preFactor.denominator() > maxPrimeLimit)
         return false;
     else
         return true;

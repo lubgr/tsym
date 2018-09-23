@@ -77,8 +77,8 @@ namespace tsym {
             BasePtr q1(q.front());
             const BasePtrList p1q1{p1, q1};
             const BasePtrList q1p1{q1, p1};
-            BasePtrList pRest(bplist::rest(p));
-            BasePtrList qRest(bplist::rest(q));
+            BasePtrList pRest(rest(p));
+            BasePtrList qRest(rest(q));
             BasePtrList res = simplTwoSummands(p1, q1);
 
             if (res.empty())
@@ -86,11 +86,11 @@ namespace tsym {
             else if (res.size() == 1 && isZero(*res.front()))
                 return merge(pRest, qRest);
             else if (res.size() == 1)
-                return bplist::join(std::move(res), merge(pRest, qRest));
-            else if (bplist::areEqual(res, p1q1))
-                return bplist::join(std::move(p1), merge(pRest, q));
-            else if (bplist::areEqual(res, q1p1))
-                return bplist::join(std::move(q1), merge(p, qRest));
+                return join(std::move(res), merge(pRest, qRest));
+            else if (areEqual(res, p1q1))
+                return join(std::move(p1), merge(pRest, q));
+            else if (areEqual(res, q1p1))
+                return join(std::move(q1), merge(p, qRest));
 
             TSYM_ERROR("Error merging non-empty lists: %S, %S", p, q);
 
@@ -115,7 +115,7 @@ namespace tsym {
                 return simplEqualNonNumericTerms(s1, s2);
             else if (haveContractableSinCos(s1, s2))
                 return {s1->constTerm()};
-            else if (order::doPermute(*s1, *s2))
+            else if (doPermute(*s1, *s2))
                 return {s2, s1};
             else
                 return {s1, s2};
@@ -152,7 +152,7 @@ namespace tsym {
 
             if (!sum->isSum())
                 return {Product::create(sum, s1->nonConstTerm())};
-            else if (order::doPermute(*s1, *s2))
+            else if (doPermute(*s1, *s2))
                 return {s2, s1};
             else
                 return {s1, s2};
@@ -223,7 +223,7 @@ namespace tsym {
 
         BasePtrList simplNSummands(const BasePtrList& u)
         {
-            const BasePtrList uRest(bplist::rest(u));
+            const BasePtrList uRest(rest(u));
             const BasePtr u1(u.front());
             const BasePtrList simplRest = simplWithoutCache(uRest);
 
@@ -235,9 +235,9 @@ namespace tsym {
     }
 }
 
-tsym::BasePtrList tsym::sumsimpl::simplify(const BasePtrList& summands)
+tsym::BasePtrList tsym::simplifySum(const BasePtrList& summands)
 {
-    static cache::RegisteredCache<BasePtrList, BasePtrList> cache;
+    static RegisteredCache<BasePtrList, BasePtrList> cache;
     static auto& map(cache.map);
 
     if (const auto lookup = map.find(summands); lookup != cend(map))

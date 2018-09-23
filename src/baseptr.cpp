@@ -9,7 +9,7 @@ std::ostream& tsym::operator<<(std::ostream& stream, const BasePtr& ptr)
 {
     auto engine = PlaintextPrintEngine{stream};
 
-    printer::print(engine, *ptr);
+    print(engine, *ptr);
 
     return stream;
 }

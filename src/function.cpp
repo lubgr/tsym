@@ -12,7 +12,7 @@ tsym::Function::Function(const BasePtrList& args, Name&& name)
 bool tsym::Function::isEqualDifferentBase(const Base& other) const
 {
     if (sameType(other))
-        return name() == other.name() && bplist::areEqual(ops, other.operands());
+        return name() == other.name() && areEqual(ops, other.operands());
     else
         return false;
 }

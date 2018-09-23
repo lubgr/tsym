@@ -34,7 +34,7 @@ tsym::Number::Number(const Int& value)
 
 tsym::Number::Number(const Int& numerator, const Int& denominator)
     /* The implementation doesn't move from input rvalues, hence const references are fine here: */
-    : rep(std::in_place_type_t<Rational>(), denominator < 0 ? -numerator : numerator, integer::abs(denominator))
+    : rep(std::in_place_type_t<Rational>(), denominator < 0 ? -numerator : numerator, abs(denominator))
 {
     setDebugString();
 }
@@ -45,7 +45,7 @@ void tsym::Number::setDebugString()
     std::ostringstream stream;
     PlaintextPrintEngine engine(stream, PlaintextPrintEngine::CharSet::ASCII);
 
-    printer::print(engine, *this);
+    print(engine, *this);
 
     prettyStr = stream.str();
 #endif
@@ -197,10 +197,10 @@ tsym::Number tsym::Number::computeRationalPower(const Number& exponent) const
 tsym::Number tsym::Number::computeNumPower(const Int& numExponent) const
 /* For e.g. (1/2)^(2/3), this does the part (1/2)^2. */
 {
-    assert(integer::fitsInto<unsigned>(integer::abs(numExponent)));
-    const auto exp = static_cast<unsigned>(integer::abs(numExponent));
-    const Int newDenom = integer::pow(denominator(), exp);
-    const Int newNum = integer::pow(numerator(), exp);
+    assert(fitsInto<unsigned>(abs(numExponent)));
+    const auto exp = static_cast<unsigned>(abs(numExponent));
+    const Int newDenom = pow(denominator(), exp);
+    const Int newNum = pow(numerator(), exp);
 
     if (numExponent < 0)
         /* The method takes care of negative a numerator. */
@@ -234,9 +234,9 @@ namespace tsym {
                 /* We are not too strict here, because of the following check. */
                 return 0;
 
-            assert(denomExponent > 0 && integer::fitsInto<unsigned>(denomExponent));
+            assert(denomExponent > 0 && fitsInto<unsigned>(denomExponent));
 
-            return integer::pow(Int(base), static_cast<unsigned>(denomExponent)) == n ? base : 0;
+            return pow(Int(base), static_cast<unsigned>(denomExponent)) == n ? base : 0;
         }
     }
 }
@@ -331,7 +331,7 @@ std::ostream& tsym::operator<<(std::ostream& stream, const Number& rhs)
 {
     PlaintextPrintEngine engine(stream);
 
-    printer::print(engine, rhs);
+    print(engine, rhs);
 
     return stream;
 }

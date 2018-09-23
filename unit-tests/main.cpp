@@ -14,7 +14,7 @@ struct GlobalFixture : public tsym::TestSuiteLoggingFixture {
     GlobalFixture& operator=(GlobalFixture&&) = delete;
     ~GlobalFixture() override
     {
-        tsym::cache::clearRegisteredCaches();
+        tsym::clearRegisteredCaches();
     }
 };
 

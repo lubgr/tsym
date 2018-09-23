@@ -1,5 +1,7 @@
 
 #include "base.h"
+#include <boost/algorithm/cxx11/any_of.hpp>
+#include <boost/range/adaptors.hpp>
 #include <sstream>
 #include <utility>
 #include "baseptr.h"
@@ -71,10 +73,12 @@ bool tsym::Base::isDifferent(const Base& other) const
 
 bool tsym::Base::has(const Base& other) const
 {
+    using boost::adaptors::indirected;
+
     if (isEqual(other))
         return true;
     else if (!ops.empty())
-        return bplist::has(ops, other);
+        return boost::algorithm::any_of(ops | indirected, [&other](const auto& item) { return item.has(other); });
     else
         return false;
 }
@@ -84,7 +88,7 @@ bool tsym::Base::isConst() const
     if (ops.empty())
         return false;
     else
-        return bplist::areAllElementsConst(ops);
+        return areAllElementsConst(ops);
 }
 
 tsym::BasePtr tsym::Base::numericTerm() const
@@ -175,7 +179,7 @@ tsym::BasePtr tsym::Base::normal() const
 
 tsym::BasePtr tsym::Base::normalViaCache() const
 {
-    static cache::RegisteredCache<BasePtr, BasePtr> cache;
+    static RegisteredCache<BasePtr, BasePtr> cache;
     static auto& map(cache.map);
     const BasePtr key = clone();
 
@@ -214,7 +218,7 @@ const tsym::BasePtrList& tsym::Base::operands() const
 bool tsym::Base::isEqualByTypeAndOperands(const Base& other) const
 {
     if (sameType(other))
-        return bplist::areEqual(ops, other.ops);
+        return areEqual(ops, other.ops);
     else
         return false;
 }
@@ -225,7 +229,7 @@ void tsym::Base::setDebugString()
     std::ostringstream stream;
     PlaintextPrintEngine engine(stream, PlaintextPrintEngine::CharSet::ASCII);
 
-    printer::printDebug(engine, *this);
+    printDebug(engine, *this);
 
     prettyStr = stream.str();
 #endif
@@ -235,7 +239,7 @@ std::ostream& tsym::operator<<(std::ostream& stream, const Base& arg)
 {
     auto engine = PlaintextPrintEngine{stream};
 
-    printer::print(engine, arg);
+    print(engine, arg);
 
     return stream;
 }

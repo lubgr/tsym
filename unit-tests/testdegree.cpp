@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE(powerTooSmallIntExp, noLogs())
 
     degree = pow->degree(*a);
 
-    BOOST_TEST(!integer::fitsInto<int>(largeNeg));
+    BOOST_TEST(!fitsInto<int>(largeNeg));
     BOOST_CHECK_EQUAL(0, degree);
 }
 

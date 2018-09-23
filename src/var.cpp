@@ -28,7 +28,7 @@ namespace tsym {
             return map;
         }
 
-        bool isCorrectIntOrSymbol(const parser::Result& parsed)
+        bool isCorrectIntOrSymbol(const ParseResult& parsed)
         {
             const bool parsingSuccess = parsed.success && parsed.matchedWholeString;
             const BasePtr& value(parsed.value);
@@ -75,7 +75,7 @@ tsym::Var::Var(int numerator, int denominator)
 
 tsym::Var::Var(std::string_view str)
 {
-    const parser::Result parsed = parser::parse(str);
+    const ParseResult parsed = parseFrom(str);
 
     if (isCorrectIntOrSymbol(parsed)) {
         rep = parsed.value;
@@ -168,7 +168,7 @@ tsym::Var::operator int() const
 
     if (!isInteger(*rep))
         throw std::domain_error(errorMessage);
-    else if (!integer::fitsInto<int>(rep->numericEval()->numerator()))
+    else if (!fitsInto<int>(rep->numericEval()->numerator()))
         throw std::overflow_error(errorMessage);
 
     try {
@@ -236,7 +236,7 @@ std::ostream& tsym::operator<<(std::ostream& stream, const Var& rhs)
 {
     PlaintextPrintEngine engine(stream);
 
-    printer::print(engine, *rhs.get());
+    print(engine, *rhs.get());
 
     return stream;
 }

@@ -22,7 +22,7 @@ tsym::BasePtr tsym::SubresultantGcd::gcdAlgo(const BasePtr& u, const BasePtr& v,
 tsym::BasePtr tsym::SubresultantGcd::gcd(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const
 {
     const BasePtr& x(L.front());
-    const BasePtrList R(bplist::rest(L));
+    const BasePtrList R(rest(L));
     const BasePtr uContent(poly::content(u, x, *this));
     const BasePtr vContent(poly::content(v, x, *this));
     const BasePtr d(compute(uContent, vContent, R));

@@ -87,14 +87,14 @@ namespace tsym {
                   >> *(('+' >> summand)[bind(&QiParser::toSum)] | ('-' >> summand)[bind(&QiParser::toDifference)]);
             }
 
-            parser::Result parse(Iterator first, Iterator last)
+            ParseResult parse(Iterator first, Iterator last)
             {
                 bool success = qi::phrase_parse(first, last, expression, boost::spirit::ascii::space);
 
                 return result(success, first == last);
             }
 
-            parser::Result result(bool success, bool fullyParsed)
+            ParseResult result(bool success, bool fullyParsed)
             {
                 const BasePtr& parsed = stack.empty() ? Undefined::create() : stack.top();
 
@@ -255,7 +255,7 @@ namespace tsym {
             Rule summand;
         };
 
-        tsym::parser::Result parseAsciiOnly(std::string_view inputStr)
+        tsym::ParseResult parseAsciiOnly(std::string_view inputStr)
         {
             QiParser<std::string_view::const_iterator> parser;
 
@@ -269,7 +269,7 @@ namespace tsym {
     }
 }
 
-tsym::parser::Result tsym::parser::parse(std::string_view inputStr)
+tsym::ParseResult tsym::parseFrom(std::string_view inputStr)
 {
     if (isAsciiOnly(inputStr))
         return parseAsciiOnly(inputStr);

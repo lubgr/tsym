@@ -25,10 +25,12 @@ namespace tsym {
             {
                 engine.registerToplevelPrintFunction([this](Engine&, const BasePtr& ptr) { print(*ptr); });
 
+                using tsym::print;
+
                 if (base.isSymbol())
                     symbol(base);
                 else if (base.isNumeric())
-                    printer::print(engine, *base.numericEval());
+                    print(engine, *base.numericEval());
                 else if (base.isPower())
                     power(base.base(), base.exp());
                 else if (base.isSum())
@@ -278,7 +280,7 @@ namespace tsym {
     }
 }
 
-template <class Engine> void tsym::printer::print(Engine& engine, const Number& number)
+template <class Engine> void tsym::print(Engine& engine, const Number& number)
 {
     if (number.isDouble())
         engine.number(number.toDouble());
@@ -296,16 +298,16 @@ template <class Engine> void tsym::printer::print(Engine& engine, const Number& 
     }
 }
 
-template <class Engine> void tsym::printer::print(Engine& engine, const Base& base)
+template <class Engine> void tsym::print(Engine& engine, const Base& base)
 {
     print(engine, base, PowerAsFraction::TRUE);
 }
 
-template <class Engine> void tsym::printer::printDebug(Engine& engine, const Base& base)
+template <class Engine> void tsym::printDebug(Engine& engine, const Base& base)
 {
     print(engine, base, PowerAsFraction::FALSE);
 }
 
-template void tsym::printer::print<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const Number&);
-template void tsym::printer::print<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const Base&);
-template void tsym::printer::printDebug<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const Base&);
+template void tsym::print<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const Number&);
+template void tsym::print<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const Base&);
+template void tsym::printDebug<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const Base&);

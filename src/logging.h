@@ -6,18 +6,20 @@
 #include <iterator>
 #include "logger.h"
 
-namespace logging {
-    template <class S, class... T> std::string fmt(S&& fmt, const T&... args)
-    {
-        boost::format format(std::forward<S>(fmt));
+namespace tsym {
+    namespace detail {
+        template <class S, class... T> std::string logFormat(S&& fmt, const T&... args)
+        {
+            boost::format format(std::forward<S>(fmt));
 
-        return boost::str((format % ... % args));
+            return boost::str((format % ... % args));
+        }
     }
 }
 
 #define TSYM_LOGGING_ARGS(...)                                                                                         \
     {                                                                                                                  \
-        "tsym", std::next(std::strrchr(__FILE__, '/')), __LINE__, logging::fmt(__VA_ARGS__)                            \
+        "tsym", std::next(std::strrchr(__FILE__, '/')), __LINE__, tsym::detail::logFormat(__VA_ARGS__)                 \
     }
 
 #define TSYM_DEBUG(...) tsym::Logger::getInstance().debug(TSYM_LOGGING_ARGS(__VA_ARGS__))

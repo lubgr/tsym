@@ -545,7 +545,7 @@ BOOST_AUTO_TEST_CASE(extractPositiveFactorsOfProductBase)
 
     BOOST_TEST(res->isProduct());
 
-    BOOST_TEST(bplist::areEqual(expected, res->operands()));
+    BOOST_TEST(areEqual(expected, res->operands()));
 }
 
 BOOST_AUTO_TEST_CASE(negProductBaseFractionExp)

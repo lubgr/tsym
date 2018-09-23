@@ -46,14 +46,14 @@ BOOST_AUTO_TEST_CASE(changeOfSign)
     const Int n(-213094234);
     Int result;
 
-    result = integer::abs(n);
+    result = abs(n);
 
     BOOST_CHECK_EQUAL(expected, result);
 }
 
 BOOST_AUTO_TEST_CASE(gcdBothOperandsZero)
 {
-    const Int result = integer::gcd(zero, zero);
+    const Int result = gcd(zero, zero);
 
     BOOST_CHECK_EQUAL(0, result);
 }
@@ -61,7 +61,7 @@ BOOST_AUTO_TEST_CASE(gcdBothOperandsZero)
 BOOST_AUTO_TEST_CASE(trivialGcd)
 {
     const Int four(4);
-    const Int result = integer::gcd(four, 3);
+    const Int result = gcd(four, 3);
 
     BOOST_CHECK_EQUAL(1, result);
 }
@@ -71,14 +71,14 @@ BOOST_AUTO_TEST_CASE(largeGcd)
     const Int n1("2268768101928008863115135358527391507");
     const Int n2("471097608789240594631830432");
     const Int expected("2309482093840923");
-    const Int result = integer::gcd(n1, n2);
+    const Int result = gcd(n1, n2);
 
     BOOST_CHECK_EQUAL(expected, result);
 }
 
 BOOST_AUTO_TEST_CASE(lcmBothZero)
 {
-    const Int result = integer::lcm(zero, zero);
+    const Int result = lcm(zero, zero);
 
     BOOST_CHECK_EQUAL(0, result);
 }
@@ -88,7 +88,7 @@ BOOST_AUTO_TEST_CASE(largeLcm)
     const Int expected("47116200935874995263669584298436552275884098991145738935519645420");
     const Int n1("2309820438092849280938402209384209");
     const Int n2("20398209384092840982094382094380");
-    const Int result = integer::lcm(n1, n2);
+    const Int result = lcm(n1, n2);
 
     BOOST_CHECK_EQUAL(expected, result);
 }
@@ -105,14 +105,14 @@ BOOST_AUTO_TEST_CASE(constructFromMaxLong)
 BOOST_AUTO_TEST_CASE(powerWithZeroExp)
 {
     const Int base(12345);
-    const Int result = integer::pow(base, 0);
+    const Int result = pow(base, 0);
 
     BOOST_CHECK_EQUAL(1, result);
 }
 
 BOOST_AUTO_TEST_CASE(powerZeroBaseAndExp)
 {
-    const Int result = integer::pow(zero, 0);
+    const Int result = pow(zero, 0);
 
     BOOST_CHECK_EQUAL(1, result);
 }
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(powerZeroBaseAndExp)
 BOOST_AUTO_TEST_CASE(powerWithBaseOne)
 {
     const Int base(1);
-    const Int result = integer::pow(base, 843098208u);
+    const Int result = pow(base, 843098208u);
 
     BOOST_CHECK_EQUAL(1, result);
 }
@@ -128,7 +128,7 @@ BOOST_AUTO_TEST_CASE(powerWithBaseOne)
 BOOST_AUTO_TEST_CASE(power)
 {
     const Int base(12345);
-    const Int result = integer::pow(base, 9);
+    const Int result = pow(base, 9);
 
     BOOST_CHECK_EQUAL(Int("6659166111488656281486807152009765625"), result);
 }
@@ -174,18 +174,18 @@ BOOST_AUTO_TEST_CASE(sign)
 
 BOOST_AUTO_TEST_CASE(fitsIntoInt)
 {
-    BOOST_TEST(integer::fitsInto<int>(Int(1234567)));
-    BOOST_TEST(integer::fitsInto<int>(Int(-7654321)));
-    BOOST_TEST(!integer::fitsInto<int>(Int("230894203489028394082903849092340")));
-    BOOST_TEST(!integer::fitsInto<int>(Int("-29304209843902894308290384203989")));
+    BOOST_TEST(fitsInto<int>(Int(1234567)));
+    BOOST_TEST(fitsInto<int>(Int(-7654321)));
+    BOOST_TEST(!fitsInto<int>(Int("230894203489028394082903849092340")));
+    BOOST_TEST(!fitsInto<int>(Int("-29304209843902894308290384203989")));
 }
 
 BOOST_AUTO_TEST_CASE(fitsIntoLong)
 {
-    BOOST_TEST(integer::fitsInto<long>(Int(1234567)));
-    BOOST_TEST(integer::fitsInto<long>(Int(-7654321)));
-    BOOST_TEST(!integer::fitsInto<long>(Int("230894203489028394082903849092340")));
-    BOOST_TEST(!integer::fitsInto<long>(Int("-29304209843902894308290384203989")));
+    BOOST_TEST(fitsInto<long>(Int(1234567)));
+    BOOST_TEST(fitsInto<long>(Int(-7654321)));
+    BOOST_TEST(!fitsInto<long>(Int("230894203489028394082903849092340")));
+    BOOST_TEST(!fitsInto<long>(Int("-29304209843902894308290384203989")));
 }
 
 BOOST_AUTO_TEST_CASE(toPrimitiveInt)
@@ -193,7 +193,7 @@ BOOST_AUTO_TEST_CASE(toPrimitiveInt)
     const int orig = 12345;
     const Int n(orig);
 
-    BOOST_TEST(integer::fitsInto<int>(n));
+    BOOST_TEST(fitsInto<int>(n));
     BOOST_CHECK_EQUAL(orig, static_cast<int>(n));
 }
 

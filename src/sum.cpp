@@ -22,7 +22,7 @@ tsym::Sum::Sum(const BasePtrList& summands, Base::CtorKey&&)
 
 tsym::BasePtr tsym::Sum::create(const BasePtrList& summands)
 {
-    if (bplist::hasUndefinedElements(summands))
+    if (hasUndefinedElements(summands))
         return Undefined::create();
     else if (summands.size() == 1)
         return summands.front();
@@ -32,7 +32,7 @@ tsym::BasePtr tsym::Sum::create(const BasePtrList& summands)
 
 tsym::BasePtr tsym::Sum::createSimplifiedSum(const BasePtrList& summands)
 {
-    const auto res = sumsimpl::simplify(summands);
+    const auto res = simplifySum(summands);
 
     if (res.empty())
         return Numeric::zero();
@@ -141,7 +141,7 @@ size_t tsym::Sum::hash() const
 
 unsigned tsym::Sum::complexity() const
 {
-    return 5 + bplist::complexitySum(ops);
+    return 5 + complexitySum(ops);
 }
 
 int tsym::Sum::sign() const
@@ -205,10 +205,12 @@ tsym::BasePtr tsym::Sum::expand() const
 
 tsym::BasePtr tsym::Sum::subst(const tsym::Base& from, const tsym::BasePtr& to) const
 {
+    using tsym::subst;
+
     if (isEqual(from))
         return to;
     else
-        return create(bplist::subst(ops, from, to));
+        return create(subst(ops, from, to));
 }
 
 tsym::BasePtr tsym::Sum::coeff(const Base& variable, int exp) const

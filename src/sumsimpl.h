@@ -5,9 +5,7 @@
 #include "baseptrlist.h"
 
 namespace tsym {
-    namespace sumsimpl {
-        BasePtrList simplify(const BasePtrList& summands);
-    }
+    BasePtrList simplifySum(const BasePtrList& summands);
 }
 
 #endif

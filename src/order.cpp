@@ -35,7 +35,7 @@ namespace tsym {
     static bool doPermuteLeftFunctionRightSymbol(const Base& left, const Base& right);
 }
 
-bool tsym::order::doPermute(const Base& left, const Base& right)
+bool tsym::doPermute(const Base& left, const Base& right)
 {
     if (left.sameType(right))
         return doPermuteSameType(left, right);
@@ -101,9 +101,9 @@ bool tsym::doPermuteBothPower(const Base& left, const Base& right)
     const Base& rExp(*right.exp());
 
     if (lBase.isDifferent(rBase))
-        return order::doPermute(lBase, rBase);
+        return doPermute(lBase, rBase);
     else
-        return order::doPermute(lExp, rExp);
+        return doPermute(lExp, rExp);
 }
 
 bool tsym::doPermuteBothProduct(const Base& left, const Base& right)
@@ -120,7 +120,7 @@ bool tsym::doPermuteListReverse(const BasePtrList& left, const BasePtrList& righ
     using boost::adaptors::reversed;
 
     return boost::lexicographical_compare(right | reversed | indirected, left | reversed | indirected,
-      [](const auto& bp1, const auto& bp2) { return bp1.isDifferent(bp2) && order::isCorrect(bp1, bp2); });
+      [](const auto& bp1, const auto& bp2) { return bp1.isDifferent(bp2) && isCorrect(bp1, bp2); });
 }
 
 bool tsym::doPermuteBothSum(const Base& left, const Base& right)
@@ -153,7 +153,7 @@ bool tsym::doPermuteBothFunction(const Base& left, const Base& right)
          * arguments exactly the other way around, while the advantage over using the normal
          * ordering procedure isn't obvious. Thus, we stick to the standard procedure, leading to
          * e.g. the correct ordering sin(b + c + d)*sin(a + c + e). */
-        return order::doPermute(*left.operands().front(), *right.operands().front());
+        return doPermute(*left.operands().front(), *right.operands().front());
 }
 
 bool tsym::doPermuteDifferentType(const Base& left, const Base& right)
@@ -178,7 +178,7 @@ bool tsym::doPermuteDifferentType(const Base& left, const Base& right)
         return false;
     }
 
-    return !order::doPermute(right, left);
+    return !doPermute(right, left);
 }
 
 bool tsym::isPowerSumSymbolOrFunction(const Base& arg)
@@ -200,7 +200,7 @@ bool tsym::doPermuteLastElement(const BasePtrList& lList, const Base& right)
     if (lLastFactor.isEqual(right))
         return true;
     else
-        return order::doPermute(lLastFactor, right);
+        return doPermute(lLastFactor, right);
 }
 
 bool tsym::isSumSymbolOrFunction(const Base& arg)
@@ -214,9 +214,9 @@ bool tsym::doPermuteLeftPower(const Base& left, const Base& right)
     const Base& lExp(*left.exp());
 
     if (lBase.isDifferent(right))
-        return order::doPermute(lBase, right);
+        return doPermute(lBase, right);
     else
-        return order::doPermute(lExp, *Numeric::one());
+        return doPermute(lExp, *Numeric::one());
 }
 
 bool tsym::isSymbolOrFunction(const Base& arg)
@@ -242,7 +242,7 @@ bool tsym::doPermuteLeftFunctionRightSymbol(const Base& left, const Base& right)
         return lName > rName;
 }
 
-bool tsym::order::isCorrect(const Base& left, const Base& right)
+bool tsym::isCorrect(const Base& left, const Base& right)
 {
     return !doPermute(left, right);
 }

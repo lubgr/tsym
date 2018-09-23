@@ -5,9 +5,8 @@
 #include "baseptrlist.h"
 
 namespace tsym {
-    namespace polyinfo {
-        /* Utility functions for operations on two multivariate polynomials. */
-
+    /* Utility functions for operations on two multivariate polynomials. */
+    namespace poly {
         /* A valid input is the following: rational Numerics, Symbols or combinations of those
          * types, i.e., Sum, Product or Power: */
         bool isInputValid(const Base& u, const Base& v);

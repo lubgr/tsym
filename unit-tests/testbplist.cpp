@@ -12,7 +12,7 @@ BOOST_AUTO_TEST_CASE(restOfEmptyList, noLogs())
 {
     const BasePtrList empty{};
 
-    auto result = bplist::rest(empty);
+    auto result = rest(empty);
 
     BOOST_TEST(result.empty());
 }
@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(restOfEmptyList, noLogs())
 BOOST_AUTO_TEST_CASE(restOfRvalueArg)
 {
     const BasePtrList expected{b, c, d, ten};
-    const BasePtrList list = bplist::rest({a, b, c, d, ten});
+    const BasePtrList list = rest({a, b, c, d, ten});
 
     BOOST_TEST(expected == list, per_element());
 }
