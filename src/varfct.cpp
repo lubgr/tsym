@@ -1,5 +1,5 @@
 
-#include "globals.h"
+#include "varfct.h"
 #include <boost/range/algorithm/find.hpp>
 #include <chrono>
 #include "constant.h"

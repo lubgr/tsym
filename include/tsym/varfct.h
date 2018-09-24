@@ -1,5 +1,5 @@
-#ifndef TSYM_GLOBALS_H
-#define TSYM_GLOBALS_H
+#ifndef TSYM_VARFCT_H
+#define TSYM_VARFCT_H
 
 #include <optional>
 #include <string>

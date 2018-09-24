@@ -13,8 +13,6 @@ add_executable(tests EXCLUDE_FROM_ALL
     testexpansion.cpp
     testfraction.cpp
     testgcd.cpp
-    testglobalplu.cpp
-    testglobals.cpp
     testhas.cpp
     testhash.cpp
     testint.cpp
@@ -29,6 +27,7 @@ add_executable(tests EXCLUDE_FROM_ALL
     testorder.cpp
     testparser.cpp
     testpivoting.cpp
+    testplu.cpp
     testpolycontentunit.cpp
     testpolydivide.cpp
     testpolyinfo.cpp
@@ -48,6 +47,7 @@ add_executable(tests EXCLUDE_FROM_ALL
     testtrigonometric.cpp
     testundefined.cpp
     testvar.cpp
+    testvarfct.cpp
     tsymtests.cpp)
 
 target_include_directories(tests

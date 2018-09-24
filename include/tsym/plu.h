@@ -10,8 +10,8 @@
 #include <stdexcept>
 #include <type_traits>
 #include <vector>
-#include "globals.h"
 #include "var.h"
+#include "varfct.h"
 
 namespace tsym {
     namespace plu {

@@ -1,13 +1,13 @@
 
 #include <cmath>
 #include "fixtures.h"
-#include "globals.h"
 #include "number.h"
 #include "tsymtests.h"
+#include "varfct.h"
 
 using namespace tsym;
 
-struct GlobalsFixture {
+struct VarFctFixture {
     const Var a = Var("a");
     const Var b = Var("b");
     const Var c = Var("c");
@@ -17,7 +17,7 @@ struct GlobalsFixture {
     const Var half = Var(1, 2);
 };
 
-BOOST_FIXTURE_TEST_SUITE(TestGlobals, GlobalsFixture)
+BOOST_FIXTURE_TEST_SUITE(TestVarFct, VarFctFixture)
 
 BOOST_AUTO_TEST_CASE(squareRoot)
 {

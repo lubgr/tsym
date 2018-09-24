@@ -7,7 +7,7 @@
 
 using namespace tsym;
 
-struct GlobalPluFixture {
+struct PluFixture {
     const Var a = Var("a");
     const Var b = Var("b");
     const Var c = Var("c");
@@ -24,7 +24,7 @@ namespace {
     }
 }
 
-BOOST_FIXTURE_TEST_SUITE(TestGlobalPlu, GlobalPluFixture)
+BOOST_FIXTURE_TEST_SUITE(TestPlu, PluFixture)
 
 BOOST_AUTO_TEST_CASE(solveWithSingularMatrix)
 {

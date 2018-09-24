@@ -7,12 +7,12 @@
 #include "base.h"
 #include "baseptr.h"
 #include "fixtures.h"
-#include "globals.h"
 #include "name.h"
 #include "number.h"
 #include "numeric.h"
 #include "tsymtests.h"
 #include "var.h"
+#include "varfct.h"
 
 using namespace tsym;
 
