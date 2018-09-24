@@ -7,22 +7,13 @@
 #include "symbolmap.h"
 #include "undefined.h"
 
-tsym::PowerNormal::PowerNormal(SymbolMap& map)
+tsym::PowerNormal::PowerNormal(const Base& base, const Base& exp, SymbolMap& map)
     : map(map)
-    , rationalBase{Undefined::create()}
+    , rationalBase{base.normal(this->map)}
+    , rationalExp{exp.normal()}
 {}
 
-void tsym::PowerNormal::setBase(const Base& base)
-{
-    rationalBase = base.normal(map);
-}
-
-void tsym::PowerNormal::setExponent(const Base& exp)
-{
-    rationalExp = exp.normal();
-}
-
-tsym::Fraction tsym::PowerNormal::normal()
+tsym::Fraction tsym::PowerNormal::normal() const
 {
     if (isBaseOrExpUndefined())
         return {Undefined::create()};
@@ -63,7 +54,7 @@ tsym::Fraction tsym::PowerNormal::normalIntegerExp() const
     return {one};
 }
 
-tsym::Fraction tsym::PowerNormal::normalNonIntegerExp()
+tsym::Fraction tsym::PowerNormal::normalNonIntegerExp() const
 {
     if (rationalExp->numericEval())
         return normalNumEvalExp();
@@ -71,7 +62,7 @@ tsym::Fraction tsym::PowerNormal::normalNonIntegerExp()
         return normalNonNumEvalExp();
 }
 
-tsym::Fraction tsym::PowerNormal::normalNumEvalExp()
+tsym::Fraction tsym::PowerNormal::normalNumEvalExp() const
 {
     /* Should have been handled as integer exponent above. */
     assert(rationalExp->numericEval() != 0);
@@ -82,7 +73,7 @@ tsym::Fraction tsym::PowerNormal::normalNumEvalExp()
         return normalNumEvalNegExp();
 }
 
-tsym::Fraction tsym::PowerNormal::normalNumEvalPosExp()
+tsym::Fraction tsym::PowerNormal::normalNumEvalPosExp() const
 {
     const BasePtr num(evaluatePow(rationalBase.num, rationalExp));
     const BasePtr denom(evaluatePow(rationalBase.denom, rationalExp));
@@ -90,14 +81,14 @@ tsym::Fraction tsym::PowerNormal::normalNumEvalPosExp()
     return {num, denom};
 }
 
-tsym::BasePtr tsym::PowerNormal::evaluatePow(const BasePtr& base, const BasePtr& exp)
+tsym::BasePtr tsym::PowerNormal::evaluatePow(const BasePtr& base, const BasePtr& exp) const
 {
     const BasePtr evaluatedPow(Power::create(base, exp));
 
     return isOne(*evaluatedPow) ? evaluatedPow : map.getTmpSymbolAndStore(evaluatedPow);
 }
 
-tsym::Fraction tsym::PowerNormal::normalNumEvalNegExp()
+tsym::Fraction tsym::PowerNormal::normalNumEvalNegExp() const
 {
     const BasePtr positiveExp(Product::minus(rationalExp));
     const BasePtr num(evaluatePow(rationalBase.denom, positiveExp));
@@ -106,7 +97,7 @@ tsym::Fraction tsym::PowerNormal::normalNumEvalNegExp()
     return {num, denom};
 }
 
-tsym::Fraction tsym::PowerNormal::normalNonNumEvalExp()
+tsym::Fraction tsym::PowerNormal::normalNonNumEvalExp() const
 {
     const BasePtr result = Power::create(eval(rationalBase), rationalExp);
     const BasePtr replacement = map.getTmpSymbolAndStore(result);

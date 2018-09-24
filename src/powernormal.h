@@ -15,29 +15,32 @@ namespace tsym {
          * (in most cases, this includes a replacement of the Power by temporary symbols, handled in
          * the SymbolMap). */
       public:
-        explicit PowerNormal(SymbolMap& map);
-
         /* Base and exponent parameter aren't required to outlive the class instance: */
-        void setBase(const Base& base);
-        void setExponent(const Base& exp);
+        PowerNormal(const Base& base, const Base& exp, SymbolMap& map);
+        /* The data members are const-qualified, hence the explicit assignment deletion: */
+        const PowerNormal& operator=(const PowerNormal&) = delete;
+        const PowerNormal& operator=(PowerNormal&&) = delete;
+        PowerNormal(const PowerNormal&) = default;
+        PowerNormal(PowerNormal&&) = default;
+        ~PowerNormal() = default;
 
-        Fraction normal();
+        Fraction normal() const;
 
       private:
         bool isBaseOrExpUndefined() const;
         bool isRationalExpInteger() const;
         Fraction normalIntegerExp() const;
-        Fraction normalNonIntegerExp();
-        Fraction normalNumEvalExp();
-        Fraction normalNumEvalPosExp();
-        BasePtr evaluatePow(const BasePtr& base, const BasePtr& exp);
-        Fraction normalNumEvalNegExp();
-        Fraction normalNonNumEvalExp();
+        Fraction normalNonIntegerExp() const;
+        Fraction normalNumEvalExp() const;
+        Fraction normalNumEvalPosExp() const;
+        BasePtr evaluatePow(const BasePtr& base, const BasePtr& exp) const;
+        Fraction normalNumEvalNegExp() const;
+        Fraction normalNonNumEvalExp() const;
 
         const BasePtr& one{Numeric::one()};
-        BasePtr rationalExp{};
         SymbolMap& map;
-        Fraction rationalBase;
+        const Fraction rationalBase;
+        const BasePtr rationalExp;
     };
 }
 

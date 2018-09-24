@@ -101,10 +101,7 @@ std::optional<tsym::Number> tsym::Power::numericEval() const
 
 tsym::Fraction tsym::Power::normal(SymbolMap& map) const
 {
-    PowerNormal pn(map);
-
-    pn.setBase(*baseRef);
-    pn.setExponent(*expRef);
+    const PowerNormal pn(*baseRef, *expRef, map);
 
     return pn.normal();
 }

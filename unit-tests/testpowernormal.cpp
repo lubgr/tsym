@@ -26,25 +26,10 @@ struct PowerNormalFixture : public AbcFixture {
 
 BOOST_FIXTURE_TEST_SUITE(TestPowerNormal, PowerNormalFixture)
 
-BOOST_AUTO_TEST_CASE(unspecifiedInput)
-{
-    PowerNormal pn(*map);
-
-    const Fraction res = pn.normal();
-
-    BOOST_TEST(res.num->isUndefined());
-    BOOST_CHECK_EQUAL(one, res.denom);
-}
-
 BOOST_AUTO_TEST_CASE(powerWithPosIntExp)
 {
-    PowerNormal pn(*map);
-    Fraction res;
-
-    pn.setBase(*a);
-    pn.setExponent(*two);
-
-    res = pn.normal();
+    const PowerNormal pn(*a, *two, *map);
+    const Fraction res = pn.normal();
 
     BOOST_CHECK_EQUAL(Power::create(a, two), res.num);
     BOOST_CHECK_EQUAL(one, res.denom);
@@ -52,13 +37,8 @@ BOOST_AUTO_TEST_CASE(powerWithPosIntExp)
 
 BOOST_AUTO_TEST_CASE(powerWithPosNegExp)
 {
-    PowerNormal pn(*map);
-    Fraction res;
-
-    pn.setBase(*a);
-    pn.setExponent(*Numeric::create(-2));
-
-    res = pn.normal();
+    const PowerNormal pn(*a, *Numeric::create(-2), *map);
+    const Fraction res = pn.normal();
 
     BOOST_CHECK_EQUAL(one, res.num);
     BOOST_CHECK_EQUAL(Power::create(a, two), res.denom);
@@ -68,19 +48,13 @@ BOOST_AUTO_TEST_CASE(powerWithSymbolExp)
 /* (a + b)^c becomes tmp/1. */
 {
     const BasePtr orig = Power::create(abSum, c);
-    BasePtr backReplaced;
-    PowerNormal pn(*map);
-    Fraction res;
-
-    pn.setBase(*Sum::create(a, b));
-    pn.setExponent(*c);
-
-    res = pn.normal();
+    const PowerNormal pn(*Sum::create(a, b), *c, *map);
+    const Fraction res = pn.normal();
 
     BOOST_CHECK_EQUAL(one, res.denom);
     BOOST_TEST(res.num->isSymbol());
 
-    backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
+    const BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
 
     BOOST_CHECK_EQUAL(orig, backReplaced);
 }
@@ -89,13 +63,8 @@ BOOST_AUTO_TEST_CASE(fractionBaseSymbolExp)
 /* (3/4)^a becomes tmp1/1. */
 {
     const BasePtr base = Numeric::create(3, 4);
-    PowerNormal pn(*map);
-    Fraction res;
-
-    pn.setBase(*base);
-    pn.setExponent(*a);
-
-    res = pn.normal();
+    const PowerNormal pn(*base, *a, *map);
+    const Fraction res = pn.normal();
 
     BOOST_CHECK_EQUAL(one, res.denom);
     BOOST_TEST(res.num->isSymbol());
@@ -109,19 +78,13 @@ BOOST_AUTO_TEST_CASE(fractionBaseNumericallyEvaluableNegExp)
     const BasePtr expectedDenom = Power::create(three, sinOne);
     const BasePtr exp = Product::minus(sinOne);
     const BasePtr base = Numeric::create(3, 4);
-    PowerNormal pn(*map);
-    BasePtr backReplaced;
-    Fraction res;
-
-    pn.setBase(*base);
-    pn.setExponent(*exp);
-
-    res = pn.normal();
+    const PowerNormal pn(*base, *exp, *map);
+    const Fraction res = pn.normal();
 
     BOOST_TEST(res.num->isSymbol());
     BOOST_TEST(res.denom->isSymbol());
 
-    backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
+    BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
 
     BOOST_CHECK_EQUAL(expectedNum, backReplaced);
 
@@ -136,19 +99,13 @@ BOOST_AUTO_TEST_CASE(fractionBaseNumericallyEvaluablePosExp)
     const BasePtr exp = Power::sqrt(two);
     const BasePtr expectedNum = Power::create(two, exp);
     const BasePtr expectedDenom = Power::create(five, exp);
-    PowerNormal pn(*map);
-    BasePtr backReplaced;
-    Fraction res;
-
-    pn.setBase(*Numeric::create(2, 5));
-    pn.setExponent(*exp);
-
-    res = pn.normal();
+    const PowerNormal pn(*Numeric::create(2, 5), *exp, *map);
+    const Fraction res = pn.normal();
 
     BOOST_TEST(res.num->isSymbol());
     BOOST_TEST(res.denom->isSymbol());
 
-    backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
+    BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
 
     BOOST_CHECK_EQUAL(expectedNum, backReplaced);
 
@@ -164,19 +121,13 @@ BOOST_AUTO_TEST_CASE(symbolicFractionBaseNumericallyEvaluablePosExp)
     const BasePtr exp = Power::sqrt(two);
     const BasePtr expectedNum = Power::create(a, exp);
     const BasePtr expectedDenom = Power::create(b, exp);
-    PowerNormal pn(*map);
-    BasePtr backReplaced;
-    Fraction res;
-
-    pn.setBase(*base);
-    pn.setExponent(*exp);
-
-    res = pn.normal();
+    const PowerNormal pn(*base, *exp, *map);
+    const Fraction res = pn.normal();
 
     BOOST_TEST(res.num->isSymbol());
     BOOST_TEST(res.denom->isSymbol());
 
-    backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
+    BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
 
     BOOST_CHECK_EQUAL(expectedNum, backReplaced);
 
@@ -189,19 +140,13 @@ BOOST_AUTO_TEST_CASE(powerWithMinusSymbolExp)
 /* (a + b)^(-c) becomes tmp/1, too. */
 {
     const BasePtr minusC = Product::minus(c);
-    BasePtr backReplaced;
-    PowerNormal pn(*map);
-    Fraction res;
-
-    pn.setBase(*abSum);
-    pn.setExponent(*minusC);
-
-    res = pn.normal();
+    const PowerNormal pn(*abSum, *minusC, *map);
+    const Fraction res = pn.normal();
 
     BOOST_CHECK_EQUAL(one, res.denom);
     BOOST_TEST(res.num->isSymbol());
 
-    backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
+    BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
 
     BOOST_CHECK_EQUAL(Power::create(abSum, minusC), backReplaced);
 }
@@ -209,19 +154,13 @@ BOOST_AUTO_TEST_CASE(powerWithMinusSymbolExp)
 BOOST_AUTO_TEST_CASE(powerWithPiExp)
 /* a^Pi becomes tmp/1 with tmp = a^Pi. */
 {
-    BasePtr backReplaced;
-    PowerNormal pn(*map);
-    Fraction res;
-
-    pn.setBase(*a);
-    pn.setExponent(*pi);
-
-    res = pn.normal();
+    const PowerNormal pn(*a, *pi, *map);
+    const Fraction res = pn.normal();
 
     BOOST_CHECK_EQUAL(one, res.denom);
     BOOST_TEST(res.num->isSymbol());
 
-    backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
+    BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
 
     BOOST_CHECK_EQUAL(Power::create(a, pi), backReplaced);
 }
@@ -230,34 +169,22 @@ BOOST_AUTO_TEST_CASE(powerWithNegNumEvalExp)
 /* a^(-3*sqrt(2)*Pi) becomes 1/tmp with tmp = a^(3*sqrt(2)*Pi). */
 {
     const BasePtr pos = Product::create(three, pi, Power::sqrt(two));
-    BasePtr backReplaced;
-    PowerNormal pn(*map);
-    Fraction res;
-
-    pn.setBase(*a);
-    pn.setExponent(*Product::minus(pos));
-
-    res = pn.normal();
+    const PowerNormal pn(*a, *Product::minus(pos), *map);
+    const Fraction res = pn.normal();
 
     BOOST_CHECK_EQUAL(one, res.num);
     BOOST_TEST(res.denom->isSymbol());
 
-    backReplaced = map->replaceTmpSymbolsBackFrom(res.denom);
+    BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(res.denom);
 
     BOOST_CHECK_EQUAL(Power::create(a, pos), backReplaced);
 }
 
 BOOST_AUTO_TEST_CASE(rationalBaseZero)
 {
-    BasePtr backReplaced;
-    PowerNormal pn(*map);
-    Fraction res;
-
-    pn.setBase(*zeroByNormal);
-    pn.setExponent(*pi);
-
-    res = pn.normal();
-    backReplaced = map->replaceTmpSymbolsBackFrom(eval(res));
+    const PowerNormal pn(*zeroByNormal, *pi, *map);
+    const Fraction res = pn.normal();
+    const BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(eval(res));
 
     BOOST_CHECK_EQUAL(zero, backReplaced);
 }
@@ -265,15 +192,9 @@ BOOST_AUTO_TEST_CASE(rationalBaseZero)
 BOOST_AUTO_TEST_CASE(rationalBaseOne)
 {
     const BasePtr base = Sum::create(zeroByNormal, one);
-    BasePtr backReplaced;
-    PowerNormal pn(*map);
-    Fraction res;
-
-    pn.setBase(*base);
-    pn.setExponent(*pi);
-
-    res = pn.normal();
-    backReplaced = map->replaceTmpSymbolsBackFrom(eval(res));
+    const PowerNormal pn(*base, *pi, *map);
+    const Fraction res = pn.normal();
+    const BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(eval(res));
 
     BOOST_CHECK_EQUAL(one, backReplaced);
 }
@@ -281,11 +202,7 @@ BOOST_AUTO_TEST_CASE(rationalBaseOne)
 BOOST_AUTO_TEST_CASE(rationalBaseUndefined)
 {
     const BasePtr base = Power::oneOver(zeroByNormal);
-    PowerNormal pn(*map);
-
-    pn.setBase(*base);
-    pn.setExponent(*pi);
-
+    const PowerNormal pn(*base, *pi, *map);
     const BasePtr res = eval(pn.normal());
 
     BOOST_TEST(res->isUndefined());
@@ -294,11 +211,7 @@ BOOST_AUTO_TEST_CASE(rationalBaseUndefined)
 BOOST_AUTO_TEST_CASE(rationalBaseUndefinedByExpansion)
 {
     const BasePtr base = Power::oneOver(zeroByExpansion);
-    PowerNormal pn(*map);
-
-    pn.setBase(*base);
-    pn.setExponent(*a);
-
+    const PowerNormal pn(*base, *a, *map);
     const BasePtr res = eval(pn.normal());
 
     BOOST_TEST(res->isUndefined());
