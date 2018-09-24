@@ -1,7 +1,7 @@
 
 #include "baseptrlist.h"
 #include <boost/functional/hash.hpp>
-#include "bplist.h"
+#include "baseptrlistfct.h"
 #include "plaintextprintengine.h"
 #include "printer.h"
 

@@ -4,7 +4,7 @@
 #include <boost/range/numeric.hpp>
 #include <vector>
 #include "basefct.h"
-#include "bplist.h"
+#include "baseptrlistfct.h"
 #include "fraction.h"
 #include "power.h"
 #include "productsimpl.h"

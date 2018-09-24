@@ -2,7 +2,7 @@
 #include "sumsimpl.h"
 #include <cassert>
 #include "basefct.h"
-#include "bplist.h"
+#include "baseptrlistfct.h"
 #include "cache.h"
 #include "logging.h"
 #include "name.h"

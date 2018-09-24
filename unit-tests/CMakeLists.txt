@@ -3,7 +3,7 @@ add_executable(tests EXCLUDE_FROM_ALL
     boostmatrixvector.cpp
     fixtures.cpp
     main.cpp
-    testbplist.cpp
+    testbaseptrlistfct.cpp
     testcoeff.cpp
     testcomparison.cpp
     testcomplexity.cpp

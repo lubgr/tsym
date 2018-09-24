@@ -3,7 +3,7 @@
 #include <cassert>
 #include "base.h"
 #include "basefct.h"
-#include "bplist.h"
+#include "baseptrlistfct.h"
 #include "numberfct.h"
 #include "numeric.h"
 #include "plaintextprintengine.h"

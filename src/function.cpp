@@ -1,7 +1,7 @@
 
 #include "function.h"
 #include <boost/functional/hash.hpp>
-#include "bplist.h"
+#include "baseptrlistfct.h"
 #include "numeric.h"
 
 tsym::Function::Function(const BasePtrList& args, Name&& name)

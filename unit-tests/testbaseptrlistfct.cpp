@@ -1,6 +1,6 @@
 
 #include "baseptrlist.h"
-#include "bplist.h"
+#include "baseptrlistfct.h"
 #include "fixtures.h"
 #include "tsymtests.h"
 

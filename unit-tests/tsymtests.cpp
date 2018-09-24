@@ -1,7 +1,7 @@
 
 #include "tsymtests.h"
 #include "base.h"
-#include "bplist.h"
+#include "baseptrlistfct.h"
 
 bool tsym::operator==(const BasePtr& lhs, const BasePtr& rhs)
 {

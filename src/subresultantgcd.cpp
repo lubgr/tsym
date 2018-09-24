@@ -1,7 +1,7 @@
 
 #include "subresultantgcd.h"
 #include "basefct.h"
-#include "bplist.h"
+#include "baseptrlistfct.h"
 #include "logging.h"
 #include "numeric.h"
 #include "poly.h"
