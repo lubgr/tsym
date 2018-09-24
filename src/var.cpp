@@ -183,10 +183,10 @@ tsym::Var::operator int() const
 
 tsym::Var::operator double() const
 {
-    if (!rep->isNumeric())
-        throw std::domain_error("Illegal conversion to double requested");
+    if (const auto num = rep->numericEval())
+        return num->toDouble();
 
-    return rep->numericEval()->toDouble();
+    throw std::domain_error("Illegal conversion to double requested");
 }
 
 const tsym::BasePtr& tsym::Var::get() const

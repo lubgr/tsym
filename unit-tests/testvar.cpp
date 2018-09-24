@@ -179,11 +179,23 @@ BOOST_AUTO_TEST_CASE(illegalNumberRequestSymbol)
     BOOST_CHECK_THROW((void) static_cast<int>(a), std::domain_error);
 }
 
-BOOST_AUTO_TEST_CASE(toDouble)
+BOOST_AUTO_TEST_CASE(castFractionToDouble)
 {
     const Var frac(2, 3);
 
     BOOST_CHECK_CLOSE(2.0 / 3.0, static_cast<double>(frac), 1.e-10);
+}
+
+BOOST_AUTO_TEST_CASE(castPiToDouble)
+{
+    BOOST_CHECK_CLOSE(M_PI, static_cast<double>(pi()), 1.e-10);
+}
+
+BOOST_AUTO_TEST_CASE(castSineOfNumericArgToDouble)
+{
+    const Var sine = tsym::sin(Var(2, 3) * euler());
+
+    BOOST_CHECK_CLOSE(std::sin(2.0 / 3.0 * M_E), static_cast<double>(sine), 1.e-10);
 }
 
 BOOST_AUTO_TEST_CASE(toDoubleNonNumeric)
