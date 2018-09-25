@@ -99,7 +99,7 @@ void tsym::PrimeFac::cancelPrimes(std::vector<Int>& p1, std::vector<Int>& p2)
 
 void tsym::PrimeFac::merge(std::vector<Int>& target, std::vector<Int>&& source)
 {
-    target.insert(end(target), std::make_move_iterator(begin(source)), std::make_move_iterator(end(source)));
+    target.insert(end(target), std::move_iterator(begin(source)), std::move_iterator(end(source)));
 
     boost::sort(target);
 }
