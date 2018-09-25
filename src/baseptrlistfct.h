@@ -1,5 +1,5 @@
 #ifndef TSYM_BASEPTRLISTFCT_H
-#define TSYM_BPSEPTRLISTFCT_H
+#define TSYM_BASEPTRLISTFCT_H
 
 #include "baseptr.h"
 #include "baseptrlist.h"
