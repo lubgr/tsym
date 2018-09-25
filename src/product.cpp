@@ -124,7 +124,7 @@ tsym::BasePtr tsym::Product::diffWrtSymbol(const Base& symbol) const
     return Sum::create(derivedSummands);
 }
 
-std::string tsym::Product::typeStr() const
+std::string_view tsym::Product::typeStr() const
 {
     return "Product";
 }

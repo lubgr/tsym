@@ -68,7 +68,7 @@ tsym::BasePtr tsym::Constant::diffWrtSymbol(const Base&) const
     return Numeric::zero();
 }
 
-std::string tsym::Constant::typeStr() const
+std::string_view tsym::Constant::typeStr() const
 {
     return "Constant";
 }

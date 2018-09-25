@@ -18,12 +18,12 @@
 
 namespace tsym {
     namespace {
-        const std::map<std::string, Var::Type>& typeStringMap()
+        const std::map<std::string_view, Var::Type>& typeStringMap()
         {
-            static const std::map<std::string, Var::Type> map{{"Sum", Var::Type::SUM}, {"Product", Var::Type::PRODUCT},
-              {"Symbol", Var::Type::SYMBOL}, {"Power", Var::Type::POWER}, {"Constant", Var::Type::CONSTANT},
-              {"Undefined", Var::Type::UNDEFINED}, {"Function", Var::Type::FUNCTION}, {"Integer", Var::Type::INT},
-              {"Fraction", Var::Type::FRACTION}, {"Double", Var::Type::DOUBLE}};
+            static const std::map<std::string_view, Var::Type> map{{"Sum", Var::Type::SUM},
+              {"Product", Var::Type::PRODUCT}, {"Symbol", Var::Type::SYMBOL}, {"Power", Var::Type::POWER},
+              {"Constant", Var::Type::CONSTANT}, {"Undefined", Var::Type::UNDEFINED}, {"Function", Var::Type::FUNCTION},
+              {"Integer", Var::Type::INT}, {"Fraction", Var::Type::FRACTION}, {"Double", Var::Type::DOUBLE}};
 
             return map;
         }
@@ -243,11 +243,9 @@ std::ostream& tsym::operator<<(std::ostream& stream, const Var& rhs)
 
 std::ostream& tsym::operator<<(std::ostream& stream, const Var::Type& rhs)
 {
-    for (const auto& it : typeStringMap())
-        if (it.second == rhs) {
-            stream << it.first;
-            return stream;
-        }
+    for (const auto& [str, type] : typeStringMap())
+        if (type == rhs)
+            return stream << str;
 
     TSYM_ERROR("Couldn't find string representation of Var");
 

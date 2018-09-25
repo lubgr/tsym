@@ -102,7 +102,7 @@ tsym::BasePtr tsym::Numeric::diffWrtSymbol(const Base&) const
     return zero();
 }
 
-std::string tsym::Numeric::typeStr() const
+std::string_view tsym::Numeric::typeStr() const
 {
     return "Numeric";
 }

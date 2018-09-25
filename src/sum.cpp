@@ -113,7 +113,7 @@ tsym::BasePtr tsym::Sum::diffWrtSymbol(const Base& symbol) const
     return create(derivedSummands);
 }
 
-std::string tsym::Sum::typeStr() const
+std::string_view tsym::Sum::typeStr() const
 {
     return "Sum";
 }

@@ -22,7 +22,7 @@ bool tsym::Function::sameType(const Base& other) const
     return other.isFunction();
 }
 
-std::string tsym::Function::typeStr() const
+std::string_view tsym::Function::typeStr() const
 {
     return "Function";
 }

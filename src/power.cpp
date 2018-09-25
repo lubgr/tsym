@@ -114,7 +114,7 @@ tsym::BasePtr tsym::Power::diffWrtSymbol(const Base& symbol) const
     return Product::create(clone(), Sum::create(summands));
 }
 
-std::string tsym::Power::typeStr() const
+std::string_view tsym::Power::typeStr() const
 {
     return "Power";
 }

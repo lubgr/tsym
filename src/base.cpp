@@ -205,7 +205,7 @@ tsym::BasePtr tsym::Base::diff(const Base& symbol) const
     if (symbol.isSymbol())
         return diffWrtSymbol(symbol);
 
-    TSYM_WARNING("Differentiation w.r.t. %s! Only Symbols work, return Undefined.", typeStr().c_str());
+    TSYM_WARNING("Differentiation w.r.t. %S! Only Symbols work, return Undefined.", typeStr());
 
     return Undefined::create();
 }

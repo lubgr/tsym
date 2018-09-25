@@ -50,7 +50,7 @@ tsym::BasePtr tsym::Undefined::diffWrtSymbol(const Base&) const
     return clone();
 }
 
-std::string tsym::Undefined::typeStr() const
+std::string_view tsym::Undefined::typeStr() const
 {
     return "Undefined";
 }

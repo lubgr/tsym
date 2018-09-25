@@ -4,6 +4,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include "baseptrlist.h"
 
 namespace tsym {
@@ -40,7 +41,7 @@ namespace tsym {
         virtual std::optional<Number> numericEval() const = 0;
         virtual Fraction normal(SymbolMap& map) const = 0;
         virtual BasePtr diffWrtSymbol(const Base& symbol) const = 0;
-        virtual std::string typeStr() const = 0;
+        virtual std::string_view typeStr() const = 0;
         /* If unclear or zero, the following two methods shall return false: */
         virtual bool isPositive() const = 0;
         virtual bool isNegative() const = 0;

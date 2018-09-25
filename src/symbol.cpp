@@ -121,7 +121,7 @@ tsym::BasePtr tsym::Symbol::diffWrtSymbol(const Base& symbol) const
     return isEqual(symbol) ? Numeric::one() : Numeric::zero();
 }
 
-std::string tsym::Symbol::typeStr() const
+std::string_view tsym::Symbol::typeStr() const
 {
     return "Symbol";
 }
