@@ -16,7 +16,7 @@ set -e
 
 pushd "${TSYM_INSTALLATION_PATH}"
 
-for header in logger plu tsym var varfct version; do
+for header in fwd logger plu tsym var varfct version; do
     checkInstalledFile "include/tsym/${header}".h
 done
 
