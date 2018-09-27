@@ -70,8 +70,8 @@ BOOST_AUTO_TEST_CASE(invalidInputBothZero, noLogs())
 
     result = poly::divide(zero, zero);
 
-    BOOST_TEST(result.front()->isUndefined());
-    BOOST_TEST(result.back()->isUndefined());
+    BOOST_TEST(isUndefined(*result.front()));
+    BOOST_TEST(isUndefined(*result.back()));
 }
 
 BOOST_AUTO_TEST_CASE(invalidInputWithFunction, noLogs())
@@ -82,8 +82,8 @@ BOOST_AUTO_TEST_CASE(invalidInputWithFunction, noLogs())
 
     result = poly::divide(u, v, {a});
 
-    BOOST_TEST(result.front()->isUndefined());
-    BOOST_TEST(result.back()->isUndefined());
+    BOOST_TEST(isUndefined(*result.front()));
+    BOOST_TEST(isUndefined(*result.back()));
 }
 
 BOOST_AUTO_TEST_CASE(intRemainder)
@@ -208,8 +208,8 @@ BOOST_AUTO_TEST_CASE(illegalInput, noLogs())
 
     result = poly::pseudoDivide(u, v, a);
 
-    BOOST_TEST(result.front()->isUndefined());
-    BOOST_TEST(result.back()->isUndefined());
+    BOOST_TEST(isUndefined(*result.front()));
+    BOOST_TEST(isUndefined(*result.back()));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -1,5 +1,6 @@
 
 #include <memory>
+#include "basefct.h"
 #include "constant.h"
 #include "fixtures.h"
 #include "power.h"
@@ -52,7 +53,7 @@ BOOST_AUTO_TEST_CASE(powerWithSymbolExp)
     const Fraction res = pn.normal();
 
     BOOST_CHECK_EQUAL(one, res.denom);
-    BOOST_TEST(res.num->isSymbol());
+    BOOST_TEST(isSymbol(*res.num));
 
     const BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
 
@@ -67,7 +68,7 @@ BOOST_AUTO_TEST_CASE(fractionBaseSymbolExp)
     const Fraction res = pn.normal();
 
     BOOST_CHECK_EQUAL(one, res.denom);
-    BOOST_TEST(res.num->isSymbol());
+    BOOST_TEST(isSymbol(*res.num));
 }
 
 BOOST_AUTO_TEST_CASE(fractionBaseNumericallyEvaluableNegExp)
@@ -81,8 +82,8 @@ BOOST_AUTO_TEST_CASE(fractionBaseNumericallyEvaluableNegExp)
     const PowerNormal pn(*base, *exp, *map);
     const Fraction res = pn.normal();
 
-    BOOST_TEST(res.num->isSymbol());
-    BOOST_TEST(res.denom->isSymbol());
+    BOOST_TEST(isSymbol(*res.num));
+    BOOST_TEST(isSymbol(*res.denom));
 
     BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
 
@@ -102,8 +103,8 @@ BOOST_AUTO_TEST_CASE(fractionBaseNumericallyEvaluablePosExp)
     const PowerNormal pn(*Numeric::create(2, 5), *exp, *map);
     const Fraction res = pn.normal();
 
-    BOOST_TEST(res.num->isSymbol());
-    BOOST_TEST(res.denom->isSymbol());
+    BOOST_TEST(isSymbol(*res.num));
+    BOOST_TEST(isSymbol(*res.denom));
 
     BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
 
@@ -124,8 +125,8 @@ BOOST_AUTO_TEST_CASE(symbolicFractionBaseNumericallyEvaluablePosExp)
     const PowerNormal pn(*base, *exp, *map);
     const Fraction res = pn.normal();
 
-    BOOST_TEST(res.num->isSymbol());
-    BOOST_TEST(res.denom->isSymbol());
+    BOOST_TEST(isSymbol(*res.num));
+    BOOST_TEST(isSymbol(*res.denom));
 
     BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
 
@@ -144,7 +145,7 @@ BOOST_AUTO_TEST_CASE(powerWithMinusSymbolExp)
     const Fraction res = pn.normal();
 
     BOOST_CHECK_EQUAL(one, res.denom);
-    BOOST_TEST(res.num->isSymbol());
+    BOOST_TEST(isSymbol(*res.num));
 
     BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
 
@@ -158,7 +159,7 @@ BOOST_AUTO_TEST_CASE(powerWithPiExp)
     const Fraction res = pn.normal();
 
     BOOST_CHECK_EQUAL(one, res.denom);
-    BOOST_TEST(res.num->isSymbol());
+    BOOST_TEST(isSymbol(*res.num));
 
     BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(res.num);
 
@@ -173,7 +174,7 @@ BOOST_AUTO_TEST_CASE(powerWithNegNumEvalExp)
     const Fraction res = pn.normal();
 
     BOOST_CHECK_EQUAL(one, res.num);
-    BOOST_TEST(res.denom->isSymbol());
+    BOOST_TEST(isSymbol(*res.denom));
 
     BasePtr backReplaced = map->replaceTmpSymbolsBackFrom(res.denom);
 
@@ -205,7 +206,7 @@ BOOST_AUTO_TEST_CASE(rationalBaseUndefined)
     const PowerNormal pn(*base, *pi, *map);
     const BasePtr res = eval(pn.normal());
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(rationalBaseUndefinedByExpansion)
@@ -214,7 +215,7 @@ BOOST_AUTO_TEST_CASE(rationalBaseUndefinedByExpansion)
     const PowerNormal pn(*base, *a, *map);
     const BasePtr res = eval(pn.normal());
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

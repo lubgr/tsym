@@ -50,7 +50,7 @@ bool tsym::Sum::isEqualDifferentBase(const Base& other) const
 
 bool tsym::Sum::sameType(const Base& other) const
 {
-    return other.isSum();
+    return isSum(other);
 }
 
 std::optional<tsym::Number> tsym::Sum::numericEval() const

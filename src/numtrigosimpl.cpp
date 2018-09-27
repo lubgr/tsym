@@ -102,7 +102,7 @@ std::optional<tsym::BasePtr> tsym::NumTrigoSimpl::simplify()
 
 void tsym::NumTrigoSimpl::resetAndCompute()
 {
-    assert(!arg->isUndefined());
+    assert(!isUndefined(*arg));
 
     reset();
     detour();
@@ -148,7 +148,7 @@ bool tsym::NumTrigoSimpl::isArgRationalNonZeroNumeric() const
 
 void tsym::NumTrigoSimpl::prepareSinCosTan()
 {
-    if (arg->isNumeric())
+    if (isNumeric(*arg))
         adjustNumericArg();
 
     adjustArgRange();
@@ -285,7 +285,7 @@ void tsym::NumTrigoSimpl::compNumericalSin()
 
 template <class Fct> void tsym::NumTrigoSimpl::compNumerically(Fct&& eval)
 {
-    assert(arg->isNumeric());
+    assert(isNumeric(*arg));
     assert(arg->numericEval()->isDouble());
 
     const double numericResult = std::forward<Fct>(eval)(arg->numericEval()->toDouble());
@@ -408,7 +408,7 @@ std::optional<tsym::BasePtr> tsym::NumTrigoSimpl::getKey(const std::unordered_ma
     const auto num = arg->numericEval();
 
     for (const auto& [key, result] : table)
-        if (result->isUndefined())
+        if (isUndefined(*result))
             continue;
         else if (arg->isEqual(*result))
             return key;

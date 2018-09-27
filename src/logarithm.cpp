@@ -25,11 +25,11 @@ tsym::BasePtr tsym::Logarithm::create(const BasePtr& arg)
         return Undefined::create();
     else if (isOne(*arg))
         return Numeric::zero();
-    else if (arg->isNumeric())
+    else if (isNumeric(*arg))
         return createNumerically(arg);
-    else if (arg->isConstant())
+    else if (isConstant(*arg))
         return createFromConstant(arg);
-    else if (arg->isPower())
+    else if (isPower(*arg))
         return createFromPower(arg);
     else
         return createInstance(arg);
@@ -44,11 +44,11 @@ bool tsym::Logarithm::isInvalidArg(const Base& arg)
 {
     bool invalid = false;
 
-    if (arg.isUndefined())
+    if (isUndefined(arg))
         invalid = true;
     else if (isZero(arg))
         invalid = true;
-    else if (arg.isPower() && arg.base()->isEqual(*Constant::createE()))
+    else if (isPower(arg) && arg.base()->isEqual(*Constant::createE()))
         /* Catches log(e^(-n)) with n being a large Numeric, which would numerically be evaluated to
          * zero and thus resulting in an Undefined return value. */
         ;

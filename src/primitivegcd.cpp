@@ -23,7 +23,7 @@ tsym::BasePtr tsym::PrimitiveGcd::gcdAlgo(const BasePtr& u, const BasePtr& v, co
 
         if (isZero(*remainder))
             rPrimPart = Numeric::zero();
-        else if (remainder->isUndefined()) {
+        else if (isUndefined(*remainder)) {
             TSYM_WARNING("Undefined remainder during primitive gcd computation, return 1.");
             return Numeric::one();
         } else

@@ -3,6 +3,7 @@
 #include <boost/functional/hash.hpp>
 #include <unordered_map>
 #include <utility>
+#include "basefct.h"
 #include "basetypestr.h"
 #include "cache.h"
 #include "fraction.h"
@@ -90,7 +91,7 @@ tsym::BasePtr tsym::Symbol::createTmpSymbol(bool positive)
 
 bool tsym::Symbol::isEqualDifferentBase(const Base& other) const
 {
-    if (other.isSymbol())
+    if (isSymbol(other))
         return isEqualOtherSymbol(other);
     else
         return false;
@@ -106,7 +107,7 @@ bool tsym::Symbol::isEqualOtherSymbol(const Base& other) const
 
 bool tsym::Symbol::sameType(const Base& other) const
 {
-    return other.isSymbol();
+    return isSymbol(other);
 }
 
 std::optional<tsym::Number> tsym::Symbol::numericEval() const

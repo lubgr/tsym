@@ -4,6 +4,7 @@
 #include <boost/range/adaptors.hpp>
 #include <sstream>
 #include <utility>
+#include "basefct.h"
 #include "baseptr.h"
 #include "baseptrlistfct.h"
 #include "basetypestr.h"
@@ -168,7 +169,7 @@ tsym::BasePtr tsym::Base::normalWithoutCache() const
 
 tsym::BasePtr tsym::Base::diff(const Base& symbol) const
 {
-    if (symbol.isSymbol())
+    if (isSymbol(symbol))
         return diffWrtSymbol(symbol);
 
     TSYM_WARNING("Differentiation w.r.t. %S! Only Symbols work, return Undefined.", typeStr());

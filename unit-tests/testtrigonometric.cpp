@@ -1,5 +1,6 @@
 
 #include <cmath>
+#include "basefct.h"
 #include "constant.h"
 #include "fixtures.h"
 #include "logarithm.h"
@@ -27,7 +28,7 @@ BOOST_FIXTURE_TEST_SUITE(TestTrigonometric, TrigonometricFixture)
 
 BOOST_AUTO_TEST_CASE(typeRequest)
 {
-    BOOST_TEST(sinA->isFunction());
+    BOOST_TEST(isFunction(*sinA));
 }
 
 BOOST_AUTO_TEST_CASE(constRequest)
@@ -164,7 +165,7 @@ BOOST_AUTO_TEST_CASE(atan2XZeroNonEvaluable)
 {
     const BasePtr res = Trigonometric::createAtan2(a, zero);
 
-    BOOST_TEST(res->isFunction());
+    BOOST_TEST(isFunction(*res));
     BOOST_CHECK_EQUAL(a, res->operands().front());
     BOOST_CHECK_EQUAL(zero, res->operands().back());
 }
@@ -250,25 +251,25 @@ BOOST_AUTO_TEST_CASE(illegalAtan2, noLogs())
 
     res = Trigonometric::createAtan2(zero, zero);
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(undefinedArg)
 {
     const BasePtr sin = Trigonometric::createSin(undefined);
 
-    BOOST_TEST(sin->isUndefined());
+    BOOST_TEST(isUndefined(*sin));
 }
 
 BOOST_AUTO_TEST_CASE(undefinedArgAtan)
 {
     BasePtr res = Trigonometric::createAtan2(undefined, a);
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 
     res = Trigonometric::createAtan2(a, undefined);
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(sinOfAsin)
@@ -399,7 +400,7 @@ BOOST_AUTO_TEST_CASE(atanOfTan)
     const BasePtr atan = Trigonometric::createAtan(tan);
     const Name expected{"atan"};
 
-    BOOST_TEST(atan->isFunction());
+    BOOST_TEST(isFunction(*atan));
     BOOST_CHECK_EQUAL(expected, atan->name());
     BOOST_CHECK_EQUAL(tan, atan->operands().front());
 }
@@ -410,11 +411,11 @@ BOOST_AUTO_TEST_CASE(sinOfCos)
     const BasePtr res = Trigonometric::createCos(sin);
     BasePtr arg;
 
-    BOOST_TEST(res->isFunction());
+    BOOST_TEST(isFunction(*res));
 
     arg = res->operands().front();
 
-    BOOST_TEST(arg->isFunction());
+    BOOST_TEST(isFunction(*arg));
     BOOST_CHECK_EQUAL(a, arg->operands().front());
 }
 
@@ -425,11 +426,11 @@ BOOST_AUTO_TEST_CASE(asinOfSin)
     const BasePtr res = Trigonometric::createAsin(sin);
     BasePtr arg;
 
-    BOOST_TEST(res->isFunction());
+    BOOST_TEST(isFunction(*res));
 
     arg = res->operands().front();
 
-    BOOST_TEST(arg->isFunction());
+    BOOST_TEST(isFunction(*arg));
     BOOST_CHECK_EQUAL(a, arg->operands().front());
 }
 
@@ -448,7 +449,7 @@ BOOST_AUTO_TEST_CASE(acosOfCos)
 {
     const BasePtr res = Trigonometric::createAcos(Trigonometric::createCos(a));
 
-    BOOST_TEST(res->isFunction());
+    BOOST_TEST(isFunction(*res));
     BOOST_CHECK_EQUAL(1, res->operands().size());
     BOOST_CHECK_EQUAL(Trigonometric::createCos(a), res->operands().front());
 }
@@ -551,8 +552,8 @@ BOOST_AUTO_TEST_CASE(atanOfTanNumEvalWithNegShift)
     const BasePtr res = Trigonometric::createAtan(tan);
     BasePtr replaced;
 
-    BOOST_TEST(res->isFunction());
-    BOOST_TEST(res->operands().front()->isFunction());
+    BOOST_TEST(isFunction(*res));
+    BOOST_TEST(isFunction(*res->operands().front()));
 
     replaced = res->subst(*a, two);
 
@@ -704,7 +705,7 @@ BOOST_AUTO_TEST_CASE(atan2OfSinCos)
     const BasePtr cosA = Trigonometric::createCos(a);
     const BasePtr res = Trigonometric::createAtan2(sinA, cosA);
 
-    BOOST_TEST(res->isFunction());
+    BOOST_TEST(isFunction(*res));
     BOOST_CHECK_EQUAL(sinA, res->operands().front());
     BOOST_CHECK_EQUAL(cosA, res->operands().back());
 }
@@ -742,7 +743,7 @@ BOOST_AUTO_TEST_CASE(atan2OfNegSymbolicArg)
 {
     const BasePtr res = Trigonometric::createAtan2(Product::minus(a), b);
 
-    BOOST_TEST(res->isFunction());
+    BOOST_TEST(isFunction(*res));
     BOOST_CHECK_EQUAL(Product::minus(a), res->operands().front());
     BOOST_CHECK_EQUAL(b, res->operands().back());
 }
@@ -876,7 +877,7 @@ BOOST_AUTO_TEST_CASE(sinOfLogarithm)
     const BasePtr result = Trigonometric::createSin(log);
     const Name expectedSinName{"sin"};
 
-    BOOST_TEST(result->isFunction());
+    BOOST_TEST(isFunction(*result));
     BOOST_CHECK_EQUAL(expectedSinName, result->name());
     BOOST_CHECK_EQUAL(log, result->operands().front());
 }

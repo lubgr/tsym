@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(trivialUndefined)
 {
     const BasePtr expanded = undefined->expand();
 
-    BOOST_TEST(expanded->isUndefined());
+    BOOST_TEST(isUndefined(*expanded));
 }
 
 BOOST_AUTO_TEST_CASE(trivialConstant)

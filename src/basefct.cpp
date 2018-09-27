@@ -1,6 +1,7 @@
 
 #include "basefct.h"
 #include "base.h"
+#include "basetypestr.h"
 #include "number.h"
 #include "numberfct.h"
 
@@ -25,12 +26,12 @@ namespace tsym {
 
 bool tsym::isOne(const Base& expr)
 {
-    return expr.isNumeric() && isEqual<1>(expr);
+    return isNumeric(expr) && isEqual<0>(expr);
 }
 
 bool tsym::isZero(const Base& expr)
 {
-    return expr.isNumeric() && isEqual<0>(expr);
+    return isNumeric(expr) && isEqual<0>(expr);
 }
 
 namespace tsym {
@@ -84,8 +85,8 @@ bool tsym::isUndefined(const Base& expr)
 
 bool tsym::isNumericPower(const Base& expr)
 {
-    if (expr.isPower())
-        return expr.base()->isNumeric() && expr.exp()->isNumeric();
+    if (isPower(expr))
+        return isNumeric(*expr.base()) && isNumeric(*expr.exp());
 
     return false;
 }
@@ -108,7 +109,7 @@ bool tsym::isRationalNumeric(const Base& expr)
 
 bool tsym::isDoubleNumeric(const Base& expr)
 {
-    if (expr.isNumeric())
+    if (isNumeric(expr))
         return expr.numericEval()->isDouble();
     else
         return false;
@@ -116,5 +117,5 @@ bool tsym::isDoubleNumeric(const Base& expr)
 
 bool tsym::isNegativeNumeric(const Base& expr)
 {
-    return expr.isNumeric() && expr.isNegative();
+    return isNumeric(expr) && expr.isNegative();
 }

@@ -53,28 +53,28 @@ BOOST_AUTO_TEST_CASE(undefinedExponent)
 {
     const BasePtr res = Power::create(a, undefined);
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(illegalNumberExponent, noLogs())
 {
     const BasePtr res = Power::create(a, Numeric::create(10, 0));
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(undefinedBase)
 {
     const BasePtr res = Power::create(undefined, two);
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(integerOnly)
 {
     const BasePtr res = Power::create(three, four);
 
-    BOOST_TEST(res->isNumeric());
+    BOOST_TEST(isNumeric(*res));
     BOOST_CHECK_EQUAL(81, res->numericEval().value());
 }
 
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(exponentFraction)
     const BasePtr exp = Numeric::create(2, 3);
     const BasePtr pow = Power::create(two, exp);
 
-    BOOST_TEST(pow->isPower());
+    BOOST_TEST(isPower(*pow));
     BOOST_CHECK_EQUAL(two, pow->base());
     BOOST_CHECK_EQUAL(exp, pow->exp());
 }
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(expFracGreaterThanOne)
     const BasePtr expectedPow = Power::create(two, Numeric::third());
     const BasePtr res = Power::create(two, Numeric::create(10, 3));
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(2, res->operands().size());
     BOOST_CHECK_EQUAL(eight, res->operands().front());
     BOOST_CHECK_EQUAL(expectedPow, res->operands().back());
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(baseFracWithExpFracGreaterThanOne)
     const BasePtr expectedPow = Power::sqrt(twoThird);
     const BasePtr res = Power::create(twoThird, Numeric::create(3, 2));
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(2, res->operands().size());
     BOOST_CHECK_EQUAL(twoThird, res->operands().front());
     BOOST_CHECK_EQUAL(expectedPow, res->operands().back());
@@ -132,7 +132,7 @@ BOOST_AUTO_TEST_CASE(expFracLessThanMinusOne)
     const BasePtr origExp = Numeric::create(-19, 7);
     const BasePtr res = Power::create(origBase, origExp);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(2, res->operands().size());
     BOOST_CHECK_EQUAL(Numeric::create(169, 25), res->operands().front());
     BOOST_CHECK_EQUAL(expectedPow, res->operands().back());
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(simpleFracBaseToIntWithNegExp)
 {
     const BasePtr pow = Power::sqrt(half);
 
-    BOOST_TEST(pow->isPower());
+    BOOST_TEST(isPower(*pow));
     BOOST_CHECK_EQUAL(two, pow->base());
     BOOST_CHECK_EQUAL(minusHalf, pow->exp());
 }
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE(illegalPower)
 {
     const BasePtr result = Power::sqrt(Numeric::create(-2));
 
-    BOOST_TEST(result->isUndefined());
+    BOOST_TEST(isUndefined(*result));
 }
 
 BOOST_AUTO_TEST_CASE(fracBaseToIntWithNegExp)
@@ -164,7 +164,7 @@ BOOST_AUTO_TEST_CASE(fracBaseToIntWithNegExp)
     const BasePtr baseFrac = Numeric::create(1, 12345);
     const BasePtr pow = Power::create(baseFrac, oneFifth);
 
-    BOOST_TEST(pow->isPower());
+    BOOST_TEST(isPower(*pow));
     BOOST_CHECK_EQUAL(12345, pow->base()->numericEval().value());
     BOOST_CHECK_EQUAL(minusOneFifth, pow->exp());
 }
@@ -187,7 +187,7 @@ BOOST_AUTO_TEST_CASE(fracBaseNegFracExp)
     const BasePtr twoThird = Numeric::create(2, 3);
     const BasePtr pow = Power::create(twoThird, minusHalf);
 
-    BOOST_TEST(pow->isPower());
+    BOOST_TEST(isPower(*pow));
     BOOST_CHECK_EQUAL(Numeric::create(3, 2), pow->base());
     BOOST_CHECK_EQUAL(half, pow->exp());
 }
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(fracBaseNoChange)
     const BasePtr twoThird = Numeric::create(2, 3);
     const BasePtr pow = Power::sqrt(twoThird);
 
-    BOOST_TEST(pow->isPower());
+    BOOST_TEST(isPower(*pow));
     BOOST_CHECK_EQUAL(twoThird, pow->base());
     BOOST_CHECK_EQUAL(half, pow->exp());
 }
@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE(resolvableExpFracBaseInt)
     const BasePtr exp = Numeric::third();
     const BasePtr res = Power::create(eight, exp);
 
-    BOOST_TEST(res->isNumeric());
+    BOOST_TEST(isNumeric(*res));
     BOOST_CHECK_EQUAL(2, res->numericEval().value());
 }
 
@@ -218,7 +218,7 @@ BOOST_AUTO_TEST_CASE(simpleSplittableExpFracBaseInt)
 {
     const BasePtr res = Power::sqrt(eight);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(2, res->operands().size());
     BOOST_CHECK_EQUAL(two, res->operands().front());
     BOOST_CHECK_EQUAL(sqrtTwo, res->operands().back());
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(splittableExpFracBaseInt)
     const BasePtr res = Power::sqrt(Numeric::create(32));
     const BasePtr expectedPow = Power::sqrt(two);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(2, res->operands().size());
     BOOST_CHECK_EQUAL(4, res->operands().front()->numericEval().value());
     BOOST_CHECK_EQUAL(expectedPow, res->operands().back());
@@ -242,7 +242,7 @@ BOOST_AUTO_TEST_CASE(splittableExpSqrtBaseInt)
     const BasePtr res = Power::sqrt(Numeric::create(833));
     const BasePtr expectedPow = Power::sqrt(Numeric::create(17));
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(2, res->operands().size());
     BOOST_CHECK_EQUAL(7, res->operands().front()->numericEval().value());
     BOOST_CHECK_EQUAL(expectedPow, res->operands().back());
@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE(splittableExpFracBaseOneEigth)
     const BasePtr oneEigth = Numeric::create(1, 8);
     const BasePtr res = Power::sqrt(oneEigth);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(2, res->operands().size());
     BOOST_CHECK_EQUAL(half, res->operands().front());
     BOOST_CHECK_EQUAL(Power::create(two, minusHalf), res->operands().back());
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE(splittableNegExpFracBaseOneThirtyHalf)
     const BasePtr res = Power::sqrt(Numeric::create(1, 32));
     const BasePtr expectedPow = Power::create(two, minusHalf);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(2, res->operands().size());
     BOOST_CHECK_EQUAL(Numeric::fourth(), res->operands().front());
     BOOST_CHECK_EQUAL(expectedPow, res->operands().back());
@@ -278,7 +278,7 @@ BOOST_AUTO_TEST_CASE(splittableExpFracBaseThreeEigth)
     const BasePtr threeEigth = Numeric::create(3, 8);
     const BasePtr res = Power::sqrt(threeEigth);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(2, res->operands().size());
     BOOST_CHECK_EQUAL(half, res->operands().front());
     BOOST_CHECK_EQUAL(Power::sqrt(Numeric::create(3, 2)), res->operands().back());
@@ -294,7 +294,7 @@ BOOST_AUTO_TEST_CASE(splittableExpFracBaseFrac)
     options::setMaxPrimeResolution(1000);
     res = Power::create(base, oneThird);
 
-    BOOST_TEST(res->isPower());
+    BOOST_TEST(isPower(*res));
     BOOST_CHECK_EQUAL(oneThird, res->exp());
     BOOST_CHECK_EQUAL(base, res->base());
 
@@ -302,7 +302,7 @@ BOOST_AUTO_TEST_CASE(splittableExpFracBaseFrac)
 
     res = Power::create(base, oneThird);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(2, res->operands().size());
     BOOST_CHECK_EQUAL(Numeric::create(3, 5), res->operands().front());
     BOOST_CHECK_EQUAL(oneThird, res->operands().back()->exp());
@@ -322,7 +322,7 @@ BOOST_AUTO_TEST_CASE(splittableBaseNumeratorExpFrac)
 
     res = Power::create(origBase, exp);
 
-    BOOST_TEST(res->isPower());
+    BOOST_TEST(isPower(*res));
     BOOST_CHECK_EQUAL(origBase, res->base());
     BOOST_CHECK_EQUAL(exp, res->exp());
 
@@ -330,7 +330,7 @@ BOOST_AUTO_TEST_CASE(splittableBaseNumeratorExpFrac)
 
     res = Power::create(origBase, exp);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(2, res->operands().size());
     BOOST_CHECK_EQUAL(Numeric::create(49), res->operands().front());
     BOOST_CHECK_EQUAL(expectedPow, res->operands().back());
@@ -352,7 +352,7 @@ BOOST_AUTO_TEST_CASE(splittalbeBaseDenomExpFrac)
 
     res = Power::create(origBase, origExp);
 
-    BOOST_TEST(res->isPower());
+    BOOST_TEST(isPower(*res));
     BOOST_CHECK_EQUAL(origExp, res->exp());
     BOOST_CHECK_EQUAL(origBase, res->base());
 
@@ -360,7 +360,7 @@ BOOST_AUTO_TEST_CASE(splittalbeBaseDenomExpFrac)
 
     res = Power::create(origBase, origExp);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(2, res->operands().size());
     BOOST_CHECK_EQUAL(expectedNumeric, res->operands().front());
     BOOST_CHECK_EQUAL(expectedPow, res->operands().back());
@@ -375,7 +375,7 @@ BOOST_AUTO_TEST_CASE(splittableNegExpFracBaseFrac)
 
     res = Power::create(Numeric::create(8, 81), Numeric::create(-4, 3));
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(2, res->operands().size());
     BOOST_CHECK_EQUAL(expectedNumeric, res->operands().front());
     BOOST_CHECK_EQUAL(expectedPow, res->operands().back());
@@ -386,7 +386,7 @@ BOOST_AUTO_TEST_CASE(simpleUnresolvableExpFrac)
 {
     const BasePtr pow = Power::sqrt(two);
 
-    BOOST_TEST(pow->isPower());
+    BOOST_TEST(isPower(*pow));
     BOOST_TEST(isNumericPower(*pow));
     BOOST_CHECK_CLOSE(std::sqrt(2.0), pow->numericEval().value().toDouble(), TOL);
 }
@@ -416,7 +416,7 @@ BOOST_AUTO_TEST_CASE(unresolvableExpFrac)
 {
     const BasePtr pow = Power::create(seven, oneThird);
 
-    BOOST_TEST(pow->isPower());
+    BOOST_TEST(isPower(*pow));
     BOOST_TEST(isNumericPower(*pow));
 
     BOOST_CHECK_CLOSE(std::pow(7.0, 1.0 / 3.0), pow->numericEval().value().toDouble(), TOL);
@@ -426,27 +426,27 @@ BOOST_AUTO_TEST_CASE(negFractionBaseWithNegFractionExp)
 {
     const BasePtr res = Power::create(minusHalf, half);
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(negFractionBaseWithPosFractionExp)
 {
     const BasePtr res = Power::create(minusHalf, minusHalf);
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(negNumericBasePosNumericExp)
 {
     const BasePtr res = Power::create(minusHalf, Numeric::create(9.87654321));
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(negNumericBaseNegNumericExp)
 {
     const BasePtr res = Power::create(minusHalf, Numeric::create(-1.23456789));
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(unclearBaseExponentContractionBothFractionsOddDenom)
@@ -501,10 +501,10 @@ BOOST_AUTO_TEST_CASE(negBaseSymbolicExp)
     const BasePtr base = Sum::create(Product::minus(aPos), Product::minus(bPos));
     const BasePtr res = Power::create(Power::create(base, c), two);
 
-    BOOST_TEST(res->isPower());
+    BOOST_TEST(isPower(*res));
     BOOST_CHECK_EQUAL(two, res->exp());
 
-    BOOST_TEST(res->base()->isPower());
+    BOOST_TEST(isPower(*res->base()));
     BOOST_CHECK_EQUAL(c, res->base()->exp());
     BOOST_CHECK_EQUAL(base, res->base()->base());
 }
@@ -515,7 +515,7 @@ BOOST_AUTO_TEST_CASE(unclearProductBaseFractionExp)
     const BasePtr exp = Numeric::create(2, 3);
     const BasePtr res = Power::create(Product::create(a, b), exp);
 
-    BOOST_TEST(res->isPower());
+    BOOST_TEST(isPower(*res));
     BOOST_CHECK_EQUAL(Product::create(a, b), res->base());
     BOOST_CHECK_EQUAL(exp, res->exp());
 }
@@ -526,10 +526,10 @@ BOOST_AUTO_TEST_CASE(extractAllFactorsOfProductBase)
     const BasePtr base = Product::create({a, b, c, d, e, pi});
     const BasePtr res = Power::create(base, eight);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
 
     for (const auto& factor : res->operands()) {
-        BOOST_TEST(factor->isPower());
+        BOOST_TEST(isPower(*factor));
         BOOST_CHECK_EQUAL(eight, factor->exp());
     }
 }
@@ -543,7 +543,7 @@ BOOST_AUTO_TEST_CASE(extractPositiveFactorsOfProductBase)
     const BasePtr base = Product::create({aPos, bPos, c, d, e, pi});
     BasePtr res = Power::create(base, exp);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
 
     BOOST_TEST(areEqual(expected, res->operands()));
 }
@@ -554,14 +554,14 @@ BOOST_AUTO_TEST_CASE(negProductBaseFractionExp)
     const BasePtr base = Product::create(Numeric::mOne(), aPos, bPos);
     const BasePtr res = Power::create(base, Numeric::create(2, 3));
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(zeroExponent)
 {
     const BasePtr res = Power::create(a, zero);
 
-    BOOST_TEST(res->isNumeric());
+    BOOST_TEST(isNumeric(*res));
     BOOST_CHECK_EQUAL(1, res->numericEval().value());
 }
 
@@ -571,7 +571,7 @@ BOOST_AUTO_TEST_CASE(symbolicPowerBaseSymbolExp)
     const BasePtr base = Power::create(a, b);
     const BasePtr res = Power::create(base, c);
 
-    BOOST_TEST(res->isPower());
+    BOOST_TEST(isPower(*res));
     BOOST_CHECK_EQUAL(base, res->base());
     BOOST_CHECK_EQUAL(c, res->exp());
 }
@@ -600,7 +600,7 @@ BOOST_AUTO_TEST_CASE(zeroBaseToNegExponent, noLogs())
 
     res = Power::create(zero, exp);
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(identity)
@@ -608,7 +608,7 @@ BOOST_AUTO_TEST_CASE(identity)
     const BasePtr res = Power::create(a, one);
     const Name expected{"a"};
 
-    BOOST_TEST(res->isSymbol());
+    BOOST_TEST(isSymbol(*res));
     BOOST_CHECK_EQUAL(expected, res->name());
 }
 
@@ -617,8 +617,8 @@ BOOST_AUTO_TEST_CASE(powerWithPowerExp)
     const BasePtr exp = Power::create(Sum::create(a, b), two);
     const BasePtr res = Power::create(a, exp);
 
-    BOOST_TEST(res->isPower());
-    BOOST_TEST(res->exp()->isPower());
+    BOOST_TEST(isPower(*res));
+    BOOST_TEST(isPower(*res->exp()));
 
     BOOST_CHECK_EQUAL(a, res->base());
     BOOST_CHECK_EQUAL(exp, res->exp());
@@ -630,10 +630,10 @@ BOOST_AUTO_TEST_CASE(multiplySymbolExp)
     const BasePtr pow1 = Power::create(two, a);
     const BasePtr res = Power::create(pow1, a);
 
-    BOOST_TEST(res->isPower());
+    BOOST_TEST(isPower(*res));
 
-    BOOST_TEST(res->base()->isNumeric());
-    BOOST_TEST(res->exp()->isPower());
+    BOOST_TEST(isNumeric(*res->base()));
+    BOOST_TEST(isPower(*res->exp()));
 
     BOOST_CHECK_EQUAL(2, res->base()->numericEval().value());
     BOOST_CHECK_EQUAL(2, res->exp()->exp()->numericEval().value());
@@ -689,7 +689,7 @@ BOOST_AUTO_TEST_CASE(multiplyExponentsByCreation)
     const BasePtr pow2 = Power::create(pow1, three);
     const BasePtr res = Power::create(pow2, one);
 
-    BOOST_TEST(res->isPower());
+    BOOST_TEST(isPower(*res));
     BOOST_CHECK_EQUAL(a, res->base());
     BOOST_CHECK_EQUAL(six, res->exp());
 }
@@ -699,7 +699,7 @@ BOOST_AUTO_TEST_CASE(squareOfSymbolSquareRoot)
 {
     const BasePtr res = Power::create(Power::sqrt(a), two);
 
-    BOOST_TEST(res->isPower());
+    BOOST_TEST(isPower(*res));
     BOOST_CHECK_EQUAL(two, res->exp());
     BOOST_CHECK_EQUAL(Power::sqrt(a), res->base());
 }
@@ -748,16 +748,16 @@ BOOST_AUTO_TEST_CASE(applyExponentToProduct)
     auto it = cbegin(res->operands());
     BasePtr fac;
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
 
     fac = *it;
-    BOOST_TEST(fac->isPower());
+    BOOST_TEST(isPower(*fac));
     BOOST_TEST(fac->base()->name() == Name{"a"});
     BOOST_CHECK_EQUAL(three, fac->exp());
 
     ++it;
     fac = *it;
-    BOOST_TEST(fac->isPower());
+    BOOST_TEST(isPower(*fac));
     BOOST_TEST(fac->base()->name() == Name{"b"});
     BOOST_CHECK_EQUAL(six, fac->exp());
 }
@@ -796,7 +796,7 @@ BOOST_AUTO_TEST_CASE(productBaseConstantExp)
 {
     const BasePtr res = Power::create(Product::create(aPos, b), pi);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(Power::create(aPos, pi), res->operands().front());
     BOOST_CHECK_EQUAL(Power::create(b, pi), res->operands().back());
 }
@@ -807,7 +807,7 @@ BOOST_AUTO_TEST_CASE(functionBase)
     const BasePtr sin = Trigonometric::createSin(a);
     const BasePtr res = Power::create(sin, a);
 
-    BOOST_TEST(res->isPower());
+    BOOST_TEST(isPower(*res));
     BOOST_CHECK_EQUAL(sin, res->base());
     BOOST_CHECK_EQUAL(a, res->exp());
 }
@@ -826,7 +826,7 @@ BOOST_AUTO_TEST_CASE(negativePowByOddExp)
 {
     const BasePtr pow = Power::create(Product::minus(aPos), Numeric::create(3, 5));
 
-    BOOST_TEST(pow->isUndefined());
+    BOOST_TEST(isUndefined(*pow));
 }
 
 BOOST_AUTO_TEST_CASE(unclearSymbolBaseLeftUnchanged)
@@ -834,7 +834,7 @@ BOOST_AUTO_TEST_CASE(unclearSymbolBaseLeftUnchanged)
     const BasePtr base = Power::create(a, oneThird);
     const BasePtr res = Power::create(base, three);
 
-    BOOST_TEST(res->isPower());
+    BOOST_TEST(isPower(*res));
     BOOST_CHECK_EQUAL(three, res->exp());
     BOOST_CHECK_EQUAL(base, res->base());
 }
@@ -903,10 +903,10 @@ BOOST_AUTO_TEST_CASE(unclearBaseNoExpContractionWithConstantSecondExp)
 {
     const BasePtr res = Power::create(Power::create(a, eight), pi);
 
-    BOOST_TEST(res->isPower());
+    BOOST_TEST(isPower(*res));
     BOOST_CHECK_EQUAL(pi, res->exp());
 
-    BOOST_TEST(res->base()->isPower());
+    BOOST_TEST(isPower(*res->base()));
     BOOST_CHECK_EQUAL(eight, res->base()->exp());
     BOOST_CHECK_EQUAL(a, res->base()->base());
 }
@@ -916,10 +916,10 @@ BOOST_AUTO_TEST_CASE(unclearBaseNoExpContractionWithSymbolSecondExp)
 {
     const BasePtr res = Power::create(Power::create(a, Numeric::fourth()), b);
 
-    BOOST_TEST(res->isPower());
+    BOOST_TEST(isPower(*res));
     BOOST_CHECK_EQUAL(b, res->exp());
 
-    BOOST_TEST(res->base()->isPower());
+    BOOST_TEST(isPower(*res->base()));
     BOOST_CHECK_EQUAL(Numeric::fourth(), res->base()->exp());
     BOOST_CHECK_EQUAL(a, res->base()->base());
 }
@@ -929,7 +929,7 @@ BOOST_AUTO_TEST_CASE(numericallyEvaluableExpToUndefined)
 {
     const BasePtr res = Power::create(Numeric::create(-2), pi);
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

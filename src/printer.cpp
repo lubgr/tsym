@@ -27,22 +27,22 @@ namespace tsym {
 
                 using tsym::print;
 
-                if (base.isSymbol())
+                if (isSymbol(base))
                     symbol(base);
-                else if (base.isNumeric())
+                else if (isNumeric(base))
                     print(engine, *base.numericEval());
-                else if (base.isPower())
+                else if (isPower(base))
                     power(base.base(), base.exp());
-                else if (base.isSum())
+                else if (isSum(base))
                     sum(base);
-                else if (base.isProduct())
+                else if (isProduct(base))
                     product(base);
-                else if (base.isFunction())
+                else if (isFunction(base))
                     function(base);
-                else if (base.isConstant())
+                else if (isConstant(base))
                     engine.symbol(base.name());
                 else {
-                    assert(base.isUndefined());
+                    assert(isUndefined(base));
                     engine.undefined();
                 }
             }
@@ -87,7 +87,7 @@ namespace tsym {
                     return false;
                 };
 
-                return base->isSymbol() || base->isConstant() || base->isFunction() || isPositiveInt(base);
+                return isSymbol(*base) || isConstant(*base) || isFunction(*base) || isPositiveInt(base);
             }
 
             void standardPower(const BasePtr& base, const BasePtr& exp)
@@ -116,9 +116,9 @@ namespace tsym {
 
             bool isScalarPowerExp(const BasePtr& exp)
             {
-                if (exp->isSymbol() || exp->isConstant() || exp->isFunction())
+                if (isSymbol(*exp) || isConstant(*exp) || isFunction(*exp))
                     return true;
-                else if (exp->isNumeric())
+                else if (isNumeric(*exp))
                     return isInt(*exp->numericEval()) && exp->isPositive();
                 else
                     return false;
@@ -144,10 +144,10 @@ namespace tsym {
 
             bool isProductWithNegativeNumeric(const BasePtr& summand)
             {
-                if (summand->isProduct()) {
+                if (isProduct(*summand)) {
                     const auto& first = summand->operands().front();
 
-                    return first->isNumeric() && first->isNegative();
+                    return isNumeric(*first) && first->isNegative();
                 } else
                     return false;
             }
@@ -200,7 +200,7 @@ namespace tsym {
                         frac.first.push_back(origFactor);
                 }
 
-                if (frac.first.empty() || frac.second.size() <= 1 || !frac.first.front()->isNumeric())
+                if (frac.first.empty() || frac.second.size() <= 1 || !isNumeric(*frac.first.front()))
                     return frac;
 
                 /* Adjust the previous logic and move factors like 2/3 to numerator/denominator. */
@@ -217,11 +217,11 @@ namespace tsym {
 
             unsigned precedence(const BasePtr& ptr)
             {
-                if (ptr->isSum())
+                if (isSum(*ptr))
                     return 1;
-                else if (ptr->isProduct())
+                else if (isProduct(*ptr))
                     return 2;
-                else if (ptr->isPower())
+                else if (isPower(*ptr))
                     return 3;
                 else
                     return 4;

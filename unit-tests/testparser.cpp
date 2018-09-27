@@ -1,5 +1,6 @@
 
 #include <string>
+#include "basefct.h"
 #include "constant.h"
 #include "fixtures.h"
 #include "numeric.h"
@@ -22,8 +23,8 @@ struct ParserFixture : public AbcFixture {
 namespace {
     void check(const ParseResult& expected, const ParseResult& result)
     {
-        if (expected.value->isUndefined()) {
-            BOOST_TEST(result.value->isUndefined());
+        if (isUndefined(*expected.value)) {
+            BOOST_TEST(isUndefined(*result.value));
         } else {
             BOOST_CHECK_EQUAL(expected.value, result.value);
         }

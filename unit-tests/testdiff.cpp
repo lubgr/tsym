@@ -17,7 +17,7 @@ namespace {
     void checkWrongDiffToUndefined(const BasePtr& arg1, const BasePtr& arg2)
     {
         const BasePtr result = arg1->diff(*arg2);
-        BOOST_TEST(result->isUndefined());
+        BOOST_TEST(isUndefined(*result));
     }
 }
 
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(undefinedWrtSymbol)
 {
     const BasePtr result = undefined->diff(*a);
 
-    BOOST_TEST(result->isUndefined());
+    BOOST_TEST(isUndefined(*result));
 }
 
 BOOST_AUTO_TEST_CASE(symbolWrtItself)

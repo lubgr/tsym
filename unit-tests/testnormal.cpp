@@ -64,7 +64,7 @@ BOOST_AUTO_TEST_CASE(constantE)
 
 BOOST_AUTO_TEST_CASE(undefinedToUndefined)
 {
-    BOOST_TEST(undefined->normal()->isUndefined());
+    BOOST_TEST(isUndefined(*undefined->normal()));
 }
 
 BOOST_AUTO_TEST_CASE(powerWithPosIntExp)
@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE(replacementOfFunctionWithNumPowerArg)
     BasePtr denom;
 
     BOOST_CHECK_EQUAL(one, frac.num);
-    BOOST_TEST(frac.denom->isSymbol());
+    BOOST_TEST(isSymbol(*frac.denom));
 
     denom = map->replaceTmpSymbolsBackFrom(frac.denom);
 
@@ -302,7 +302,7 @@ BOOST_AUTO_TEST_CASE(atan2NormalizeFunctionArgs)
     const BasePtr result = orig->normal();
     const Name expectedFctName{"atan2"};
 
-    BOOST_TEST(result->isFunction());
+    BOOST_TEST(isFunction(*result));
     BOOST_CHECK_EQUAL(expectedFctName, result->name());
 
     BOOST_CHECK_EQUAL(b, result->operands().front());
@@ -324,7 +324,7 @@ BOOST_AUTO_TEST_CASE(logarithmicFunctionArgToZero, noLogs())
 
     result = orig->normal();
 
-    BOOST_TEST(result->isUndefined());
+    BOOST_TEST(isUndefined(*result));
 }
 
 BOOST_AUTO_TEST_CASE(logarithmicFunction)

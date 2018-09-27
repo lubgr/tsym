@@ -1,4 +1,5 @@
 
+#include "basefct.h"
 #include "fixtures.h"
 #include "numeric.h"
 #include "poly.h"
@@ -40,8 +41,8 @@ struct GcdFixture : public AbcFixture {
     {
         const BasePtr result = poly::gcd(u, v, gcd);
 
-        if (expected->isUndefined()) {
-            BOOST_TEST(result->isUndefined());
+        if (isUndefined(*expected)) {
+            BOOST_TEST(isUndefined(*result));
         } else {
             BOOST_CHECK_EQUAL(expected, result);
         }

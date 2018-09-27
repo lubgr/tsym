@@ -28,7 +28,7 @@ tsym::Power::Power(const BasePtr& base, const BasePtr& exponent, Base::CtorKey&&
 
 tsym::BasePtr tsym::Power::create(const BasePtr& base, const BasePtr& exponent)
 {
-    if (exponent->isUndefined() || base->isUndefined())
+    if (isUndefined(*exponent) || isUndefined(*base))
         return Undefined::create();
 
     return createNotUndefined(base, exponent);
@@ -86,7 +86,7 @@ bool tsym::Power::isEqualDifferentBase(const Base& other) const
 
 bool tsym::Power::sameType(const Base& other) const
 {
-    return other.isPower();
+    return isPower(other);
 }
 
 std::optional<tsym::Number> tsym::Power::numericEval() const
@@ -152,9 +152,9 @@ tsym::BasePtr tsym::Power::expand() const
 
 tsym::BasePtr tsym::Power::expandIntegerExponent() const
 {
-    if (baseRef->isSum())
+    if (isSum(*baseRef))
         return expandSumBaseIntExp();
-    else if (baseRef->isProduct())
+    else if (isProduct(*baseRef))
         /* Should have been resolved during standard product simplification. */
         TSYM_ERROR("Illegal power expression, base: %S, exponent: %S.", baseRef, expRef);
 

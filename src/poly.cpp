@@ -44,7 +44,7 @@ namespace tsym {
             int m = u->degree(x);
             int n = v->degree(x);
 
-            assert(x.isSymbol());
+            assert(isSymbol(x));
 
             while (m >= n) {
                 assert(m >= 0 && n >= 0);
@@ -120,7 +120,7 @@ namespace tsym {
         {
             const BasePtr firstSymbol(getFirstSymbol(polynomial));
 
-            if (firstSymbol->isUndefined()) {
+            if (isUndefined(*firstSymbol)) {
                 TSYM_ERROR("Polynomial unit request with illegal argument: %S", polynomial);
                 return 1;
             }
@@ -130,11 +130,11 @@ namespace tsym {
 
         BasePtr getFirstSymbol(const BasePtr& polynomial)
         {
-            if (polynomial->isSymbol())
+            if (isSymbol(*polynomial))
                 return polynomial;
-            else if (polynomial->isPower())
+            else if (isPower(*polynomial))
                 return getFirstSymbol(polynomial->base());
-            else if (polynomial->isSum() || polynomial->isProduct())
+            else if (isSum(*polynomial) || isProduct(*polynomial))
                 return getFirstSymbol(polynomial->operands());
 
             return Undefined::create();
@@ -145,7 +145,7 @@ namespace tsym {
             for (const auto& item : polynomials) {
                 auto firstSymbol = getFirstSymbol(item);
 
-                if (!firstSymbol->isUndefined())
+                if (!isUndefined(*firstSymbol))
                     return firstSymbol;
             }
 
@@ -259,7 +259,7 @@ int tsym::poly::unit(const Base& polynomial, const Base& x)
 
     if (isZero(*lCoeff))
         return 1;
-    else if (lCoeff->isNumeric())
+    else if (isNumeric(*lCoeff))
         return sign(*lCoeff->numericEval());
     else
         return unitFromNonNumeric(lCoeff);
@@ -291,7 +291,7 @@ tsym::BasePtr tsym::poly::content(const BasePtr& polynomial, const tsym::BasePtr
 {
     const BasePtr expanded(polynomial->expand());
 
-    if (expanded->isNumeric())
+    if (isNumeric(*expanded))
         /* This include the zero case. */
         return Numeric::create(abs(*expanded->numericEval()));
     else
@@ -300,18 +300,18 @@ tsym::BasePtr tsym::poly::content(const BasePtr& polynomial, const tsym::BasePtr
 
 int tsym::poly::minDegree(const Base& of, const Base& variable)
 {
-    if (!variable.isSymbol())
+    if (!isSymbol(variable))
         TSYM_WARNING("Requesting min. degree with non-Symbol argument %S", variable);
 
-    if (of.isNumeric())
+    if (isNumeric(of))
         return 0;
     else if (of.isEqual(variable))
         return 1;
-    else if (of.isPower())
+    else if (isPower(of))
         return minDegreeOfPower(of, variable);
-    else if (of.isSum())
+    else if (isSum(of))
         return minDegreeOfSum(of, variable);
-    else if (of.isProduct())
+    else if (isProduct(of))
         return minDegreeOfProduct(of, variable);
 
     return 0;

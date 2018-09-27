@@ -43,7 +43,9 @@ tsym::BasePtrList tsym::rest(BasePtrList list)
 
 bool tsym::hasUndefinedElements(const BasePtrList& list)
 {
-    return boost::algorithm::any_of(list, std::mem_fn(&Base::isUndefined));
+    using boost::adaptors::indirected;
+
+    return boost::algorithm::any_of(list | indirected, isUndefined);
 }
 
 bool tsym::hasZeroElements(const BasePtrList& list)
@@ -55,7 +57,9 @@ bool tsym::hasZeroElements(const BasePtrList& list)
 
 bool tsym::hasSumElements(const BasePtrList& list)
 {
-    return boost::algorithm::any_of(list, std::mem_fn(&Base::isSum));
+    using boost::adaptors::indirected;
+
+    return boost::algorithm::any_of(list | indirected, isSum);
 }
 
 bool tsym::areAllElementsConst(const BasePtrList& list)
@@ -97,7 +101,7 @@ namespace tsym {
             BasePtrList scalarFactors;
 
             for (const auto& item : list) {
-                if (const auto expanded = item->expand(); expanded->isSum())
+                if (const auto expanded = item->expand(); isSum(*expanded))
                     sums.push_back(expanded);
                 else
                     scalarFactors.push_back(expanded);

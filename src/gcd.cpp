@@ -29,7 +29,7 @@ tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v, const BaseP
     const BasePtr vExp(v->expand());
     BasePtr result(Numeric::one());
 
-    assert((L.empty() && uExp->isNumeric() && vExp->isNumeric()) || !L.empty());
+    assert((L.empty() && isNumeric(*uExp) && isNumeric(*vExp)) || !L.empty());
 
     if (isOne(*uExp) || isOne(*vExp))
         ;
@@ -41,7 +41,7 @@ tsym::BasePtr tsym::Gcd::compute(const BasePtr& u, const BasePtr& v, const BaseP
         result = uExp;
     else if (uExp->isEqual(*vExp))
         result = uExp;
-    else if (uExp->isNumeric() && vExp->isNumeric())
+    else if (isNumeric(*uExp) && isNumeric(*vExp))
         result = computeNumerics(uExp, vExp);
     else if (!haveCommonSymbol(u, v, L))
         result = integerContent(u, v);
@@ -113,7 +113,7 @@ tsym::Number tsym::Gcd::integerContent(const BasePtr& poly) const
 {
     Number result;
 
-    if (poly->isSum())
+    if (isSum(*poly))
         result = integerContentOfSum(poly->operands());
     else
         result = abs(poly->numericTerm()->numericEval().value_or(1));
@@ -158,7 +158,7 @@ tsym::Number tsym::Gcd::normalizationFactor(const BasePtr& arg, BasePtrList& L) 
         L.pop_back();
     }
 
-    if (!lCoeff->isNumeric())
+    if (!isNumeric(*lCoeff))
         return normalizationFactor(lCoeff, L);
 
     const Number fac = *lCoeff->numericEval();

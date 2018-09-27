@@ -1,4 +1,5 @@
 
+#include "basefct.h"
 #include "fixtures.h"
 #include "name.h"
 #include "numeric.h"
@@ -13,7 +14,7 @@ BOOST_AUTO_TEST_CASE(creationByNumber)
     const Number half(1, 2);
     const BasePtr ptr = Numeric::create(half);
 
-    BOOST_TEST(ptr->isNumeric());
+    BOOST_TEST(isNumeric(*ptr));
     BOOST_CHECK_EQUAL(half, ptr->numericEval().value());
 }
 
@@ -30,14 +31,14 @@ BOOST_AUTO_TEST_CASE(creationWithZeroDenominator, noLogs())
 {
     const BasePtr ptr = Numeric::create(1, 0);
 
-    BOOST_TEST(ptr->isUndefined());
+    BOOST_TEST(isUndefined(*ptr));
 }
 
 BOOST_AUTO_TEST_CASE(creationByInt)
 {
     const BasePtr ptr = Numeric::one();
 
-    BOOST_TEST(ptr->isNumeric());
+    BOOST_TEST(isNumeric(*ptr));
     BOOST_CHECK_EQUAL(1, ptr->numericEval().value());
 }
 
@@ -45,7 +46,7 @@ BOOST_AUTO_TEST_CASE(creationByFraction)
 {
     const BasePtr res = Numeric::fourth();
 
-    BOOST_TEST(res->isNumeric());
+    BOOST_TEST(isNumeric(*res));
     BOOST_CHECK_EQUAL(Number(1, 4), res->numericEval().value());
 }
 
@@ -54,7 +55,7 @@ BOOST_AUTO_TEST_CASE(creationByDouble)
     const double value = 1.23456789;
     const BasePtr res = Numeric::create(value);
 
-    BOOST_TEST(res->isNumeric());
+    BOOST_TEST(isNumeric(*res));
     BOOST_CHECK_EQUAL(value, res->numericEval().value());
 }
 

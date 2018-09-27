@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(undefinedNoChange)
 {
     const BasePtr result = undefined->subst(*a, b);
 
-    BOOST_TEST(result->isUndefined());
+    BOOST_TEST(isUndefined(*result));
 }
 
 BOOST_AUTO_TEST_CASE(cosineToConstant)
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(asinToUndefined)
 
     res = orig->subst(*a, tmp);
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(atan2ToPiFourth)
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE(atan2ToPiFourth)
     const BasePtr expected = Product::create(Numeric::fourth(), pi);
     BasePtr secondSubst;
 
-    BOOST_TEST(firstSubst->isFunction());
+    BOOST_TEST(isFunction(*firstSubst));
 
     secondSubst = firstSubst->subst(*a, two);
 
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE(powerToUndefined, noLogs())
 
     res = orig->subst(*a, zero);
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(sumToUndefined)
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(sumToUndefined)
     const BasePtr orig = Sum::create(a, b, c, d);
     const BasePtr res = orig->subst(*c, undefined);
 
-    BOOST_TEST(res->isUndefined());
+    BOOST_TEST(isUndefined(*res));
 }
 
 BOOST_AUTO_TEST_CASE(sumToOne)

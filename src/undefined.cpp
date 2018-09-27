@@ -1,6 +1,7 @@
 
 #include "undefined.h"
 #include <cassert>
+#include "basefct.h"
 #include "basetypestr.h"
 #include "fraction.h"
 #include "logging.h"
@@ -26,7 +27,7 @@ bool tsym::Undefined::isEqual(const Base& other) const
 
 bool tsym::Undefined::isEqualDifferentBase(const Base& other) const
 {
-    if (other.isUndefined())
+    if (isUndefined(other))
         TSYM_ERROR("Equality request between two undefined expressions! Returns false.");
 
     return false;
@@ -34,7 +35,7 @@ bool tsym::Undefined::isEqualDifferentBase(const Base& other) const
 
 bool tsym::Undefined::sameType(const Base& other) const
 {
-    return other.isUndefined();
+    return isUndefined(other);
 }
 
 std::optional<tsym::Number> tsym::Undefined::numericEval() const
@@ -69,7 +70,7 @@ size_t tsym::Undefined::hash() const
 
 bool tsym::Undefined::isDifferent(const Base& other) const
 {
-    if (other.isUndefined())
+    if (isUndefined(other))
         TSYM_WARNING("Difference request between two Undefined! Returns true.");
 
     return true;
@@ -83,7 +84,7 @@ bool tsym::Undefined::has(const Base&) const
 
 tsym::BasePtr tsym::Undefined::subst(const Base& from, const BasePtr& to) const
 {
-    if (from.isUndefined())
+    if (isUndefined(from))
         return to;
     else
         return clone();

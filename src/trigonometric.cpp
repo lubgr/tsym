@@ -104,7 +104,7 @@ tsym::BasePtr tsym::Trigonometric::createAtan(const BasePtr& arg)
 tsym::BasePtr tsym::Trigonometric::createAtan2(const BasePtr& y, const BasePtr& x)
 /* This method differs from those above because of a higher number of function arguments. */
 {
-    if (x->isUndefined() || y->isUndefined())
+    if (isUndefined(*x) || isUndefined(*y))
         return Undefined::create();
     else if (const auto xNum = x->numericEval(), yNum = y->numericEval(); xNum && yNum)
         return createAtan2Numerically(*yNum, *xNum, y, x);
@@ -114,9 +114,9 @@ tsym::BasePtr tsym::Trigonometric::createAtan2(const BasePtr& y, const BasePtr& 
 
 tsym::BasePtr tsym::Trigonometric::create(Type type, const BasePtr& arg)
 {
-    if (arg->isUndefined())
+    if (isUndefined(*arg))
         return arg;
-    else if (arg->isFunction())
+    else if (isFunction(*arg))
         return createFromFunction(type, arg);
     else if (doesSymmetryApply(arg))
         return createBySymmetry(type, arg);
@@ -133,9 +133,9 @@ tsym::BasePtr tsym::Trigonometric::createInstance(Type type, const BasePtrList& 
 
 bool tsym::Trigonometric::doesSymmetryApply(const BasePtr& arg)
 {
-    if (arg->isSum())
+    if (isSum(*arg))
         return haveAllNegativePrefactors(arg->operands());
-    else if (arg->isProduct())
+    else if (isProduct(*arg))
         return arg->expand()->constTerm()->isNegative();
     else
         return false;
@@ -207,7 +207,7 @@ const tsym::Trigonometric* tsym::Trigonometric::tryCast(const BasePtr& arg)
 
     cast = dynamic_cast<const Trigonometric*>(&*arg);
 
-    assert(cast == nullptr || arg->isFunction());
+    assert(cast == nullptr || isFunction(*arg));
 
     return cast;
 }
@@ -371,7 +371,7 @@ tsym::BasePtr tsym::Trigonometric::shiftAtanResultIntoRange(BasePtr result, Base
 
     assert(result->numericEval());
 
-    if (result->isNumeric() && !isZero(*result)) {
+    if (isNumeric(*result) && !isZero(*result)) {
         increment = Numeric::create(*increment->numericEval());
         summand = Numeric::create(*summand->numericEval());
     }

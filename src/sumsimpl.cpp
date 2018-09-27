@@ -47,7 +47,7 @@ namespace tsym {
 
         BasePtrList simplTwoSummands(const BasePtr& s1, const BasePtr& s2)
         {
-            if (s1->isSum() || s2->isSum())
+            if (isSum(*s1) || isSum(*s2))
                 return simplTwoSummandsWithSum(s1, s2);
             else
                 return simplTwoSummandsWithoutSum(s1, s2);
@@ -55,8 +55,8 @@ namespace tsym {
 
         BasePtrList simplTwoSummandsWithSum(const BasePtr& s1, const BasePtr& s2)
         {
-            BasePtrList l1 = s1->isSum() ? s1->operands() : BasePtrList{s1};
-            BasePtrList l2 = s2->isSum() ? s2->operands() : BasePtrList{s2};
+            BasePtrList l1 = isSum(*s1) ? s1->operands() : BasePtrList{s1};
+            BasePtrList l2 = isSum(*s2) ? s2->operands() : BasePtrList{s2};
 
             return merge(l1, l2);
         }
@@ -103,7 +103,7 @@ namespace tsym {
                 return {s2};
             else if (isZero(*s2))
                 return {s1};
-            else if (s1->isNumeric() && s2->isNumeric())
+            else if (isNumeric(*s1) && isNumeric(*s2))
                 return simplTwoNumerics(s1, s2);
             else if (haveEqualNonConstTerms(s1, s2))
                 /* Catches const. terms as prefactors, e.g. sqrt(3)*a + 2*a = (2 + sqrt(3))*a. Constants are
@@ -150,7 +150,7 @@ namespace tsym {
         {
             const BasePtr sum(Sum::create(s1->constTerm(), s2->constTerm()));
 
-            if (!sum->isSum())
+            if (!isSum(*sum))
                 return {Product::create(sum, s1->nonConstTerm())};
             else if (doPermute(*s1, *s2))
                 return {s2, s1};
@@ -194,7 +194,7 @@ namespace tsym {
 
         bool areSinAndCosSquare(const BasePtr& s1, const BasePtr& s2)
         {
-            if (!s1->isPower() || !s2->isPower())
+            if (!isPower(*s1) || !isPower(*s2))
                 return false;
             else if (s1->exp()->numericEval() == 2 && s2->exp()->numericEval() == 2)
                 return areSinAndCos(s1->base(), s2->base());
@@ -207,7 +207,7 @@ namespace tsym {
             const Name sin{"sin"};
             const Name cos{"cos"};
 
-            if (!s1->isFunction() || !s2->isFunction())
+            if (!isFunction(*s1) || !isFunction(*s2))
                 return false;
             else
                 return (s1->name() == sin && s2->name() == cos) || (s1->name() == cos && s2->name() == sin);
@@ -227,7 +227,7 @@ namespace tsym {
             const BasePtr u1(u.front());
             const BasePtrList simplRest = simplWithoutCache(uRest);
 
-            if (u1->isSum())
+            if (isSum(*u1))
                 return merge(u1->operands(), simplRest);
             else
                 return merge({u1}, simplRest);

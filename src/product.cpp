@@ -68,7 +68,7 @@ bool tsym::Product::isEqualDifferentBase(const Base& other) const
 
 bool tsym::Product::sameType(const Base& other) const
 {
-    return other.isProduct();
+    return isProduct(other);
 }
 
 std::optional<tsym::Number> tsym::Product::numericEval() const
@@ -164,12 +164,12 @@ tsym::BasePtr tsym::Product::numericTerm() const
 {
     const BasePtr& first(ops.front());
 
-    return first->isNumeric() ? first : Numeric::one();
+    return isNumeric(*first) ? first : Numeric::one();
 }
 
 tsym::BasePtr tsym::Product::nonNumericTerm() const
 {
-    if (ops.front()->isNumeric())
+    if (isNumeric(*ops.front()))
         /* We should to go through automatic simplification again, because the factor list could be
          * e.g. of size 1. */
         return create(rest(ops));

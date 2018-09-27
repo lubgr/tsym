@@ -1,5 +1,6 @@
 
 #include <cmath>
+#include "basefct.h"
 #include "constant.h"
 #include "fixtures.h"
 #include "numeric.h"
@@ -34,8 +35,8 @@ struct NumTrigoSimplFixture : public AbcFixture {
 
         BOOST_TEST(result);
 
-        if (expected->isUndefined()) {
-            BOOST_TEST(result.value()->isUndefined());
+        if (isUndefined(*expected)) {
+            BOOST_TEST(isUndefined(*result.value()));
         } else {
             BOOST_CHECK_EQUAL(expected, result.value());
         }

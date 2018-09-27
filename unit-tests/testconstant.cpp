@@ -1,5 +1,6 @@
 
 #include <cmath>
+#include "basefct.h"
 #include "constant.h"
 #include "fixtures.h"
 #include "number.h"
@@ -30,8 +31,8 @@ BOOST_AUTO_TEST_CASE(constRequest)
 
 BOOST_AUTO_TEST_CASE(typeRequest)
 {
-    BOOST_TEST(pi->isConstant());
-    BOOST_TEST(euler->isConstant());
+    BOOST_TEST(isConstant(*pi));
+    BOOST_TEST(isConstant(*euler));
 }
 
 BOOST_AUTO_TEST_CASE(getNameFromPi)

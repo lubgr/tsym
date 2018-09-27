@@ -3,6 +3,7 @@
 #include <boost/range/adaptor/indirected.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 #include <boost/range/algorithm/lexicographical_compare.hpp>
+#include "basefct.h"
 #include "constant.h"
 #include "function.h"
 #include "logging.h"
@@ -45,21 +46,21 @@ bool tsym::doPermute(const Base& left, const Base& right)
 
 bool tsym::doPermuteSameType(const Base& left, const Base& right)
 {
-    if (left.isSymbol())
+    if (isSymbol(left))
         return doPermuteBothSymbol(left, right);
-    else if (left.isNumeric())
+    else if (isNumeric(left))
         return doPermuteBothNumeric(left, right);
-    else if (left.isPower())
+    else if (isPower(left))
         return doPermuteBothPower(left, right);
-    else if (left.isProduct())
+    else if (isProduct(left))
         return doPermuteBothProduct(left, right);
-    else if (left.isSum())
+    else if (isSum(left))
         return doPermuteBothSum(left, right);
-    else if (left.isConstant())
+    else if (isConstant(left))
         return doPermuteBothConstant(left, right);
-    else if (left.isFunction())
+    else if (isFunction(left))
         return doPermuteBothFunction(left, right);
-    else if (left.isUndefined())
+    else if (isUndefined(left))
         TSYM_WARNING("Requesting order relation for an Undefined!");
 
     return false;
@@ -158,22 +159,22 @@ bool tsym::doPermuteBothFunction(const Base& left, const Base& right)
 
 bool tsym::doPermuteDifferentType(const Base& left, const Base& right)
 {
-    if (left.isNumeric())
+    if (isNumeric(left))
         return false;
     /* We differ from Cohen's algorithm here, as he didn't take a Constant type into account. It is
      * simply the leftmost part in any expression, except in comparison with a Numeric. */
-    else if (left.isConstant() && !right.isNumeric())
+    else if (isConstant(left) && !isNumeric(right))
         return false;
-    else if (left.isProduct() && isPowerSumSymbolOrFunction(right))
+    else if (isProduct(left) && isPowerSumSymbolOrFunction(right))
         return doPermuteLeftProduct(left, right);
-    else if (left.isPower() && isSumSymbolOrFunction(right))
+    else if (isPower(left) && isSumSymbolOrFunction(right))
         return doPermuteLeftPower(left, right);
-    else if (left.isSum() && isSymbolOrFunction(right))
+    else if (isSum(left) && isSymbolOrFunction(right))
         return doPermuteLeftSum(left, right);
-    else if (left.isFunction() && right.isSymbol())
+    else if (isFunction(left) && isSymbol(right))
         return doPermuteLeftFunctionRightSymbol(left, right);
 
-    if (left.isUndefined() || right.isUndefined()) {
+    if (isUndefined(left) || isUndefined(right)) {
         TSYM_WARNING("Requesting order relation for Undefined base pointer!");
         return false;
     }
@@ -183,7 +184,7 @@ bool tsym::doPermuteDifferentType(const Base& left, const Base& right)
 
 bool tsym::isPowerSumSymbolOrFunction(const Base& arg)
 {
-    return arg.isPower() || arg.isSum() || arg.isSymbol() || arg.isFunction();
+    return isPower(arg) || isSum(arg) || isSymbol(arg) || isFunction(arg);
 }
 
 bool tsym::doPermuteLeftProduct(const Base& left, const Base& right)
@@ -205,7 +206,7 @@ bool tsym::doPermuteLastElement(const BasePtrList& lList, const Base& right)
 
 bool tsym::isSumSymbolOrFunction(const Base& arg)
 {
-    return arg.isSum() || arg.isSymbol() || arg.isFunction();
+    return isSum(arg) || isSymbol(arg) || isFunction(arg);
 }
 
 bool tsym::doPermuteLeftPower(const Base& left, const Base& right)
@@ -221,7 +222,7 @@ bool tsym::doPermuteLeftPower(const Base& left, const Base& right)
 
 bool tsym::isSymbolOrFunction(const Base& arg)
 {
-    return arg.isSymbol() || arg.isFunction();
+    return isSymbol(arg) || isFunction(arg);
 }
 
 bool tsym::doPermuteLeftSum(const Base& left, const Base& right)

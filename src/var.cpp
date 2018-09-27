@@ -34,7 +34,7 @@ namespace tsym {
             const BasePtr& value(parsed.value);
 
             if (parsingSuccess)
-                return value->isSymbol() || (value->isNumeric() && isInt(*value->numericEval()));
+                return isSymbol(*value) || (isNumeric(*value) && isInt(*value->numericEval()));
 
             return false;
         }
@@ -151,7 +151,7 @@ tsym::Var tsym::Var::operator-() const
 
 tsym::Var::Type tsym::Var::type() const
 {
-    if (rep->isNumeric())
+    if (isNumeric(*rep))
         return numericType(*rep->numericEval());
 
     const auto lookup = typeStringMap().find(rep->typeStr());

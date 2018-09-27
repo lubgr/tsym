@@ -58,13 +58,13 @@ namespace tsym {
         /* Only symbols, rational Numerics, sums, products or powers with primitive int exponents are
          * allowed. */
         {
-            if (arg.isSymbol())
+            if (isSymbol(arg))
                 return true;
-            else if (arg.isNumeric())
+            else if (isNumeric(arg))
                 return arg.numericEval()->isRational();
-            else if (arg.isPower())
+            else if (isPower(arg))
                 return isValidPower(arg);
-            else if (arg.isSum() || arg.isProduct())
+            else if (isSum(arg) || isProduct(arg))
                 return hasValidOperands(arg);
             else
                 return false;
@@ -104,9 +104,9 @@ namespace tsym {
 
         void addSymbols(BasePtrList& symbolList, const Base& arg)
         {
-            if (arg.isSymbol())
+            if (isSymbol(arg))
                 addIfNotAlreadyStored(symbolList, arg);
-            else if (arg.isNumeric())
+            else if (isNumeric(arg))
                 return;
             else
                 addSymbolsNonScalar(symbolList, arg);
@@ -123,11 +123,11 @@ namespace tsym {
 
         void addSymbolsNonScalar(BasePtrList& symbolList, const Base& arg)
         {
-            if (arg.isSum())
+            if (isSum(arg))
                 addSymbols(symbolList, arg.operands());
-            else if (arg.isProduct())
+            else if (isProduct(arg))
                 addSymbols(symbolList, arg.operands());
-            else if (arg.isPower())
+            else if (isPower(arg))
                 addSymbols(symbolList, *arg.base());
         }
 

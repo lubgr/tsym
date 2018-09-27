@@ -89,7 +89,7 @@ namespace tsym {
         /* Recursively looks for items of type Product in the given container and inserts all factors
          * into the list itself. */
         {
-            const auto product = boost::find_if(u, [](const auto& item) { return item->isProduct(); });
+            const auto product = boost::find_if(u, [](const auto& item) { return isProduct(*item); });
 
             if (product == end(u))
                 return;
@@ -149,7 +149,7 @@ namespace tsym {
         {
             const Name& name(pow.base()->name());
 
-            if (pow.base()->isFunction() && pow.exp()->numericEval())
+            if (isFunction(*pow.base()) && pow.exp()->numericEval())
                 return name == Name{"sin"} || name == Name{"cos"} || name == Name{"tan"};
 
             return false;
@@ -220,7 +220,7 @@ namespace tsym {
 
         BasePtrList simplTwoFactors(const BasePtr& f1, const BasePtr& f2)
         {
-            if (f1->isProduct() || f2->isProduct())
+            if (isProduct(*f1) || isProduct(*f2))
                 return simplTwoFactorsWithProduct(f1, f2);
             else
                 return simplTwoFactorsWithoutProduct(f1, f2);
@@ -228,8 +228,8 @@ namespace tsym {
 
         BasePtrList simplTwoFactorsWithProduct(const BasePtr& f1, const BasePtr& f2)
         {
-            BasePtrList l1 = f1->isProduct() ? f1->operands() : BasePtrList{f1};
-            BasePtrList l2 = f2->isProduct() ? f2->operands() : BasePtrList{f2};
+            BasePtrList l1 = isProduct(*f1) ? f1->operands() : BasePtrList{f1};
+            BasePtrList l2 = isProduct(*f2) ? f2->operands() : BasePtrList{f2};
 
             return merge(l1, l2);
         }
@@ -290,14 +290,14 @@ namespace tsym {
 
         BasePtrList simplTwoConst(const BasePtr& f1, const BasePtr& f2)
         {
-            if (f1->isNumeric() && f2->isNumeric())
+            if (isNumeric(*f1) && isNumeric(*f2))
                 return simplTwoNumerics(f1, f2);
-            else if (f1->isNumeric())
+            else if (isNumeric(*f1))
                 /* The product of a numeric and a numeric power is treated in a special way: 2*sqrt(2) is
                  * not evaluated to 2^(3/2), but stays a product. If f2 is a constant sum, its expansion is
                  * handled later on. */
                 return simplNumAndConst(f1, f2);
-            else if (f2->isNumeric())
+            else if (isNumeric(*f2))
                 return simplNumAndConst(f2, f1);
             else if (haveEqualBases(*f1, *f2))
                 /* 2*sqrt(2) has been handled earlier, so this will catch terms like 2^(1/3)*2(1/4). */
@@ -334,13 +334,13 @@ namespace tsym {
         {
             /* At this point, the second parameter should either be a sum, a numeric power or a constant
              * power. */
-            assert(!constant->isConstant());
+            assert(!isConstant(*constant));
 
-            if (constant->isSum())
+            if (isSum(*constant))
                 return {numeric, constant};
             else if (isNumericPower(*constant))
                 return simplNumAndNumPow(numeric, constant);
-            else if (constant->isPower())
+            else if (isPower(*constant))
                 return {numeric, constant};
 
             TSYM_ERROR("Wrong type during ProductSimpl of two const. expressions!"
@@ -528,9 +528,9 @@ namespace tsym {
         void contractNumerics(BasePtrList& u)
         {
             const auto result = boost::accumulate(u, Number{1},
-              [](const auto& n, const auto& factor) { return factor->isNumeric() ? n * (*factor->numericEval()) : n; });
+              [](const auto& n, const auto& factor) { return isNumeric(*factor) ? n * (*factor->numericEval()) : n; });
 
-            u.remove_if([](const auto& factor) { return factor->isNumeric(); });
+            u.remove_if([](const auto& factor) { return isNumeric(*factor); });
 
             if (result != 1 || u.empty())
                 u.push_front(Numeric::create(result));
@@ -556,7 +556,7 @@ namespace tsym {
          * isConst(), this must be caught here. */
         {
             if (arg->isConst())
-                return arg->isNumeric() || isNumericPower(*arg);
+                return isNumeric(*arg) || isNumericPower(*arg);
 
             return false;
         }

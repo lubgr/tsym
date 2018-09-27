@@ -98,7 +98,7 @@ namespace tsym {
 #ifdef TSYM_WITH_DEBUG_STRINGS
         /* A member to be accessed by a gdb pretty printing plugin. As the class is immutable,
          * it has to be filled with content during initialization only. */
-        const std::string prettyStr;
+        std::string prettyStr;
 #endif
     };
 

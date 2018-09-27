@@ -40,7 +40,7 @@ namespace tsym {
 
         BasePtrList simplifyNumericBase(const BasePtr& base, const BasePtr& exp)
         {
-            if (exp->isNumeric())
+            if (isNumeric(*exp))
                 return simplifyNumericPower(base, exp);
             else
                 return {base, exp};
@@ -117,7 +117,7 @@ namespace tsym {
 
         bool areTwoFractionExpWithOddDenom(const BasePtr& exp1, const BasePtr& exp2)
         {
-            if (!exp1->isNumeric() || !exp2->isNumeric())
+            if (!isNumeric(*exp1) || !isNumeric(*exp2))
                 return false;
 
             const auto nExp1 = exp1->numericEval();
@@ -133,7 +133,7 @@ namespace tsym {
         {
             if (!base->isNegative())
                 return false;
-            else if (!exp1->isNumeric())
+            else if (!isNumeric(*exp1))
                 return false;
 
             return isEvenInt(*exp1->numericEval());
@@ -195,7 +195,7 @@ namespace tsym {
 
         bool isBaseEulerConstantAndExpLogarithm(const BasePtr& base, const BasePtr& exp)
         {
-            if (base->isEqual(*Constant::createE()) && exp->isFunction())
+            if (base->isEqual(*Constant::createE()) && isFunction(*exp))
                 return exp->isEqual(*Logarithm::create(exp->operands().front()));
             else
                 return false;
@@ -207,15 +207,15 @@ tsym::BasePtrList tsym::simplifyPower(const BasePtr& base, const BasePtr& exp)
 {
     if (doesInvolveComplexNumbers(base, exp))
         return {Undefined::create(), one()};
-    else if (base->isNumeric())
+    else if (isNumeric(*base))
         return simplifyNumericBase(base, exp);
-    else if (base->isPower())
+    else if (isPower(*base))
         return simplifyPowerBase(base, exp);
-    else if (base->isProduct())
+    else if (isProduct(*base))
         return simplifyProductBase(base, exp);
-    else if (base->isUndefined())
+    else if (isUndefined(*base))
         return {Undefined::create(), one()};
-    else if (base->isConstant())
+    else if (isConstant(*base))
         return simplifyConstantBase(base, exp);
     else
         /* No simplification applicable. */

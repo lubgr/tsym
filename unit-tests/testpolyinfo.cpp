@@ -1,6 +1,7 @@
 
 #include <boost/algorithm/cxx11/any_of.hpp>
 #include <boost/range/adaptors.hpp>
+#include "basefct.h"
 #include "fixtures.h"
 #include "numeric.h"
 #include "polyinfo.h"
@@ -147,7 +148,7 @@ BOOST_AUTO_TEST_CASE(failingMainSymbolRequest)
     const BasePtr sum = Sum::create(c, four);
     const auto list = poly::listOfSymbols(*product, *sum);
 
-    BOOST_TEST(poly::mainSymbol(list, *product, *sum)->isUndefined());
+    BOOST_TEST(isUndefined(*poly::mainSymbol(list, *product, *sum)));
 }
 
 BOOST_AUTO_TEST_CASE(mainSymbolOnlyOneCommon)

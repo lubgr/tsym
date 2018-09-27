@@ -41,7 +41,7 @@ tsym::BasePtr tsym::SubresultantGcd::gcd(const BasePtr& u, const BasePtr& v, con
         if (isZero(*remainder)) {
             U = V;
             break;
-        } else if (remainder->isUndefined()) {
+        } else if (isUndefined(*remainder)) {
             TSYM_WARNING("Undefined remainder during subres. gcd computation, return 1.");
             return Numeric::one();
         }

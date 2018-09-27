@@ -1,5 +1,6 @@
 
 #include "numeric.h"
+#include "basefct.h"
 #include "basetypestr.h"
 #include "fraction.h"
 #include "numberfct.h"
@@ -75,7 +76,7 @@ const tsym::BasePtr& tsym::Numeric::mOne()
 
 bool tsym::Numeric::isEqualDifferentBase(const Base& other) const
 {
-    if (other.isNumeric())
+    if (isNumeric(other))
         return number == other.numericEval();
     else
         return false;
@@ -83,7 +84,7 @@ bool tsym::Numeric::isEqualDifferentBase(const Base& other) const
 
 bool tsym::Numeric::sameType(const Base& other) const
 {
-    return other.isNumeric();
+    return isNumeric(other);
 }
 
 std::optional<tsym::Number> tsym::Numeric::numericEval() const

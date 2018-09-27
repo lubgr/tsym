@@ -1,4 +1,5 @@
 
+#include "basefct.h"
 #include "fixtures.h"
 #include "fraction.h"
 #include "power.h"
@@ -56,7 +57,7 @@ BOOST_AUTO_TEST_CASE(cancelZeroDenominator, noLogs())
     const Fraction frac{a, zero};
     const Fraction result = cancel(frac);
 
-    BOOST_TEST(result.num->isUndefined());
+    BOOST_TEST(isUndefined(*result.num));
     BOOST_CHECK_EQUAL(one, result.denom);
 }
 
@@ -65,7 +66,7 @@ BOOST_AUTO_TEST_CASE(evalZeroDenominator, noLogs())
     const Fraction frac{a, zero};
     const BasePtr result = eval(frac);
 
-    BOOST_TEST(result->isUndefined());
+    BOOST_TEST(isUndefined(*result));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

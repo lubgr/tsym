@@ -1,6 +1,7 @@
 
 #include "constant.h"
 #include <cmath>
+#include "basefct.h"
 #include "basetypestr.h"
 #include "fraction.h"
 #include "numeric.h"
@@ -35,7 +36,7 @@ tsym::BasePtr tsym::Constant::create(Type type, Name&& name)
 
 bool tsym::Constant::isEqualDifferentBase(const Base& other) const
 {
-    if (other.isConstant())
+    if (isConstant(other))
         return name() == other.name();
     else
         return false;
@@ -43,7 +44,7 @@ bool tsym::Constant::isEqualDifferentBase(const Base& other) const
 
 bool tsym::Constant::sameType(const Base& other) const
 {
-    return other.isConstant();
+    return isConstant(other);
 }
 
 std::optional<tsym::Number> tsym::Constant::numericEval() const

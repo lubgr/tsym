@@ -25,8 +25,8 @@ tsym::Fraction tsym::PowerNormal::normal() const
 
 bool tsym::PowerNormal::isBaseOrExpUndefined() const
 {
-    return rationalBase.num->isUndefined() || rationalBase.denom->isUndefined() || isZero(*rationalBase.denom)
-      || isZero(*rationalBase.denom->expand()) || rationalExp->isUndefined();
+    return isUndefined(*rationalBase.num) || isUndefined(*rationalBase.denom) || isZero(*rationalBase.denom)
+      || isZero(*rationalBase.denom->expand()) || isUndefined(*rationalExp);
 }
 
 bool tsym::PowerNormal::isRationalExpInteger() const

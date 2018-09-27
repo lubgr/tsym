@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(logOfZero, noLogs())
 
     result = Logarithm::create(zero);
 
-    BOOST_TEST(result->isUndefined());
+    BOOST_TEST(isUndefined(*result));
 }
 
 BOOST_AUTO_TEST_CASE(logOfOne)
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(logOfUndefinedArg, noLogs())
 
     result = Logarithm::create(undefined);
 
-    BOOST_TEST(result->isUndefined());
+    BOOST_TEST(isUndefined(*result));
 }
 
 BOOST_AUTO_TEST_CASE(logOfE)
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(logOfPi)
 {
     const BasePtr result = Logarithm::create(pi);
 
-    BOOST_TEST(result->isFunction());
+    BOOST_TEST(isFunction(*result));
     BOOST_CHECK_EQUAL(pi, result->operands().front());
 }
 
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(logOfRationalNumericArg)
     const BasePtr arg = Numeric::create(5, 7);
     const BasePtr result = Logarithm::create(arg);
 
-    BOOST_TEST(result->isFunction());
+    BOOST_TEST(isFunction(*result));
     BOOST_CHECK_EQUAL(arg, result->operands().front());
 }
 
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(logOfValidNumericallyEvaluable)
     const BasePtr arg = Product::create(two, Power::sqrt(two));
     const BasePtr result = Logarithm::create(arg);
 
-    BOOST_TEST(result->isFunction());
+    BOOST_TEST(isFunction(*result));
     BOOST_CHECK_EQUAL(arg, result->operands().front());
 }
 
@@ -95,7 +95,7 @@ BOOST_AUTO_TEST_CASE(logOfNegativeArgument, noLogs())
 
     log = Logarithm::create(Product::minus(aPos));
 
-    BOOST_TEST(log->isUndefined());
+    BOOST_TEST(isUndefined(*log));
 }
 
 BOOST_AUTO_TEST_CASE(logOfInvalidNumericallyEvaluableEqualZero, noLogs())
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(logOfInvalidNumericallyEvaluableEqualZero, noLogs())
 
     result = Logarithm::create(arg);
 
-    BOOST_TEST(result->isUndefined());
+    BOOST_TEST(isUndefined(*result));
 }
 
 BOOST_AUTO_TEST_CASE(logOfInvalidNumericallyEvaluableLessThanZero, noLogs())
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(logOfInvalidNumericallyEvaluableLessThanZero, noLogs())
 
     result = Logarithm::create(arg);
 
-    BOOST_TEST(result->isUndefined());
+    BOOST_TEST(isUndefined(*result));
 }
 
 BOOST_AUTO_TEST_CASE(logOfExactDoubleEtoThe5)
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(logOfSymbolicSum)
     const BasePtr arg = Sum::create(a, b);
     const BasePtr result = Logarithm::create(arg);
 
-    BOOST_TEST(result->isFunction());
+    BOOST_TEST(isFunction(*result));
     BOOST_CHECK_EQUAL(arg, result->operands().front());
 }
 
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(logOfPowerWithNegEulerBasePosNumericExp, noLogs())
 
     result = Logarithm::create(arg);
 
-    BOOST_TEST(result->isUndefined());
+    BOOST_TEST(isUndefined(*result));
 }
 
 BOOST_AUTO_TEST_CASE(logOfPowerWithEulerBaseNegNumericExp)

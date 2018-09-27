@@ -1,6 +1,7 @@
 
 #include "symbolmap.h"
 #include <boost/range/numeric.hpp>
+#include "basefct.h"
 #include "symbol.h"
 
 const tsym::BasePtr& tsym::SymbolMap::getTmpSymbolAndStore(const BasePtr& ptr)
@@ -16,7 +17,7 @@ tsym::BasePtr tsym::SymbolMap::replaceTmpSymbolsBackFrom(const BasePtr& orig) co
     const BasePtr result = boost::accumulate(
       rep, orig, [](const auto& bp, const auto& entry) { return bp->subst(*entry.second, entry.first); });
 
-    if (result->isUndefined())
+    if (isUndefined(*result))
         /* Catch this in advance to avoid a possible comparison with an Undefined instance: */
         return result;
     else if (result->isDifferent(*orig))

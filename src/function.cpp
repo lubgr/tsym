@@ -1,6 +1,7 @@
 
 #include "function.h"
 #include <boost/functional/hash.hpp>
+#include "basefct.h"
 #include "baseptrlistfct.h"
 #include "basetypestr.h"
 #include "numeric.h"
@@ -20,7 +21,7 @@ bool tsym::Function::isEqualDifferentBase(const Base& other) const
 
 bool tsym::Function::sameType(const Base& other) const
 {
-    return other.isFunction();
+    return isFunction(other);
 }
 
 size_t tsym::Function::hash() const

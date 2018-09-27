@@ -1,4 +1,5 @@
 
+#include "basefct.h"
 #include "fixtures.h"
 #include "number.h"
 #include "tsymtests.h"
@@ -27,7 +28,7 @@ BOOST_AUTO_TEST_CASE(numericTerm)
 
 BOOST_AUTO_TEST_CASE(nonNumericTerm)
 {
-    BOOST_TEST(undefined->nonNumericTerm()->isUndefined());
+    BOOST_TEST(isUndefined(*undefined->nonNumericTerm()));
 }
 
 BOOST_AUTO_TEST_CASE(constTerm)
@@ -37,7 +38,7 @@ BOOST_AUTO_TEST_CASE(constTerm)
 
 BOOST_AUTO_TEST_CASE(nonConstTerm)
 {
-    BOOST_TEST(undefined->nonConstTerm()->isUndefined());
+    BOOST_TEST(isUndefined(*undefined->nonConstTerm()));
 }
 
 BOOST_AUTO_TEST_CASE(numericEvaluation)

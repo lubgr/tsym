@@ -2,6 +2,7 @@
 #include "varfct.h"
 #include <boost/range/algorithm/find.hpp>
 #include <chrono>
+#include "basefct.h"
 #include "constant.h"
 #include "fraction.h"
 #include "logarithm.h"
@@ -39,7 +40,7 @@ namespace tsym {
 
         void collectSymbols(const BasePtr& ptr, std::vector<Var>& symbols)
         {
-            if (ptr->isSymbol())
+            if (isSymbol(*ptr))
                 insertSymbolIfNotPresent(ptr, symbols);
             else
                 for (const auto& operand : ptr->operands())
@@ -134,7 +135,7 @@ tsym::Var tsym::simplify(const Var& arg)
     BasePtr normalizedLast(rep);
     BasePtr normalizedNext(rep->normal());
 
-    if (normalizedNext->isUndefined())
+    if (isUndefined(*normalizedNext))
         return Var(normalizedNext);
 
     while (normalizedNext->isDifferent(*normalizedLast)) {

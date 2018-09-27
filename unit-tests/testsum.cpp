@@ -37,7 +37,7 @@ BOOST_AUTO_TEST_CASE(undefinedToUndefined)
 {
     const BasePtr p = Sum::create(undefined, a);
 
-    BOOST_TEST(p->isUndefined());
+    BOOST_TEST(isUndefined(*p));
 }
 
 BOOST_AUTO_TEST_CASE(createWithOneSummandGivenAsList)
@@ -57,7 +57,7 @@ BOOST_AUTO_TEST_CASE(twoNumericSummands)
 {
     const BasePtr sum = Sum::create(two, three);
 
-    BOOST_TEST(sum->isNumeric());
+    BOOST_TEST(isNumeric(*sum));
     BOOST_CHECK_EQUAL(5, sum->numericEval().value());
 }
 
@@ -98,7 +98,7 @@ BOOST_AUTO_TEST_CASE(rearrangeTwoSymbols)
 {
     const BasePtr res = Sum::create(b, a);
 
-    BOOST_TEST(res->isSum());
+    BOOST_TEST(isSum(*res));
     BOOST_CHECK_EQUAL(a, res->operands().front());
     BOOST_CHECK_EQUAL(b, res->operands().back());
 }
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(rearrangeFiveSymbols)
     const BasePtrList expected{a, b, c, d, e};
     const BasePtrList& summands = res->operands();
 
-    BOOST_TEST(res->isSum());
+    BOOST_TEST(isSum(*res));
 
     BOOST_TEST(expected == summands, per_element());
 }
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(collectSymbols)
     const BasePtr res = Sum::create(a, a);
     const BasePtrList& summands(res->operands());
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
 
     BOOST_CHECK_EQUAL(2, summands.size());
 
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE(collectProducts)
     const BasePtr res = Sum::create(twoAB, threeAB);
     const BasePtrList expected{five, a, b};
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
 
     BOOST_TEST(expected == res->operands(), per_element());
 }
@@ -172,7 +172,7 @@ BOOST_AUTO_TEST_CASE(collectPower)
     const BasePtr res = Sum::create(s1, pow);
     const BasePtrList& factors(res->operands());
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
 
     BOOST_CHECK_EQUAL(2, factors.size());
 
@@ -201,7 +201,7 @@ BOOST_AUTO_TEST_CASE(twoSums)
     const BasePtr res = Sum::create(sum1, sum2);
     const BasePtrList expected{Product::create(two, a), b, c};
 
-    BOOST_TEST(res->isSum());
+    BOOST_TEST(isSum(*res));
 
     BOOST_TEST(expected == res->operands(), per_element());
 }
@@ -214,7 +214,7 @@ BOOST_AUTO_TEST_CASE(sumOfSumAndSymbols)
     const BasePtr res = Sum::create({sum1, e, c});
     const BasePtrList& summands{res->operands()};
 
-    BOOST_TEST(res->isSum());
+    BOOST_TEST(isSum(*res));
 
     BOOST_TEST(expected == summands, per_element());
 }
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE(cancellationOfNumbersInTwoSums)
     const BasePtr sum2 = Sum::create(Numeric::mOne(), b);
     const BasePtr res = Sum::create(sum1, sum2);
 
-    BOOST_TEST(res->isSum());
+    BOOST_TEST(isSum(*res));
 
     BOOST_CHECK_EQUAL(2, res->operands().size());
     BOOST_CHECK_EQUAL(a, res->operands().front());
@@ -238,7 +238,7 @@ BOOST_AUTO_TEST_CASE(simpleCollectionOfNumericPowers)
 {
     const BasePtr res = Sum::create(sqrtTwo, sqrtTwo);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(Product::create(two, sqrtTwo), res);
 }
 
@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE(collectionOfNumericPowers)
 {
     const BasePtr res = Sum::create(Product::create(two, sqrtTwo), sqrtTwo);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(Product::create(three, sqrtTwo), res);
 }
 
@@ -257,7 +257,7 @@ BOOST_AUTO_TEST_CASE(collectionOfNumericPowersInProduct)
     const BasePtr product = Product::create(sqrtTwo, Power::create(three, Numeric::fourth()));
     const BasePtr res = Sum::create(Product::create(two, product), product);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
 
     BOOST_CHECK_EQUAL(Product::create(three, product), res);
 }
@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE(collectNumericPowerProduct)
     const BasePtr sum2 = Sum::create(one, Product::create(two, term));
     const BasePtr res = Sum::create(sum1, sum2);
 
-    BOOST_TEST(res->isSum());
+    BOOST_TEST(isSum(*res));
     BOOST_TEST(res->isConst());
     BOOST_CHECK_EQUAL(expected, res);
 }
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE(collectionOfConstCoeff)
     const BasePtr s2 = Product::create(sqrtThree, a);
     const BasePtr res = Sum::create(s1, s2);
 
-    BOOST_TEST(res->isSum());
+    BOOST_TEST(isSum(*res));
     BOOST_CHECK_EQUAL(s1, res->operands().front());
     BOOST_CHECK_EQUAL(s2, res->operands().back());
 }
@@ -313,7 +313,7 @@ BOOST_AUTO_TEST_CASE(collectionOfPiTimesSymbol)
     const BasePtr res = Sum::create(Product::create(two, piAb), piAb);
     const BasePtr expected = Product::create(three, piAb);
 
-    BOOST_TEST(res->isProduct());
+    BOOST_TEST(isProduct(*res));
     BOOST_CHECK_EQUAL(expected, res);
 }
 
@@ -324,7 +324,7 @@ BOOST_AUTO_TEST_CASE(noCollectionOfPiInDifferentProducts)
     const BasePtr s2 = Product::create(two, pi, a);
     const BasePtr res = Sum::create(s1, s2);
 
-    BOOST_TEST(res->isSum());
+    BOOST_TEST(isSum(*res));
     BOOST_CHECK_EQUAL(s1, res->operands().front());
     BOOST_CHECK_EQUAL(s2, res->operands().back());
 }
@@ -337,7 +337,7 @@ BOOST_AUTO_TEST_CASE(noCollectionOfNumberAndPi)
     const BasePtr s2 = Product::create(pi, ab);
     const BasePtr res = Sum::create(s1, s2);
 
-    BOOST_TEST(res->isSum());
+    BOOST_TEST(isSum(*res));
     BOOST_CHECK_EQUAL(s1, res->operands().front());
     BOOST_CHECK_EQUAL(s2, res->operands().back());
 }
@@ -362,7 +362,7 @@ BOOST_AUTO_TEST_CASE(nonEqualConstTermsWithPi)
     const BasePtr s2 = Product::create(sqrtThree, piAb);
     const BasePtr res = Sum::create(s1, s2);
 
-    BOOST_TEST(res->isSum());
+    BOOST_TEST(isSum(*res));
     BOOST_CHECK_EQUAL(s1, res->operands().front());
     BOOST_CHECK_EQUAL(s2, res->operands().back());
 }
@@ -374,7 +374,7 @@ BOOST_AUTO_TEST_CASE(noCollectionOfPiNumericPowCoeff)
     const BasePtr s2 = Product::create(sqrtThree, pi);
     const BasePtr res = Sum::create(s1, s2);
 
-    BOOST_TEST(res->isSum());
+    BOOST_TEST(isSum(*res));
     BOOST_CHECK_EQUAL(s1, res->operands().front());
     BOOST_CHECK_EQUAL(s2, res->operands().back());
 }
@@ -394,7 +394,7 @@ BOOST_AUTO_TEST_CASE(sumOfEqualFunctionsDifferentArguments)
     const BasePtr sinB = Trigonometric::createSin(b);
     const BasePtr res = Sum::create(sinA, sinB);
 
-    BOOST_TEST(res->isSum());
+    BOOST_TEST(isSum(*res));
     BOOST_CHECK_EQUAL(sinA, res->operands().front());
     BOOST_CHECK_EQUAL(sinB, res->operands().back());
 }
@@ -406,7 +406,7 @@ BOOST_AUTO_TEST_CASE(sumOfLogarithmDifferentArguments)
     const BasePtr logThree = Logarithm::create(three);
     const BasePtr sum = Sum::create(logTwo, logThree);
 
-    BOOST_TEST(sum->isSum());
+    BOOST_TEST(isSum(*sum));
     BOOST_CHECK_EQUAL(logTwo, sum->operands().front());
     BOOST_CHECK_EQUAL(logThree, sum->operands().back());
 }
@@ -418,7 +418,7 @@ BOOST_AUTO_TEST_CASE(sumOfLogarithmNoSimplification)
     const BasePtr minusLogB = Product::minus(Logarithm::create(b));
     const BasePtr sum = Sum::create(logA, minusLogB);
 
-    BOOST_TEST(sum->isSum());
+    BOOST_TEST(isSum(*sum));
     BOOST_CHECK_EQUAL(logA, sum->operands().front());
     BOOST_CHECK_EQUAL(minusLogB, sum->operands().back());
 }
@@ -497,7 +497,7 @@ BOOST_AUTO_TEST_CASE(nonContractableSinCosSquareNonEqualPrefactor)
     const BasePtr s2 = Product::create(two, Power::create(cosA, two));
     const BasePtr result = Sum::create(s1, s2);
 
-    BOOST_TEST(result->isSum());
+    BOOST_TEST(isSum(*result));
     BOOST_CHECK_EQUAL(s2, result->operands().front());
     BOOST_CHECK_EQUAL(s1, result->operands().back());
 }
