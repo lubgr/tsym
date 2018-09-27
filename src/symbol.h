@@ -43,7 +43,7 @@ namespace tsym {
         const Name symbolName;
         const bool positive;
         static unsigned tmpCounter;
-        static constexpr const char* tmpSymbolNamePrefix = "tmp#";
+        static constexpr std::string_view tmpSymbolNamePrefix = "tmp#";
     };
 }
 
