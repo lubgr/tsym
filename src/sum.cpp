@@ -48,11 +48,6 @@ bool tsym::Sum::isEqualDifferentBase(const Base& other) const
     return isEqualByTypeAndOperands(other);
 }
 
-bool tsym::Sum::sameType(const Base& other) const
-{
-    return isSum(other);
-}
-
 std::optional<tsym::Number> tsym::Sum::numericEval() const
 {
     Number result(0);

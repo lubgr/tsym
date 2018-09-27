@@ -66,11 +66,6 @@ bool tsym::Product::isEqualDifferentBase(const Base& other) const
     return isEqualByTypeAndOperands(other);
 }
 
-bool tsym::Product::sameType(const Base& other) const
-{
-    return isProduct(other);
-}
-
 std::optional<tsym::Number> tsym::Product::numericEval() const
 {
     Number result(1);

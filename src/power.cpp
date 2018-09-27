@@ -84,11 +84,6 @@ bool tsym::Power::isEqualDifferentBase(const Base& other) const
     return isEqualByTypeAndOperands(other);
 }
 
-bool tsym::Power::sameType(const Base& other) const
-{
-    return isPower(other);
-}
-
 std::optional<tsym::Number> tsym::Power::numericEval() const
 {
     const auto nExp = expRef->numericEval();

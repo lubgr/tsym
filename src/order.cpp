@@ -38,7 +38,7 @@ namespace tsym {
 
 bool tsym::doPermute(const Base& left, const Base& right)
 {
-    if (left.sameType(right))
+    if (sameType(left, right))
         return doPermuteSameType(left, right);
     else
         return doPermuteDifferentType(left, right);

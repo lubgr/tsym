@@ -13,15 +13,10 @@ tsym::Function::Function(const BasePtrList& args, Name&& name)
 
 bool tsym::Function::isEqualDifferentBase(const Base& other) const
 {
-    if (sameType(other))
+    if (sameType(*this, other))
         return name() == other.name() && areEqual(ops, other.operands());
     else
         return false;
-}
-
-bool tsym::Function::sameType(const Base& other) const
-{
-    return isFunction(other);
 }
 
 size_t tsym::Function::hash() const

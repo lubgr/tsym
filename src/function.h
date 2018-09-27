@@ -16,7 +16,6 @@ namespace tsym {
         Function& operator=(Function&&) = delete;
 
         bool isEqualDifferentBase(const Base& other) const override;
-        bool sameType(const Base& other) const override;
         size_t hash() const override;
 
         bool isConst() const override;

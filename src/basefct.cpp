@@ -83,6 +83,11 @@ bool tsym::isUndefined(const Base& expr)
     return areTypeStrEqual(expr, typestring::undefined);
 }
 
+bool tsym::sameType(const Base& first, const Base& second)
+{
+    return first.typeStr().data() == second.typeStr().data();
+}
+
 bool tsym::isNumericPower(const Base& expr)
 {
     if (isPower(expr))

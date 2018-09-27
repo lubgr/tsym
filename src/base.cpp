@@ -189,7 +189,7 @@ std::string_view tsym::Base::typeStr() const
 
 bool tsym::Base::isEqualByTypeAndOperands(const Base& other) const
 {
-    if (sameType(other))
+    if (sameType(*this, other))
         return areEqual(ops, other.ops);
     else
         return false;

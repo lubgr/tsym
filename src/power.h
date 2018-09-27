@@ -23,7 +23,6 @@ namespace tsym {
         ~Power() override = default;
 
         bool isEqualDifferentBase(const Base& other) const override;
-        bool sameType(const Base& other) const override;
         std::optional<Number> numericEval() const override;
         Fraction normal(SymbolMap& map) const override;
         BasePtr diffWrtSymbol(const Base& symbol) const override;

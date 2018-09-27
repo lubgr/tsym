@@ -33,11 +33,6 @@ bool tsym::Undefined::isEqualDifferentBase(const Base& other) const
     return false;
 }
 
-bool tsym::Undefined::sameType(const Base& other) const
-{
-    return isUndefined(other);
-}
-
 std::optional<tsym::Number> tsym::Undefined::numericEval() const
 {
     return std::nullopt;

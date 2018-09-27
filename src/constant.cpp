@@ -42,11 +42,6 @@ bool tsym::Constant::isEqualDifferentBase(const Base& other) const
         return false;
 }
 
-bool tsym::Constant::sameType(const Base& other) const
-{
-    return isConstant(other);
-}
-
 std::optional<tsym::Number> tsym::Constant::numericEval() const
 {
     switch (type) {

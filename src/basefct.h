@@ -22,6 +22,8 @@ namespace tsym {
     bool isSymbol(const Base& expr);
     bool isUndefined(const Base& expr);
 
+    bool sameType(const Base& first, const Base& second);
+
     bool isNumericPower(const Base& expr);
     bool isFractionNumeric(const Base& arg);
     bool isRationalNumeric(const Base& expr);

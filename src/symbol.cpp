@@ -105,11 +105,6 @@ bool tsym::Symbol::isEqualOtherSymbol(const Base& other) const
         return false;
 }
 
-bool tsym::Symbol::sameType(const Base& other) const
-{
-    return isSymbol(other);
-}
-
 std::optional<tsym::Number> tsym::Symbol::numericEval() const
 {
     return std::nullopt;

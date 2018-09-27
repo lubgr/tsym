@@ -25,7 +25,6 @@ namespace tsym {
         ~Symbol() override;
 
         bool isEqualDifferentBase(const Base& other) const override;
-        bool sameType(const Base& other) const override;
         std::optional<Number> numericEval() const override;
         Fraction normal(SymbolMap&) const override;
         BasePtr diffWrtSymbol(const Base& symbol) const override;
