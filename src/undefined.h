@@ -23,7 +23,6 @@ namespace tsym {
         std::optional<Number> numericEval() const override;
         Fraction normal(SymbolMap&) const override;
         BasePtr diffWrtSymbol(const Base& symbol) const override;
-        std::string_view typeStr() const override;
         bool isPositive() const override;
         bool isNegative() const override;
         unsigned complexity() const override;
@@ -34,8 +33,6 @@ namespace tsym {
         bool has(const Base& other) const override;
         BasePtr subst(const Base& from, const BasePtr& to) const override;
         int degree(const Base& variable) const override;
-
-        bool isUndefined() const override;
     };
 }
 

@@ -41,21 +41,11 @@ namespace tsym {
         virtual std::optional<Number> numericEval() const = 0;
         virtual Fraction normal(SymbolMap& map) const = 0;
         virtual BasePtr diffWrtSymbol(const Base& symbol) const = 0;
-        virtual std::string_view typeStr() const = 0;
         /* If unclear or zero, the following two methods shall return false: */
         virtual bool isPositive() const = 0;
         virtual bool isNegative() const = 0;
         virtual unsigned complexity() const = 0;
         virtual size_t hash() const = 0;
-
-        virtual bool isUndefined() const;
-        virtual bool isSymbol() const;
-        virtual bool isNumeric() const;
-        virtual bool isPower() const;
-        virtual bool isSum() const;
-        virtual bool isProduct() const;
-        virtual bool isFunction() const;
-        virtual bool isConstant() const;
 
         virtual bool isEqual(const Base& other) const;
         virtual bool isDifferent(const Base& other) const;
@@ -84,10 +74,11 @@ namespace tsym {
         BasePtr normal() const;
         BasePtr diff(const Base& symbol) const;
         const BasePtrList& operands() const;
+        std::string_view typeStr() const;
 
       protected:
-        Base() = default;
-        explicit Base(BasePtrList operands);
+        explicit Base(const char* typeString);
+        Base(const char* typeString, BasePtrList operands);
 
         bool isEqualByTypeAndOperands(const Base& other) const;
         void setDebugString();
@@ -102,10 +93,12 @@ namespace tsym {
         BasePtr normalViaCache() const;
         BasePtr normalWithoutCache() const;
 
+        const std::string_view typeString;
+
 #ifdef TSYM_WITH_DEBUG_STRINGS
         /* A member to be accessed by a gdb pretty printing plugin. As the class is immutable,
          * it has to be filled with content during initialization only. */
-        std::string prettyStr;
+        const std::string prettyStr;
 #endif
     };
 

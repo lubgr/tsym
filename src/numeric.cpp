@@ -1,11 +1,13 @@
 
 #include "numeric.h"
+#include "basetypestr.h"
 #include "fraction.h"
 #include "numberfct.h"
 #include "symbolmap.h"
 
 tsym::Numeric::Numeric(Number&& number, Base::CtorKey&&)
-    : number(std::move(number))
+    : Base(typestring::numeric)
+    , number(std::move(number))
 {
     setDebugString();
 }
@@ -102,11 +104,6 @@ tsym::BasePtr tsym::Numeric::diffWrtSymbol(const Base&) const
     return zero();
 }
 
-std::string_view tsym::Numeric::typeStr() const
-{
-    return "Numeric";
-}
-
 bool tsym::Numeric::isPositive() const
 {
     return number > 0;
@@ -130,11 +127,6 @@ unsigned tsym::Numeric::complexity() const
         return 2;
     else
         return 3;
-}
-
-bool tsym::Numeric::isNumeric() const
-{
-    return true;
 }
 
 bool tsym::Numeric::isConst() const

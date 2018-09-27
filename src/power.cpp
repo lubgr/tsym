@@ -5,6 +5,7 @@
 #include <limits>
 #include "basefct.h"
 #include "baseptrlistfct.h"
+#include "basetypestr.h"
 #include "logarithm.h"
 #include "logging.h"
 #include "numberfct.h"
@@ -16,7 +17,7 @@
 #include "undefined.h"
 
 tsym::Power::Power(const BasePtr& base, const BasePtr& exponent, Base::CtorKey&&)
-    : Base({base, exponent})
+    : Base(typestring::power, {base, exponent})
     , baseRef(ops.front())
     , expRef(ops.back())
 {
@@ -114,11 +115,6 @@ tsym::BasePtr tsym::Power::diffWrtSymbol(const Base& symbol) const
     return Product::create(clone(), Sum::create(summands));
 }
 
-std::string_view tsym::Power::typeStr() const
-{
-    return "Power";
-}
-
 bool tsym::Power::isPositive() const
 {
     if (baseRef->isPositive())
@@ -144,11 +140,6 @@ size_t tsym::Power::hash() const
 unsigned tsym::Power::complexity() const
 {
     return 5 + baseRef->complexity() + 2 * expRef->complexity();
-}
-
-bool tsym::Power::isPower() const
-{
-    return true;
 }
 
 tsym::BasePtr tsym::Power::expand() const

@@ -33,6 +33,55 @@ bool tsym::isZero(const Base& expr)
     return expr.isNumeric() && isEqual<0>(expr);
 }
 
+namespace tsym {
+    namespace {
+        bool areTypeStrEqual(const Base& expr, const char* predefinedTyepStr)
+        {
+            return expr.typeStr().data() == predefinedTyepStr;
+        }
+    }
+}
+
+bool tsym::isConstant(const Base& expr)
+{
+    return areTypeStrEqual(expr, typestring::constant);
+}
+
+bool tsym::isFunction(const Base& expr)
+{
+    return areTypeStrEqual(expr, typestring::function);
+}
+
+bool tsym::isNumeric(const Base& expr)
+{
+    return areTypeStrEqual(expr, typestring::numeric);
+}
+
+bool tsym::isPower(const Base& expr)
+{
+    return areTypeStrEqual(expr, typestring::power);
+}
+
+bool tsym::isProduct(const Base& expr)
+{
+    return areTypeStrEqual(expr, typestring::product);
+}
+
+bool tsym::isSum(const Base& expr)
+{
+    return areTypeStrEqual(expr, typestring::sum);
+}
+
+bool tsym::isSymbol(const Base& expr)
+{
+    return areTypeStrEqual(expr, typestring::symbol);
+}
+
+bool tsym::isUndefined(const Base& expr)
+{
+    return areTypeStrEqual(expr, typestring::undefined);
+}
+
 bool tsym::isNumericPower(const Base& expr)
 {
     if (expr.isPower())

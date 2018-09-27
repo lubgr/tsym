@@ -5,6 +5,7 @@
 #include <limits>
 #include "basefct.h"
 #include "baseptrlistfct.h"
+#include "basetypestr.h"
 #include "fraction.h"
 #include "numberfct.h"
 #include "numeric.h"
@@ -15,7 +16,7 @@
 #include "undefined.h"
 
 tsym::Sum::Sum(const BasePtrList& summands, Base::CtorKey&&)
-    : Base(summands)
+    : Base(typestring::sum, summands)
 {
     setDebugString();
 }
@@ -113,11 +114,6 @@ tsym::BasePtr tsym::Sum::diffWrtSymbol(const Base& symbol) const
     return create(derivedSummands);
 }
 
-std::string_view tsym::Sum::typeStr() const
-{
-    return "Sum";
-}
-
 bool tsym::Sum::isPositive() const
 {
     if (const auto num = numericEval())
@@ -186,11 +182,6 @@ int tsym::Sum::signOfSymbolicParts() const
             return 0;
 
     return symbolicSign;
-}
-
-bool tsym::Sum::isSum() const
-{
-    return true;
 }
 
 tsym::BasePtr tsym::Sum::expand() const

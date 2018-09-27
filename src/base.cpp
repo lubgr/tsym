@@ -6,6 +6,7 @@
 #include <utility>
 #include "baseptr.h"
 #include "baseptrlistfct.h"
+#include "basetypestr.h"
 #include "cache.h"
 #include "fraction.h"
 #include "logging.h"
@@ -17,49 +18,14 @@
 #include "symbolmap.h"
 #include "undefined.h"
 
-tsym::Base::Base(BasePtrList operands)
-    : ops(std::move(operands))
+tsym::Base::Base(const char* typeString)
+    : Base(typeString, {})
 {}
 
-bool tsym::Base::isUndefined() const
-{
-    return false;
-}
-
-bool tsym::Base::isSymbol() const
-{
-    return false;
-}
-
-bool tsym::Base::isNumeric() const
-{
-    return false;
-}
-
-bool tsym::Base::isPower() const
-{
-    return false;
-}
-
-bool tsym::Base::isSum() const
-{
-    return false;
-}
-
-bool tsym::Base::isProduct() const
-{
-    return false;
-}
-
-bool tsym::Base::isFunction() const
-{
-    return false;
-}
-
-bool tsym::Base::isConstant() const
-{
-    return false;
-}
+tsym::Base::Base(const char* typeString, BasePtrList operands)
+    : ops(std::move(operands))
+    , typeString(typeString)
+{}
 
 bool tsym::Base::isEqual(const Base& other) const
 {
@@ -213,6 +179,11 @@ tsym::BasePtr tsym::Base::diff(const Base& symbol) const
 const tsym::BasePtrList& tsym::Base::operands() const
 {
     return ops;
+}
+
+std::string_view tsym::Base::typeStr() const
+{
+    return typeString;
 }
 
 bool tsym::Base::isEqualByTypeAndOperands(const Base& other) const

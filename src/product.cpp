@@ -5,6 +5,7 @@
 #include <vector>
 #include "basefct.h"
 #include "baseptrlistfct.h"
+#include "basetypestr.h"
 #include "fraction.h"
 #include "power.h"
 #include "productsimpl.h"
@@ -13,7 +14,7 @@
 #include "undefined.h"
 
 tsym::Product::Product(const BasePtrList& factors, Base::CtorKey&&)
-    : Base(factors)
+    : Base(typestring::product, factors)
 {
     setDebugString();
 }
@@ -124,11 +125,6 @@ tsym::BasePtr tsym::Product::diffWrtSymbol(const Base& symbol) const
     return Sum::create(derivedSummands);
 }
 
-std::string_view tsym::Product::typeStr() const
-{
-    return "Product";
-}
-
 bool tsym::Product::isPositive() const
 {
     return sign() == 1;
@@ -162,11 +158,6 @@ int tsym::Product::sign() const
             return 0;
 
     return result;
-}
-
-bool tsym::Product::isProduct() const
-{
-    return true;
 }
 
 tsym::BasePtr tsym::Product::numericTerm() const

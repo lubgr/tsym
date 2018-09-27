@@ -1,11 +1,13 @@
 
 #include "undefined.h"
 #include <cassert>
+#include "basetypestr.h"
 #include "fraction.h"
 #include "logging.h"
 #include "numeric.h"
 
 tsym::Undefined::Undefined(Base::CtorKey&&)
+    : Base(typestring::undefined)
 {
     setDebugString();
 }
@@ -50,11 +52,6 @@ tsym::BasePtr tsym::Undefined::diffWrtSymbol(const Base&) const
     return clone();
 }
 
-std::string_view tsym::Undefined::typeStr() const
-{
-    return "Undefined";
-}
-
 bool tsym::Undefined::isPositive() const
 {
     return false;
@@ -68,11 +65,6 @@ bool tsym::Undefined::isNegative() const
 size_t tsym::Undefined::hash() const
 {
     return 1;
-}
-
-bool tsym::Undefined::isUndefined() const
-{
-    return true;
 }
 
 bool tsym::Undefined::isDifferent(const Base& other) const

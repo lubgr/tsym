@@ -17,11 +17,9 @@ namespace tsym {
 
         bool isEqualDifferentBase(const Base& other) const override;
         bool sameType(const Base& other) const override;
-        std::string_view typeStr() const override;
         size_t hash() const override;
 
         bool isConst() const override;
-        bool isFunction() const override;
         BasePtr constTerm() const override;
         BasePtr nonConstTerm() const override;
         const Name& name() const override;

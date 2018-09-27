@@ -2,10 +2,11 @@
 #include "function.h"
 #include <boost/functional/hash.hpp>
 #include "baseptrlistfct.h"
+#include "basetypestr.h"
 #include "numeric.h"
 
 tsym::Function::Function(const BasePtrList& args, Name&& name)
-    : Base(args)
+    : Base(typestring::function, args)
     , functionName{std::move(name)}
 {}
 
@@ -22,11 +23,6 @@ bool tsym::Function::sameType(const Base& other) const
     return other.isFunction();
 }
 
-std::string_view tsym::Function::typeStr() const
-{
-    return "Function";
-}
-
 size_t tsym::Function::hash() const
 {
     size_t seed = 0;
@@ -35,11 +31,6 @@ size_t tsym::Function::hash() const
     boost::hash_combine(seed, ops);
 
     return seed;
-}
-
-bool tsym::Function::isFunction() const
-{
-    return true;
 }
 
 tsym::BasePtr tsym::Function::constTerm() const

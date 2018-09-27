@@ -3,6 +3,7 @@
 #include <boost/functional/hash.hpp>
 #include <unordered_map>
 #include <utility>
+#include "basetypestr.h"
 #include "cache.h"
 #include "fraction.h"
 #include "logging.h"
@@ -12,14 +13,16 @@
 unsigned tsym::Symbol::tmpCounter = 0;
 
 tsym::Symbol::Symbol(Name name, bool positive, Base::CtorKey&&)
-    : symbolName{std::move(name)}
+    : Base(typestring::symbol)
+    , symbolName{std::move(name)}
     , positive(positive)
 {
     setDebugString();
 }
 
 tsym::Symbol::Symbol(unsigned tmpId, bool positive, Base::CtorKey&&)
-    : symbolName{std::string(tmpSymbolNamePrefix) + std::to_string(tmpId)}
+    : Base(typestring::symbol)
+    , symbolName{std::string(tmpSymbolNamePrefix) + std::to_string(tmpId)}
     , positive(positive)
 {
     setDebugString();
@@ -121,11 +124,6 @@ tsym::BasePtr tsym::Symbol::diffWrtSymbol(const Base& symbol) const
     return isEqual(symbol) ? Numeric::one() : Numeric::zero();
 }
 
-std::string_view tsym::Symbol::typeStr() const
-{
-    return "Symbol";
-}
-
 bool tsym::Symbol::isPositive() const
 {
     return positive;
@@ -149,11 +147,6 @@ size_t tsym::Symbol::hash() const
 unsigned tsym::Symbol::complexity() const
 {
     return 5;
-}
-
-bool tsym::Symbol::isSymbol() const
-{
-    return true;
 }
 
 const tsym::Name& tsym::Symbol::name() const

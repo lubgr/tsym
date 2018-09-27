@@ -47,13 +47,11 @@ namespace tsym {
         std::optional<Number> numericEval() const override;
         Fraction normal(SymbolMap& map) const override;
         BasePtr diffWrtSymbol(const Base& symbol) const override;
-        std::string_view typeStr() const override;
         bool isPositive() const override;
         bool isNegative() const override;
         unsigned complexity() const override;
         size_t hash() const override;
 
-        bool isNumeric() const override;
         bool isConst() const override;
         BasePtr numericTerm() const override;
         BasePtr nonNumericTerm() const override;

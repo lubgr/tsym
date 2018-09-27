@@ -13,6 +13,15 @@ namespace tsym {
     bool isOne(const Base& expr);
     bool isZero(const Base& expr);
 
+    bool isConstant(const Base& expr);
+    bool isFunction(const Base& expr);
+    bool isNumeric(const Base& expr);
+    bool isPower(const Base& expr);
+    bool isProduct(const Base& expr);
+    bool isSum(const Base& expr);
+    bool isSymbol(const Base& expr);
+    bool isUndefined(const Base& expr);
+
     bool isNumericPower(const Base& expr);
     bool isFractionNumeric(const Base& arg);
     bool isRationalNumeric(const Base& expr);

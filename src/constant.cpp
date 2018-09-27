@@ -1,12 +1,14 @@
 
 #include "constant.h"
 #include <cmath>
+#include "basetypestr.h"
 #include "fraction.h"
 #include "numeric.h"
 #include "symbolmap.h"
 
 tsym::Constant::Constant(Type type, Name&& name, Base::CtorKey&&)
-    : type(type)
+    : Base(typestring::constant)
+    , type(type)
     , constantName{std::move(name)}
 {
     setDebugString();
@@ -68,11 +70,6 @@ tsym::BasePtr tsym::Constant::diffWrtSymbol(const Base&) const
     return Numeric::zero();
 }
 
-std::string_view tsym::Constant::typeStr() const
-{
-    return "Constant";
-}
-
 bool tsym::Constant::isPositive() const
 {
     return true;
@@ -93,11 +90,6 @@ size_t tsym::Constant::hash() const
 unsigned tsym::Constant::complexity() const
 {
     return 4;
-}
-
-bool tsym::Constant::isConstant() const
-{
-    return true;
 }
 
 const tsym::Name& tsym::Constant::name() const
