@@ -14,7 +14,7 @@
 #include "undefined.h"
 
 tsym::Product::Product(const BasePtrList& factors, Base::CtorKey&&)
-    : Base(typestring::product, factors)
+    : Base(typestring::product, std::move(factors))
 {
     setDebugString();
 }
