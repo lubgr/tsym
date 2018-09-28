@@ -13,7 +13,6 @@ add_library(tsym
     baseptr.cpp
     baseptrlist.cpp
     baseptrlistfct.cpp
-    basetypestr.cpp
     cache.cpp
     constant.cpp
     fraction.cpp
