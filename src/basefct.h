@@ -28,7 +28,7 @@ namespace tsym {
     bool isFractionNumeric(const Base& arg);
     bool isRationalNumeric(const Base& expr);
     bool isDoubleNumeric(const Base& expr);
-    bool isNegativeNumeric(const Base& ptr);
+    bool isNegativeNumeric(const Base& expr);
 }
 
 #endif

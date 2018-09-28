@@ -88,7 +88,7 @@ tsym::NumTrigoSimpl::NumTrigoSimpl(BasePtr arg)
 tsym::NumTrigoSimpl::NumTrigoSimpl(BasePtr arg, Trigonometric::Type type)
     : type(type)
     , origArg(arg)
-    , arg(arg)
+    , arg(std::move(arg))
 {
     assert(arg->numericEval());
 }
