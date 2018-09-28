@@ -26,7 +26,7 @@ namespace tsym {
 
 bool tsym::isOne(const Base& expr)
 {
-    return isNumeric(expr) && isEqual<0>(expr);
+    return isNumeric(expr) && isEqual<1>(expr);
 }
 
 bool tsym::isZero(const Base& expr)
