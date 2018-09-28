@@ -81,14 +81,14 @@ namespace tsym {
     }
 }
 
-tsym::NumTrigoSimpl::NumTrigoSimpl(BasePtr arg)
-    : NumTrigoSimpl(std::move(arg), Trigonometric::Type::SIN)
+tsym::NumTrigoSimpl::NumTrigoSimpl(const BasePtr& arg)
+    : NumTrigoSimpl(arg, Trigonometric::Type::SIN)
 {}
 
-tsym::NumTrigoSimpl::NumTrigoSimpl(BasePtr arg, Trigonometric::Type type)
+tsym::NumTrigoSimpl::NumTrigoSimpl(const BasePtr& arg, Trigonometric::Type type)
     : type(type)
     , origArg(arg)
-    , arg(std::move(arg))
+    , arg(arg)
 {
     assert(arg->numericEval());
 }

@@ -21,8 +21,8 @@ namespace tsym {
      * Everything else is not simplified. */
     class NumTrigoSimpl {
       public:
-        explicit NumTrigoSimpl(BasePtr arg);
-        NumTrigoSimpl(BasePtr arg, Trigonometric::Type type);
+        explicit NumTrigoSimpl(const BasePtr& arg);
+        NumTrigoSimpl(const BasePtr& arg, Trigonometric::Type type);
 
         std::optional<BasePtr> simplify();
 
