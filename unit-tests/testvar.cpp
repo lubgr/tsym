@@ -6,13 +6,14 @@
 #include <unordered_map>
 #include "base.h"
 #include "baseptr.h"
+#include "constants.h"
 #include "fixtures.h"
+#include "functions.h"
 #include "name.h"
 #include "number.h"
 #include "numeric.h"
 #include "tsymtests.h"
 #include "var.h"
-#include "varfct.h"
 
 using namespace tsym;
 

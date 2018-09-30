@@ -1,5 +1,5 @@
-#ifndef TSYM_VARFCT_H
-#define TSYM_VARFCT_H
+#ifndef TSYM_FCT_H
+#define TSYM_FCT_H
 
 #include <optional>
 #include <string>
@@ -23,9 +23,6 @@ namespace tsym {
     Var acos(const Var& arg);
     Var atan(const Var& arg);
     Var atan2(const Var& y, const Var& x);
-
-    const Var& pi();
-    const Var& euler();
 
     Var subst(const Var& arg, const Var& from, const Var& to);
     Var expand(const Var& arg);

@@ -1,5 +1,5 @@
 
-#include "varfct.h"
+#include "functions.h"
 #include <boost/range/algorithm/find.hpp>
 #include <chrono>
 #include "basefct.h"
@@ -99,20 +99,6 @@ tsym::Var tsym::atan(const Var& arg)
 tsym::Var tsym::atan2(const Var& y, const Var& x)
 {
     return Var(Trigonometric::createAtan2(y.get(), x.get()));
-}
-
-const tsym::Var& tsym::pi()
-{
-    static const tsym::Var instance(Constant::createPi());
-
-    return instance;
-}
-
-const tsym::Var& tsym::euler()
-{
-    static const tsym::Var instance(Constant::createE());
-
-    return instance;
 }
 
 tsym::Var tsym::subst(const Var& arg, const Var& from, const Var& to)

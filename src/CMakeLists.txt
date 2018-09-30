@@ -16,8 +16,10 @@ add_library(tsym
     basetypestr.cpp
     cache.cpp
     constant.cpp
+    constants.cpp
     fraction.cpp
     function.cpp
+    functions.cpp
     gcd.cpp
     int.cpp
     logarithm.cpp
@@ -51,7 +53,6 @@ add_library(tsym
     trigonometric.cpp
     undefined.cpp
     var.cpp
-    varfct.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/version.cpp)
 
 target_link_libraries(tsym PRIVATE tsym-internal-config)

@@ -12,6 +12,7 @@ add_executable(tests EXCLUDE_FROM_ALL
     testdiff.cpp
     testexpansion.cpp
     testfraction.cpp
+    testfunctions.cpp
     testgcd.cpp
     testhas.cpp
     testhash.cpp
@@ -47,7 +48,6 @@ add_executable(tests EXCLUDE_FROM_ALL
     testtrigonometric.cpp
     testundefined.cpp
     testvar.cpp
-    testvarfct.cpp
     tsymtests.cpp)
 
 target_include_directories(tests

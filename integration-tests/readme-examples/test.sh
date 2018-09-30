@@ -31,7 +31,7 @@ awk \
         grep -v 'boost::numeric\|std::array' |\
         sed 's/#include *[<\"][^>\"]*[>\"]//g' |\
         while read -r line; do
-            echo '#include "tsym/tsym.h"' > "${EXAMPLE_CODE}"
+            echo '#include "tsym/all.h"' > "${EXAMPLE_CODE}"
             echo '#include <iostream>' >> "${EXAMPLE_CODE}"
             echo 'int main(int, char**) {' >> "${EXAMPLE_CODE}"
             echo "${line}" >> "${EXAMPLE_CODE}"

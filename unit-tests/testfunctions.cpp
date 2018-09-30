@@ -1,9 +1,10 @@
 
 #include <cmath>
+#include "constants.h"
 #include "fixtures.h"
+#include "functions.h"
 #include "number.h"
 #include "tsymtests.h"
-#include "varfct.h"
 
 using namespace tsym;
 
