@@ -1,29 +1,34 @@
 
+#include "power.h"
 #include <cassert>
 #include <cmath>
 #include <limits>
-#include "power.h"
-#include "numeric.h"
-#include "powersimpl.h"
-#include "logging.h"
+#include "basefct.h"
+#include "baseptrlistfct.h"
+#include "basetypestr.h"
 #include "logarithm.h"
+#include "logging.h"
+#include "numberfct.h"
+#include "numeric.h"
+#include "powernormal.h"
+#include "powersimpl.h"
 #include "product.h"
 #include "sum.h"
-#include "powernormal.h"
+#include "undefined.h"
 
-tsym::Power::Power(const BasePtr& base, const BasePtr& exponent) :
-    Base(BasePtrList(base, exponent)),
-    baseRef(ops.front()),
-    expRef(ops.back())
+tsym::Power::Power(const BasePtr& base, const BasePtr& exponent, Base::CtorKey&&)
+    : Base(typestring::power, {base, exponent})
+    , baseRef(ops.front())
+    , expRef(ops.back())
 {
     assert(ops.size() == 2);
-}
 
-tsym::Power::~Power() {}
+    setDebugString();
+}
 
 tsym::BasePtr tsym::Power::create(const BasePtr& base, const BasePtr& exponent)
 {
-    if (exponent->isUndefined() || base->isUndefined())
+    if (isUndefined(*exponent) || isUndefined(*base))
         return Undefined::create();
 
     return createNotUndefined(base, exponent);
@@ -36,145 +41,130 @@ tsym::BasePtr tsym::Power::oneOver(const BasePtr& base)
 
 tsym::BasePtr tsym::Power::sqrt(const BasePtr& base)
 {
-    return create(base, Numeric::create(1, 2));
+    return create(base, Numeric::half());
 }
 
 tsym::BasePtr tsym::Power::createNotUndefined(const BasePtr& base, const BasePtr& exponent)
 {
     /* Handle trivial cases first. */
-    if (exponent->isZero() || base->isOne())
+    if (isZero(*exponent) || isOne(*base))
         return Numeric::one();
-    else if (base->isZero() && isNumericLessThanZero(exponent)) {
-        logging::warning() << "Division by zero during Power creation!";
+    else if (isZero(*base) && exponent->isNegative()) {
+        TSYM_WARNING("Division by zero during Power creation!");
         return Undefined::create();
-    } else if (base->isZero())
+    } else if (isZero(*base))
         return Numeric::zero();
-    else if (exponent->isOne())
+    else if (isOne(*exponent))
         return base;
 
     return createNonTrivial(base, exponent);
 }
 
-bool tsym::Power::isNumericLessThanZero(const BasePtr& ptr)
-{
-    return ptr->isNumeric() && ptr->numericEval() < 0;
-}
-
 tsym::BasePtr tsym::Power::createNonTrivial(const BasePtr& base, const BasePtr& exponent)
 {
-    PowerSimpl simpl;
-    BasePtrList res;
-
-    res = simpl.simplify(base, exponent);
+    const auto res = simplifyPower(base, exponent);
 
     if (res.size() != 2) {
-        logging::error() << "Obtained wrong list from PowerSimpl: " << res << ". Return Undefined.";
+        TSYM_ERROR("Obtained wrong list from powersimpl: %S. Return Undefined", res);
         return Undefined::create();
     }
 
     /* Handle trivial cases again. */
-    if (res.back()->isOne())
+    if (isOne(*res.back()))
         return res.front();
-    else if (res.front()->isOne())
+    else if (isOne(*res.front()))
         /* Will probably never be the case, just a security check. */
         return Numeric::one();
 
-    return BasePtr(new Power(res.front(), res.back()));
+    return std::make_shared<const Power>(res.front(), res.back(), Base::CtorKey{});
 }
 
-bool tsym::Power::isEqual(const BasePtr& other) const
+bool tsym::Power::isEqualDifferentBase(const Base& other) const
 {
     return isEqualByTypeAndOperands(other);
 }
 
-bool tsym::Power::sameType(const BasePtr& other) const
+std::optional<tsym::Number> tsym::Power::numericEval() const
 {
-    return other->isPower();
-}
+    const auto nExp = expRef->numericEval();
+    const auto res = baseRef->numericEval();
 
-tsym::Number tsym::Power::numericEval() const
-    /* If base or exponent can't be numerically evaluated, they will return an undefined Number and
-     * the result will be undefined, too. */
-{
-    Number nExp;
-    Number res;
+    if (nExp && res)
+        return res->toThe(*nExp);
 
-    nExp = expRef->numericEval();
-    res = baseRef->numericEval();
-    res = res.toThe(nExp);
-
-    return res;
+    return std::nullopt;
 }
 
 tsym::Fraction tsym::Power::normal(SymbolMap& map) const
 {
-    PowerNormal pn(map);
-
-    pn.setBase(baseRef);
-    pn.setExponent(expRef);
+    const PowerNormal pn(*baseRef, *expRef, map);
 
     return pn.normal();
 }
 
-tsym::BasePtr tsym::Power::diffWrtSymbol(const BasePtr& symbol) const
+tsym::BasePtr tsym::Power::diffWrtSymbol(const Base& symbol) const
 {
-    BasePtrList summands;
-
-    summands.push_back(Product::create(Logarithm::create(baseRef), expRef->diffWrtSymbol(symbol)));
-    summands.push_back(Product::create(expRef, oneOver(baseRef), baseRef->diffWrtSymbol(symbol)));
+    const BasePtrList summands{Product::create(Logarithm::create(baseRef), expRef->diffWrtSymbol(symbol)),
+      Product::create(expRef, oneOver(baseRef), baseRef->diffWrtSymbol(symbol))};
 
     return Product::create(clone(), Sum::create(summands));
 }
 
-std::string tsym::Power::typeStr() const
+bool tsym::Power::isPositive() const
 {
-    return "Power";
+    if (baseRef->isPositive())
+        return true;
+    else if (const auto num = expRef->numericEval())
+        return num->isRational() && num->numerator() % 2 == 0;
+    else
+        return false;
 }
 
-bool tsym::Power::isPower() const
+bool tsym::Power::isNegative() const
 {
-    return true;
+    /* Currently, negative powers are always resolved as e.g. (-a)^(1/3) = (-1)*a^(1/3) for product
+     * bases or (-2)^(1/3) = (-1)*2^(1/3) for numeric powers. */
+    return false;
 }
 
-bool tsym::Power::isNumericPower() const
+size_t tsym::Power::hash() const
 {
-    return baseRef->isNumeric() && expRef->isNumeric();
+    return std::hash<BasePtrList>{}(ops);
+}
+
+unsigned tsym::Power::complexity() const
+{
+    return 5 + baseRef->complexity() + 2 * expRef->complexity();
 }
 
 tsym::BasePtr tsym::Power::expand() const
 {
-    if (isInteger(expRef))
+    if (isInteger(*expRef))
         return expandIntegerExponent();
     else
         return clone();
 }
 
-bool tsym::Power::isInteger(const BasePtr& ptr) const
-{
-    return ptr->isNumeric() && ptr->numericEval().isInt();
-}
-
 tsym::BasePtr tsym::Power::expandIntegerExponent() const
 {
-    if (baseRef->isSum())
+    if (isSum(*baseRef))
         return expandSumBaseIntExp();
-    else if (baseRef->isProduct() || baseRef->isPower())
-        /* Should have been resolved during standard power simplification. */
-        logging::error() << "Illegal power expression, base: " << baseRef << ", exp.: " << expRef;
+    else if (isProduct(*baseRef))
+        /* Should have been resolved during standard product simplification. */
+        TSYM_ERROR("Illegal power expression, base: %S, exponent: %S.", baseRef, expRef);
 
     return Power::create(baseRef, expRef);
 }
 
 tsym::BasePtr tsym::Power::expandSumBaseIntExp() const
 {
-    const Int nExp(expRef->numericEval().numerator());
+    const Int nExp(expRef->numericEval()->numerator());
     BasePtrList sums;
-    BasePtr res;
 
-    for (Int i(0); i < nExp.abs(); ++i)
+    for (Int i(0); i < abs(nExp); ++i)
         sums.push_back(baseRef);
 
-    res = sums.expandAsProduct();
+    auto res = expandAsProduct(sums);
 
     if (nExp < 0)
         res = Power::oneOver(res);
@@ -182,7 +172,7 @@ tsym::BasePtr tsym::Power::expandSumBaseIntExp() const
     return res;
 }
 
-tsym::BasePtr tsym::Power::subst(const BasePtr& from, const BasePtr& to) const
+tsym::BasePtr tsym::Power::subst(const Base& from, const BasePtr& to) const
 {
     if (isEqual(from))
         return to;
@@ -190,11 +180,11 @@ tsym::BasePtr tsym::Power::subst(const BasePtr& from, const BasePtr& to) const
         return create(baseRef->subst(from, to), expRef->subst(from, to));
 }
 
-tsym::BasePtr tsym::Power::coeff(const BasePtr& variable, int exp) const
+tsym::BasePtr tsym::Power::coeff(const Base& variable, int exp) const
 {
     if (isEqual(variable))
         return exp == 1 ? Numeric::one() : Numeric::zero();
-    else if (isEqual(create(variable, Numeric::create(exp))))
+    else if (isEqual(*create(variable.clone(), Numeric::create(exp))))
         /* We won't get here for an exp < 2, otherwise *this wasn't a Power. */
         return Numeric::one();
     else if (!baseRef->isEqual(variable))
@@ -203,24 +193,25 @@ tsym::BasePtr tsym::Power::coeff(const BasePtr& variable, int exp) const
         return Numeric::zero();
 }
 
-int tsym::Power::degree(const BasePtr& variable) const
+int tsym::Power::degree(const Base& variable) const
 {
-    int baseDegree;
     Int nExp;
 
     if (isEqual(variable))
         return 1;
-    else if (isInteger(expRef))
-        nExp = expRef->numericEval().numerator();
+    else if (isInteger(*expRef))
+        nExp = expRef->numericEval()->numerator();
 
-    baseDegree = baseRef->degree(variable);
+    const int baseDegree = baseRef->degree(variable);
 
-    if (nExp.fitsIntoInt() && nExp.toDouble() < std::numeric_limits<int>::max()/(double)baseDegree
-            && nExp.toDouble() > std::numeric_limits<int>::min()/(double)baseDegree)
-        return nExp.toInt()*baseDegree;
+    if (baseDegree == 0)
+        return 0;
+    else if (fitsInto<int>(nExp)
+      && static_cast<double>(nExp) < std::numeric_limits<int>::max() / static_cast<double>(baseDegree)
+      && static_cast<double>(nExp) > std::numeric_limits<int>::min() / static_cast<double>(baseDegree))
+        return static_cast<int>(nExp) * baseDegree;
 
-    logging::error() << "Degree of " << clone() <<
-        " doens't fit into a primitive integer! Return 0 as degree.";
+    TSYM_ERROR("Degree of %S doens't fit into a primitive integer! Return 0 as degree.", clone());
 
     return 0;
 }

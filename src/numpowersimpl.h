@@ -2,6 +2,7 @@
 #define TSYM_NUMPOWERSIMPL_H
 
 #include "number.h"
+#include "options.h"
 #include "primefac.h"
 
 namespace tsym {
@@ -27,58 +28,49 @@ namespace tsym {
          * The components can be obtained via getter methods, where the representation of a simple
          * resulting number n (in case the power could be resolved to a number, e.g. 4^(1/2) = 2) is
          * 1*n^1. */
-        public:
-            NumPowerSimpl();
+      public:
+        struct Payload {
+            Number base;
+            Number exp;
+            Number preFactor{1};
+        };
 
-            void setPower(const Number& base, const Number& exp);
-            /* The prefactor is one when not specified: */
-            void setPreFac(const Number& fac);
-            static void setMaxPrimeResolution(const Int& max);
+        explicit NumPowerSimpl(Payload data);
+        NumPowerSimpl(Payload data, Int maxPrimeResolutionLimit);
 
-            const Number& getNewBase();
-            const Number& getNewExp();
-            const Number& getPreFactor();
-            static const Int& getMaxPrimeResolution();
+        bool isInputValid() const;
+        const Number& getNewBase() const;
+        const Number& getNewExp() const;
+        const Number& getPreFactor() const;
 
-        private:
-            const Number& get(const Number& component);
-            void computeAndSetFlag();
-            void compute();
-            void setToOrig();
-            void computeNonRational();
-            void computeRational();
-            void computeNegOrPosExp();
-            void computeNegExp();
-            void computePosExp();
-            void shiftNegBase();
-            void computePosExpPosBase();
-            void shiftNegPreFac();
-            void computeAllPos();
-            bool hasUndefinedComponents() const;
-            void setUndefined();
-            void computeAllPosAndDefined();
-            bool areValuesSmallEnough() const;
-            void cancel();
-            void defNewBasePrimes();
-            void defPreFacPrimesInPower();
-            void cancelAndExtract();
-            void collectPrimesInPower();
-            void primesToComponents();
-            void adjustExpGreaterThanOne();
-            void processIntOverflow();
-            void adjustExpSignAndBase();
-            void shiftPreFacSignBack();
+      private:
+        void compute();
+        void computeNonRational();
+        void computeRational();
+        void computeNegOrPosExp();
+        void computeNegExp();
+        void computePosExp();
+        void shiftNegBase();
+        void computePosExpPosBase();
+        void shiftNegPreFac();
+        void computeAllPos();
+        bool areValuesSmallEnough() const;
+        void cancel();
+        void defNewBasePrimes();
+        void defPreFacPrimesInPower();
+        void cancelAndExtract();
+        void collectPrimesInPower();
+        void primesToComponents();
+        void adjustExpGreaterThanOne();
+        void adjustExpSignAndBase();
+        void shiftPreFacSignBack();
 
-            Number origBase;
-            Number origExp;
-            Number origPreFac;
-            Number newBase;
-            Number newExp;
-            Number preFac;
-            bool needsComputation;
-            bool isPreFacNegative;
-            PrimeFac nbPrimes;
-            PrimeFac pfPrimes;
+        Payload orig;
+        Payload result;
+        bool isPreFacNegative = false;
+        PrimeFac nbPrimes;
+        PrimeFac pfPrimes;
+        Int maxPrimeLimit = options::getMaxPrimeResolution();
     };
 }
 

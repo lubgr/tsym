@@ -1,62 +1,49 @@
 
-#include <cmath>
-#include <algorithm>
 #include "primefac.h"
-#include "logging.h"
+#include <boost/range/algorithm/find_if.hpp>
+#include <boost/range/algorithm/sort.hpp>
+#include <boost/range/algorithm/unique.hpp>
+#include <boost/range/algorithm_ext/erase.hpp>
+#include <boost/range/numeric.hpp>
+#include <limits>
+#include "numberfct.h"
 
-tsym::PrimeFac::PrimeFac() {}
+namespace tsym {
+    namespace {
+        template <class Container> void duplicate(Container& c, Container&& result, unsigned n)
+        {
+            using std::begin;
+            using std::end;
+            unsigned insCount = n;
 
-tsym::PrimeFac::PrimeFac(const Number& n)
-{
-    checkAndFactorize(n);
-}
+            for (auto i = begin(c); i != end(c); ++i) {
+                auto next = i;
 
-void tsym::PrimeFac::checkAndFactorize(const Number& n)
-{
-    if (n.isDouble() || n < 0)
-        return;
-    else
-        factorize(n);
-}
+                if (++next != end(c) && *next == *i) {
+                    insCount += n;
+                    continue;
+                }
 
-void tsym::PrimeFac::factorize(const Number& n)
-{
-    defPrimes(n.numerator(), numPrimes);
-    defPrimes(n.denominator(), denomPrimes);
-}
+                result.insert(cend(result), insCount, *i);
+                insCount = n;
+            }
 
-void tsym::PrimeFac::defPrimes(Int n, std::vector<Int>& primes)
-    /* Saves the prime factorization of n into the given vector. This is done without any special
-     * algorithm, meaning that the speed of this operation is poor. However, this method will mostly
-     * been called for moderate values, and even for high numbers the factorization didn't cause a
-     * remarkable break of the program, so for now, this is supposed to be sufficient. */
-{
-    static const Int zero(0);
-    static const Int two(2);
-    double upperLimit;
-
-    primes.clear();
-
-    while (n % two == zero) {
-        primes.push_back(two);
-        n /= two;
-    }
-
-    upperLimit = std::sqrt(n.toDouble()) + 0.5;
-
-    for (Int i(3); i.toDouble() < upperLimit; i = i + two)
-        while (n % i == zero) {
-            primes.push_back(i);
-            n /= i;
+            c = std::forward<Container>(result);
         }
 
-    if (n > two)
-        primes.push_back(n);
-}
+        void duplicate(std::vector<Int>& primes, const Int& n)
+        {
+            std::vector<Int> result;
 
-void tsym::PrimeFac::set(const Number& n)
-{
-    checkAndFactorize(n);
+            assert(n > 0 && n < Int(std::numeric_limits<unsigned>::max()));
+
+            const auto nUnsigned = static_cast<unsigned>(n);
+
+            result.reserve(nUnsigned * primes.size());
+
+            duplicate(primes, std::move(result), nUnsigned);
+        }
+    }
 }
 
 void tsym::PrimeFac::toThe(const Int& exponent)
@@ -64,27 +51,13 @@ void tsym::PrimeFac::toThe(const Int& exponent)
     if (exponent == 0) {
         numPrimes.clear();
         denomPrimes.clear();
+    } else {
+        duplicate(numPrimes, abs(exponent));
+        duplicate(denomPrimes, abs(exponent));
     }
-
-    copyElementsNTimes(exponent.abs(), numPrimes);
-    copyElementsNTimes(exponent.abs(), denomPrimes);
 
     if (exponent < 0)
         numPrimes.swap(denomPrimes);
-}
-
-void tsym::PrimeFac::copyElementsNTimes(const Int& n, std::vector<Int>& primes)
-{
-    std::vector<Int>::iterator it(primes.begin());
-    Int i;
-
-    while (it != primes.end()) {
-        for (i = 0; i < n - 1; ++i)
-            it = primes.insert(it, *it);
-
-        for (i = 0; i < n; ++i)
-            ++it;
-    }
 }
 
 void tsym::PrimeFac::multiply(const Number& n)
@@ -104,16 +77,16 @@ void tsym::PrimeFac::multiply(const PrimeFac& other)
     cancelPrimes(numPrimes, copy.denomPrimes);
     cancelPrimes(denomPrimes, copy.numPrimes);
 
-    merge(numPrimes, copy.numPrimes);
-    merge(denomPrimes, copy.denomPrimes);
+    merge(numPrimes, std::move(copy.numPrimes));
+    merge(denomPrimes, std::move(copy.denomPrimes));
 }
 
 void tsym::PrimeFac::cancelPrimes(std::vector<Int>& p1, std::vector<Int>& p2)
 {
-    std::vector<Int>::iterator it1(p1.begin());
-    std::vector<Int>::iterator it2(p2.begin());
+    auto it1 = begin(p1);
+    auto it2 = begin(p2);
 
-    while (it1 != p1.end() && it2 != p2.end())
+    while (it1 != end(p1) && it2 != end(p2))
         if (*it1 < *it2)
             ++it1;
         else if (*it1 > *it2)
@@ -124,44 +97,45 @@ void tsym::PrimeFac::cancelPrimes(std::vector<Int>& p1, std::vector<Int>& p2)
         }
 }
 
-void tsym::PrimeFac::merge(std::vector<Int>& target, const std::vector<Int>& source)
+void tsym::PrimeFac::merge(std::vector<Int>& target, std::vector<Int>&& source)
 {
-    target.insert(target.end(), source.begin(), source.end());
+    target.insert(end(target), std::move_iterator(begin(source)), std::move_iterator(end(source)));
 
-    std::sort(target.begin(), target.end());
+    boost::sort(target);
+}
+
+namespace tsym {
+    namespace {
+        void extractPrimes(std::vector<Int>& source, std::vector<Int>& target, const Int& expDenom)
+        {
+            Int prime(0);
+            Int nPrime(0);
+
+            for (auto it = begin(source); it != end(source); ++it)
+                if (prime != *it) {
+                    prime = *it;
+                    nPrime = 1;
+                } else if (++nPrime == expDenom) {
+                    target.push_back(prime);
+
+                    it = std::prev(source.erase(it - static_cast<int>(expDenom - 1), it + 1));
+
+                    nPrime = 0;
+                }
+        }
+    }
 }
 
 tsym::PrimeFac tsym::PrimeFac::extract(const Number& exponent)
 {
     PrimeFac extraction;
 
-    extract(numPrimes, extraction.numPrimes, exponent.denominator());
-    extract(denomPrimes, extraction.denomPrimes, exponent.denominator());
+    extractPrimes(numPrimes, extraction.numPrimes, exponent.denominator());
+    extractPrimes(denomPrimes, extraction.denomPrimes, exponent.denominator());
 
     extraction.toThe(exponent.numerator());
 
     return extraction;
-}
-
-void tsym::PrimeFac::extract(std::vector<Int>& source, std::vector<Int>& target,
-        const Int& expDenom)
-{
-    std::vector<Int>::iterator it;
-    Int prime(0);
-    Int nPrime(0);
-
-    for (it = source.begin(); it != source.end(); ++it)
-        if (prime != *it) {
-            prime = *it;
-            nPrime = 1;
-        } else if (++nPrime == expDenom) {
-            target.push_back(prime);
-
-            for (Int i(0); i < expDenom; ++i)
-                it = --source.erase(it);
-
-            nPrime = 0;
-        }
 }
 
 tsym::Number tsym::PrimeFac::collectToNewExp(const Number& exponent)
@@ -169,69 +143,71 @@ tsym::Number tsym::PrimeFac::collectToNewExp(const Number& exponent)
     const int count = getEqualCount();
 
     if (count > 1) {
-        deleteElements(count - 1);
-        return count*exponent;
-    } else if (numPrimes.size() == 0 && denomPrimes.size() == 0)
+        eraseDuplicates();
+        return count * exponent;
+    } else if (numPrimes.empty() && denomPrimes.empty())
         return 1;
     else
         return exponent;
 }
 
+namespace tsym {
+    namespace {
+        auto equalCountOrZero(const std::vector<Int>& primes, int guess)
+        {
+            for (auto prime = cbegin(primes) + guess; prime != cend(primes); prime += guess)
+                if (*prime != *(prime + (guess - 1)))
+                    return 0;
+
+            return guess;
+        }
+
+        auto getEqualCountOf(const std::vector<Int>& primes)
+        {
+            const auto firstEqualRange = boost::find_if<boost::return_begin_found>(
+              primes, [first = primes.front()](const auto& prime) { return prime != first; });
+            const auto firstSize = boost::size(firstEqualRange);
+
+            if (primes.size() % firstSize != 0)
+                return 0;
+            else if (firstSize == 1)
+                return 1;
+
+            const auto n = static_cast<int>(firstSize);
+
+            return equalCountOrZero(primes, n);
+        }
+    }
+}
+
 int tsym::PrimeFac::getEqualCount() const
 {
-    int denomCount;
-    int numCount;
-
     if (numPrimes.empty() && denomPrimes.empty())
         return 0;
     else if (numPrimes.empty())
-        return getEqualCount(denomPrimes);
+        return getEqualCountOf(denomPrimes);
     else if (denomPrimes.empty())
-        return getEqualCount(numPrimes);
+        return getEqualCountOf(numPrimes);
 
-    numCount = getEqualCount(numPrimes);
-    denomCount = getEqualCount(denomPrimes);
+    const auto numCount = getEqualCountOf(numPrimes);
+    const auto denomCount = getEqualCountOf(denomPrimes);
 
     return numCount == denomCount ? numCount : 0;
 }
 
-int tsym::PrimeFac::getEqualCount(const std::vector<Int>& primes) const
-{
-    std::vector<Int>::const_iterator it;
-    int lastCount = 0;
-    int count = 0;
-    Int oldPrime;
-
-    /* The vector must not be empty at this point! */
-    for (it = primes.begin(), oldPrime = *it; it != primes.end(); ++it)
-        if (*it == oldPrime)
-            ++count;
-        else if (lastCount != 0 && lastCount != count)
-            return 0;
-        else {
-            lastCount = count;
-            count = 1;
-            oldPrime = *it;
+namespace tsym {
+    namespace {
+        void eraseRemoveDuplicates(std::vector<Int>& primes)
+        {
+            boost::erase(primes, boost::unique<boost::return_found_end>(primes));
         }
-
-    return count == lastCount || lastCount == 0 ? count : 0;
+    }
 }
 
-void tsym::PrimeFac::deleteElements(int nToDelete)
+void tsym::PrimeFac::eraseDuplicates()
 {
-    deleteElements(nToDelete, numPrimes);
-    deleteElements(nToDelete, denomPrimes);
-}
-
-void tsym::PrimeFac::deleteElements(int nToDelete, std::vector<Int>& primes)
-    /* Removes duplicate elements from the given vector of primes. It is supposed, that primes have
-     * been checked before, such that this operation is safe. */
-{
-    std::vector<Int>::iterator it;
-
-    for (it = primes.begin(); it != primes.end(); ++it)
-        for (int i = 0; i < nToDelete; ++i)
-            it = primes.erase(it);
+    eraseRemoveDuplicates(numPrimes);
+    eraseRemoveDuplicates(denomPrimes);
 }
 
 const std::vector<tsym::Int>& tsym::PrimeFac::getNumPrimes() const
@@ -246,19 +222,8 @@ const std::vector<tsym::Int>& tsym::PrimeFac::getDenomPrimes() const
 
 tsym::Number tsym::PrimeFac::eval() const
 {
-    std::vector<Int>::const_iterator nIt(numPrimes.begin());
-    std::vector<Int>::const_iterator dIt(denomPrimes.begin());
-    Number res(1);
-    Int denom;
-    Int num;
+    const auto num = boost::accumulate(numPrimes, Int(1), std::multiplies<>());
+    const auto denom = boost::accumulate(denomPrimes, Int(1), std::multiplies<>());
 
-    while (nIt != numPrimes.end() || dIt != denomPrimes.end()) {
-        num = nIt == numPrimes.end() ? 1 : *nIt++;
-        denom = dIt == denomPrimes.end() ? 1 : *dIt++;
-        /* If an integer overflow happens here, the original Number has already been corrupted, and
-         * the behavior is undefined in any case. */
-        res *= Number(num, denom);
-    }
-
-    return res;
+    return Number(num, denom);
 }

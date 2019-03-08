@@ -2,51 +2,65 @@
 #define TSYM_NUMERIC_H
 
 #include "base.h"
+#include "logging.h"
+#include "number.h"
 #include "undefined.h"
 
 namespace tsym {
     class Numeric : public Base {
-        public:
-            static BasePtr create(int value);
-            static BasePtr create(double value);
-            static BasePtr create(const Int& value);
-            static BasePtr create(int numerator, int denominator);
-            static BasePtr create(const Int& numerator, const Int& denominator);
-            static BasePtr create(const Number& number);
+      public:
+        static BasePtr create(Number number);
+        template <class T> static BasePtr create(T&& value)
+        {
+            return create(Number(std::forward<T>(value)));
+        }
+        template <class S, class T> static BasePtr create(S&& num, T&& denom)
+        {
+            if (denom == 0) {
+                TSYM_ERROR("Attempt to create a Numeric with zero denominator, result is Undefined");
+                return Undefined::create();
+            }
 
-            /* Shortcuts for frequently used constant numbers. */
-            static const BasePtr& zero();
-            static const BasePtr& one();
-            static const BasePtr& mOne();
+            return create(Number(std::forward<S>(num), std::forward<T>(denom)));
+        }
 
-            /* Implentations of pure virtual methods of Base. */
-            bool isEqual(const BasePtr& other) const;
-            bool sameType(const BasePtr& other) const;
-            Number numericEval() const;
-            Fraction normal(SymbolMap& map) const;
-            BasePtr diffWrtSymbol(const BasePtr& symbol) const;
-            std::string typeStr() const;
+        Numeric(Number&& number, Base::CtorKey&&);
+        Numeric(const Numeric&) = delete;
+        Numeric& operator=(const Numeric&) = delete;
+        Numeric(Numeric&&) = delete;
+        Numeric& operator=(Numeric&&) = delete;
+        ~Numeric() override = default;
 
-            /* Overridden methods from Base. */
-            bool isNumericallyEvaluable() const;
-            bool isNumeric() const;
-            bool isZero() const;
-            bool isOne() const;
-            bool isConst() const;
-            BasePtr numericTerm() const;
-            BasePtr nonNumericTerm() const;
-            BasePtr constTerm() const;
-            BasePtr nonConstTerm() const;
-            BasePtr coeff(const BasePtr& variable, int exp) const;
-            int degree(const BasePtr& variable) const;
+        /* Shortcuts for frequently used constant numbers. */
+        static const BasePtr& zero();
+        static const BasePtr& one();
+        static const BasePtr& two();
+        static const BasePtr& three();
+        static const BasePtr& four();
+        static const BasePtr& half();
+        static const BasePtr& third();
+        static const BasePtr& fourth();
+        static const BasePtr& mOne();
 
-        private:
-            Numeric(const Number& number);
-            Numeric(const Numeric& other);
-            Numeric& operator = (Numeric const& other);
-            ~Numeric();
+        bool isEqualDifferentBase(const Base& other) const override;
+        std::optional<Number> numericEval() const override;
+        Fraction normal(SymbolMap& map) const override;
+        BasePtr diffWrtSymbol(const Base& symbol) const override;
+        bool isPositive() const override;
+        bool isNegative() const override;
+        unsigned complexity() const override;
+        size_t hash() const override;
 
-            const Number number;
+        bool isConst() const override;
+        BasePtr numericTerm() const override;
+        BasePtr nonNumericTerm() const override;
+        BasePtr constTerm() const override;
+        BasePtr nonConstTerm() const override;
+        BasePtr coeff(const Base& variable, int exp) const override;
+        int degree(const Base& variable) const override;
+
+      private:
+        const Number number;
     };
 }
 

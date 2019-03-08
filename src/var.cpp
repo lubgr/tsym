@@ -1,222 +1,258 @@
 
 #include "var.h"
-#include "symbol.h"
+#include <map>
+#include <stdexcept>
+#include "base.h"
+#include "basefct.h"
+#include "logging.h"
+#include "numberfct.h"
 #include "numeric.h"
-#include "sum.h"
-#include "product.h"
+#include "parser.h"
+#include "plaintextprintengine.h"
 #include "power.h"
 #include "printer.h"
-#include "logging.h"
+#include "product.h"
+#include "sum.h"
+#include "symbol.h"
+#include "undefined.h"
 
-tsym::Var::Var() :
-    basePtr(Numeric::zero())
+namespace tsym {
+    namespace {
+        const std::map<std::string_view, Var::Type>& typeStringMap()
+        {
+            static const std::map<std::string_view, Var::Type> map{{"Sum", Var::Type::SUM},
+              {"Product", Var::Type::PRODUCT}, {"Symbol", Var::Type::SYMBOL}, {"Power", Var::Type::POWER},
+              {"Constant", Var::Type::CONSTANT}, {"Undefined", Var::Type::UNDEFINED}, {"Function", Var::Type::FUNCTION},
+              {"Integer", Var::Type::INT}, {"Fraction", Var::Type::FRACTION}, {"Double", Var::Type::DOUBLE}};
+
+            return map;
+        }
+
+        bool isCorrectIntOrSymbol(const ParseResult& parsed)
+        {
+            const bool parsingSuccess = parsed.success && parsed.matchedWholeString;
+            const BasePtr& value(parsed.value);
+
+            if (parsingSuccess)
+                return isSymbol(*value) || (isNumeric(*value) && isInt(*value->numericEval()));
+
+            return false;
+        }
+
+        Var::Type numericType(const Number& number)
+        {
+            if (isInt(number))
+                return Var::Type::INT;
+            else if (number.isDouble())
+                return Var::Type::DOUBLE;
+            else if (isFraction(number))
+                return Var::Type::FRACTION;
+
+            /* This should never happened, as the BasePtr must be Undefined in the first place. */
+            TSYM_ERROR("Illegal number %S in Var!", number);
+
+            return Var::Type::UNDEFINED;
+        }
+    }
+}
+
+tsym::Var::Var()
+    : rep(Numeric::zero())
 {}
 
-tsym::Var::Var(int value) :
-    basePtr(Numeric::create(value))
+tsym::Var::Var(int value)
+    : rep(Numeric::create(value))
 {}
 
-tsym::Var::Var(double value) :
-    basePtr(Numeric::create(value))
+tsym::Var::Var(double value)
+    : rep(Numeric::create(value))
 {}
 
-tsym::Var::Var(int numerator, int denominator) :
-    /* Zero denominator is checked inside of the Numeric::create method. */
-    basePtr(Numeric::create(numerator, denominator))
+tsym::Var::Var(int numerator, int denominator)
+    : /* Zero denominator is checked inside of the Numeric::create method. */
+    rep(Numeric::create(numerator, denominator))
 {}
 
-tsym::Var::Var(const Number& number) :
-    /* An undefined number is again checked inside of the Numeric::create method. */
-    basePtr(Numeric::create(number))
-{}
-
-tsym::Var::Var(const char *name, const char *subscript, const char *superscript) :
-    basePtr(Symbol::create(Name(name, subscript, superscript)))
-{}
-
-tsym::Var::Var(const BasePtr& ptr) :
-    basePtr(ptr)
-{}
-
-tsym::Var& tsym::Var::operator += (const Var& rhs)
+tsym::Var::Var(std::string_view str)
 {
-    basePtr = Sum::create(basePtr, rhs.basePtr);
+    const ParseResult parsed = parseFrom(str);
+
+    if (isCorrectIntOrSymbol(parsed)) {
+        rep = parsed.value;
+        return;
+    }
+
+    TSYM_ERROR("Parsing symbol or integer from '%S' failed, result: %S (%S). "
+               "Create undefined Var object.",
+      str, parsed.value, Var(parsed.value).type());
+
+    rep = Undefined::create();
+}
+
+tsym::Var::Var(std::string_view str, [[maybe_unused]] Var::Sign sign)
+{
+    const Var withoutSign(str);
+    const Type type(withoutSign.type());
+
+    assert(sign == Var::Sign::POSITIVE);
+
+    if (type == Type::SYMBOL) {
+        rep = Symbol::createPositive(withoutSign.rep->name());
+        return;
+    }
+
+    if (type == Type::INT && *withoutSign.rep->numericEval() < 0)
+        TSYM_WARNING("Ignore positive flag for negative int (%S)", withoutSign);
+
+    rep = withoutSign.rep;
+}
+
+tsym::Var::Var(BasePtr ptr)
+    : rep(std::move(ptr))
+{}
+
+tsym::Var& tsym::Var::operator+=(const Var& rhs)
+{
+    rep = Sum::create(rep, rhs.rep);
 
     return *this;
 }
 
-tsym::Var& tsym::Var::operator -= (const Var& rhs)
+tsym::Var& tsym::Var::operator-=(const Var& rhs)
 {
-    basePtr = Sum::create(basePtr, Product::minus(rhs.basePtr));
+    rep = Sum::create(rep, Product::minus(rhs.rep));
 
     return *this;
 }
 
-tsym::Var& tsym::Var::operator *= (const Var& rhs)
+tsym::Var& tsym::Var::operator*=(const Var& rhs)
 {
-    basePtr = Product::create(basePtr, rhs.basePtr);
+    rep = Product::create(rep, rhs.rep);
 
     return *this;
 }
 
-tsym::Var& tsym::Var::operator /= (const Var& rhs)
+tsym::Var& tsym::Var::operator/=(const Var& rhs)
 {
-    basePtr = Product::create(basePtr, Power::oneOver(rhs.basePtr));
+    rep = Product::create(rep, Power::oneOver(rhs.rep));
 
     return *this;
 }
 
-const tsym::Var& tsym::Var::operator + () const
+const tsym::Var& tsym::Var::operator+() const
 {
     return *this;
 }
 
-tsym::Var tsym::Var::operator - () const
+tsym::Var tsym::Var::operator-() const
 {
-    return Var(Product::minus(basePtr));
+    return Var(Product::minus(rep));
 }
 
-tsym::Var tsym::Var::toThe(const Var& exponent) const
+tsym::Var::Type tsym::Var::type() const
 {
-    Var res;
+    if (isNumeric(*rep))
+        return numericType(*rep->numericEval());
 
-    res.basePtr = Power::create(basePtr, exponent.basePtr);
+    const auto lookup = typeStringMap().find(rep->typeStr());
 
-    return res;
+    assert(lookup != cend(typeStringMap()));
+
+    return lookup->second;
 }
 
-tsym::Var tsym::Var::subst(const Var& from, const Var& to) const
+tsym::Var::operator int() const
 {
-    return Var(basePtr->subst(from.basePtr, to.basePtr));
+    static const char* errorMessage = "Illegal integer request";
+    int result = 0;
+
+    if (!isInteger(*rep))
+        throw std::domain_error(errorMessage);
+    else if (!fitsInto<int>(rep->numericEval()->numerator()))
+        throw std::overflow_error(errorMessage);
+
+    try {
+        result = static_cast<int>(rep->numericEval().value().numerator());
+    } catch (const std::exception& e) {
+        TSYM_ERROR("Conversion from %S to int failed: %s", *this, e.what());
+        throw std::domain_error(errorMessage);
+    }
+
+    return result;
 }
 
-tsym::Var tsym::Var::expand() const
+tsym::Var::operator double() const
 {
-    return Var(basePtr->expand());
+    if (const auto num = rep->numericEval())
+        return num->toDouble();
+
+    throw std::domain_error("Illegal conversion to double requested");
 }
 
-tsym::Var tsym::Var::normal() const
+const tsym::BasePtr& tsym::Var::get() const
 {
-    const time_t start = time(NULL);
-    const BasePtr bp(basePtr->normal());
-
-    if (!bp->isEqual(basePtr))
-        logging::info() << "Normalized " << basePtr << " to " << bp << " in " <<
-            difftime(time(NULL), start) << " s.";
-
-    return Var(bp);
+    return rep;
 }
 
-tsym::Var tsym::Var::diff(const Var& symbol) const
+bool tsym::operator==(const Var& lhs, const Var& rhs)
 {
-    return Var(basePtr->diff(symbol.basePtr));
+    return lhs.get()->isEqual(*rhs.get());
 }
 
-bool tsym::Var::equal(const Var& other) const
+bool tsym::operator!=(const Var& lhs, const Var& rhs)
 {
-    return basePtr->isEqual(other.basePtr);
+    return !(lhs == rhs);
 }
 
-bool tsym::Var::has(const Var& other) const
-{
-    return basePtr->has(other.basePtr);
-}
-
-bool tsym::Var::isZero() const
-{
-    return basePtr->isZero();
-}
-
-bool tsym::Var::isNumericallyEvaluable() const
-{
-    return basePtr->isNumericallyEvaluable();
-}
-
-tsym::Number tsym::Var::numericEval() const
-{
-    /* A check for numerical evaluability is performed inside of the method called. */
-    return basePtr->numericEval();
-}
-
-std::string tsym::Var::type() const
-{
-    return basePtr->typeStr();
-}
-
-const std::string& tsym::Var::name() const
-{
-    return basePtr->name().getName();
-}
-
-const std::string& tsym::Var::subscript() const
-{
-    return basePtr->name().getSubscript();
-}
-
-const std::string& tsym::Var::superscript() const
-{
-    return basePtr->name().getSuperscript();
-}
-
-std::list<tsym::Var> tsym::Var::operands() const
-{
-    BasePtrList::const_iterator it;
-    std::list<Var> ops;
-
-    for (it = basePtr->operands().begin(); it != basePtr->operands().end(); ++it)
-        ops.push_back(Var(*it));
-
-    return ops;
-}
-
-const tsym::BasePtr& tsym::Var::getBasePtr() const
-{
-    return basePtr;
-}
-
-bool tsym::operator == (const Var& lhs, const Var& rhs)
-{
-    return lhs.equal(rhs);
-}
-
-bool tsym::operator != (const Var& lhs, const Var& rhs)
-{
-    return !lhs.equal(rhs);
-}
-
-tsym::Var tsym::operator + (Var lhs, const Var& rhs)
+tsym::Var tsym::operator+(Var lhs, const Var& rhs)
 {
     lhs += rhs;
 
     return lhs;
 }
 
-tsym::Var tsym::operator - (Var lhs, const Var& rhs)
+tsym::Var tsym::operator-(Var lhs, const Var& rhs)
 {
     lhs -= rhs;
 
     return lhs;
 }
 
-tsym::Var tsym::operator * (Var lhs, const Var& rhs)
+tsym::Var tsym::operator*(Var lhs, const Var& rhs)
 {
     lhs *= rhs;
 
     return lhs;
 }
 
-tsym::Var tsym::operator / (Var lhs, const Var& rhs)
+tsym::Var tsym::operator/(Var lhs, const Var& rhs)
 {
     lhs /= rhs;
 
     return lhs;
 }
 
-std::ostream& tsym::operator << (std::ostream& stream, const Var& var)
+std::ostream& tsym::operator<<(std::ostream& stream, const Var& rhs)
 {
-    Printer printer(var);
+    PlaintextPrintEngine engine(stream);
 
-    printer.print(stream);
+    print(engine, *rhs.get());
 
     return stream;
+}
+
+std::ostream& tsym::operator<<(std::ostream& stream, const Var::Type& rhs)
+{
+    for (const auto& [str, type] : typeStringMap())
+        if (type == rhs)
+            return stream << str;
+
+    TSYM_ERROR("Couldn't find string representation of Var");
+
+    return stream;
+}
+
+size_t std::hash<tsym::Var>::operator()(const tsym::Var& var) const
+{
+    return var.get()->hash();
 }

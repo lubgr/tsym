@@ -1,83 +1,148 @@
 
-#include <sstream>
 #include "symbol.h"
+#include <boost/functional/hash.hpp>
+#include <unordered_map>
+#include <utility>
+#include "basefct.h"
+#include "basetypestr.h"
+#include "cache.h"
+#include "fraction.h"
+#include "logging.h"
 #include "numeric.h"
-#include "symbolregistry.h"
+#include "undefined.h"
 
-tsym::Symbol::Symbol(const Name& name) :
-    symbolName(name)
-{}
+unsigned tsym::Symbol::tmpCounter = 0;
 
-tsym::Symbol::~Symbol() {}
-
-tsym::BasePtr tsym::Symbol::create(const std::string& name)
+tsym::Symbol::Symbol(Name name, bool positive, Base::CtorKey&&)
+    : Base(typestring::symbol)
+    , symbolName{std::move(name)}
+    , positive(positive)
 {
-    return create(Name(name));
+    setDebugString();
+}
+
+tsym::Symbol::Symbol(unsigned tmpId, bool positive, Base::CtorKey&&)
+    : Base(typestring::symbol)
+    , symbolName{std::string(tmpSymbolNamePrefix) + std::to_string(tmpId)}
+    , positive(positive)
+{
+    setDebugString();
+}
+
+tsym::Symbol::~Symbol()
+{
+    if (symbolName.value.find(tmpSymbolNamePrefix) == 0)
+        --tmpCounter;
+}
+
+tsym::BasePtr tsym::Symbol::create(std::string_view name)
+{
+    return create(Name{std::string(name)});
 }
 
 tsym::BasePtr tsym::Symbol::create(const Name& name)
 {
-    return BasePtr(new Symbol(name));
+    return create(name, false);
 }
 
-tsym::BasePtr tsym::Symbol::createTmpSymbol()
+tsym::BasePtr tsym::Symbol::create(const Name& name, bool positive)
 {
-    const Name name(getTmpName());
+    if (name.value.empty()) {
+        TSYM_ERROR("Creating Symbol with empty name, return Undefined instead");
+        return Undefined::create();
+    } else if (name.value.find(tmpSymbolNamePrefix) == 0) {
+        TSYM_ERROR("Instantiation of a non-temporary Symbol containing the temporary name prefix %s,"
+                   " return true temporary Symbol",
+          name.value);
+        return createTmpSymbol(positive);
+    }
 
-    return BasePtr(new Symbol(name));
+    return createNonEmptyName(name, positive);
 }
 
-tsym::Name tsym::Symbol::getTmpName()
+tsym::BasePtr tsym::Symbol::createNonEmptyName(const Name& name, bool positive)
 {
-    std::ostringstream stream;
-    unsigned count = 0;
-    Name name;
+    using Key = std::pair<Name, bool>;
+    static std::unordered_map<Key, BasePtr, boost::hash<Key>> pool;
+    const auto key = std::make_pair(name, positive);
 
-    do {
-        stream.str("");
-        stream << ++count;
-        name = Name("tmp", stream.str());
-    } while (SymbolRegistry::count(name) != 0);
+    if (const auto lookup = pool.find(key); lookup != cend(pool))
+        return lookup->second;
 
-    return name;
+    return pool.insert({key, std::make_shared<const Symbol>(name, positive, Base::CtorKey{})}).first->second;
 }
 
-bool tsym::Symbol::isEqual(const BasePtr& other) const
+tsym::BasePtr tsym::Symbol::createPositive(std::string_view name)
 {
-    if (other->isSymbol())
-        return symbolName == other->name();
+    return createPositive(Name{std::string(name)});
+}
+
+tsym::BasePtr tsym::Symbol::createPositive(const Name& name)
+{
+    return create(name, true);
+}
+
+tsym::BasePtr tsym::Symbol::createTmpSymbol(bool positive)
+{
+    ++tmpCounter;
+
+    return std::make_shared<const Symbol>(tmpCounter, positive, Base::CtorKey{});
+}
+
+bool tsym::Symbol::isEqualDifferentBase(const Base& other) const
+{
+    if (isSymbol(other))
+        return isEqualOtherSymbol(other);
     else
         return false;
 }
 
-bool tsym::Symbol::sameType(const BasePtr& other) const
+bool tsym::Symbol::isEqualOtherSymbol(const Base& other) const
 {
-    return other->isSymbol();
+    if (symbolName == other.name())
+        return positive == other.isPositive();
+    else
+        return false;
 }
 
-tsym::Number tsym::Symbol::numericEval() const
+std::optional<tsym::Number> tsym::Symbol::numericEval() const
 {
-    return Number::createUndefined();
+    return std::nullopt;
 }
 
 tsym::Fraction tsym::Symbol::normal(SymbolMap&) const
 {
-    return Fraction(clone());
+    return Fraction{clone()};
 }
 
-tsym::BasePtr tsym::Symbol::diffWrtSymbol(const BasePtr& symbol) const
+tsym::BasePtr tsym::Symbol::diffWrtSymbol(const Base& symbol) const
 {
     return isEqual(symbol) ? Numeric::one() : Numeric::zero();
 }
 
-std::string tsym::Symbol::typeStr() const
+bool tsym::Symbol::isPositive() const
 {
-    return "Symbol";
+    return positive;
 }
 
-bool tsym::Symbol::isSymbol() const
+bool tsym::Symbol::isNegative() const
 {
-    return true;
+    return false;
+}
+
+size_t tsym::Symbol::hash() const
+{
+    size_t seed = 0;
+
+    boost::hash_combine(seed, symbolName);
+    boost::hash_combine(seed, positive);
+
+    return seed;
+}
+
+unsigned tsym::Symbol::complexity() const
+{
+    return 5;
 }
 
 const tsym::Name& tsym::Symbol::name() const

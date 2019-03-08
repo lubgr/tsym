@@ -6,27 +6,34 @@
 namespace tsym {
     class Logarithm : public Function {
         /* Natural Logarithm with respect to basis e. */
-        public:
-            static BasePtr create(const BasePtr& arg);
+      public:
+        static BasePtr create(const BasePtr& arg);
 
-            /* Implentations of pure virtual methods of Base. */
-            Number numericEval() const;
-            Fraction normal(SymbolMap& map) const;
-            BasePtr diffWrtSymbol(const BasePtr& symbol) const;
-            BasePtr subst(const BasePtr& from, const BasePtr& to) const;
+        Logarithm(const BasePtr& arg, Base::CtorKey&&);
+        Logarithm(const Logarithm&) = delete;
+        Logarithm& operator=(const Logarithm&) = delete;
+        Logarithm(Logarithm&&) = delete;
+        Logarithm& operator=(Logarithm&&) = delete;
+        ~Logarithm() override = default;
 
-        private:
-            Logarithm(const BasePtr& arg);
-            Logarithm(const Logarithm& other);
-            Logarithm& operator = (const Logarithm& other);
-            ~Logarithm();
+        std::optional<Number> numericEval() const override;
+        Fraction normal(SymbolMap& map) const override;
+        BasePtr diffWrtSymbol(const Base& symbol) const override;
+        BasePtr subst(const Base& from, const BasePtr& to) const override;
+        bool isPositive() const override;
+        bool isNegative() const override;
+        unsigned complexity() const override;
 
-            static bool isInvalidArg(const BasePtr& arg);
-            static BasePtr createNumerically(const BasePtr& arg);
-            static BasePtr createFromConstant(const BasePtr& arg);
-            static BasePtr createFromPower(const BasePtr& arg);
+      private:
+        static bool isInvalidArg(const Base& arg);
+        static BasePtr createInstance(const BasePtr& arg);
+        static BasePtr createNumerically(const BasePtr& arg);
+        static BasePtr createFromConstant(const BasePtr& arg);
+        static BasePtr createFromPower(const BasePtr& arg);
 
-            Number checkedNumericEval() const;
+        bool checkSign(bool (Base::*method)() const) const;
+
+        const BasePtr& arg;
     };
 }
 

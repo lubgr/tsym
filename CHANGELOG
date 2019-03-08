@@ -1,0 +1,71 @@
+v.03
+* Simplification of the public API: only the Var class representing any
+  expression is exposed from now on. Replace Var methods by free functions
+  accepting a Var parameter. Matrix and Vector classes are deleted, all matrix
+  operations are implemented as function templates (PLU factorization,
+  determinant and inversion using PLU factorization) that accept matrix/vector
+  types with standard []/() access. Alternatively, anything that binds to the
+  appropriate std::function wrapper can be passed as an access function.
+
+* Restrict simplification of power expressions to variables of the real domain.
+  Allow for strictly positive symbols for more simplifications based on
+  signedness.
+
+* Arbitrary precision integer arithmetic via boost multiprecision. This enables
+  more involved symbolic gcd computations.
+
+* Reduce dependencies on external tools/libraries and favor boost. The parser is
+  now implemented with boost spirit (flex/bison aren't needed for building
+  anymore), formatting is done with boost format, boost rational, boost range
+  and boost hash are brought in, too. Using an external logging library is now
+  optional to client code by implementing a simple Logger interface and
+  registering it with the library. Additionally, Boost test has replaced
+  CppUTest as a unit test framework, allowing for less global state by means of
+  global and per suite fixtures.
+
+* Switch to cmake for build configurations. This enables simpler builds on
+  non-Linux platforms and idiomatic dependency handling for client applications,
+  either via sources in a subdirectory or a system-wide installation.
+
+* Setup and improvement of continuous integration on Travis CI. Builds with
+  multiple gcc versions and clang, static analysis, testing with valgrind and
+  address/ub sanitizer.
+
+* Bug fixes, increase usage of STL algorithms and types, especially smart
+  pointers. Modernize with range-based for loops and other C++-11/14/17
+  features. Reduction of coupling of internal classes by dependency injection.
+
+v.02
+
+* A parser has been added to construct expressions from strings. The top-level
+  interface can be found in the StringToVar class, while a backend uses lex/yacc
+  and intermediate adapter functions. Numerics, all Functions implemented,
+  Symbols with limited super-/subscript naming schemes etc. can be parsed.
+
+* Better handling of trigonometric and inverse trigonometric functions:
+  automatric simplification as fractions, e.g. sin(a)/cos(a) = tan(a) plus a fix
+  of inverse trigonometric functions of trigonometric functions for function
+  arguments, that can be numerically evaluated.
+
+* Fix (portability) issues in several development utility scripts and for
+  compilation, testing or code generation on 32bit machines.
+
+* Additional build/version information in auto-generated header. Headers don't
+  depend on NDEBUG macro anymore.
+
+* Minor fixes for static destruction order problems, trivial gcd cases, CppUTest
+  compatibility (mainly reported memory leaks), makefile enhancements, fixes of
+  the meaningless comparisons between two Undefined expressions.
+
+v.01
+
+* Basic setup of computer algebra algorithms for automatic simplification, gcd
+  computation and solutions of linear equations. Algorithms specific to computer
+  algebra are implemented following Cohen, Computer Algebra and Symbolic
+  Computation [2003], though some details like the automatic simplification of
+  numeric powers are different.
+
+* Small set of API classes. Var, Number, Int, Vector, Matrix as basic types,
+  where Var is supposed to be the general purpose expression type (symbols,
+  numeric types, functions...). In addition, some common functions and constants
+  in the tsym namespace, e.g. sqrt, sin/cos, Pi etc.

@@ -1,64 +1,46 @@
 
 #include "fraction.h"
-#include "numeric.h"
-#include "product.h"
-#include "power.h"
-#include "poly.h"
+#include <utility>
+#include "basefct.h"
 #include "logging.h"
+#include "numeric.h"
+#include "poly.h"
+#include "power.h"
+#include "product.h"
+#include "undefined.h"
 
-tsym::Fraction::Fraction() :
-    numerator(Undefined::create()),
-    denominator(Numeric::one())
-{}
-
-tsym::Fraction::Fraction(const BasePtr& numerator) :
-    numerator(numerator),
-    denominator(Numeric::one())
-{}
-
-tsym::Fraction::Fraction(const BasePtr& numerator, const BasePtr& denominator) :
-    numerator(numerator),
-    denominator(denominator)
-{}
-
-tsym::BasePtr tsym::Fraction::eval() const
+tsym::BasePtr tsym::eval(const Fraction& f)
 {
-    return Product::create(numerator, Power::oneOver(denominator));
+    return Product::create(f.num, Power::oneOver(f.denom));
 }
 
-tsym::Fraction tsym::Fraction::invert() const
+tsym::Fraction tsym::invert(const Fraction& f)
 {
-    return Fraction(denominator, numerator);
+    return Fraction{f.denom, f.num};
 }
 
-tsym::Fraction tsym::Fraction::cancel() const
+namespace tsym {
+    namespace {
+        Fraction cancelNonTrivial(const Fraction& f)
+        {
+            const BasePtr gcd(poly::gcd(f.num, f.denom));
+            const BasePtr newDenom(poly::divide(f.denom, gcd).front());
+            const BasePtr newNum(poly::divide(f.num, gcd).front());
+
+            return Fraction{newNum, newDenom};
+        }
+    }
+}
+
+tsym::Fraction tsym::cancel(const Fraction& f)
 {
-    if (denominator->isOne())
-        return Fraction(numerator);
-    else if (numerator->isZero())
-        return Fraction(numerator);
-    else if (denominator->expand()->isZero()) {
-        logging::warning() << "Zero denominator encountered during fraction cacellation";
-        return Fraction(Undefined::create());
+    if (isOne(*f.denom))
+        return Fraction{f.num};
+    else if (isZero(*f.num))
+        return Fraction{f.num};
+    else if (isZero(*f.denom->expand())) {
+        TSYM_WARNING("Zero f.denom encountered during fraction cancellation");
+        return Fraction{Undefined::create()};
     } else
-        return cancelNonTrivial();
-}
-
-tsym::Fraction tsym::Fraction::cancelNonTrivial() const
-{
-    const BasePtr gcd(poly::gcd(numerator, denominator));
-    const BasePtr newDenom(poly::divide(denominator, gcd).front());
-    const BasePtr newNum(poly::divide(numerator, gcd).front());
-
-    return Fraction(newNum, newDenom);
-}
-
-const tsym::BasePtr& tsym::Fraction::num() const
-{
-    return numerator;
-}
-
-const tsym::BasePtr& tsym::Fraction::denom() const
-{
-    return denominator;
+        return cancelNonTrivial(f);
 }

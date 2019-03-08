@@ -1,40 +1,31 @@
 #ifndef TSYM_LOGGING_H
 #define TSYM_LOGGING_H
 
-#ifdef USE_TRLOG
-
-#include "trlog/trlog.h"
+#include <boost/format.hpp>
+#include <cstring>
+#include <iterator>
+#include "logger.h"
 
 namespace tsym {
-    namespace logging {
-        trlog::Stream debug();
-        trlog::Stream info();
-        trlog::Stream warning();
-        trlog::Stream error();
-        /* Note that trlog calls std::exit(1) after printing the message: */
-        trlog::Stream fatal();
+    namespace detail {
+        template <class S, class... T> std::string logFormat(S&& fmt, const T&... args)
+        {
+            boost::format format(std::forward<S>(fmt));
+
+            return boost::str((format % ... % args));
+        }
     }
 }
 
-#else
-
-#include <sstream>
-#include <iostream>
-
-namespace tsym {
-    namespace logging {
-        std::ostream& debug();
-        std::ostream& info();
-        std::ostream& warning();
-        std::ostream& error();
-        /* The program doesn't exit within this function: */
-        std::ostream& fatal();
-
-        enum Level { FATAL = 0, ERROR, WARNING, INFO, DEBUG };
-        extern Level verbosity;
+#define TSYM_LOGGING_ARGS(...)                                                                                         \
+    {                                                                                                                  \
+        "tsym", std::next(std::strrchr(__FILE__, '/')), __LINE__, tsym::detail::logFormat(__VA_ARGS__)                 \
     }
-}
 
-#endif
+#define TSYM_DEBUG(...) tsym::Logger::getInstance().debug(TSYM_LOGGING_ARGS(__VA_ARGS__))
+#define TSYM_INFO(...) tsym::Logger::getInstance().info(TSYM_LOGGING_ARGS(__VA_ARGS__))
+#define TSYM_WARNING(...) tsym::Logger::getInstance().warning(TSYM_LOGGING_ARGS(__VA_ARGS__))
+#define TSYM_ERROR(...) tsym::Logger::getInstance().error(TSYM_LOGGING_ARGS(__VA_ARGS__))
+#define TSYM_CRITICAL(...) tsym::Logger::getInstance().critical(TSYM_LOGGING_ARGS(__VA_ARGS__))
 
 #endif

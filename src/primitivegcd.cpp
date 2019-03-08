@@ -1,30 +1,30 @@
 
 #include "primitivegcd.h"
+#include "basefct.h"
+#include "baseptrlistfct.h"
+#include "logging.h"
+#include "numeric.h"
 #include "poly.h"
 #include "product.h"
-#include "numeric.h"
-#include "logging.h"
 
-tsym::BasePtr tsym::PrimitiveGcd::gcdAlgo(const BasePtr& u, const BasePtr& v,
-        const BasePtrList& L) const
+tsym::BasePtr tsym::PrimitiveGcd::gcdAlgo(const BasePtr& u, const BasePtr& v, const BasePtrList& L) const
 {
     const BasePtr x(L.front());
-    const BasePtrList R(L.rest());
-    const BasePtr uContent(poly::content(u, x, this));
-    const BasePtr vContent(poly::content(v, x, this));
+    const BasePtrList R(rest(L));
+    const BasePtr uContent(poly::content(u, x, *this));
+    const BasePtr vContent(poly::content(v, x, *this));
     const BasePtr d(compute(uContent, vContent, R));
     BasePtr uPrimPart(poly::divide(u, uContent, L).front());
     BasePtr vPrimPart(poly::divide(v, vContent, L).front());
-    BasePtr rPrimPart;
-    BasePtr remainder;
 
-    while (!vPrimPart->isZero()) {
-        remainder = poly::pseudoRemainder(uPrimPart, vPrimPart, x);
+    while (!isZero(*vPrimPart)) {
+        const auto remainder = poly::pseudoRemainder(uPrimPart, vPrimPart, x);
+        BasePtr rPrimPart;
 
-        if (remainder->isZero())
+        if (isZero(*remainder))
             rPrimPart = Numeric::zero();
-        else if (remainder->isUndefined()) {
-            logging::warning() << "Undefined remainder during primitive gcd computation, return 1.";
+        else if (isUndefined(*remainder)) {
+            TSYM_WARNING("Undefined remainder during primitive gcd computation, return 1.");
             return Numeric::one();
         } else
             rPrimPart = poly::divide(remainder, poly::content(remainder, x), L).front();

@@ -1,628 +1,348 @@
 
+#include "number.h"
+#include <boost/functional/hash.hpp>
+#include <cassert>
 #include <cmath>
+#include <exception>
+#include <functional>
 #include <iostream>
 #include <limits>
-#include "number.h"
-#include "printer.h"
+#include <sstream>
 #include "logging.h"
+#include "numberfct.h"
+#include "plaintextprintengine.h"
+#include "printer.h"
 
-const double tsym::Number::ZERO_TOL = std::numeric_limits<double>::epsilon();
-const double tsym::Number::TOL = 100.0*ZERO_TOL;
+tsym::Number::Number(int value)
+    : Number(value, 1)
+{}
 
-tsym::Number::Number() :
-    undefined(false)
+tsym::Number::Number(int numerator, int denominator)
+    : Number(Int(numerator), Int(denominator))
+{}
+
+tsym::Number::Number(double value)
+    : rep(value)
 {
-    setAndSimplify(0, 1, 0.0);
+    tryDoubleToFraction();
+    setDebugString();
 }
 
-tsym::Number::Number(int value) :
-    undefined(false)
+tsym::Number::Number(const Int& value)
+    : Number(value, 1)
+{}
+
+tsym::Number::Number(const Int& numerator, const Int& denominator)
+    /* The implementation doesn't move from input rvalues, hence const references are fine here: */
+    : rep(std::in_place_type_t<Rational>(), denominator < 0 ? -numerator : numerator, abs(denominator))
 {
-    setAndSimplify(value, 1, 0.0);
+    setDebugString();
 }
 
-tsym::Number::Number(int numerator, int denominator) :
-    undefined(false)
+void tsym::Number::setDebugString()
 {
-    setAndSimplify(numerator, denominator, 0.0);
-}
+#ifdef TSYM_WITH_DEBUG_STRINGS
+    std::ostringstream stream;
+    PlaintextPrintEngine engine(stream, PlaintextPrintEngine::CharSet::ASCII);
 
-tsym::Number::Number(double value) :
-    undefined(false)
-{
-    setAndSimplify(0, 1, value);
-}
+    print(engine, *this);
 
-tsym::Number::Number(const Int& value) :
-    undefined(false)
-{
-    setAndSimplify(value, 1, 0.0);
-}
-
-tsym::Number::Number(const Int& numerator, const Int& denominator) :
-    undefined(false)
-{
-    setAndSimplify(numerator, denominator, 0.0);
-}
-
-tsym::Number tsym::Number::createUndefined()
-{
-    Number undefined;
-
-    undefined.setUndefined();
-
-    return undefined;
-}
-
-void tsym::Number::setAndSimplify(int num, int denom, double dValue)
-{
-    setAndSimplify(Int(num), Int(denom), dValue);
-}
-
-void tsym::Number::setAndSimplify(const Int& num, const Int& denom, double dValue)
-{
-    set(num, denom, dValue);
-
-    if (denom == 0)
-        logging::error() << "Try to set fraction with zero denominator. Number is undefined.";
-    else if (num.hasOverflowed() || denom.hasOverflowed())
-        logging::error() << "Initiate Number with overflowed Int arguments! Number is undefined.";
-    else {
-        simplify();
-        return;
-    }
-
-    setUndefined();
-}
-
-void tsym::Number::set(const Int& num, const Int& denom, double dValue)
-{
-    if (denom > 0) {
-        this->num = num;
-        this->denom = denom;
-    } else {
-        this->num = -num;
-        this->denom = -denom;
-    }
-
-    this->dValue = dValue;
-}
-
-void tsym::Number::setUndefined()
-{
-    setAndSimplify(0, 1, 0.0);
-    undefined = true;
-}
-
-void tsym::Number::simplify()
-{
-    if (isDouble())
-        tryDoubleToFraction();
-
-    if (isFrac())
-        cancel();
-
-    #ifdef TSYM_DEBUG_STRINGS
-    prettyStr = Printer(*this).getStr();
-    #endif
+    prettyStr = stream.str();
+#endif
 }
 
 void tsym::Number::tryDoubleToFraction()
 {
+    assert(isDouble());
     /* We don't want to have huge fractions everywhere possible, so default number of floating point
      * digits isn't set to a too large value. */
-    const int nFloatDigits = 10000;
-    int truncated;
+    static const int nFloatDigits = 10000;
+    const double value = getDouble();
+    const double roundIncrement = value > 0.0 ? 0.5 : -0.5;
 
-    if (dValue*nFloatDigits >= std::numeric_limits<int>::max())
-        /* Conversion to int would lead to an integer overflow. */
+    if (value > std::numeric_limits<double>::max() / nFloatDigits - roundIncrement / nFloatDigits)
+        /* The product for constructing a fraction doesn't fit into a double. */
+        return;
+    else if (value < std::numeric_limits<double>::lowest() / nFloatDigits - roundIncrement / nFloatDigits)
         return;
 
-    truncated = (int)(dValue*nFloatDigits + 0.5);
+    auto truncated = Int(value * nFloatDigits + roundIncrement);
 
-    if (std::abs((double)truncated/nFloatDigits - dValue) < ZERO_TOL)
+    if (std::abs(static_cast<double>(truncated) / nFloatDigits - value) < std::numeric_limits<double>::epsilon())
         /* This will also catch very low double values, which turns them into a rational zero. */
-        setAndSimplify(truncated, nFloatDigits, 0.0);
+        rep.emplace<Rational>(truncated, Int(nFloatDigits));
 }
 
-void tsym::Number::cancel()
+double tsym::Number::getDouble() const
 {
-    /* The overload of std::abs doesn't seem to work correctly here, compiler warnings for possibly
-     * dangerous implicit conversions demand for the implicit cast to int. */
-    const Int divisor(gcd(num, denom).abs());
-
-    if (num == 0)
-        denom = 1;
-
-    if (divisor == 0 || divisor > num.abs() || divisor > denom)
-        return;
-
-    num /= divisor;
-    denom /= divisor;
+    return std::get<double>(rep);
 }
 
-tsym::Int tsym::Number::gcd(const Int& a, const Int& b) const
+tsym::Number& tsym::Number::operator+=(const Number& rhs)
 {
-    if (b == 0)
-        return a;
+    rep = std::visit(Operate<std::plus<>>{}, rep, rhs.rep);
 
-    return gcd(b, a % b);
-}
-
-tsym::Number& tsym::Number::operator += (const Number& rhs)
-{
-    if (isThisOrOtherUndefined(rhs))
-        setUndefined();
-    else if (isThisOrOtherDouble(rhs))
-        setAndSimplify(0, 1, toDouble() + rhs.toDouble());
-    else
-        addRational(rhs);
-
-    return *this;
-}
-
-bool tsym::Number::isThisOrOtherUndefined(const Number& other) const
-{
-    return isUndefined() || other.isUndefined();
-}
-
-bool tsym::Number::isThisOrOtherDouble(const Number& other) const
-{
-    return isDouble() || other.isDouble();
-}
-
-void tsym::Number::addRational(const Number& other)
-{
-    const Int multiple(lcm(denom, other.denom));
-    Int newDenom;
-    Int newNum;
-
-    if (num == 0 || other.num == 0) {
-        newNum = num + other.num;
-        newDenom = denom + other.denom - 1;
-    } else {
-        /* If the lcm is overflowed, the result of this evaluation will be, too. */
-        newNum = num*multiple/denom + other.num*multiple/other.denom;
-        newDenom = multiple;
-    }
-
-    if (newNum.hasOverflowed() || newDenom.hasOverflowed()) {
-        printOverflowWarning();
-        setAndSimplify(0, 1, toDouble() + other.toDouble());
-        return;
-    }
-
-    setAndSimplify(newNum, newDenom, 0.0);
-}
-
-tsym::Int tsym::Number::lcm(const Int& a, const Int& b) const
-    /* Returns the smallest common multiple of the given two integers, This method is only called
-     * during addition, the arguments are denominators of two numbers and thus positive. If an
-     * integer overflow occurs, this state is ported to the return value. */
-{
-    const Int divisor(gcd(a, b));
-
-    return a/divisor*b;
-}
-
-void tsym::Number::printOverflowWarning() const
-{
-    logging::warning() << "Integer overflow! Number is converted to double.";
-}
-
-tsym::Number& tsym::Number::operator -= (const Number& rhs)
-{
-    return operator += (rhs.flipSign());
-}
-
-tsym::Number tsym::Number::flipSign() const
-{
     if (isDouble())
-        return Number(-dValue);
-    else if (isRational())
-        return Number(-num, denom);
-    else
-        return *this;
-}
+        tryDoubleToFraction();
 
-tsym::Number& tsym::Number::operator *= (const Number& rhs)
-{
-    if (isThisOrOtherUndefined(rhs))
-        setUndefined();
-    else if (isThisOrOtherDouble(rhs))
-        setAndSimplify(0, 1, toDouble()*rhs.toDouble());
-    else
-        timesRational(rhs);
+    setDebugString();
 
     return *this;
 }
 
-void tsym::Number::timesRational(const Number& other)
+tsym::Number& tsym::Number::operator-=(const Number& rhs)
 {
-    const Int newNum(num*other.num);
-    const Int newDenom(denom*other.denom);
-
-    if (newNum.hasOverflowed() || newDenom.hasOverflowed()) {
-        printOverflowWarning();
-        setAndSimplify(0, 1, toDouble()*other.toDouble());
-    } else
-        setAndSimplify(newNum, newDenom, 0.0);
+    return operator+=(-rhs);
 }
 
-tsym::Number& tsym::Number::operator /= (const Number& rhs)
+tsym::Number& tsym::Number::operator*=(const Number& rhs)
+{
+    rep = std::visit(Operate<std::multiplies<>>{}, rep, rhs.rep);
+
+    if (isDouble())
+        tryDoubleToFraction();
+
+    setDebugString();
+
+    return *this;
+}
+
+tsym::Number& tsym::Number::operator/=(const Number& rhs)
 {
     static const Number minusOne(-1);
 
-    return operator *= (rhs.toThe(minusOne));
+    return operator*=(rhs.toThe(minusOne));
 }
 
-const tsym::Number& tsym::Number::operator + () const
+const tsym::Number& tsym::Number::operator+() const
 {
     return *this;
 }
 
-tsym::Number tsym::Number::operator - () const
+tsym::Number tsym::Number::operator-() const
 {
-    return flipSign();
+    if (isRational())
+        return {-numerator(), denominator()};
+    else
+        return {-toDouble()};
 }
 
 tsym::Number tsym::Number::toThe(const Number& exponent) const
 {
-    Number res;
-
-    if (processTrivialPowers(exponent, res))
-        return res;
-    else if (processNegBase(exponent, res))
-        return res;
-    else if (processIrrationalPowers(exponent, res))
-        return res;
-    else if (processRationalPowers(exponent, res))
-        return res;
-
-    res = *this;
-
-    res.setAndSimplify(0, 1, std::pow(toDouble(), exponent.toDouble()));
-
-    return res;
+    if (auto result = computeTrivialPower(exponent))
+        return *result;
+    else if ((result = computeNegBasePower(exponent)))
+        return *result;
+    else if ((result = computeIrrationalPower(exponent)))
+        return *result;
+    else
+        return computeRationalPower(exponent);
 }
 
-bool tsym::Number::processTrivialPowers(const Number& exponent, Number& result) const
-    /* If the power is evaluated within the block of trivial posssibilities, the second parameter is
-     * defined and true is returned, otherwise false. */
+std::optional<tsym::Number> tsym::Number::computeTrivialPower(const Number& exponent) const
 {
-    if (isThisOrOtherUndefined(exponent)) {
-        result = createUndefined();
-        return true;
-    } else if (isZero() && exponent.num < 0) {
-        logging::warning() << "Number division by zero! Result is undefined.";
-        result = createUndefined();
-        return true;
-    } else if (isZero() || isOne() || exponent.isOne()) {
-        result = *this;
-        return true;
-    } else if (exponent.isZero()) {
-        result = Number(1);
-        return true;
-    } else if (*this == -1) {
-        result = computeMinusOneToThe(exponent);
-        return true;
-    }
+    if (*this == 0 && exponent.numerator() < 0)
+        throw std::overflow_error("0 divisor in rational number division");
 
-    return false;
+    if (*this == 0 || *this == 1 || exponent == 1)
+        return *this;
+    else if (exponent == 0)
+        return 1;
+    else if (*this < 0 && !isInt(exponent))
+        throw std::overflow_error("Illegal power with base zero and non-integer exponent");
+    else if (*this == -1)
+        return computeMinusOneToThe(exponent);
+
+    return std::nullopt;
 }
 
 tsym::Number tsym::Number::computeMinusOneToThe(const Number& exponent) const
 {
-    const Int two(2);
+    assert(isInt(exponent));
 
-    if (exponent.isDouble())
-        return createUndefined();
-    else if (exponent.num % two == 0)
-        return Number(1);
-    else if (exponent.denom % two == 0 && num == -1)
-        return createUndefined();
-    else
-        return Number(-1);
+    return exponent.numerator() % 2 == 0 ? 1 : -1;
 }
 
-bool tsym::Number::processNegBase(const Number& exponent, Number& result) const
+std::optional<tsym::Number> tsym::Number::computeNegBasePower(const Number& exponent) const
 {
-    Number preFac(-1);
-
     if (*this > 0)
-        return false;
+        return std::nullopt;
+
+    assert(isInt(exponent));
+
+    Number preFac(-1);
 
     preFac = preFac.toThe(exponent);
 
-    if (preFac.isUndefined()) {
-        result = createUndefined();
-        return true;
-    }
-
-    result = this->abs().toThe(exponent)*preFac;
-
-    return true;
+    return abs(*this).toThe(exponent) * preFac;
 }
 
-bool tsym::Number::processIrrationalPowers(const Number& exponent, Number& result) const
+std::optional<tsym::Number> tsym::Number::computeIrrationalPower(const Number& exponent) const
 {
-    if (isThisOrOtherDouble(exponent)) {
-        result = Number(std::pow(toDouble(), exponent.toDouble()));
-        return true;
-    } else
-        return false;
+    if (isDouble() || exponent.isDouble())
+        return {std::pow(toDouble(), exponent.toDouble())};
+
+    return std::nullopt;
 }
 
-bool tsym::Number::processRationalPowers(const Number& exponent, Number& result) const
+tsym::Number tsym::Number::computeRationalPower(const Number& exponent) const
 {
     /* The base is positive and neither 1 or 0. The exponent is positive or negative. */
-    if (!computeNumPower(exponent.num, result))
-        return false;
+    auto result = computeNumPower(exponent.numerator());
+    computeDenomPower(exponent.denominator(), result);
 
-    /* We get here only if no integer overflow happened before. computeDenomPower can't produce
-     * an integer overflow, so no additional check is required. */
-    computeDenomPower(exponent.denom, result);
-
-    return true;
+    return result;
 }
 
-bool tsym::Number::computeNumPower(const Int& numExponent, Number& result) const
-    /* For e.g. (1/2)^(2/3), this does the part (1/2)^2. This may produce an integer overflow - if
-     * it does, the method stops and returns false, otherwise true. */
+tsym::Number tsym::Number::computeNumPower(const Int& numExponent) const
+/* For e.g. (1/2)^(2/3), this does the part (1/2)^2. */
 {
-    const Int newDenom(denom.toThe(numExponent.abs()));
-    const Int newNum(num.toThe(numExponent.abs()));
+    assert(fitsInto<unsigned>(abs(numExponent)));
+    const auto exp = static_cast<unsigned>(abs(numExponent));
+    const Int newDenom = pow(denominator(), exp);
+    const Int newNum = pow(numerator(), exp);
 
-    if (newNum.hasOverflowed() || newDenom.hasOverflowed()) {
-        printOverflowWarning();
-        return false;
-    } else if (numExponent < 0)
+    if (numExponent < 0)
         /* The method takes care of negative a numerator. */
-        result = Number(newDenom, newNum);
+        return {newDenom, newNum};
     else
-        result = Number(newNum, newDenom);
+        return {newNum, newDenom};
+}
 
-    return true;
+namespace tsym {
+    namespace {
+        Int tryGetBase(const Int& n, const Int& denomExponent)
+        /* Returns a in a^(1/denomExponent) = n, if that's an exact solution. Otherwise, returns 0. n
+         * and denomExponent are both positive. */
+        {
+            /* The following integer base can only be a solution, if the double resulting from the std::pow
+             * call is more or less exactly an integer. That's why 0.1 is added instead of the usual 0.5 for
+             * rounding. The purpose is to avoid truncation errors due to e.g. (int)(6.000001 + 0.5) = 7. On
+             * the other hand, (int)(5.50001 + 0.5) = 6 isn't a desired result, because 5.50001 will never
+             * lead to an exact integer solution of the power. Thus, it is save to cast the double power
+             * result to an integer after only adding 0.1 (which is somewhat arbitrary, could be any value
+             * less than 0.5). */
+            const double exact = std::pow(static_cast<double>(n), 1.0 / static_cast<double>(denomExponent));
+
+            if (exact > std::numeric_limits<int>::max())
+                /* Result wouldn't fit into an int. */
+                return 0;
+
+            const auto base = static_cast<int>(exact + 0.1);
+
+            if (std::abs(exact - static_cast<double>(base)) > 1.e-6)
+                /* We are not too strict here, because of the following check. */
+                return 0;
+
+            assert(denomExponent > 0 && fitsInto<unsigned>(denomExponent));
+
+            return pow(Int(base), static_cast<unsigned>(denomExponent)) == n ? base : 0;
+        }
+    }
 }
 
 void tsym::Number::computeDenomPower(const Int& denomExponent, Number& result) const
-    /* For e.g. (1/2)^(2/3), this does the part (1/2)^(1/3), where an attempt is made to resolve the
-     * power exactly, i.e., check for simple bases matching the numerator/denominator with the given
-     * denominator exponent (e.g. 8^(1/3) = 2). */
+/* For e.g. (1/2)^(2/3), this does the part (1/2)^(1/3), where an attempt is made to resolve the
+ * power exactly, i.e., check for simple bases matching the numerator/denominator with the given
+ * denominator exponent (e.g. 8^(1/3) = 2). */
 {
-    const Int numTest = tryGetBase(result.num, denomExponent);
-    const Int denomTest = tryGetBase(result.denom, denomExponent);
+    const Int numTest = tryGetBase(result.numerator(), denomExponent);
+    const Int denomTest = tryGetBase(result.denominator(), denomExponent);
 
     if (denomExponent == 1)
         return;
     else if (numTest == 0 || denomTest == 0)
-        result = Number(std::pow(result.toDouble(), 1.0/denomExponent.toDouble()));
+        result = {std::pow(result.toDouble(), 1.0 / static_cast<double>(denomExponent))};
     else
-        result = Number(numTest, denomTest);
-}
-
-tsym::Int tsym::Number::tryGetBase(const Int& n, const Int& denomExponent) const
-    /* Returns a in a^(1/denomExponent) = n, if that's an exact solution. Otherwise, returns 0. n
-     * and denomExponent are both positive. */
-{
-    /* The following integer base can only be a solution, if the double resulting from the std::pow
-     * call is more or less exactly an integer. That's why 0.1 is added instead of the usual 0.5 for
-     * rounding. The purpose is to avoid truncation errors due to e.g. (int)(6.000001 + 0.5) = 7. On
-     * the other hand, (int)(5.50001 + 0.5) = 6 isn't a desired result, because 5.50001 will never
-     * lead to an exact integer solution of the power. Thus, it is save to cast the double power
-     * result to an integer after only adding 0.1 (which is somewhat arbitrary, could be any value
-     * less than 0.5). */
-    const double exact = std::pow(n.toDouble(), 1.0/denomExponent.toDouble());
-    const int base = (int)(exact + 0.1);
-    Int res(base);
-
-    if (exact > std::numeric_limits<int>::max())
-        /* The exact doesn't fit into an int. */
-        return 0;
-    else if (std::abs(exact - (double)base) > 1.e-6)
-        /* We are not too strict here, because of the following check. */
-        return 0;
-
-    res = res.toThe(denomExponent);
-
-    if (res.hasOverflowed())
-        /* This shouldn't happen, it should have been overflowed before. */
-        return 0;
-    else
-        return res == n ? base : 0;
-}
-
-bool tsym::Number::equal(const Number& rhs) const
-{
-    if (areBothRational(rhs))
-        return num == rhs.num && denom == rhs.denom;
-    else if (isThisOrOtherUndefined(rhs))
-        return false;
-    else
-        return equalViaDouble(rhs);
-}
-
-bool tsym::Number::areBothRational(const Number& other) const
-{
-    return isRational() && other.isRational();
-}
-
-bool tsym::Number::equalViaDouble(const Number& rhs) const
-{
-    double dLhs = toDouble();
-    double dRhs = rhs.toDouble();
-    const double diff = std::abs(dLhs - dRhs);
-    double max = 1.0;
-
-    dLhs = std::abs(dLhs);
-    dRhs = std::abs(dRhs);
-
-    max = dLhs > max ? dLhs : max;
-    max = dRhs > max ? dRhs : max;
-
-    return diff < TOL*max;
-}
-
-bool tsym::Number::lessThan(const Number& rhs) const
-{
-    if (isThisOrOtherUndefined(rhs))
-        return false;
-    else if (areBothRational(rhs))
-        if (num < rhs.num && denom >= rhs.denom)
-            return true;
-
-    return toDouble() < rhs.toDouble();
-}
-
-bool tsym::Number::isZero() const
-{
-    if (isInt() || isFrac())
-        return num == 0;
-    else if (isDouble())
-        return std::abs(dValue) < TOL;
-    else if (isUndefined())
-        return false;
-
-    logging::error() << "Unknown number type " << *this << " during zero request.";
-
-    return false;
-}
-
-bool tsym::Number::isOne() const
-{
-    return isInt() && num == 1 && !undefined;
-}
-
-bool tsym::Number::isInt() const
-{
-    return denom == 1 && std::abs(dValue) < ZERO_TOL && !undefined;
-}
-
-bool tsym::Number::isFrac() const
-{
-    return denom != 1 && !undefined;
+        result = {numTest, denomTest};
 }
 
 bool tsym::Number::isRational() const
 {
-    return isInt() || isFrac();
+    return std::holds_alternative<Rational>(rep);
 }
 
 bool tsym::Number::isDouble() const
 {
-    return num == 0 && std::abs(dValue) > ZERO_TOL && !undefined;
+    return std::holds_alternative<double>(rep);
 }
 
-bool tsym::Number::isUndefined() const
+tsym::Int tsym::Number::numerator() const
 {
-    return undefined;
+    if (isRational())
+        return getRational().numerator();
+    else
+        return 0;
 }
 
-const tsym::Int& tsym::Number::numerator() const
+tsym::Number::Rational tsym::Number::getRational() const
 {
-    return num;
+    return std::get<Rational>(rep);
 }
 
-const tsym::Int& tsym::Number::denominator() const
+tsym::Int tsym::Number::denominator() const
 {
-    return denom;
+    if (isRational())
+        return getRational().denominator();
+    else
+        return 1;
 }
 
 double tsym::Number::toDouble() const
 {
-    if (isInt())
-        return num.toDouble();
-    else if (isFrac())
-        return num.toDouble()/denom.toDouble();
+    if (isRational())
+        return boost::rational_cast<double>(getRational());
     else
-        return dValue;
+        return getDouble();
 }
 
-tsym::Number tsym::Number::abs() const
-{
-    return *this < 0 ? flipSign() : *this;
+namespace tsym {
+    namespace {
+        bool areEqual(double lhs, double rhs)
+        {
+            const double diff = std::abs(lhs - rhs);
+            double max = 1.0;
+
+            lhs = std::abs(lhs);
+            rhs = std::abs(rhs);
+
+            max = lhs > max ? lhs : max;
+            max = rhs > max ? rhs : max;
+
+            return diff < 100. * std::numeric_limits<double>::epsilon() * max;
+        }
+    }
 }
 
-int tsym::Number::sign() const
+bool tsym::operator==(const Number& lhs, const Number& rhs)
 {
-    return *this < 0 ? -1 : 1;
+    if (lhs.isRational() && rhs.isRational())
+        return lhs.numerator() == rhs.numerator() && lhs.denominator() == rhs.denominator();
+    else
+        return areEqual(lhs.toDouble(), rhs.toDouble());
 }
 
-tsym::Number tsym::Number::Sqrt(const Number& base)
+bool tsym::operator<(const Number& lhs, const Number& rhs)
 {
-    const Number half(1, 2);
-
-    return Pow(base, half);
+    return lhs.toDouble() < rhs.toDouble();
 }
 
-tsym::Number tsym::Number::Pow(const Number& base, const Number& exp)
+std::ostream& tsym::operator<<(std::ostream& stream, const Number& rhs)
 {
-    return base.toThe(exp);
-}
+    PlaintextPrintEngine engine(stream);
 
-bool tsym::operator == (const Number& lhs, const Number& rhs)
-{
-    return lhs.equal(rhs);
-}
-
-bool tsym::operator != (const Number& lhs, const Number& rhs)
-{
-    return !lhs.equal(rhs);
-}
-
-bool tsym::operator < (const Number& lhs, const Number& rhs)
-{
-    return lhs.lessThan(rhs);
-}
-
-bool tsym::operator <= (const Number& lhs, const Number& rhs)
-{
-    return !(lhs > rhs);
-}
-
-bool tsym::operator > (const Number& lhs, const Number& rhs)
-{
-    return rhs < lhs;
-}
-
-bool tsym::operator >= (const Number& lhs, const Number& rhs)
-{
-    return !(lhs < rhs);
-}
-
-tsym::Number tsym::operator + (Number lhs, const Number& rhs)
-{
-    lhs += rhs;
-
-    return lhs;
-}
-
-tsym::Number tsym::operator - (Number lhs, const Number& rhs)
-{
-    lhs -= rhs;
-
-    return lhs;
-}
-
-tsym::Number tsym::operator * (Number lhs, const Number& rhs)
-{
-    lhs *= rhs;
-
-    return lhs;
-}
-
-tsym::Number tsym::operator / (Number lhs, const Number& rhs)
-{
-    lhs /= rhs;
-
-    return lhs;
-}
-
-std::ostream& tsym::operator << (std::ostream& stream, const Number& rhs)
-{
-    Printer printer(rhs);
-
-    printer.print(stream);
+    print(engine, rhs);
 
     return stream;
+}
+
+size_t std::hash<tsym::Number>::operator()(const tsym::Number& n) const
+{
+    size_t seed = 0;
+
+    boost::hash_combine(seed, n.toDouble());
+    boost::hash_combine(seed, n.denominator());
+    boost::hash_combine(seed, n.numerator());
+
+    return seed;
 }

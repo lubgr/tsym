@@ -1,0 +1,102 @@
+
+extends boost-test
+
+snippet bp "BasePtr" w
+BasePtr
+endsnippet
+
+snippet cbp "const BasePtr" w
+const BasePtr
+endsnippet
+
+snippet tbp "tsym::BasePtr" w
+tsym::BasePtr
+endsnippet
+
+snippet ctbp "const tsym::BasePtr" w
+const tsym::BasePtr
+endsnippet
+
+snippet bpl "BasePtrList" w
+BasePtrList
+endsnippet
+
+snippet cbpl "const BasePtrList" w
+const BasePtrList
+endsnippet
+
+snippet tbpl "tsym::BasePtrList" w
+tsym::BasePtrList
+endsnippet
+
+snippet ctbpl "const tsym::BasePtrList" w
+const tsym::BasePtrList
+endsnippet
+
+snippet pro "Product creation" w
+Product::create($1)$0
+endsnippet
+
+snippet minus "Product negative creation" w
+Product::minus($1)$0
+endsnippet
+
+snippet pow "Power creation" w
+Power::create($1)$0
+endsnippet
+
+snippet sum "Sum creation" w
+Sum::create($1)$0
+endsnippet
+
+snippet num "Numeric creation" w
+Numeric::create($1)$0
+endsnippet
+
+snippet asin "inverse sine" w
+Trigonometric::createAsin($1)
+endsnippet
+
+snippet acos "inverse cosine" w
+Trigonometric::createAcos($1)
+endsnippet
+
+snippet atan "inverse tangent" w
+Trigonometric::createAtan($1)
+endsnippet
+
+snippet atan2 "atan2" w
+Trigonometric::createAtan2($1, $2)
+endsnippet
+
+snippet sin "sine" w
+Trigonometric::createSin($1)
+endsnippet
+
+snippet cos "cosine" w
+Trigonometric::createCos($1)
+endsnippet
+
+snippet tan "tangent" w
+Trigonometric::createTan($1)
+endsnippet
+
+snippet dis "disable logging" w
+disableLog();
+endsnippet
+
+snippet en "disable logging" w
+enableLog();
+endsnippet
+
+priority -1
+
+snippet 'namespace t' "tsym namespace" w
+namespace tsym
+endsnippet
+
+priority -2
+
+snippet t "tsym namespace" w
+tsym::
+endsnippet

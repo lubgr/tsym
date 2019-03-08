@@ -1,36 +1,32 @@
 
-#include "numeric.h"
 #include "function.h"
+#include <boost/functional/hash.hpp>
+#include "basefct.h"
+#include "baseptrlistfct.h"
+#include "basetypestr.h"
+#include "numeric.h"
 
-tsym::Function::Function(const BasePtr& arg, const std::string& name) :
-    Base(BasePtrList(arg)),
-    arg(ops.front()),
-    functionName(name)
+tsym::Function::Function(const BasePtrList& args, Name&& name)
+    : Base(typestring::function, args)
+    , functionName{std::move(name)}
 {}
 
-tsym::Function::~Function() {}
-
-bool tsym::Function::isEqual(const BasePtr& other) const
+bool tsym::Function::isEqualDifferentBase(const Base& other) const
 {
-    if (sameType(other))
-        return name() == other->name() && ops.isEqual(other->operands());
+    if (sameType(*this, other))
+        return name() == other.name() && areEqual(ops, other.operands());
     else
         return false;
 }
 
-bool tsym::Function::sameType(const BasePtr& other) const
+size_t tsym::Function::hash() const
 {
-    return other->isFunction();
-}
+    size_t seed = 0;
 
-std::string tsym::Function::typeStr() const
-{
-    return "Function";
-}
+    boost::hash_combine(seed, functionName);
+    boost::hash_combine(seed, ops);
 
-bool tsym::Function::isFunction() const
-{
-    return true;
+    return seed;
 }
 
 tsym::BasePtr tsym::Function::constTerm() const

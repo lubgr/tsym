@@ -1,0 +1,8 @@
+--ignore-dir=build
+--ignore-dir=misc
+--ignore-dir=integration-tests
+--smart-case
+--sort-files
+--color
+--group
+--cpp

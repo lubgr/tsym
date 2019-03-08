@@ -1,38 +1,34 @@
 #!/usr/bin/env bash
 
-files=`ls include/*.h src/*.h src/*.cpp test/*.h test/*.cpp`
-formatstr="%-40s%s\n"
+CLANGFMT="clang-format --style=file"
 
-for file in $files; do
-    for line in `gawk '{if (length > 100) print NR}' $file`; do
-        printf $formatstr "$file +$line" "line > 100 chars"
-    done
+if ! $CLANGFMT --version | grep -qs '[5-9]\.[0-9]'; then
+    echo "Version requirement of clang format not met, >= 5 is required"
+    exit 1
+fi
 
-    for line in `gawk '/^ +$/ {print NR}' $file`; do
-        printf $formatstr "$file +$line" "empty line with whitespace"
-    done
+inplace=""
+files=`git ls-files -- '*.h' '*.cpp'`
 
-    for line in `gawk '/[^ ]+ +$/ {print NR}' $file`; do
-        printf $formatstr "$file +$line" "trailing whitespace"
-    done
+if [ $# -gt 0 -a "$1" = "-i" ]; then
+    inplace="-i"
+    shift
+fi
 
-    for line in `gawk 'END {if ($0 ~ /^ *$/) print NR}' $file`; do
-        printf $formatstr "$file +$line" "empty line at bottom"
-    done
+if [ -n "`echo $@`" ]; then
+    files=$@
+fi
 
-    for line in `gawk '/^ *$/ {if (++n > 1) print NR} /[^ ]/ {n = 0}' $file`; do
-        printf $formatstr "$file +$line" "multiple empty lines"
-    done
+tmpfile=`mktemp`
 
-    for line in `gawk '/^ *$/ {++n} /^ *}/ {if (n >= 1) print NR - 1} /[^ ]/ {n = 0}' $file`; do
-        printf $formatstr "$file +$line" "empty line before end of block"
-    done
-
-    for line in `gawk '/^ *[^ /*][^"]*  +[^ ]/ {print NR}' $file`; do
-        printf $formatstr "$file +$line" "multiple spaces between tokens"
-    done
-
-    for line in `gawk '/^ *[^ /*]/ {n = match($0, /[^ ]/) - 1; if (n % 4 != 0) print NR}' $file`; do
-        printf $formatstr "$file +$line" "indentation not a multiple of 4 spaces"
-    done
+for file in `ls $files`; do
+    if [ -z "$inplace" ]; then
+        diff -u <(cat $file) <($CLANGFMT $file)
+    else
+        cp $file $tmpfile
+        clang-format $inplace --style=file $file
+        diff -q $tmpfile $file > /dev/null || echo "$file changed..."
+    fi
 done
+
+rm -f "$tmpfile"

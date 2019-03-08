@@ -1,0 +1,5 @@
+unusedFunction
+selfAssignment:unit-tests/*.cpp
+noExplicitConstructor:include/tsym/var.h
+noExplicitConstructor:src/number.h
+noExplicitConstructor:src/baseptrlist.h

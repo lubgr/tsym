@@ -1,81 +1,88 @@
 
 #include "numeric.h"
+#include "basefct.h"
+#include "basetypestr.h"
+#include "fraction.h"
+#include "numberfct.h"
 #include "symbolmap.h"
 
-tsym::Numeric::Numeric(const Number& number) :
-    number(number)
-{}
-
-tsym::Numeric::~Numeric() {}
-
-tsym::BasePtr tsym::Numeric::create(int value)
+tsym::Numeric::Numeric(Number&& number, Base::CtorKey&&)
+    : Base(typestring::numeric)
+    , number(std::move(number))
 {
-    return create(Number(value));
+    setDebugString();
 }
 
-tsym::BasePtr tsym::Numeric::create(int numerator, int denominator)
+tsym::BasePtr tsym::Numeric::create(Number number)
 {
-    return create(Number(numerator, denominator));
+    return std::make_shared<const Numeric>(std::move(number), Base::CtorKey{});
 }
 
-tsym::BasePtr tsym::Numeric::create(double value)
-{
-    return create(Number(value));
-}
+namespace tsym {
+    namespace {
+        template <int num, int denom = 1> const tsym::BasePtr& refToLocalStatic()
+        {
+            static const auto n = Numeric::create(num, denom);
 
-tsym::BasePtr tsym::Numeric::create(const Int& value)
-{
-    return create(Number(value));
-}
-
-tsym::BasePtr tsym::Numeric::create(const Int& numerator, const Int& denominator)
-{
-    return create(Number(numerator, denominator));
-}
-
-tsym::BasePtr tsym::Numeric::create(const Number& number)
-{
-    if (number.isUndefined())
-        return Undefined::create();
-    else
-        return BasePtr(new Numeric(number));
+            return n;
+        }
+    }
 }
 
 const tsym::BasePtr& tsym::Numeric::zero()
 {
-    static const BasePtr n(create(0));
-
-    return n;
+    return refToLocalStatic<0>();
 }
 
 const tsym::BasePtr& tsym::Numeric::one()
 {
-    static const BasePtr n(create(1));
+    return refToLocalStatic<1>();
+}
 
-    return n;
+const tsym::BasePtr& tsym::Numeric::two()
+{
+    return refToLocalStatic<2>();
+}
+
+const tsym::BasePtr& tsym::Numeric::three()
+{
+    return refToLocalStatic<3>();
+}
+
+const tsym::BasePtr& tsym::Numeric::four()
+{
+    return refToLocalStatic<4>();
+}
+
+const tsym::BasePtr& tsym::Numeric::half()
+{
+    return refToLocalStatic<1, 2>();
+}
+
+const tsym::BasePtr& tsym::Numeric::third()
+{
+    return refToLocalStatic<1, 3>();
+}
+
+const tsym::BasePtr& tsym::Numeric::fourth()
+{
+    return refToLocalStatic<1, 4>();
 }
 
 const tsym::BasePtr& tsym::Numeric::mOne()
 {
-    static const BasePtr n(create(-1));
-
-    return n;
+    return refToLocalStatic<-1>();
 }
 
-bool tsym::Numeric::isEqual(const BasePtr& other) const
+bool tsym::Numeric::isEqualDifferentBase(const Base& other) const
 {
-    if (other->isNumeric())
-        return number == other->numericEval();
+    if (isNumeric(other))
+        return number == other.numericEval();
     else
         return false;
 }
 
-bool tsym::Numeric::sameType(const BasePtr& other) const
-{
-    return other->isNumeric();
-}
-
-tsym::Number tsym::Numeric::numericEval() const
+std::optional<tsym::Number> tsym::Numeric::numericEval() const
 {
     return number;
 }
@@ -83,39 +90,39 @@ tsym::Number tsym::Numeric::numericEval() const
 tsym::Fraction tsym::Numeric::normal(SymbolMap& map) const
 {
     if (number.isRational())
-        return Fraction(Numeric::create(number.numerator()), Numeric::create(number.denominator()));
+        return Fraction{Numeric::create(number.numerator()), Numeric::create(number.denominator())};
     else
-        return Fraction(map.getTmpSymbolAndStore(clone()));
+        return Fraction{map.getTmpSymbolAndStore(clone())};
 }
 
-tsym::BasePtr tsym::Numeric::diffWrtSymbol(const BasePtr&) const
+tsym::BasePtr tsym::Numeric::diffWrtSymbol(const Base&) const
 {
     return zero();
 }
 
-std::string tsym::Numeric::typeStr() const
+bool tsym::Numeric::isPositive() const
 {
-    return "Numeric";
+    return number > 0;
 }
 
-bool tsym::Numeric::isNumericallyEvaluable() const
+bool tsym::Numeric::isNegative() const
 {
-    return true;
+    return number < 0;
 }
 
-bool tsym::Numeric::isNumeric() const
+size_t tsym::Numeric::hash() const
 {
-    return true;
+    return std::hash<Number>{}(number);
 }
 
-bool tsym::Numeric::isZero() const
+unsigned tsym::Numeric::complexity() const
 {
-    return number.isZero();
-}
-
-bool tsym::Numeric::isOne() const
-{
-    return number.isOne();
+    if (isInt(number))
+        return 1;
+    else if (isFraction(number))
+        return 2;
+    else
+        return 3;
 }
 
 bool tsym::Numeric::isConst() const
@@ -143,7 +150,7 @@ tsym::BasePtr tsym::Numeric::nonConstTerm() const
     return create(1);
 }
 
-tsym::BasePtr tsym::Numeric::coeff(const BasePtr&, int exp) const
+tsym::BasePtr tsym::Numeric::coeff(const Base&, int exp) const
 {
     if (exp == 0)
         return clone();
@@ -151,7 +158,7 @@ tsym::BasePtr tsym::Numeric::coeff(const BasePtr&, int exp) const
         return Numeric::zero();
 }
 
-int tsym::Numeric::degree(const BasePtr&) const
+int tsym::Numeric::degree(const Base&) const
 {
     return 0;
 }

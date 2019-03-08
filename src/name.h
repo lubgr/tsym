@@ -1,45 +1,32 @@
 #ifndef TSYM_NAME_H
 #define TSYM_NAME_H
 
+#include <limits>
 #include <string>
 
 namespace tsym {
-    class Name {
-        public:
-            Name();
-            explicit Name(const std::string& name);
-            Name(const std::string& name, const std::string& subscript);
-            Name(const std::string& name, const std::string& subscript,
-                    const std::string& superscript);
-
-            const std::string& getName() const;
-            const std::string& getSubscript() const;
-            const std::string& getSuperscript() const;
-
-            const std::string& plain() const;
-            std::string tex() const;
-
-            bool equal(const Name& rhs) const;
-            bool lessThan(const Name& rhs) const;
-
-        private:
-            bool isGreekLetter() const;
-            std::string getGreekTexLetter() const;
-            std::string texAppendix(const std::string& term, const std::string& connection) const;
-
-            std::string name;
-            std::string subscript;
-            std::string superscript;
-            std::string plainText;
+    struct Name {
+        /* This struct shall be an aggregate, hence not boost operator CTRP base class. Until the
+         * three-way comparison is available, all operators must be implemented manually. */
+        std::string value;
+        std::string subscript{};
+        std::string superscript{};
     };
 
-    bool operator == (const Name& lhs, const Name& rhs);
-    bool operator != (const Name& lhs, const Name& rhs);
-    bool operator < (const Name& lhs, const Name& rhs);
-    bool operator <= (const Name& lhs, const Name& rhs);
-    bool operator > (const Name& lhs, const Name& rhs);
-    bool operator >= (const Name& lhs, const Name& rhs);
-    std::ostream& operator << (std::ostream& stream, const Name& name);
+    bool operator==(const Name& lhs, const Name& rhs);
+    bool operator!=(const Name& lhs, const Name& rhs);
+    bool operator<(const Name& lhs, const Name& rhs);
+    bool operator<=(const Name& lhs, const Name& rhs);
+    bool operator>(const Name& lhs, const Name& rhs);
+    bool operator>=(const Name& lhs, const Name& rhs);
+    std::ostream& operator<<(std::ostream& stream, const Name& name);
+    size_t hash_value(const Name& name);
+}
+
+namespace std {
+    template <> struct hash<tsym::Name> {
+        size_t operator()(const tsym::Name& name) const;
+    };
 }
 
 #endif

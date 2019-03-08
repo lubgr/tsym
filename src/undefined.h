@@ -5,30 +5,33 @@
 
 namespace tsym {
     class Undefined : public Base {
-        public:
-            static BasePtr create();
+      public:
+        /* There is only one instance, because no state is needed: */
+        static const BasePtr& create();
 
-            /* Returns always false: */
-            bool isEqual(const BasePtr& other) const;
-            bool sameType(const BasePtr& other) const;
-            Number numericEval() const;
-            Fraction normal(SymbolMap&) const;
-            BasePtr diffWrtSymbol(const BasePtr& symbol) const;
-            std::string typeStr() const;
+        explicit Undefined(Base::CtorKey&&);
+        Undefined(const Undefined&) = delete;
+        Undefined& operator=(const Undefined&) = delete;
+        Undefined(Undefined&&) = delete;
+        Undefined& operator=(Undefined&&) = delete;
+        ~Undefined() override = default;
 
-            /* Returns always true: */
-            bool isDifferent(const BasePtr& other) const;
-            bool has(const BasePtr& other) const;
-            BasePtr subst(const BasePtr& from, const BasePtr& to) const;
-            int degree(const BasePtr& variable) const;
+        /* Returns always false: */
+        bool isEqual(const Base& other) const override;
+        bool isEqualDifferentBase(const Base& other) const override;
+        std::optional<Number> numericEval() const override;
+        Fraction normal(SymbolMap&) const override;
+        BasePtr diffWrtSymbol(const Base& symbol) const override;
+        bool isPositive() const override;
+        bool isNegative() const override;
+        unsigned complexity() const override;
+        size_t hash() const override;
 
-            bool isUndefined() const;
-
-        private:
-            Undefined();
-            Undefined(const Undefined& other);
-            Undefined& operator = (Undefined const& other);
-            ~Undefined();
+        /* Returns always true: */
+        bool isDifferent(const Base& other) const override;
+        bool has(const Base& other) const override;
+        BasePtr subst(const Base& from, const BasePtr& to) const override;
+        int degree(const Base& variable) const override;
     };
 }
 

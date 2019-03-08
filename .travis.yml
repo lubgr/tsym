@@ -1,0 +1,73 @@
+language: cpp
+
+dist: trusty
+sudo: required
+os: linux
+
+branches:
+  only:
+    - develop
+
+git:
+    depth: 3
+
+before_install:
+  - export -f travis_fold
+
+install:
+  - export MAKEFLAGS='-j 2'
+  - sudo apt-get remove -y libboost-all-dev cmake cmake-data
+  - sudo apt-get autoremove -y
+  - sudo apt-get -qq update
+  - export CMAKEVER=3.12.1
+  - wget -qO- https://cmake.org/files/v${CMAKEVER/%.[0-9]/}/cmake-${CMAKEVER}-Linux-x86_64.tar.gz | tar xz
+  - export PATH="${PWD}/cmake-${CMAKEVER}-Linux-x86_64/bin/:${PATH}"
+  - export BOOSTVER=1_68_0
+  - export BOOSTDIR="${PWD}/boost_${BOOSTVER}"
+  - wget -qO- https://downloads.sourceforge.net/project/boost/boost/${BOOSTVER//_/.}/boost_${BOOSTVER}.tar.bz2 | tar xj
+  - travis_fold start "setup-script"
+  - ./bin/travis-setup.sh
+  - travis_fold end "setup-script"
+  - export PATH="/usr/lib/llvm-6.0/bin/:/usr/lib/llvm-5.0/bin/:${PATH}"
+
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+      - llvm-toolchain-trusty-5.0
+      - llvm-toolchain-trusty-6.0
+    packages:
+      - g++-7
+      - g++-8
+      - clang-5.0
+      - clang-6.0
+      - clang-tidy-6.0
+      - clang-tools-6.0
+      - clang-format-6.0
+      - lcov
+      - valgrind
+
+matrix:
+  include:
+    - env:
+          - MODE=RELEASE
+          - COMPILER="g++-7 g++-8 clang++ clang++-5.0"
+
+    - env:
+          - MODE=DEBUG
+          - COMPILER="clang++"
+
+    - env:
+          - MODE=PROFILING
+          - COMPILER="g++-7"
+
+    - env:
+          - MODE=INTEGRATION
+          - COMPILER="g++-7"
+
+    - env:
+          - COMPILER="clang++"
+          - MODE=ANALYSIS
+
+script:
+  - ./bin/travis.sh

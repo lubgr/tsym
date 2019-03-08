@@ -3,41 +3,44 @@
 
 #include <vector>
 #include "base.h"
-#include "baseptrlist.h"
 
 namespace tsym {
     class Sum : public Base {
-        public:
-            static BasePtr create(const BasePtr& s1, const BasePtr& s2);
-            static BasePtr create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3);
-            static BasePtr create(const BasePtr& s1, const BasePtr& s2, const BasePtr& s3,
-                    const BasePtr& s4);
-            static BasePtr create(const BasePtrList& summands);
+      public:
+        static BasePtr create(const BasePtrList& summands);
+        template <class... T> static BasePtr create(T&&... args)
+        {
+            return create({std::forward<T>(args)...});
+        }
 
-            /* Implentations of pure virtual methods of Base. */
-            bool isEqual(const BasePtr& other) const;
-            bool sameType(const BasePtr& other) const;
-            Number numericEval() const;
-            Fraction normal(SymbolMap& map) const;
-            BasePtr diffWrtSymbol(const BasePtr& symbol) const;
-            std::string typeStr() const;
+        explicit Sum(const BasePtrList& summands, Base::CtorKey&&);
+        Sum(const Sum&) = delete;
+        Sum& operator=(const Sum&) = delete;
+        Sum(Sum&&) = delete;
+        Sum& operator=(Sum&&) = delete;
+        ~Sum() override = default;
 
-            /* Overridden methods from Base. */
-            bool isSum() const;
-            BasePtr expand() const;
-            BasePtr subst(const BasePtr& from, const BasePtr& to) const;
-            BasePtr coeff(const BasePtr& variable, int exp) const;
-            int degree(const BasePtr& variable) const;
+        bool isEqualDifferentBase(const Base& other) const override;
+        std::optional<Number> numericEval() const override;
+        Fraction normal(SymbolMap& map) const override;
+        BasePtr diffWrtSymbol(const Base& symbol) const override;
+        bool isPositive() const override;
+        bool isNegative() const override;
+        unsigned complexity() const override;
+        size_t hash() const override;
 
-        private:
-            explicit Sum(const BasePtrList& summands);
-            Sum(const Sum& other);
-            Sum& operator = (const Sum& other);
-            ~Sum();
+        BasePtr expand() const override;
+        BasePtr subst(const Base& from, const BasePtr& to) const override;
+        BasePtr coeff(const Base& variable, int exp) const override;
+        int degree(const Base& variable) const override;
 
-            static BasePtr createSimplifiedSum(const BasePtrList& summands);
-            Fraction toCommonDenom(const std::vector<Fraction>& operands) const;
-            BasePtr coeffOverSummands(const BasePtr& variable, int exp) const;
+      private:
+        static BasePtr createSimplifiedSum(const BasePtrList& summands);
+        Fraction toCommonDenom(const std::vector<Fraction>& operands) const;
+        int sign() const;
+        int signOfNumericParts() const;
+        int signOfSymbolicParts() const;
+        BasePtr coeffOverSummands(const Base& variable, int exp) const;
     };
 }
 

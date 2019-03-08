@@ -1,0 +1,22 @@
+
+snippet fsuite "Boost auto test suite with fixture" b
+BOOST_FIXTURE_TEST_SUITE($1, $2)
+BOOST_AUTO_TEST_SUITE_END()
+endsnippet
+
+snippet suite "Boost auto test suite" b
+BOOST_AUTO_TEST_SUITE($1)
+BOOST_AUTO_TEST_SUITE_END()
+endsnippet
+
+snippet case "Boost auto test"
+BOOST_AUTO_TEST_CASE($1)
+endsnippet
+
+snippet eq "equality macro"
+BOOST_CHECK_EQUAL($1, $2);
+endsnippet
+
+snippet test "general purpose macro" b
+BOOST_TEST($1);
+endsnippet

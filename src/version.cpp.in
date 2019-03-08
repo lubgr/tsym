@@ -1,0 +1,32 @@
+
+#include "version.h"
+
+constexpr int tsym::version::major()
+{
+    return @tsym_VERSION_MAJOR@;
+}
+
+constexpr int tsym::version::minor()
+{
+    return @tsym_VERSION_MINOR@;
+}
+
+constexpr int tsym::version::patch()
+{
+    return @tsym_VERSION_PATCH@;
+}
+
+constexpr const char* tsym::version::compiler()
+{
+    return "@CMAKE_CXX_COMPILER_ID@ @CMAKE_CXX_COMPILER_VERSION@";
+}
+
+constexpr const char* tsym::version::os()
+{
+    return "@CMAKE_SYSTEM_NAME@ @CMAKE_SYSTEM_VERSION@";
+}
+
+constexpr const char* tsym::version::configureTime()
+{
+    return "@tsym_CONFIGURE_TIME@";
+}

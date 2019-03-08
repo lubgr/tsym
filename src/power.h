@@ -10,44 +10,42 @@ namespace tsym {
          * the simplification, see the PowerSimpl class, which follows Cohen's Computer Algebra and
          * Symbolic Computation [2003] in some parts, but implements a special treatment of numeric
          * powers, e.g. (3/4)^(-1/2) = (4/3)^(1/2). */
-        public:
-            static BasePtr create(const BasePtr& base, const BasePtr& exponent);
-            static BasePtr oneOver(const BasePtr& base);
-            static BasePtr sqrt(const BasePtr& base);
+      public:
+        static BasePtr create(const BasePtr& base, const BasePtr& exponent);
+        static BasePtr oneOver(const BasePtr& base);
+        static BasePtr sqrt(const BasePtr& base);
 
-            /* Implentations of pure virtual methods of Base. */
-            bool isEqual(const BasePtr& other) const;
-            bool sameType(const BasePtr& other) const;
-            Number numericEval() const;
-            Fraction normal(SymbolMap& map) const;
-            BasePtr diffWrtSymbol(const BasePtr& symbol) const;
-            std::string typeStr() const;
+        Power(const BasePtr& base, const BasePtr& exponent, Base::CtorKey&&);
+        Power(const Power&) = delete;
+        Power& operator=(const Power&) = delete;
+        Power(Power&&) = delete;
+        Power& operator=(Power&&) = delete;
+        ~Power() override = default;
 
-            /* Overridden methods from Base. */
-            bool isPower() const;
-            bool isNumericPower() const;
-            BasePtr expand() const;
-            BasePtr subst(const BasePtr& from, const BasePtr& to) const;
-            BasePtr coeff(const BasePtr& variable, int exp) const;
-            int degree(const BasePtr& variable) const;
-            BasePtr base() const;
-            BasePtr exp() const;
+        bool isEqualDifferentBase(const Base& other) const override;
+        std::optional<Number> numericEval() const override;
+        Fraction normal(SymbolMap& map) const override;
+        BasePtr diffWrtSymbol(const Base& symbol) const override;
+        bool isPositive() const override;
+        bool isNegative() const override;
+        unsigned complexity() const override;
+        size_t hash() const override;
 
-        private:
-            Power(const BasePtr& base, const BasePtr& exponent);
-            Power(const Power& other);
-            Power& operator = (Power const& other);
-            ~Power();
+        BasePtr expand() const override;
+        BasePtr subst(const Base& from, const BasePtr& to) const override;
+        BasePtr coeff(const Base& variable, int exp) const override;
+        int degree(const Base& variable) const override;
+        BasePtr base() const override;
+        BasePtr exp() const override;
 
-            static BasePtr createNotUndefined(const BasePtr& base, const BasePtr& exponent);
-            static bool isNumericLessThanZero(const BasePtr& ptr);
-            static BasePtr createNonTrivial(const BasePtr& base, const BasePtr& exponent);
-            bool isInteger(const BasePtr& ptr) const;
-            BasePtr expandIntegerExponent() const;
-            BasePtr expandSumBaseIntExp() const;
+      private:
+        static BasePtr createNotUndefined(const BasePtr& base, const BasePtr& exponent);
+        static BasePtr createNonTrivial(const BasePtr& base, const BasePtr& exponent);
+        BasePtr expandIntegerExponent() const;
+        BasePtr expandSumBaseIntExp() const;
 
-            const BasePtr& baseRef;
-            const BasePtr& expRef;
+        const BasePtr& baseRef;
+        const BasePtr& expRef;
     };
 }
 
