@@ -1,6 +1,6 @@
 
 cmake_minimum_required(VERSION 3.9)
-project(tsym VERSION 0.2.0 DESCRIPTION "Tiny symbolic library" LANGUAGES CXX)
+project(tsym VERSION 0.3.0 DESCRIPTION "Tiny symbolic library" LANGUAGES CXX)
 
 option(BUILD_SHARED_LIBS "Build as shared library" ON)
 option(BUILD_TESTING "Compile unit tests" OFF)
