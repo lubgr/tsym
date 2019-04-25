@@ -63,13 +63,13 @@ executable links to the boost test framework, and the appropriate static library
 
 Usage
 -----
-There is only one header that needs to be included: `tsym/all.h` (don't worry about compile times,
+There is only one header that needs to be included: `tsym/tsym.h` (don't worry about compile times,
 the library is indeed tiny). The library provides a **tsym::Var** class holding all expressions. It
 can be instantiated as a symbol or a number, and arithmetic as well as stream operators are
 overloaded:
 ```c++
 #include <iostream>
-#include "tsym/all.h"
+#include "tsym/tsym.h"
 
 int main(int argc, char **argv)
 {
