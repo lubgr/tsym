@@ -19,10 +19,10 @@ install:
   - sudo apt-get remove -y libboost-all-dev cmake cmake-data
   - sudo apt-get autoremove -y
   - sudo apt-get -qq update
-  - export CMAKEVER=3.12.1
+  - export CMAKEVER=3.14.3
   - wget -qO- https://cmake.org/files/v${CMAKEVER/%.[0-9]/}/cmake-${CMAKEVER}-Linux-x86_64.tar.gz | tar xz
   - export PATH="${PWD}/cmake-${CMAKEVER}-Linux-x86_64/bin/:${PATH}"
-  - export BOOSTVER=1_68_0
+  - export BOOSTVER=1_69_0
   - export BOOSTDIR="${PWD}/boost_${BOOSTVER}"
   - wget -qO- https://downloads.sourceforge.net/project/boost/boost/${BOOSTVER//_/.}/boost_${BOOSTVER}.tar.bz2 | tar xj
   - travis_fold start "setup-script"
