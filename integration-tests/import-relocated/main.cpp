@@ -1,6 +1,6 @@
 
 #include <iostream>
-#include "tsym/all.h"
+#include "tsym/tsym.h"
 
 int main(int, char**)
 {
