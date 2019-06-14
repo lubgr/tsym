@@ -22,6 +22,7 @@ add_library(tsym
     functions.cpp
     gcd.cpp
     int.cpp
+    leastcomplexitypivot.cpp
     logarithm.cpp
     logger.cpp
     name.cpp
@@ -35,6 +36,7 @@ add_library(tsym
     order.cpp
     parser.cpp
     plaintextprintengine.cpp
+    plu.cpp
     poly.cpp
     polyinfo.cpp
     power.cpp
