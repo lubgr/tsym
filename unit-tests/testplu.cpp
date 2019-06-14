@@ -2,6 +2,7 @@
 #include <array>
 #include <vector>
 #include "boostmatrixvector.h"
+#include "functions.h"
 #include "plu.h"
 #include "tsymtests.h"
 
@@ -16,13 +17,6 @@ struct PluFixture {
     const Var f = Var("f");
     const Var half = Var(1, 2);
 };
-
-namespace {
-    Var& localGet3d(Var A[][3], int i, int j)
-    {
-        return A[i][j];
-    }
-}
 
 BOOST_FIXTURE_TEST_SUITE(TestPlu, PluFixture)
 
@@ -66,53 +60,6 @@ BOOST_AUTO_TEST_CASE(solveLinearSystemDim2b)
 
     BOOST_CHECK_EQUAL(1, x(0));
     BOOST_CHECK_EQUAL(1, x(1));
-}
-
-BOOST_AUTO_TEST_CASE(solveLinearSystemDim2CustomAccess)
-{
-    const std::size_t dim = 2;
-    class Custom2dVector {
-      public:
-        Var& get(std::size_t i)
-        {
-            return rep[i];
-        }
-
-      private:
-        std::vector<Var> rep = {Var("a") + Var("b"), Var("c") + Var("d")};
-    };
-
-    class Custom2dMatrix {
-      public:
-        Var& get(std::size_t i, std::size_t j)
-        {
-            return rep[2 * i + j];
-        }
-
-      private:
-        std::vector<Var> rep = {Var("a"), Var("b"), Var("c"), Var("d")};
-    };
-
-    struct Callable {
-        Var& operator()(Custom2dMatrix& m, std::size_t i, std::size_t j)
-        {
-            return m.get(i, j);
-        }
-
-        Var& operator()(Custom2dVector& vec, std::size_t i)
-        {
-            return vec.get(i);
-        }
-    };
-
-    Custom2dMatrix A;
-    Custom2dVector rhs;
-    Custom2dVector x;
-
-    solve(A, rhs, x, dim, Callable(), Callable());
-
-    BOOST_CHECK_EQUAL(1, x.get(0));
-    BOOST_CHECK_EQUAL(1, x.get(1));
 }
 
 BOOST_AUTO_TEST_CASE(solveLinearSystemDim3a)
@@ -312,7 +259,7 @@ BOOST_AUTO_TEST_CASE(solveWithPlainCArrayAndSimplePivoting)
     b[1] = 17;
     b[2] = 74;
 
-    solve(A, b, x, 3, &localGet3d);
+    solve(A, b, x, 3);
 
     BOOST_CHECK_EQUAL(1, x[0]);
     BOOST_CHECK_EQUAL(2, x[1]);
@@ -429,7 +376,7 @@ BOOST_AUTO_TEST_CASE(numericDetDim20)
     const Var det = determinant(A, dim);
 
     /* The tolerance shouldn't be too high here, because the resulting determinant is large. */
-    BOOST_CHECK_CLOSE(expected, static_cast<double>(det), 1.e-3);
+    BOOST_CHECK_CLOSE(expected, static_cast<double>(det), 1.e-10);
 }
 
 BOOST_AUTO_TEST_CASE(detDim3)
@@ -441,7 +388,7 @@ BOOST_AUTO_TEST_CASE(detDim3)
     BOOST_CHECK_EQUAL(expected, det);
 }
 
-BOOST_AUTO_TEST_CASE(detDim3SpecifyAccess)
+BOOST_AUTO_TEST_CASE(detDim3ThroughLamdba)
 {
     std::array<std::array<Var, 3>, 3> A;
     const Var expected(a * b * d + 2 * c);
@@ -450,7 +397,7 @@ BOOST_AUTO_TEST_CASE(detDim3SpecifyAccess)
     A[1] = {{-2, 0, -b}};
     A[2] = {{0, d, c}};
 
-    const Var det = determinant(A, std::size_t{3}, [](auto& A, auto i, auto j) -> Var& { return A.at(i).at(j); });
+    const Var det = determinant([&A](auto i, auto j) { return A.at(i).at(j); }, std::size_t{3});
 
     BOOST_CHECK_EQUAL(expected, det);
 }
@@ -480,11 +427,11 @@ BOOST_AUTO_TEST_CASE(inverseDim2SpecifyAccess)
     const Var det = a * d - b * c;
     const std::vector<Var> expected{d / det, -b / det, -c / det, 1 / (d - b * c / a)};
     std::vector<Var> A{a, b, c, d};
+    auto adaptor = [&A](auto i, auto j) -> Var& { return A[i * 2 + j]; };
 
-    invert(A, 2u, [](auto& a, auto i, auto j) -> Var& { return a[i * 2 + j]; });
+    invert(adaptor, 2u);
 
-    for (unsigned i = 0; i < 4; ++i)
-        BOOST_CHECK_EQUAL(expected[i], A[i]);
+    BOOST_TEST(expected == A, boost::test_tools::per_element{});
 }
 
 BOOST_AUTO_TEST_CASE(numericInverseDim3)

@@ -4,13 +4,11 @@
 #include <boost/numeric/ublas/io.hpp>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <initializer_list>
-#include "plu.h"
+#include "var.h"
 
 using BoostMatrix = boost::numeric::ublas::matrix<tsym::Var>;
 using BoostVector = boost::numeric::ublas::vector<tsym::Var>;
 using BoostSizeType = BoostMatrix::size_type;
-using BoostMatrixProxy = tsym::plu::detail::MatrixAccessProxy<BoostMatrix, BoostSizeType>;
-using BoostVectorProxy = tsym::plu::detail::VectorAccessProxy<BoostVector, BoostSizeType>;
 
 BoostVector createBoostVector(std::initializer_list<tsym::Var> values);
 BoostMatrix createBoostMatrix(std::initializer_list<std::initializer_list<tsym::Var>> values);
