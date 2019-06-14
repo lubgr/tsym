@@ -145,29 +145,28 @@ const auto parseAttempt = tsym::parse("a*cos(3!)");
 if (!parseAttempt)
     std::cout << "Factorials aren't implemented\n";
 ```
-The parser does very limited error recovery, and partially parsed result are
-simply discarded. Three standard operations for matrices are provided as free
-functions, i.e., solution of linear systems of equations, matrix inversion and
-computing determinants. All three use the LU decomposition and a partial
-pivoting scheme and are implemented as function templates that accept any matrix
-type providing element access via `(i, j)` or `[i][j]` operators and any vector
-type with `(i)` or `[i]` operators. It's fine to use simple container types
-(`std::vector<tsym::Var>`, `std::vector<std::vector<tsym::Var>`, plain C-style
-arrays, `std::array` and so on. More sophisticated matrix/vector types don't
-help the performance that is solely governed by internal simplifications.
+The parser does very limited error recovery, and partially parsed result are simply discarded. Three
+standard operations for matrices are provided as free functions: solution of linear systems of
+equations, matrix inversion and computing determinants. All three use an LU decomposition and a
+partial pivoting scheme. They are wrapped by helper templates that accept arbitrary vector and
+matrix types, which support element access via an overloaded call operator (`matrix(i, j)` and
+`vector(i)`) or an array subscript operator (`matrix[i][j]` and `vector[i]`). It's fine to use
+simple container types (`std::vector<tsym::Var>`, `std::vector<std::vector<tsym::Var>`, plain
+C-style arrays, `std::array` and so on. More sophisticated matrix/vector types don't help the
+performance that is solely governed by internal algebraic simplifications.
 ```c++
 std::vector<std::vector<tsym::Var>> A;
 boost::numeric::ublas::matrix<tsym::Var> B;
 
 /* ... fill matrices with values ... */
 
-tsym::determinant(A, A.size()); /* A is modified in place! */
+tsym::determinant(A, A.size());
 tsym::invert(B, B.size1());
 ```
-The dimension (second parameter in the example above) should be passed as the container index type
-(usually some `unsigned` integral type). Instantiating the function with e.g. a literal integer
-will probably result in many unwanted sign conversions. When using a type that doesn't support the
-standard access operators, a callable entity can be passed to these functions.
+The dimension (second parameter in the example above) should be passed as the container index type.
+Instantiating the function with a different type might result in many unwanted sign conversions
+warnings. When using a type that doesn't support the access operators mentioned above, wrap it into
+a forwarding lambda.
 ```c++
 std::array<tsym::Var, 16> C; /* A 4x4 matrix with elements stored contingously. */
 std::unique_ptr<tsym::Var[]> rhs(new tsym::Var[4]);
@@ -175,15 +174,17 @@ std::unique_ptr<tsym::Var[]> x(new tsym::Var[4]);
 
 /* ... fill matrix and and right hand side with values ... */
 
-tsym::solve(C, rhs, x, std::size_t{4}, [](auto& A, auto i, auto j) -> tsym::Var& { return A[4u*i + j]; });
+auto wrappedC = [&C](auto i, auto j) -> tsym::Var& { return C[4u*i + j]; };
 
-/* A and rhs have changed now, x contains the solution. */
+tsym::solve(wrappedC, rhs, x, std::size_t{4});
+
+/* A and rhs are untouched, x contains the solution. */
 ```
-Different vector types for solution and right hand side aren't supported. Last, a sixth functions
-argument can be passed to `solve`, specifying the vector access function. When the given coefficient
-matrix is singular, all functions will throw an instance of `std::invalid_argument`. To keep the
-requirements on vector/matrix types low, no sanity checks are made (client code is hence responsible
-for correct dimensions)
+When the given coefficient matrix is singular, all functions will throw an instance of
+`std::invalid_argument`. To keep the requirements on vector/matrix types low, no sanity checks are
+made (client code is hence responsible for correct dimensions). Further note that `solve` and
+`determinant` don't mutate the input matrix and (if applicable) the right hand side vector (this
+differs from most LU decomposition approaches for numerical types).
 
 Additional notes
 ----------------
