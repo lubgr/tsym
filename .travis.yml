@@ -19,7 +19,7 @@ install:
   - sudo apt-get remove -y libboost-all-dev cmake cmake-data
   - sudo apt-get autoremove -y
   - sudo apt-get -qq update
-  - export CMAKEVER=3.14.5
+  - export CMAKEVER=3.14.3
   - wget -qO- https://cmake.org/files/v${CMAKEVER/%.[0-9]/}/cmake-${CMAKEVER}-Linux-x86_64.tar.gz | tar xz
   - export PATH="${PWD}/cmake-${CMAKEVER}-Linux-x86_64/bin/:${PATH}"
   - export BOOSTVER=1_70_0
