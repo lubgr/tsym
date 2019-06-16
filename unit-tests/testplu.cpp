@@ -76,6 +76,24 @@ BOOST_AUTO_TEST_CASE(solveLinearSystemDim3a)
     BOOST_CHECK_EQUAL(b, x(2));
 }
 
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim4SkipField)
+{
+    const Var untouched = tsym::pow(a + d, b);
+    auto A = createBoostMatrix({{a, b, 17 * b / 29, 0}, {d, 3 * d - a, 4, 0},
+      {0, a - b, 1 / (a * b * c), tsym::pow(12, d)}, {1, 5 * a * a, 4 * a, 0}});
+    auto rhs = createBoostVector({a * d + 17 * a * b / 116, d, b * tsym::pow(12, d) + 1 / (b * c * 4), d + a * a});
+    auto x = createBoostVector({0, untouched, 0, 0});
+    std::vector<bool> skipField{false, true, false, false};
+
+    solve(A, rhs, x, skipField, x.size());
+
+    BOOST_CHECK_EQUAL(4, x.size());
+    BOOST_CHECK_EQUAL(d, x(0));
+    BOOST_CHECK_EQUAL(untouched, x(1));
+    BOOST_CHECK_EQUAL(a / 4, x(2));
+    BOOST_CHECK_EQUAL(b, x(3));
+}
+
 BOOST_AUTO_TEST_CASE(solveLinearSystemDim3b, *label("expensive"))
 {
     const BoostSizeType dim(3);
@@ -411,6 +429,21 @@ BOOST_AUTO_TEST_CASE(detDim4)
     BOOST_CHECK_EQUAL(expected, det);
 }
 
+BOOST_AUTO_TEST_CASE(detDim7SkipField)
+{
+    boost::numeric::ublas::vector<bool> skipField(7, false);
+
+    skipField(1) = skipField(2) = skipField(6) = true;
+
+    auto A = createBoostMatrix({{0, b * a, a + b, 1, a, 3, 14}, {9, 8, 7, b + c, 5, a, 2},
+      {a, 0, 0, 23 * d, c, d * c, a}, {b, 100, -100, 0, 2, 0, 2 * a / 3 + b}, {a, a, -3 * b, Var(-1, 2), 0, 2, 123},
+      {0, f, f * f * f, b, 3, 0, -f}, {d, -10, b, d * c, 0, 72, 0}});
+    const Var expected(-6 * a * b - 2 * a * b * b + 21 * b / 2);
+    const Var det = determinant(A, skipField, BoostSizeType{7});
+
+    BOOST_CHECK_EQUAL(expected, det);
+}
+
 BOOST_AUTO_TEST_CASE(inverseDim2)
 {
     auto A = createBoostMatrix({{a, b}, {c, d}});
@@ -461,6 +494,32 @@ BOOST_AUTO_TEST_CASE(inverseDim3, *label("expensive"))
     expected[1] = {(10 - a * a * c * d) / (-20 * b * b + a * b * c * d),
       (-a + 2 * a * a * b) / (-20 * b * b + a * b * c * d), 1 / b};
     expected[2] = {-10 / (-20 * b + a * c * d), 1 / (-20 * b / a + c * d), 0};
+
+    for (unsigned i = 0; i < dim; ++i)
+        for (unsigned j = 0; j < dim; ++j) {
+            BOOST_CHECK_EQUAL(expected[i][j], A[i][j]);
+        }
+}
+
+BOOST_AUTO_TEST_CASE(inverseDim4SkipField, *label("expensive"))
+{
+    const unsigned dim = 4;
+    const std::vector<int> skip{0, 0, 1, 0};
+    std::vector<std::vector<Var>> A(dim);
+    std::vector<std::vector<Var>> expected(dim);
+
+    A[0] = {a, 0, c * c, 2 * b};
+    A[1] = {10, 0, d + 4 * a / 3, c * d};
+    A[2] = {2500, a * b * c, 3 * d * a, -10};
+    A[3] = {a * a, b, -b * a, 1};
+
+    invert(A, skip, dim);
+
+    expected[0] = {c * d / (-20 * b + a * c * d), -2 * b / (-20 * b + a * c * d), c * c, 0};
+    expected[1] = {(10 - a * a * c * d) / (-20 * b * b + a * b * c * d),
+      (-a + 2 * a * a * b) / (-20 * b * b + a * b * c * d), d + 4 * a / 3, 1 / b};
+    expected[2] = {2500, a * b * c, 3 * d * a, -10},
+    expected[3] = {-10 / (-20 * b + a * c * d), 1 / (-20 * b / a + c * d), -b * a, 0};
 
     for (unsigned i = 0; i < dim; ++i)
         for (unsigned j = 0; j < dim; ++j) {
