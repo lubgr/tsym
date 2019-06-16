@@ -182,9 +182,14 @@ tsym::solve(wrappedC, rhs, x, std::size_t{4});
 ```
 When the given coefficient matrix is singular, all functions will throw an instance of
 `std::invalid_argument`. To keep the requirements on vector/matrix types low, no sanity checks are
-made (client code is hence responsible for correct dimensions). Further note that `solve` and
-`determinant` don't mutate the input matrix and (if applicable) the right hand side vector (this
-differs from most LU decomposition approaches for numerical types).
+made (client code is hence responsible for correct dimensions, violating these preconditions leads
+to undefined behavior). Further note that `solve` and `determinant` don't mutate the input matrix
+and (if applicable) the right hand side vector (this differs from most LU decomposition approaches
+for numerical types), and an additional, one-dimensional skip field sequence can be passed to
+`solve`, `determinant` and `invert` as the last but one argument (before the dimension parameter)
+for indicating subproblems to be solved. The skip field is handled identically to matrix/vector
+arguments, and rows/columns for which the skip field element evaluates to `true` are ignored by the
+procedures.
 
 Additional notes
 ----------------
