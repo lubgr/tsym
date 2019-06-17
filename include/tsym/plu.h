@@ -144,7 +144,7 @@ namespace tsym {
 
         std::vector<Var> result = detail::solve(std::move(coeff), std::move(rhs), reducedDim);
 
-        detail::fromStdVec(std::move(result), x, sf, dim);
+        detail::fromStdVec(std::move(result), x, skip, dim);
     }
 
     template <class Matrix, class RhsVector, class SolutionVector, typename SizeType>
