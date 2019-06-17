@@ -25,6 +25,8 @@ build() {
     make tsym tests
     SUCCESS=$?
 
+    cat -n unit-tests/Makefile
+
     return ${SUCCESS}
 }
 
