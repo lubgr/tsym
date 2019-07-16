@@ -64,7 +64,7 @@ elif [ "${MODE}" = "PROFILING" ]; then
 elif [ "${MODE}" = "DEBUG" ]; then
     CMAKE_BUILD_TYPE=Sanitizer
 
-    buildDir "debug-sanitizer-${COMPILIER}"
+    buildDir "debug-sanitizer-${COMPILER}"
     build "${COMPILER}"
     logFile=sanitizerLog
     ${TESTEXEC} -l all --color=no &> "${logFile}" || EXIT=1
@@ -73,7 +73,7 @@ elif [ "${MODE}" = "DEBUG" ]; then
     popd
 
     CMAKE_BUILD_TYPE=Debug
-    buildDir "debug-valgrind-${COMPILIER}"
+    buildDir "debug-valgrind-${COMPILER}"
     build "${COMPILER}"
     valgrind --error-exitcode=1 --leak-check=full "${TESTEXEC}" -t '!@expensive' || EXIT=1
     popd
