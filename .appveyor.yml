@@ -7,7 +7,7 @@ os:
 build_script:
     - mkdir build
     - cd build
-    - cmake -G "Visual Studio 15 2017 Win64" -DBOOST_ROOT=C:\Libraries\boost_1_69_0 ..
+    - cmake -D BUILD_TESTING=ON -G "Visual Studio 15 2017 Win64" -DBOOST_ROOT=C:\Libraries\boost_1_69_0 ..
     - cmake --build . --target tests --config Release
 
 test_script:
