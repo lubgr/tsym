@@ -430,9 +430,13 @@ namespace tsym {
 
         bool areNumPowersWithZeroSumExp(const Base& f1, const Base& f2)
         {
-            const BasePtr sum(Sum::create(f1.exp(), f2.exp()));
+            if (isNumericPower(f1) && isNumericPower(f2)) {
+                const BasePtr sum(Sum::create(f1.exp(), f2.exp()));
 
-            return isZero(*sum);
+                return isZero(*sum);
+            }
+
+            return false;
         }
 
         BasePtrList simplTwoZeroSumExp(const BasePtr& f1, const BasePtr& f2)

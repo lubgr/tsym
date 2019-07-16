@@ -1032,4 +1032,14 @@ BOOST_AUTO_TEST_CASE(sumOfExpUnclearBasePowers)
     BOOST_CHECK_EQUAL(expected, res);
 }
 
+BOOST_AUTO_TEST_CASE(dontAlwaysContractZeroSumExp)
+{
+    const BasePtr fac1 = Sum::create(Numeric::create(-4), Product::minus(three, sqrtTwo));
+    const BasePtr fac2 =
+      Power::oneOver(Sum::create(Numeric::create(68), Product::create(Numeric::create(48), sqrtTwo)));
+    const BasePtr result = Product::create(fac1, fac2);
+
+    BOOST_TEST(result->operands().size() > 1);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
