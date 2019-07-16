@@ -7,3 +7,5 @@ build*
 !.clang-format
 .ackrc
 .vimrc
+.nvimrc
+compile_commands.json
