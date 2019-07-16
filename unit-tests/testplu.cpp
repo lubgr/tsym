@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(solveLinearSystemDim3b, *label("expensive"))
     BOOST_CHECK_EQUAL(f * f, x(2));
 }
 
-BOOST_AUTO_TEST_CASE(solveLinearSystemDim4)
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim4a)
 {
     BoostMatrix A(4, 4);
     BoostVector rhs(4);
@@ -149,6 +149,46 @@ BOOST_AUTO_TEST_CASE(solveLinearSystemDim4)
     BOOST_CHECK_EQUAL(-3 + 3 * b / c, x(1));
     BOOST_CHECK_EQUAL(3 / c, x(2));
     BOOST_CHECK_EQUAL(1 - 2 * a * a + 3 * b / 2 + 3 * a * a * b / (2 * c) - 3 * b * b / (2 * c), x(3));
+}
+
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim4b)
+{
+    const Var sqrtTwo = tsym::sqrt(2);
+    BoostMatrix A(4, 4);
+    BoostVector rhs(4);
+    BoostVector x(4);
+
+    A(0, 0) = sqrtTwo * b / (4 * a) + b / a;
+    A(0, 1) = 0;
+    A(0, 2) = -sqrtTwo * b / (4 * a);
+    A(0, 3) = sqrtTwo * b / (4 * a);
+
+    A(1, 0) = 0;
+    A(1, 1) = 1;
+    A(1, 2) = 0;
+    A(1, 3) = 0;
+
+    A(2, 0) = -sqrtTwo * b / (4 * a);
+    A(2, 1) = 0;
+    A(2, 2) = sqrtTwo * b / (4 * a) + b / a;
+    A(2, 3) = -sqrtTwo * b / (4 * a);
+
+    A(3, 0) = sqrtTwo * b / (4 * a);
+    A(3, 1) = 0;
+    A(3, 2) = -sqrtTwo * b / (4 * a);
+    A(3, 3) = sqrtTwo * b / (4 * a) + b / a;
+
+    rhs(0) = 0;
+    rhs(1) = 0;
+    rhs(2) = 1;
+    rhs(3) = 0;
+
+    solve(A, rhs, x, rhs.size());
+
+    BOOST_CHECK_EQUAL(a / (3 * b + 2 * sqrtTwo * b), x(0));
+    BOOST_CHECK_EQUAL(0, x(1));
+    BOOST_CHECK_EQUAL((2 * a + 2 * sqrtTwo * a) / (3 * b + 2 * sqrtTwo * b), x(2));
+    BOOST_CHECK_EQUAL(a / (3 * b + 2 * sqrtTwo * b), x(3));
 }
 
 BOOST_AUTO_TEST_CASE(solveDependentLinearSystemDim4, *label("expensive"))
