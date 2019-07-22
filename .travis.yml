@@ -16,7 +16,7 @@ before_install:
 
 install:
   - export MAKEFLAGS='-j 2'
-  - sudo apt-get remove -y  libboost-doc libboost-dev libboost-all-dev cmake cmake-data
+  - sudo apt-get remove -y cmake cmake-data
   - sudo apt-get autoremove -y
   - sudo apt-get -qq update
   - export CMAKEVER=3.14.6
@@ -45,7 +45,8 @@ addons:
       - clang-format-6.0
       - lcov
       - valgrind
-      - boost1.70
+      - libboost1.70
+      - libboost1.70-dev
 
 matrix:
   include:
