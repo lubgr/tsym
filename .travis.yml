@@ -16,15 +16,12 @@ before_install:
 
 install:
   - export MAKEFLAGS='-j 2'
-  - sudo apt-get remove -y libboost-all-dev cmake cmake-data
+  - sudo apt-get remove -y  libboost-doc libboost-dev libboost-all-dev cmake cmake-data
   - sudo apt-get autoremove -y
   - sudo apt-get -qq update
   - export CMAKEVER=3.14.6
   - wget -qO- https://cmake.org/files/v${CMAKEVER/%.[0-9]/}/cmake-${CMAKEVER}-Linux-x86_64.tar.gz | tar xz
   - export PATH="${PWD}/cmake-${CMAKEVER}-Linux-x86_64/bin/:${PATH}"
-  - export BOOSTVER=1_70_0
-  - export BOOSTDIR="${PWD}/boost_${BOOSTVER}"
-  - wget -qO- https://downloads.sourceforge.net/project/boost/boost/${BOOSTVER//_/.}/boost_${BOOSTVER}.tar.bz2 | tar xj
   - travis_fold start "setup-script"
   - ./bin/travis-setup.sh
   - travis_fold end "setup-script"
@@ -36,6 +33,8 @@ addons:
       - ubuntu-toolchain-r-test
       - llvm-toolchain-trusty-5.0
       - llvm-toolchain-trusty-6.0
+      - sourceline: 'ppa:mhier/libboost-latest'
+
     packages:
       - g++-7
       - g++-8
@@ -46,6 +45,7 @@ addons:
       - clang-format-6.0
       - lcov
       - valgrind
+      - boost1.70
 
 matrix:
   include:
