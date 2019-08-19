@@ -25,8 +25,6 @@ build() {
     make tsym tests
     SUCCESS=$?
 
-    cat -n unit-tests/CMakeFiles/tests.dir/build.make
-
     return ${SUCCESS}
 }
 

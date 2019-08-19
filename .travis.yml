@@ -22,6 +22,9 @@ install:
   - export CMAKEVER=3.14.6
   - wget -qO- https://cmake.org/files/v${CMAKEVER/%.[0-9]/}/cmake-${CMAKEVER}-Linux-x86_64.tar.gz | tar xz
   - export PATH="${PWD}/cmake-${CMAKEVER}-Linux-x86_64/bin/:${PATH}"
+  - export BOOSTVER=1_71_0
+  - export BOOSTDIR="${PWD}/boost_${BOOSTVER}"
+  - wget -qO- https://downloads.sourceforge.net/project/boost/boost/${BOOSTVER//_/.}/boost_${BOOSTVER}.tar.bz2 | tar xj
   - travis_fold start "setup-script"
   - ./bin/travis-setup.sh
   - travis_fold end "setup-script"
@@ -33,7 +36,6 @@ addons:
       - ubuntu-toolchain-r-test
       - llvm-toolchain-trusty-5.0
       - llvm-toolchain-trusty-6.0
-      - sourceline: 'ppa:mhier/libboost-latest'
 
     packages:
       - g++-7
@@ -45,8 +47,6 @@ addons:
       - clang-format-6.0
       - lcov
       - valgrind
-      - libboost1.70
-      - libboost1.70-dev
 
 matrix:
   include:
