@@ -24,7 +24,7 @@ install:
   - export PATH="${PWD}/cmake-${CMAKEVER}-Linux-x86_64/bin/:${PATH}"
   - export BOOSTVER=1_71_0
   - export BOOSTDIR="${PWD}/boost_${BOOSTVER}"
-  - wget -qO- https://downloads.sourceforge.net/project/boost/boost/${BOOSTVER//_/.}/boost_${BOOSTVER}.tar.bz2 | tar xj
+  - wget -qO- https://dl.bintray.com/boostorg/release/${BOOSTVER//_/.}/source/boost_${BOOSTVER}.tar.bz2 | tar xj
   - travis_fold start "setup-script"
   - ./bin/travis-setup.sh
   - travis_fold end "setup-script"
