@@ -138,6 +138,8 @@ namespace tsym {
         {
             BasePtrList summands;
 
+            assert(isSum(sum));
+
             for (const auto& item : sum.operands()) {
                 auto product = Product::create(scalar, item);
                 summands.push_back(product->expand());
@@ -164,8 +166,14 @@ tsym::BasePtr tsym::expandAsProduct(const BasePtrList& list)
 
     if (sums.empty())
         expanded = scalar;
-    else
-        expanded = expandProductOf(scalar, *expandProductOf(sums));
+    else {
+        const BasePtr secondFactor = expandProductOf(sums);
+
+        if (isSum(*secondFactor))
+            expanded = expandProductOf(scalar, *secondFactor);
+        else
+            expanded = Product::create(scalar, secondFactor);
+    }
 
     return map.insert({list, std::move(expanded)})->second;
 }

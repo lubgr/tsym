@@ -308,4 +308,18 @@ BOOST_AUTO_TEST_CASE(sumsOfPowersWithIntExp)
     BOOST_CHECK_EQUAL(orig, result);
 }
 
+BOOST_AUTO_TEST_CASE(partialSumExpansionIsScalar)
+{
+    const BasePtr sqrtTwo = Power::sqrt(two);
+    const BasePtr s1 = Power::oneOver(Product::create(nine, sqrtTwo));
+    const BasePtr s2 = Product::create(Numeric::create(4, 243), sqrtTwo);
+    const BasePtr base = Sum::create(s1, s2);
+    const BasePtr exp = Numeric::create(-2);
+    const BasePtr pow = Power::create(base, exp);
+    const BasePtr result = pow->expand();
+    const BasePtr expected = Numeric::create(118098, 1225);
+
+    BOOST_CHECK_EQUAL(expected, result);
+}
+
 BOOST_AUTO_TEST_SUITE_END()
