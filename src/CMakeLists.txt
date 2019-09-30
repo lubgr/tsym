@@ -1,5 +1,5 @@
 
-string(TIMESTAMP tsym_CONFIGURE_TIME "%Y-%B-%d %H:%M")
+string(TIMESTAMP tsym_CONFIGURE_TIME "%Y-%B-%d")
 
 configure_file(version.cpp.in version.cpp)
 
