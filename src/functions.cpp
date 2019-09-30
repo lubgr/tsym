@@ -132,7 +132,11 @@ tsym::Var tsym::simplify(const Var& arg)
         normalizedNext = normalizedNext->normal();
     }
 
-    const BasePtr& result = normalizedNext->complexity() < expanded->complexity() ? normalizedNext : expanded;
+    const BasePtr expandedNext(normalizedNext->expand());
+    const BasePtr simplestExpanded = expandedNext->complexity() < expanded->complexity() ? expandedNext : expanded;
+
+    const BasePtr& result =
+      normalizedNext->complexity() < simplestExpanded->complexity() ? normalizedNext : simplestExpanded;
 
     if (result->isDifferent(*rep)) {
         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(clock::now() - before);
