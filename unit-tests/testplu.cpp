@@ -3,7 +3,7 @@
 #include <vector>
 #include "boostmatrixvector.h"
 #include "functions.h"
-#include "plu.h"
+#include "solve.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -16,6 +16,7 @@ struct PluFixture {
     const Var e = Var("e");
     const Var f = Var("f");
     const Var half = Var(1, 2);
+    const Var sqrtTwo = tsym::sqrt(2);
 };
 
 BOOST_FIXTURE_TEST_SUITE(TestPlu, PluFixture)
@@ -183,7 +184,7 @@ BOOST_AUTO_TEST_CASE(solveLinearSystemDim4b)
     rhs(2) = 1;
     rhs(3) = 0;
 
-    solve(A, rhs, x, rhs.size());
+    solve(A, rhs, x, rhs.size(), Algo::Gauss);
 
     BOOST_CHECK_EQUAL(a / (3 * b + 2 * sqrtTwo * b), x(0));
     BOOST_CHECK_EQUAL(0, x(1));
@@ -344,6 +345,207 @@ BOOST_AUTO_TEST_CASE(solveLinearSystemDim3PivotingByCycling)
     BOOST_CHECK_EQUAL(0, x(0));
     BOOST_CHECK_EQUAL(2, x(1));
     BOOST_CHECK_EQUAL(3, x(2));
+}
+
+BOOST_AUTO_TEST_CASE(solveLinearNumericSystemDim10)
+{
+    const size_t dim = 10;
+    std::vector<std::vector<Var>> A(dim);
+    std::vector<Var> rhs(dim);
+    std::vector<Var> expected(dim);
+    std::vector<Var> x(dim);
+
+    A[0] = std::vector<Var>{Var(985, 1944), 0, Var(-49, 108), Var(-3, 8), 0, 0, 0, 0, 0, 0, Var(21, 5)};
+    A[1] = std::vector<Var>{0, Var(13, 18), 0, 0, Var(-1, 2), 0, 0, 0, 0, 0, 0};
+    A[2] = std::vector<Var>{Var(-49, 108), 0, Var(43, 18), Var(3, 4), 0, 0, 0, 0, 0, 0, Var(3, 4)};
+    A[3] =
+      std::vector<Var>{Var(-3, 8), 0, Var(3, 4), Var(567, 1000), 0, Var(-12, 25), Var(-24, 125), 0, 0, 0, Var(123, 32)};
+    A[4] = std::vector<Var>{0, Var(-1, 2), 0, 0, Var(9, 10), 0, 0, Var(-2, 5), 0, 0, 0};
+    A[5] = std::vector<Var>{0, 0, 0, Var(-12, 25), 0, Var(6, 5), Var(12, 25), 0, 0, 0, Var(-15, 16)};
+    A[6] = std::vector<Var>{0, 0, 0, Var(-24, 125), 0, Var(12, 25),
+      Var(24, 125) + Var(1, 9) / sqrtTwo + Var(4, 243) * sqrtTwo, Var(-1, 9) / sqrtTwo + Var(4, 243) * sqrtTwo,
+      Var(2, 27) * sqrtTwo, Var(2, 27) * sqrtTwo, Var(-27, 32)};
+    A[7] = std::vector<Var>{0, 0, 0, 0, Var(-2, 5), 0, Var(-1, 9) / sqrtTwo + Var(4, 243) * sqrtTwo,
+      Var(2, 5) + Var(1, 9) / sqrtTwo + Var(4, 243) * sqrtTwo, Var(2, 27) * sqrtTwo, Var(2, 27) * sqrtTwo, 0};
+    A[8] = std::vector<Var>{
+      0, 0, 0, 0, 0, 0, Var(2, 27) * sqrtTwo, Var(2, 27) * sqrtTwo, Var(4, 9) * sqrtTwo, Var(2, 9) * sqrtTwo, 0};
+    A[9] = std::vector<Var>{
+      0, 0, 0, 0, 0, 0, Var(2, 27) * sqrtTwo, Var(2, 27) * sqrtTwo, Var(2, 9) * sqrtTwo, Var(4, 9) * sqrtTwo, 0};
+
+    rhs[0] = Var(21, 5);
+    rhs[1] = 0;
+    rhs[2] = Var(3, 4);
+    rhs[3] = Var(123, 32);
+    rhs[4] = 0;
+    rhs[5] = Var(-15, 16);
+    rhs[6] = Var(-27, 32);
+    rhs[7] = 0;
+    rhs[8] = 0;
+    rhs[9] = 0;
+
+    solve(A, rhs, x, x.size(), Algo::GaussLCPivot);
+
+    expected[0] = Var(378351, 1280);
+    expected[1] = Var(-135, 64);
+    expected[2] = Var(-135027, 1280);
+    expected[3] = Var(132049, 256);
+    expected[4] = Var(-195, 64);
+    expected[5] = Var(132629, 640) + Var(27, 8) / sqrtTwo;
+    expected[6] = Var(-135, 32) - Var(135, 16) / sqrtTwo;
+    expected[7] = Var(-135, 32);
+    expected[8] = Var(15, 16) + Var(15, 16) / sqrtTwo;
+    expected[9] = Var(15, 16) + Var(15, 16) / sqrtTwo;
+
+    BOOST_TEST(expected == x, boost::test_tools::per_element{});
+}
+
+BOOST_AUTO_TEST_CASE(solveLinearSymbolicSystemDim10)
+{
+    const size_t dim = 10;
+    BoostMatrix A(dim, dim);
+    BoostVector rhs(dim);
+    BoostVector x(dim);
+    BoostVector expected(dim);
+
+    A(0, 0) = Var(985, 1944) * a * b;
+    A(0, 1) = 0;
+    A(0, 2) = Var(-49, 108) * a * b;
+    A(0, 3) = Var(-3, 8) * a * b;
+    A(0, 4) = 0;
+    A(0, 5) = 0;
+    A(0, 6) = 0;
+    A(0, 7) = 0;
+    A(0, 8) = 0;
+    A(0, 9) = 0;
+
+    A(1, 0) = 0;
+    A(1, 1) = Var(13, 18) * a * b;
+    A(1, 2) = 0;
+    A(1, 3) = 0;
+    A(1, 4) = Var(-1, 2) * c * a;
+    A(1, 5) = 0;
+    A(1, 6) = 0;
+    A(1, 7) = 0;
+    A(1, 8) = 0;
+    A(1, 9) = 0;
+
+    A(2, 0) = Var(-49, 108) * a * b;
+    A(2, 1) = 0;
+    A(2, 2) = Var(43, 18) * a * b;
+    A(2, 3) = Var(3, 4) * a * b;
+    A(2, 4) = 0;
+    A(2, 5) = 0;
+    A(2, 6) = 0;
+    A(2, 7) = 0;
+    A(2, 8) = 0;
+    A(2, 9) = 0;
+
+    A(3, 0) = Var(-3, 8) * a * b;
+    A(3, 1) = 0;
+    A(3, 2) = Var(3, 4) * a * b;
+    A(3, 3) = Var(1143, 1000) * a * b;
+    A(3, 4) = 0;
+    A(3, 5) = Var(-24, 25) * a * b;
+    A(3, 6) = Var(-96, 125) * a * b;
+    A(3, 7) = 0;
+    A(3, 8) = Var(-24, 25) * a * b;
+    A(3, 9) = 0;
+
+    A(4, 0) = 0;
+    A(4, 1) = Var(-1, 2) * c * a;
+    A(4, 2) = 0;
+    A(4, 3) = 0;
+    A(4, 4) = Var(9, 10) * c * a;
+    A(4, 5) = 0;
+    A(4, 6) = 0;
+    A(4, 7) = Var(-2, 5) * c * a;
+    A(4, 8) = 0;
+    A(4, 9) = 0;
+
+    A(5, 0) = 0;
+    A(5, 1) = 0;
+    A(5, 2) = 0;
+    A(5, 3) = Var(-24, 25) * a * b;
+    A(5, 4) = 0;
+    A(5, 5) = Var(8, 5) * a * b;
+    A(5, 6) = Var(24, 25) * a * b;
+    A(5, 7) = 0;
+    A(5, 8) = Var(4, 5) * a * b;
+    A(5, 9) = 0;
+
+    A(6, 0) = 0;
+    A(6, 1) = 0;
+    A(6, 2) = 0;
+    A(6, 3) = Var(-96, 125) * a * b;
+    A(6, 4) = 0;
+    A(6, 5) = Var(24, 25) * a * b;
+    A(6, 6) = Var(1, 9) * c * a / sqrtTwo + Var(96, 125) * a * b + Var(1, 243) * sqrtTwo * a * b;
+    A(6, 7) = Var(-1, 9) * c * a / sqrtTwo + Var(1, 243) * sqrtTwo * a * b;
+    A(6, 8) = Var(24, 25) * a * b;
+    A(6, 9) = Var(1, 27) * sqrtTwo * a * b;
+
+    A(7, 0) = 0;
+    A(7, 1) = 0;
+    A(7, 2) = 0;
+    A(7, 3) = 0;
+    A(7, 4) = Var(-2, 5) * c * a;
+    A(7, 5) = 0;
+    A(7, 6) = Var(-1, 9) * c * a / sqrtTwo + Var(1, 243) * sqrtTwo * a * b;
+    A(7, 7) = Var(2, 5) * c * a + Var(1, 9) * c * a / sqrtTwo + Var(1, 243) * sqrtTwo * a * b;
+    A(7, 8) = 0;
+    A(7, 9) = Var(1, 27) * sqrtTwo * a * b;
+
+    A(8, 0) = 0;
+    A(8, 1) = 0;
+    A(8, 2) = 0;
+    A(8, 3) = Var(-24, 25) * a * b;
+    A(8, 4) = 0;
+    A(8, 5) = Var(4, 5) * a * b;
+    A(8, 6) = Var(24, 25) * a * b;
+    A(8, 7) = 0;
+    A(8, 8) = Var(8, 5) * a * b;
+    A(8, 9) = 0;
+
+    A(9, 0) = 0;
+    A(9, 1) = 0;
+    A(9, 2) = 0;
+    A(9, 3) = 0;
+    A(9, 4) = 0;
+    A(9, 5) = 0;
+    A(9, 6) = Var(1, 27) * sqrtTwo * a * b;
+    A(9, 7) = Var(1, 27) * sqrtTwo * a * b;
+    A(9, 8) = 0;
+    A(9, 9) = Var(1, 3) * sqrtTwo * a * b;
+
+    rhs(0) = Var(33, 10);
+    rhs(1) = 0;
+    rhs(2) = Var(3, 4);
+    rhs(3) = Var(12, 5);
+    rhs(4) = 0;
+    rhs(5) = Var(-5, 8);
+    rhs(6) = Var(3, 2);
+    rhs(7) = 0;
+    rhs(8) = Var(5, 8);
+    rhs(9) = 0;
+
+    solve(A, rhs, x, x.size(), Algo::GaussLCPivot);
+
+    expected(0) = 34263 / (160 * a * b);
+    expected(1) = -27 / (-13 * a * b + 9 * a * c);
+    expected(2) = -1215 / (16 * a * b);
+    expected(3) = 59587 / (160 * a * b);
+    expected(4) = -39 * b / (-13 * a * b * c + 9 * a * c * c);
+    expected(5) =
+      (28080 * b * b + 56160 * sqrtTwo * b * b - 1551937 * b * c - 38880 * sqrtTwo * b * c + 1066941 * c * c)
+      / (-10400 * a * b * b * c + 7200 * a * b * c * c);
+    expected(6) = (-351 * b - 702 * sqrtTwo * b + 135 * c + 486 * sqrtTwo * c) / (-52 * a * b * c + 36 * a * c * c);
+    expected(7) = (-351 * b + 135 * c) / (-52 * a * b * c + 36 * a * c * c);
+    expected(8) =
+      (28080 * b * b + 56160 * sqrtTwo * b * b - 1568187 * b * c - 38880 * sqrtTwo * b * c + 1078191 * c * c)
+      / (-10400 * a * b * b * c + 7200 * a * b * c * c);
+    expected(9) = (39 * b + 39 * sqrtTwo * b - 15 * c - 27 * sqrtTwo * c) / (-26 * a * b * c + 18 * a * c * c);
+
+    BOOST_CHECK_EQUAL(expected, x);
 }
 
 BOOST_AUTO_TEST_CASE(detDim0)
@@ -528,7 +730,7 @@ BOOST_AUTO_TEST_CASE(inverseDim3, *label("expensive"))
     A[1] = {10, 0, c * d};
     A[2] = {a * a, b, 1};
 
-    invert(A, dim);
+    invert(A, dim, Algo::Gauss);
 
     expected[0] = {c * d / (-20 * b + a * c * d), -2 * b / (-20 * b + a * c * d), 0};
     expected[1] = {(10 - a * a * c * d) / (-20 * b * b + a * b * c * d),
@@ -553,7 +755,7 @@ BOOST_AUTO_TEST_CASE(inverseDim4SkipField, *label("expensive"))
     A[2] = {2500, a * b * c, 3 * d * a, -10};
     A[3] = {a * a, b, -b * a, 1};
 
-    invert(A, skip, dim);
+    invert(A, skip, dim, Algo::Gauss);
 
     expected[0] = {c * d / (-20 * b + a * c * d), -2 * b / (-20 * b + a * c * d), c * c, 0};
     expected[1] = {(10 - a * a * c * d) / (-20 * b * b + a * b * c * d),

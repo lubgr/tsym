@@ -27,7 +27,7 @@ add_executable(tests EXCLUDE_FROM_ALL
     testnumtrigosimpl.cpp
     testorder.cpp
     testparser.cpp
-    testpivoting.cpp
+    testpivotingrowswaps.cpp
     testplu.cpp
     testpolycontentunit.cpp
     testpolydivide.cpp

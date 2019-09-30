@@ -5,30 +5,30 @@
 #include "var.h"
 
 namespace tsym {
-    struct VectorAdaptor {
-        std::vector<Var> data;
+    template <class T = Var> struct VectorAdaptor {
+        std::vector<T> data;
 
-        Var& operator()(std::size_t i)
+        T& operator()(std::size_t i)
         {
             return data[i];
         }
-        const Var& operator()(std::size_t i) const
+        const T& operator()(std::size_t i) const
         {
             return data[i];
         }
     };
 
-    struct MatrixAdaptor {
-        std::vector<Var> data;
-        std::size_t nRows;
+    template <class T = Var> struct SquareMatrixAdaptor {
+        std::vector<T> data;
+        std::size_t dim;
 
-        Var& operator()(std::size_t i, std::size_t j)
+        T& operator()(std::size_t i, std::size_t j)
         {
-            return data[i * nRows + j];
+            return data[i * dim + j];
         }
-        const Var& operator()(std::size_t i, std::size_t j) const
+        const T& operator()(std::size_t i, std::size_t j) const
         {
-            return data[i * nRows + j];
+            return data[i * dim + j];
         }
     };
 }

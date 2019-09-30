@@ -1,5 +1,5 @@
-#ifndef TSYM_PLU_H
-#define TSYM_PLU_H
+#ifndef TSYM_SOLVE_H
+#define TSYM_SOLVE_H
 
 #include <algorithm>
 #include <cassert>
@@ -9,6 +9,9 @@
 #include "var.h"
 
 namespace tsym {
+    enum class Algo { Gauss, GaussLCPivot };
+    inline constexpr Algo defaultAlgo = Algo::GaussLCPivot;
+
     namespace detail {
         template <class SkipFieldVector, class SizeType> auto toSkipField(const SkipFieldVector& src, SizeType dim)
         {
@@ -129,60 +132,61 @@ namespace tsym {
             }
         }
 
-        void invert(std::vector<Var>& A, std::size_t dim);
-        Var determinant(std::vector<Var>&& A, std::size_t dim);
-        std::vector<Var> solve(std::vector<Var>&& A, std::vector<Var>&& b, std::size_t dim);
+        void invert(std::vector<Var>& A, std::size_t dim, Algo choice);
+        Var determinant(std::vector<Var>&& A, std::size_t dim, Algo choice);
+        std::vector<Var> solve(std::vector<Var>&& A, std::vector<Var>&& b, std::size_t dim, Algo choice);
     }
 
     template <class Matrix, class RhsVector, class SolutionVector, class SkipField, typename SizeType>
-    void solve(const Matrix& A, const RhsVector& b, SolutionVector& x, const SkipField& sf, SizeType dim)
+    void solve(const Matrix& A, const RhsVector& b, SolutionVector& x, const SkipField& sf, SizeType dim,
+      Algo choice = defaultAlgo)
     {
         const std::vector<bool> skip = detail::toSkipField(sf, dim);
         std::vector<Var> coeff = detail::toStdVec<Var>(A, skip, dim, dim);
         std::vector<Var> rhs = detail::toStdVec<Var>(b, skip, dim);
         const std::size_t reducedDim = rhs.size();
 
-        std::vector<Var> result = detail::solve(std::move(coeff), std::move(rhs), reducedDim);
+        std::vector<Var> result = detail::solve(std::move(coeff), std::move(rhs), reducedDim, choice);
 
         detail::fromStdVec(std::move(result), x, skip, dim);
     }
 
     template <class Matrix, class RhsVector, class SolutionVector, typename SizeType>
-    void solve(const Matrix& A, const RhsVector& b, SolutionVector& x, SizeType dim)
+    void solve(const Matrix& A, const RhsVector& b, SolutionVector& x, SizeType dim, Algo choice = defaultAlgo)
     {
-        solve(A, b, x, detail::defaultSkip(dim), dim);
+        solve(A, b, x, detail::defaultSkip(dim), dim, choice);
     }
 
     template <class Matrix, class SkipField, typename SizeType>
-    Var determinant(const Matrix& A, const SkipField& sf, SizeType dim)
+    Var determinant(const Matrix& A, const SkipField& sf, SizeType dim, Algo choice = defaultAlgo)
     {
         const std::vector<bool> skip = detail::toSkipField(sf, dim);
         const auto reducedDim = std::count(skip.cbegin(), skip.cend(), false);
         std::vector<Var> vecA = detail::toStdVec<Var>(A, skip, dim, dim);
 
-        return detail::determinant(std::move(vecA), static_cast<std::size_t>(reducedDim));
+        return detail::determinant(std::move(vecA), static_cast<std::size_t>(reducedDim), choice);
     }
 
-    template <class Matrix, typename SizeType> Var determinant(const Matrix& A, SizeType dim)
+    template <class Matrix, typename SizeType> Var determinant(const Matrix& A, SizeType dim, Algo choice = defaultAlgo)
     {
-        return determinant(A, detail::defaultSkip(dim), dim);
+        return determinant(A, detail::defaultSkip(dim), dim, choice);
     }
 
     template <class Matrix, class SkipField, typename SizeType>
-    void invert(Matrix& A, const SkipField& sf, SizeType dim)
+    void invert(Matrix& A, const SkipField& sf, SizeType dim, Algo choice = defaultAlgo)
     {
         const std::vector<bool> skip = detail::toSkipField(sf, dim);
         const auto reducedDim = std::count(skip.cbegin(), skip.cend(), false);
         std::vector<Var> vecA = detail::toStdVec<Var>(A, skip, dim, dim);
 
-        detail::invert(vecA, static_cast<std::size_t>(reducedDim));
+        detail::invert(vecA, static_cast<std::size_t>(reducedDim), choice);
 
         detail::fromStdVec(std::move(vecA), A, skip, dim, dim);
     }
 
-    template <class Matrix, typename SizeType> void invert(Matrix& A, SizeType dim)
+    template <class Matrix, typename SizeType> void invert(Matrix& A, SizeType dim, Algo choice = defaultAlgo)
     {
-        return invert(A, detail::defaultSkip(dim), dim);
+        return invert(A, detail::defaultSkip(dim), dim, choice);
     }
 }
 

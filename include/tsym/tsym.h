@@ -4,7 +4,7 @@
 #include "constants.h"
 #include "functions.h"
 #include "logger.h"
-#include "plu.h"
+#include "solve.h"
 #include "var.h"
 #include "version.h"
 

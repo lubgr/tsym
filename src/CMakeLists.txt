@@ -17,12 +17,12 @@ add_library(tsym
     cache.cpp
     constant.cpp
     constants.cpp
+    directsolve.cpp
     fraction.cpp
     function.cpp
     functions.cpp
     gcd.cpp
     int.cpp
-    leastcomplexitypivot.cpp
     logarithm.cpp
     logger.cpp
     name.cpp
@@ -36,7 +36,6 @@ add_library(tsym
     order.cpp
     parser.cpp
     plaintextprintengine.cpp
-    plu.cpp
     poly.cpp
     polyinfo.cpp
     power.cpp
@@ -47,6 +46,7 @@ add_library(tsym
     printer.cpp
     product.cpp
     productsimpl.cpp
+    solve.cpp
     subresultantgcd.cpp
     sum.cpp
     sumsimpl.cpp
