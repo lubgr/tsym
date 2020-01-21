@@ -1,7 +1,7 @@
 #ifndef TSYM_PRINTENGINE_H
 #define TSYM_PRINTENGINE_H
 
-#include "int.h"
+#include <string_view>
 
 namespace tsym {
     struct Name;
@@ -15,8 +15,9 @@ namespace tsym {
         virtual PrintEngine& symbol(const Name& name) = 0;
         virtual PrintEngine& positiveSymbol(const Name& name) = 0;
         virtual PrintEngine& functionName(const Name& name) = 0;
-        virtual PrintEngine& number(double n) = 0;
-        virtual PrintEngine& number(const Int& n) = 0;
+        virtual PrintEngine& floatingPoint(double n) = 0;
+        virtual PrintEngine& integer(long long n) = 0;
+        virtual PrintEngine& integer(std::string_view n) = 0;
         virtual PrintEngine& undefined() = 0;
 
         virtual PrintEngine& plusSign() = 0;

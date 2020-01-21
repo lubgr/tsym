@@ -4,6 +4,7 @@
 #include "fixtures.h"
 #include "functions.h"
 #include "number.h"
+#include "plaintextprintengine.h"
 #include "tsymtests.h"
 
 using namespace tsym;
@@ -183,6 +184,18 @@ BOOST_AUTO_TEST_CASE(atanMinusOneOverSqrtThree)
     res = atan(arg);
 
     BOOST_CHECK_EQUAL(-pi() / 6, res);
+}
+
+BOOST_AUTO_TEST_CASE(printPlainText)
+{
+    const std::string expected = "a*(b + 3*c - 4*d)*sqrt(e)";
+    const Var arg = a * (b + 3 * c - 4 * d) * tsym::sqrt(e);
+    std::ostringstream os;
+    PlaintextPrintEngine engine(os);
+
+    print(engine, arg);
+
+    BOOST_CHECK_EQUAL(expected, os.str());
 }
 
 BOOST_AUTO_TEST_CASE(successfulParsing01)

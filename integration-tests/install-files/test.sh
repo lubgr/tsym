@@ -16,7 +16,7 @@ set -e
 
 pushd "${TSYM_INSTALLATION_PATH}"
 
-for header in constants functions fwd logger solve tsym var version; do
+for header in constants functions fwd logger solve tsym plaintextprintengine printengine var version; do
     checkInstalledFile "include/tsym/${header}".h
 done
 

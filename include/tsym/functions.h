@@ -8,6 +8,10 @@
 #include "var.h"
 
 namespace tsym {
+    class PrintEngine;
+}
+
+namespace tsym {
     /* Central functions and constants, that they are allowed to pollute the global tsym namespace,
      * i.e., common mathematical functions and constants, the interface for parsing expressions and
      * functions for the solution of linear systems of equations and the like. */
@@ -43,6 +47,7 @@ namespace tsym {
     std::vector<Var> operands(const Var& arg);
     std::vector<Var> collectSymbols(const Var& arg);
 
+    void print(PrintEngine& engine, const Var& arg);
     std::optional<Var> parse(std::string_view str);
 }
 

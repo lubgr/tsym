@@ -10,6 +10,7 @@
 #include "namefct.h"
 #include "parser.h"
 #include "power.h"
+#include "printer.h"
 #include "symbolmap.h"
 #include "trigonometric.h"
 
@@ -204,6 +205,11 @@ std::vector<tsym::Var> tsym::collectSymbols(const Var& arg)
     collectSymbols(arg.get(), symbols);
 
     return symbols;
+}
+
+void tsym::print(PrintEngine& engine, const Var& arg)
+{
+    print(engine, *arg.get());
 }
 
 std::optional<tsym::Var> tsym::parse(std::string_view str)

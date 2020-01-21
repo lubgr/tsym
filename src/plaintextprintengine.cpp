@@ -38,14 +38,21 @@ tsym::PrintEngine& tsym::PlaintextPrintEngine::functionName(const Name& name)
     return *this;
 }
 
-tsym::PrintEngine& tsym::PlaintextPrintEngine::number(double n)
+tsym::PrintEngine& tsym::PlaintextPrintEngine::floatingPoint(double n)
 {
     out << n;
 
     return *this;
 }
 
-tsym::PrintEngine& tsym::PlaintextPrintEngine::number(const Int& n)
+tsym::PrintEngine& tsym::PlaintextPrintEngine::integer(long long n)
+{
+    out << n;
+
+    return *this;
+}
+
+tsym::PrintEngine& tsym::PlaintextPrintEngine::integer(std::string_view n)
 {
     out << n;
 

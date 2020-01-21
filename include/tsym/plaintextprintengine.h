@@ -14,8 +14,9 @@ namespace tsym {
         PrintEngine& symbol(const Name& name) override;
         PrintEngine& positiveSymbol(const Name& name) override;
         PrintEngine& functionName(const Name& name) override;
-        PrintEngine& number(double n) override;
-        PrintEngine& number(const Int& n) override;
+        PrintEngine& floatingPoint(double n) override;
+        PrintEngine& integer(long long n) override;
+        PrintEngine& integer(std::string_view n) override;
         PrintEngine& undefined() override;
 
         PrintEngine& plusSign() override;
