@@ -1,15 +1,15 @@
 
 #include "plaintextprintengine.h"
-#include "logging.h"
+#include "int.h"
 #include "name.h"
 #include "namefct.h"
 
 tsym::PlaintextPrintEngine::PlaintextPrintEngine(std::ostream& out, CharSet charset)
-    : PrintEngine<PlaintextPrintEngine>(out)
-    , charset(charset)
+    : charset(charset)
+    , out(out)
 {}
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::symbol(const Name& name)
+tsym::PrintEngine& tsym::PlaintextPrintEngine::symbol(const Name& name)
 {
     if (charset == CharSet::ASCII)
         out << concat(name);
@@ -19,7 +19,7 @@ tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::symbol(const Name& name)
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::positiveSymbol(const Name& name)
+tsym::PrintEngine& tsym::PlaintextPrintEngine::positiveSymbol(const Name& name)
 {
     symbol(name);
 
@@ -31,77 +31,77 @@ tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::positiveSymbol(const Nam
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::functionName(const Name& name)
+tsym::PrintEngine& tsym::PlaintextPrintEngine::functionName(const Name& name)
 {
     symbol(name);
 
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::number(double n)
+tsym::PrintEngine& tsym::PlaintextPrintEngine::number(double n)
 {
     out << n;
 
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::number(const Int& n)
+tsym::PrintEngine& tsym::PlaintextPrintEngine::number(const Int& n)
 {
     out << n;
 
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::undefined()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::undefined()
 {
     out << "Undefined";
 
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::plusSign()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::plusSign()
 {
     out << " + ";
 
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::minusSign()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::minusSign()
 {
     out << " - ";
 
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::unaryMinusSign()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::unaryMinusSign()
 {
     out << "-";
 
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::timesSign()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::timesSign()
 {
     out << "*";
 
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::divisionSign()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::divisionSign()
 {
     out << "/";
 
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::comma()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::comma()
 {
     out << ", ";
 
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::openNumerator(bool numeratorIsSum)
+tsym::PrintEngine& tsym::PlaintextPrintEngine::openNumerator(bool numeratorIsSum)
 {
     if (numeratorIsSum)
         openParentheses();
@@ -109,7 +109,7 @@ tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::openNumerator(bool numer
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::closeNumerator(bool numeratorWasSum)
+tsym::PrintEngine& tsym::PlaintextPrintEngine::closeNumerator(bool numeratorWasSum)
 {
     if (numeratorWasSum)
         closeParentheses();
@@ -117,7 +117,7 @@ tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::closeNumerator(bool nume
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::openDenominator(bool denominatorIsScalar)
+tsym::PrintEngine& tsym::PlaintextPrintEngine::openDenominator(bool denominatorIsScalar)
 {
     divisionSign();
 
@@ -127,7 +127,7 @@ tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::openDenominator(bool den
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::closeDenominator(bool denominatorWasScalar)
+tsym::PrintEngine& tsym::PlaintextPrintEngine::closeDenominator(bool denominatorWasScalar)
 {
     if (!denominatorWasScalar)
         closeParentheses();
@@ -135,19 +135,19 @@ tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::closeDenominator(bool de
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::openScalarExponent()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::openScalarExponent()
 {
     out << "^";
 
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::closeScalarExponent()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::closeScalarExponent()
 {
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::openCompositeExponent()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::openCompositeExponent()
 {
     openScalarExponent();
     openParentheses();
@@ -155,14 +155,14 @@ tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::openCompositeExponent()
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::closeCompositeExponent()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::closeCompositeExponent()
 {
     closeParentheses();
 
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::openSquareRoot()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::openSquareRoot()
 {
     out << "sqrt";
     openParentheses();
@@ -170,21 +170,21 @@ tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::openSquareRoot()
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::closeSquareRoot()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::closeSquareRoot()
 {
     closeParentheses();
 
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::openParentheses()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::openParentheses()
 {
     out << "(";
 
     return *this;
 }
 
-tsym::PlaintextPrintEngine& tsym::PlaintextPrintEngine::closeParentheses()
+tsym::PrintEngine& tsym::PlaintextPrintEngine::closeParentheses()
 {
     out << ")";
 

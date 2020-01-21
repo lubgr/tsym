@@ -1,38 +1,46 @@
 #ifndef TSYM_PRINTENGINE_H
 #define TSYM_PRINTENGINE_H
 
-#include <functional>
-#include <ostream>
-#include "baseptr.h"
-#include "logging.h"
+#include "int.h"
 
 namespace tsym {
-    template <class Engine> class PrintEngine {
+    struct Name;
+}
+
+namespace tsym {
+    class PrintEngine {
       public:
-        explicit PrintEngine(std::ostream& stream)
-            : out(stream)
-        {}
+        virtual ~PrintEngine() = default;
 
-        void registerToplevelPrintFunction(std::function<void(Engine&, const BasePtr&)> function)
-        {
-            printFunction = std::move(function);
-        }
+        virtual PrintEngine& symbol(const Name& name) = 0;
+        virtual PrintEngine& positiveSymbol(const Name& name) = 0;
+        virtual PrintEngine& functionName(const Name& name) = 0;
+        virtual PrintEngine& number(double n) = 0;
+        virtual PrintEngine& number(const Int& n) = 0;
+        virtual PrintEngine& undefined() = 0;
 
-        Engine& invokePrint(const BasePtr& ptr)
-        {
-            if (printFunction)
-                printFunction(static_cast<Engine&>(*this), ptr);
-            else
-                TSYM_ERROR("No toplevel print function registered");
+        virtual PrintEngine& plusSign() = 0;
+        virtual PrintEngine& minusSign() = 0;
+        virtual PrintEngine& unaryMinusSign() = 0;
+        virtual PrintEngine& timesSign() = 0;
+        virtual PrintEngine& divisionSign() = 0;
+        virtual PrintEngine& comma() = 0;
 
-            return static_cast<Engine&>(*this);
-        }
+        virtual PrintEngine& openNumerator(bool numeratorIsSum = false) = 0;
+        virtual PrintEngine& closeNumerator(bool numeratorWasSum = false) = 0;
+        virtual PrintEngine& openDenominator(bool denominatorIsScalar = false) = 0;
+        virtual PrintEngine& closeDenominator(bool denominatorWasScalar = false) = 0;
 
-      protected:
-        std::ostream& out;
+        virtual PrintEngine& openScalarExponent() = 0;
+        virtual PrintEngine& closeScalarExponent() = 0;
+        virtual PrintEngine& openCompositeExponent() = 0;
+        virtual PrintEngine& closeCompositeExponent() = 0;
 
-      private:
-        std::function<void(Engine&, const BasePtr&)> printFunction;
+        virtual PrintEngine& openSquareRoot() = 0;
+        virtual PrintEngine& closeSquareRoot() = 0;
+
+        virtual PrintEngine& openParentheses() = 0;
+        virtual PrintEngine& closeParentheses() = 0;
     };
 }
 

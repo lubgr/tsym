@@ -8,29 +8,31 @@
 #include "numeric.h"
 #include "plaintextprintengine.h"
 #include "power.h"
+#include "printengine.h"
 #include "product.h"
 
 namespace tsym {
     namespace {
         enum class PowerAsFraction : bool { TRUE, FALSE };
 
-        template <class Engine> class Printer {
+        class Printer {
           public:
-            Printer(Engine& engine, PowerAsFraction opt)
+            Printer(PrintEngine& engine, PowerAsFraction opt)
                 : engine(engine)
                 , powerAsFraction(opt)
             {}
 
+            void print(const BasePtr& base)
+            {
+                return print(*base);
+            }
+
             void print(const Base& base)
             {
-                engine.registerToplevelPrintFunction([this](Engine&, const BasePtr& ptr) { print(*ptr); });
-
-                using tsym::print;
-
                 if (isSymbol(base))
                     symbol(base);
                 else if (isNumeric(base))
-                    print(engine, *base.numericEval());
+                    tsym::print(engine, *base.numericEval());
                 else if (isPower(base))
                     power(base.base(), base.exp());
                 else if (isSum(base))
@@ -58,9 +60,11 @@ namespace tsym {
 
             void power(const BasePtr& base, const BasePtr& exp)
             {
-                if (exp->isEqual(*Numeric::half()))
-                    engine.openSquareRoot().invokePrint(base).closeSquareRoot();
-                else if (isNegativeNumeric(*exp) && powerAsFraction == PowerAsFraction::TRUE)
+                if (exp->isEqual(*Numeric::half())) {
+                    engine.openSquareRoot();
+                    print(base);
+                    engine.closeSquareRoot();
+                } else if (isNegativeNumeric(*exp) && powerAsFraction == PowerAsFraction::TRUE)
                     powerNegNumericExp(base, exp);
                 else
                     standardPower(base, exp);
@@ -70,12 +74,11 @@ namespace tsym {
             {
                 const bool denomNeedsParentheses = isScalarPowerBase(base);
 
-                engine.openNumerator()
-                  .number(1)
-                  .closeNumerator()
-                  .openDenominator(denomNeedsParentheses)
-                  .invokePrint(Power::create(base, Product::minus(exp)))
-                  .closeDenominator(denomNeedsParentheses);
+                engine.openNumerator().number(1).closeNumerator().openDenominator(denomNeedsParentheses);
+
+                print(Power::create(base, Product::minus(exp)));
+
+                engine.closeDenominator(denomNeedsParentheses);
             }
 
             bool isScalarPowerBase(const BasePtr& base)
@@ -99,19 +102,27 @@ namespace tsym {
             void powerBase(const BasePtr& base)
             {
                 if (isScalarPowerBase(base))
-                    engine.invokePrint(base);
-                else
-                    engine.openParentheses().invokePrint(base).closeParentheses();
+                    print(base);
+                else {
+                    engine.openParentheses();
+                    print(base);
+                    engine.closeParentheses();
+                }
             }
 
             void powerExponent(const BasePtr& exp)
             {
                 if (isOne(*exp))
                     return;
-                else if (isScalarPowerExp(exp))
-                    engine.openScalarExponent().invokePrint(exp).closeScalarExponent();
-                else
-                    engine.openCompositeExponent().invokePrint(exp).closeCompositeExponent();
+                else if (isScalarPowerExp(exp)) {
+                    engine.openScalarExponent();
+                    print(exp);
+                    engine.closeScalarExponent();
+                } else {
+                    engine.openCompositeExponent();
+                    print(exp);
+                    engine.closeCompositeExponent();
+                }
             }
 
             bool isScalarPowerExp(const BasePtr& exp)
@@ -128,7 +139,7 @@ namespace tsym {
             {
                 auto summands = sum.operands();
 
-                engine.invokePrint(summands.front());
+                print(summands.front());
                 summands.pop_front();
 
                 for (auto& summand : summands) {
@@ -138,7 +149,7 @@ namespace tsym {
                     } else
                         engine.plusSign();
 
-                    engine.invokePrint(summand);
+                    print(summand);
                 }
             }
 
@@ -171,9 +182,11 @@ namespace tsym {
 
                 if (num.empty())
                     engine.number(1);
-                else if (num.size() == 1 && precedence(num.front()) < productPrecedence)
-                    engine.openParentheses().invokePrint(num.front()).closeParentheses();
-                else
+                else if (num.size() == 1 && precedence(num.front()) < productPrecedence) {
+                    engine.openParentheses();
+                    print(num.front());
+                    engine.closeParentheses();
+                } else
                     productWithoutFractions(num);
 
                 if (denom.empty())
@@ -182,9 +195,12 @@ namespace tsym {
                 engine.divisionSign();
 
                 if (denom.size() == 1 && precedence(denom.front()) > productPrecedence)
-                    engine.invokePrint(denom.front());
-                else
-                    engine.openParentheses().invokePrint(Product::create(denom)).closeParentheses();
+                    print(denom.front());
+                else {
+                    engine.openParentheses();
+                    print(Product::create(denom));
+                    engine.closeParentheses();
+                }
             }
 
             std::pair<tsym::BasePtrList, tsym::BasePtrList> getProductFrac(const BasePtrList& origFactors)
@@ -235,21 +251,27 @@ namespace tsym {
                 factors.pop_front();
 
                 if (factors.empty())
-                    engine.invokePrint(first);
+                    print(first);
                 else if (isOne(*Product::minus(first)))
                     engine.unaryMinusSign();
                 else if (isOne(*first))
                     ;
-                else if (precedence(first) < productPrecedence)
-                    engine.openParentheses().invokePrint(first).closeParentheses().timesSign();
-                else
-                    engine.invokePrint(first).timesSign();
+                else if (precedence(first) < productPrecedence) {
+                    engine.openParentheses();
+                    print(first);
+                    engine.closeParentheses().timesSign();
+                } else {
+                    print(first);
+                    engine.timesSign();
+                }
 
                 for (auto factor = cbegin(factors); factor != cend(factors); ++factor) {
-                    if (precedence(*factor) < productPrecedence)
-                        engine.openParentheses().invokePrint(*factor).closeParentheses();
-                    else
-                        engine.invokePrint(*factor);
+                    if (precedence(*factor) < productPrecedence) {
+                        engine.openParentheses();
+                        print(*factor);
+                        engine.closeParentheses();
+                    } else
+                        print(*factor);
 
                     if (factor != std::prev(cend(factors)))
                         engine.timesSign();
@@ -260,27 +282,30 @@ namespace tsym {
             {
                 const auto& ops = fct.operands();
 
-                engine.functionName(fct.name()).openParentheses().invokePrint(ops.front());
+                engine.functionName(fct.name()).openParentheses();
+                print(ops.front());
 
-                if (ops.size() == 2)
-                    engine.comma().invokePrint(ops.back());
+                if (ops.size() == 2) {
+                    engine.comma();
+                    print(ops.back());
+                }
 
                 engine.closeParentheses();
             }
 
-            Engine& engine;
+            PrintEngine& engine;
             PowerAsFraction powerAsFraction;
         };
 
-        template <class Engine> void print(Engine& engine, const Base& base, PowerAsFraction opt)
+        void print(PrintEngine& engine, const Base& base, PowerAsFraction opt)
         {
-            Printer<Engine> printer(engine, opt);
-            printer.print(base);
+            Printer p(engine, opt);
+            p.print(base);
         }
     }
 }
 
-template <class Engine> void tsym::print(Engine& engine, const Number& number)
+void tsym::print(PrintEngine& engine, const Number& number)
 {
     if (number.isDouble())
         engine.number(number.toDouble());
@@ -298,16 +323,12 @@ template <class Engine> void tsym::print(Engine& engine, const Number& number)
     }
 }
 
-template <class Engine> void tsym::print(Engine& engine, const Base& base)
+void tsym::print(PrintEngine& engine, const Base& base)
 {
     print(engine, base, PowerAsFraction::TRUE);
 }
 
-template <class Engine> void tsym::printDebug(Engine& engine, const Base& base)
+void tsym::printDebug(PrintEngine& engine, const Base& base)
 {
     print(engine, base, PowerAsFraction::FALSE);
 }
-
-template void tsym::print<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const Number&);
-template void tsym::print<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const Base&);
-template void tsym::printDebug<tsym::PlaintextPrintEngine>(PlaintextPrintEngine&, const Base&);

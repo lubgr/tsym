@@ -1,52 +1,49 @@
 #ifndef TSYM_PLAINTEXTPRINTENGINE_H
 #define TSYM_PLAINTEXTPRINTENGINE_H
 
-#include "int.h"
+#include <iosfwd>
 #include "printengine.h"
 
 namespace tsym {
-    struct Name;
-}
-
-namespace tsym {
-    class PlaintextPrintEngine : public PrintEngine<PlaintextPrintEngine> {
+    class PlaintextPrintEngine : public PrintEngine {
       public:
         enum class CharSet { ASCII, UNICODE };
 
         explicit PlaintextPrintEngine(std::ostream& out, CharSet charset = CharSet::UNICODE);
 
-        PlaintextPrintEngine& symbol(const Name& name);
-        PlaintextPrintEngine& positiveSymbol(const Name& name);
-        PlaintextPrintEngine& functionName(const Name& name);
-        PlaintextPrintEngine& number(double n);
-        PlaintextPrintEngine& number(const Int& n);
-        PlaintextPrintEngine& undefined();
+        PrintEngine& symbol(const Name& name) override;
+        PrintEngine& positiveSymbol(const Name& name) override;
+        PrintEngine& functionName(const Name& name) override;
+        PrintEngine& number(double n) override;
+        PrintEngine& number(const Int& n) override;
+        PrintEngine& undefined() override;
 
-        PlaintextPrintEngine& plusSign();
-        PlaintextPrintEngine& minusSign();
-        PlaintextPrintEngine& unaryMinusSign();
-        PlaintextPrintEngine& timesSign();
-        PlaintextPrintEngine& divisionSign();
-        PlaintextPrintEngine& comma();
+        PrintEngine& plusSign() override;
+        PrintEngine& minusSign() override;
+        PrintEngine& unaryMinusSign() override;
+        PrintEngine& timesSign() override;
+        PrintEngine& divisionSign() override;
+        PrintEngine& comma() override;
 
-        PlaintextPrintEngine& openNumerator(bool numeratorIsSum = false);
-        PlaintextPrintEngine& closeNumerator(bool numeratorWasSum = false);
-        PlaintextPrintEngine& openDenominator(bool denominatorIsScalar = false);
-        PlaintextPrintEngine& closeDenominator(bool denominatorWasScalar = false);
+        PrintEngine& openNumerator(bool numeratorIsSum = false) override;
+        PrintEngine& closeNumerator(bool numeratorWasSum = false) override;
+        PrintEngine& openDenominator(bool denominatorIsScalar = false) override;
+        PrintEngine& closeDenominator(bool denominatorWasScalar = false) override;
 
-        PlaintextPrintEngine& openScalarExponent();
-        PlaintextPrintEngine& closeScalarExponent();
-        PlaintextPrintEngine& openCompositeExponent();
-        PlaintextPrintEngine& closeCompositeExponent();
+        PrintEngine& openScalarExponent() override;
+        PrintEngine& closeScalarExponent() override;
+        PrintEngine& openCompositeExponent() override;
+        PrintEngine& closeCompositeExponent() override;
 
-        PlaintextPrintEngine& openSquareRoot();
-        PlaintextPrintEngine& closeSquareRoot();
+        PrintEngine& openSquareRoot() override;
+        PrintEngine& closeSquareRoot() override;
 
-        PlaintextPrintEngine& openParentheses();
-        PlaintextPrintEngine& closeParentheses();
+        PrintEngine& openParentheses() override;
+        PrintEngine& closeParentheses() override;
 
       private:
         const CharSet charset;
+        std::ostream& out;
     };
 }
 

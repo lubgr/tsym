@@ -1,17 +1,17 @@
 #ifndef TSYM_PRINTER_H
 #define TSYM_PRINTER_H
 
-#include "baseptr.h"
-
 namespace tsym {
     class Number;
+    class Base;
+    class PrintEngine;
 }
 
 namespace tsym {
-    template <class Engine> void print(Engine& engine, const Number& number);
-    template <class Engine> void print(Engine& engine, const Base& base);
+    void print(PrintEngine& engine, const Number& number);
+    void print(PrintEngine& engine, const Base& base);
     /* Account for to the actual representation, not prettiness: */
-    template <class Engine> void printDebug(Engine& engine, const Base& base);
+    void printDebug(PrintEngine& engine, const Base& base);
 }
 
 #endif
