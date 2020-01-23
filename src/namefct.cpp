@@ -4,8 +4,12 @@
 #include <cctype>
 #include <ostream>
 #include <string_view>
+#include <type_traits>
 #include <vector>
 #include "name.h"
+
+static_assert(std::is_aggregate_v<tsym::Name>);
+static_assert(std::is_aggregate_v<tsym::NameView>);
 
 namespace tsym {
     namespace {
@@ -93,7 +97,7 @@ namespace tsym {
     }
 }
 
-std::string tsym::unicode(const Name& name)
+std::string tsym::unicode(NameView name)
 {
     if (!isGreekLetter(name.value))
         return concat(name);
@@ -101,9 +105,9 @@ std::string tsym::unicode(const Name& name)
         return unicodeForGreekLetter(name.value);
 }
 
-std::string tsym::tex(const Name& name)
+std::string tsym::tex(NameView name)
 {
-    std::string result = isGreekLetter(name.value) ? getGreekTexLetter(name.value) : name.value;
+    std::string result = isGreekLetter(name.value) ? getGreekTexLetter(name.value) : std::string{name.value};
 
     result.append(texAppendix(name.subscript, '_'));
     result.append(texAppendix(name.superscript, '^'));
@@ -111,7 +115,7 @@ std::string tsym::tex(const Name& name)
     return result;
 }
 
-std::string tsym::concat(const Name& name, char delimiter)
+std::string tsym::concat(NameView name, char delimiter)
 {
     std::string result(name.value);
 

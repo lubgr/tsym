@@ -5,12 +5,13 @@
 
 namespace tsym {
     struct Name;
+    struct NameView;
 }
 
 namespace tsym {
-    std::string unicode(const Name& name);
-    std::string tex(const Name& name);
-    std::string concat(const Name& name, char delimiter = '_');
+    std::string unicode(NameView name);
+    std::string tex(NameView name);
+    std::string concat(NameView name, char delimiter = '_');
 }
 
 #endif

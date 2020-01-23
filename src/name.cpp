@@ -5,6 +5,11 @@
 #include <tuple>
 #include "namefct.h"
 
+tsym::Name::operator tsym::NameView() const
+{
+    return {value, subscript, superscript};
+}
+
 bool tsym::operator==(const Name& lhs, const Name& rhs)
 {
     return std::tie(lhs.value, lhs.subscript, lhs.superscript) == std::tie(rhs.value, rhs.subscript, rhs.superscript);
