@@ -11,9 +11,9 @@ namespace tsym {
 
         explicit PlaintextPrintEngine(std::ostream& out, CharSet charset = CharSet::UNICODE);
 
-        PrintEngine& symbol(const Name& name) override;
-        PrintEngine& positiveSymbol(const Name& name) override;
-        PrintEngine& functionName(const Name& name) override;
+        PrintEngine& symbol(std::string_view name, std::string_view sub, std::string_view super) override;
+        PrintEngine& positiveSymbol(std::string_view name, std::string_view sub, std::string_view super) override;
+        PrintEngine& functionName(std::string_view name) override;
         PrintEngine& floatingPoint(double n) override;
         PrintEngine& integer(long long n) override;
         PrintEngine& integer(std::string_view n) override;
@@ -42,9 +42,11 @@ namespace tsym {
         PrintEngine& openParentheses() override;
         PrintEngine& closeParentheses() override;
 
+      protected:
+        std::ostream& out;
+
       private:
         const CharSet charset;
-        std::ostream& out;
     };
 }
 

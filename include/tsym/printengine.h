@@ -4,17 +4,19 @@
 #include <string_view>
 
 namespace tsym {
-    struct Name;
-}
-
-namespace tsym {
     class PrintEngine {
       public:
         virtual ~PrintEngine() = default;
 
-        virtual PrintEngine& symbol(const Name& name) = 0;
-        virtual PrintEngine& positiveSymbol(const Name& name) = 0;
-        virtual PrintEngine& functionName(const Name& name) = 0;
+        struct Name {
+            std::string_view value;
+            std::string_view subscript;
+            std::string_view superscript;
+        };
+
+        virtual PrintEngine& symbol(std::string_view name, std::string_view sub, std::string_view super) = 0;
+        virtual PrintEngine& positiveSymbol(std::string_view name, std::string_view sub, std::string_view super) = 0;
+        virtual PrintEngine& functionName(std::string_view name) = 0;
         virtual PrintEngine& floatingPoint(double n) = 0;
         virtual PrintEngine& integer(long long n) = 0;
         virtual PrintEngine& integer(std::string_view n) = 0;

@@ -5,6 +5,7 @@
 #include "base.h"
 #include "basefct.h"
 #include "baseptrlistfct.h"
+#include "name.h"
 #include "numberfct.h"
 #include "numeric.h"
 #include "plaintextprintengine.h"
@@ -42,9 +43,10 @@ namespace tsym {
                     product(base);
                 else if (isFunction(base))
                     function(base);
-                else if (isConstant(base))
-                    engine.symbol(base.name());
-                else {
+                else if (isConstant(base)) {
+                    const Name& n = base.name();
+                    engine.symbol(n.value, n.subscript, n.superscript);
+                } else {
                     assert(isUndefined(base));
                     engine.undefined();
                 }
@@ -53,10 +55,12 @@ namespace tsym {
           private:
             void symbol(const Base& base)
             {
+                const Name& n = base.name();
+
                 if (base.isPositive())
-                    engine.positiveSymbol(base.name());
+                    engine.positiveSymbol(n.value, n.subscript, n.superscript);
                 else
-                    engine.symbol(base.name());
+                    engine.symbol(n.value, n.subscript, n.superscript);
             }
 
             void power(const BasePtr& base, const BasePtr& exp)
@@ -283,7 +287,7 @@ namespace tsym {
             {
                 const auto& ops = fct.operands();
 
-                engine.functionName(fct.name()).openParentheses();
+                engine.functionName(fct.name().value).openParentheses();
                 toplevel(ops.front());
 
                 if (ops.size() == 2) {

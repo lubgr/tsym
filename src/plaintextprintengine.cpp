@@ -5,23 +5,25 @@
 #include "namefct.h"
 
 tsym::PlaintextPrintEngine::PlaintextPrintEngine(std::ostream& out, CharSet charset)
-    : charset(charset)
-    , out(out)
+    : out(out)
+    , charset(charset)
 {}
 
-tsym::PrintEngine& tsym::PlaintextPrintEngine::symbol(const Name& name)
+tsym::PrintEngine& tsym::PlaintextPrintEngine::symbol(
+  std::string_view name, std::string_view sub, std::string_view super)
 {
     if (charset == CharSet::ASCII)
-        out << concat(name);
+        out << concat({name, sub, super});
     else
-        out << unicode(name);
+        out << unicode({name, sub, super});
 
     return *this;
 }
 
-tsym::PrintEngine& tsym::PlaintextPrintEngine::positiveSymbol(const Name& name)
+tsym::PrintEngine& tsym::PlaintextPrintEngine::positiveSymbol(
+  std::string_view name, std::string_view sub, std::string_view super)
 {
-    symbol(name);
+    symbol(name, sub, super);
 
 #ifndef TSYM_ASCII_ONLY
     if (charset == CharSet::UNICODE)
@@ -31,9 +33,9 @@ tsym::PrintEngine& tsym::PlaintextPrintEngine::positiveSymbol(const Name& name)
     return *this;
 }
 
-tsym::PrintEngine& tsym::PlaintextPrintEngine::functionName(const Name& name)
+tsym::PrintEngine& tsym::PlaintextPrintEngine::functionName(std::string_view name)
 {
-    symbol(name);
+    symbol(name, {}, {});
 
     return *this;
 }
