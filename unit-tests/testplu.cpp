@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(solveLinearSystemDim4a)
     BOOST_CHECK_EQUAL(1 - 2 * a * a + 3 * b / 2 + 3 * a * a * b / (2 * c) - 3 * b * b / (2 * c), x(3));
 }
 
-BOOST_AUTO_TEST_CASE(solveLinearSystemDim4b)
+BOOST_AUTO_TEST_CASE(solveLinearSystemDim4b, *label("expensive"))
 {
     const Var sqrtTwo = tsym::sqrt(2);
     BoostMatrix A(4, 4);
@@ -399,7 +399,7 @@ BOOST_AUTO_TEST_CASE(solveLinearNumericSystemDim10)
     BOOST_TEST(expected == x, boost::test_tools::per_element{});
 }
 
-BOOST_AUTO_TEST_CASE(solveLinearSymbolicSystemDim10)
+BOOST_AUTO_TEST_CASE(solveLinearSymbolicSystemDim10, *label("expensive"))
 {
     const size_t dim = 10;
     BoostMatrix A(dim, dim);
