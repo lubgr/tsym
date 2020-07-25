@@ -11,7 +11,7 @@ namespace tsym {
 namespace tsym {
     std::string unicode(NameView name);
     std::string tex(NameView name);
-    std::string concat(NameView name, char delimiter = '_');
+    std::string concat(NameView name);
 }
 
 #endif

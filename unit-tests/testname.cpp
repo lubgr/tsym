@@ -36,32 +36,29 @@ BOOST_AUTO_TEST_CASE(varWithSubscriptChar)
 
 BOOST_AUTO_TEST_CASE(varWithSubscriptString)
 {
-    const std::string expectedPlain("U_xyz");
-    const std::string expectedTex("U_{xyz}");
+    const std::string expected("U_{xyz}");
     const Name n{"U", "xyz"};
 
-    BOOST_CHECK_EQUAL(expectedPlain, concat(n));
-    BOOST_CHECK_EQUAL(expectedTex, tex(n));
+    BOOST_CHECK_EQUAL(expected, concat(n));
+    BOOST_CHECK_EQUAL(expected, tex(n));
 }
 
 BOOST_AUTO_TEST_CASE(varWithSubAndSuperscriptChar)
 {
-    const std::string expectedPlain("ABC_d_e");
-    const std::string expectedTex("ABC_d^e");
+    const std::string expected("ABC_d^e");
     const Name n{"ABC", "d", "e"};
 
-    BOOST_CHECK_EQUAL(expectedPlain, concat(n));
-    BOOST_CHECK_EQUAL(expectedTex, tex(n));
+    BOOST_CHECK_EQUAL(expected, concat(n));
+    BOOST_CHECK_EQUAL(expected, tex(n));
 }
 
 BOOST_AUTO_TEST_CASE(varWithSubCharAndSuperString)
 {
-    const std::string expectedPlain("ABC_d_efg");
-    const std::string expectedTex("ABC_d^{efg}");
+    const std::string expected("ABC_d^{efg}");
     const Name n{"ABC", "d", "efg"};
 
-    BOOST_CHECK_EQUAL(expectedPlain, concat(n));
-    BOOST_CHECK_EQUAL(expectedTex, tex(n));
+    BOOST_CHECK_EQUAL(expected, concat(n));
+    BOOST_CHECK_EQUAL(expected, tex(n));
 }
 
 BOOST_AUTO_TEST_CASE(greekLowerCaseLetter)

@@ -130,9 +130,9 @@ BOOST_AUTO_TEST_CASE(positiveSymbolWithSubAndSuperscript)
 {
     const std::string expected =
 #ifndef TSYM_ASCII_ONLY
-      "a_b_c\u208A";
+      "a_b^c\u208A";
 #else
-      "a_b_c";
+      "a_b^c";
 #endif
     const Name name{"a", "b", "c"};
     const BasePtr aPos = Symbol::createPositive(name);

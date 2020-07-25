@@ -77,7 +77,7 @@ namespace tsym {
             return result.append(str);
         }
 
-        std::string texAppendix(std::string_view term, char connection)
+        std::string delimCurlyBracesOrPlain(std::string_view term, char connection)
         {
             std::string appendix;
 
@@ -109,19 +109,18 @@ std::string tsym::tex(NameView name)
 {
     std::string result = isGreekLetter(name.value) ? getGreekTexLetter(name.value) : std::string{name.value};
 
-    result.append(texAppendix(name.subscript, '_'));
-    result.append(texAppendix(name.superscript, '^'));
+    result.append(delimCurlyBracesOrPlain(name.subscript, '_'));
+    result.append(delimCurlyBracesOrPlain(name.superscript, '^'));
 
     return result;
 }
 
-std::string tsym::concat(NameView name, char delimiter)
+std::string tsym::concat(NameView name)
 {
-    std::string result(name.value);
+    std::string result{name.value};
 
-    for (const auto& appendix : {name.subscript, name.superscript})
-        if (!appendix.empty())
-            result.append(1, delimiter).append(appendix);
+    result.append(delimCurlyBracesOrPlain(name.subscript, '_'));
+    result.append(delimCurlyBracesOrPlain(name.superscript, '^'));
 
     return result;
 }
