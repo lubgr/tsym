@@ -18,7 +18,6 @@ namespace tsym {
         std::string unicodeForGreekLetter(std::string_view str);
         bool startsWithCapitalLetter(std::string_view str);
         std::string getGreekTexLetter(std::string_view str);
-        std::string texAppendix(std::string_view term, char connection);
 
         bool isGreekLetter(std::string_view str)
         {
