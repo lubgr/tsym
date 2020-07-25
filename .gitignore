@@ -1,6 +1,7 @@
 bin
 build*
 .gdb*
+.ccls-cache
 *.swp
 .tags
 .clang*
