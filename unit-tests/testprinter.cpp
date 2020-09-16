@@ -115,25 +115,14 @@ BOOST_AUTO_TEST_CASE(symbol)
 
 BOOST_AUTO_TEST_CASE(positiveSymbol)
 {
-    const std::string expected =
-#ifndef TSYM_ASCII_ONLY
-      "a\u208A";
-#else
-      "a";
-#endif
     const BasePtr aPos = Symbol::createPositive("a");
 
-    BOOST_CHECK_EQUAL(expected, print(*aPos));
+    BOOST_CHECK_EQUAL("a", print(*aPos));
 }
 
 BOOST_AUTO_TEST_CASE(positiveSymbolWithSubAndSuperscript)
 {
-    const std::string expected =
-#ifndef TSYM_ASCII_ONLY
-      "a_b^c\u208A";
-#else
-      "a_b^c";
-#endif
+    const std::string expected = "a_b^c";
     const Name name{"a", "b", "c"};
     const BasePtr aPos = Symbol::createPositive(name);
 
