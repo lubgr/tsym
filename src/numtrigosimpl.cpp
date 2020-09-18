@@ -286,7 +286,6 @@ void tsym::NumTrigoSimpl::compNumericalSin()
 template <class Fct> void tsym::NumTrigoSimpl::compNumerically(Fct&& eval)
 {
     assert(isNumeric(*arg));
-    assert(arg->numericEval()->isDouble());
 
     const double numericResult = std::forward<Fct>(eval)(arg->numericEval()->toDouble());
 
@@ -445,6 +444,9 @@ void tsym::NumTrigoSimpl::atan()
         resultTimesSign();
     else if (isDoubleNumeric(*origArg)) {
         reset();
-        compNumerically([](auto arg) { return std::atan(arg); });
+        compNumerically([](auto arg) {
+            const double result = std::atan(arg);
+            return result >= 0 ? result : 2 * M_PI + result;
+        });
     }
 }
