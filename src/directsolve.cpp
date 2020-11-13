@@ -1,6 +1,7 @@
 
 #include "directsolve.h"
 #include <limits>
+#include <stdexcept>
 #include "functions.h"
 
 std::size_t tsym::firstNonZeroPivot(const SquareMatrixAdaptor<>& coeff, std::size_t row)
