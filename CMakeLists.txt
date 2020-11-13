@@ -34,7 +34,7 @@ target_compile_options(tsym-internal-config
     INTERFACE
     $<$<OR:$<CXX_COMPILER_ID:AppleClang>,$<CXX_COMPILER_ID:Clang>,$<CXX_COMPILER_ID:GNU>>:
     -Wall -Wextra -pedantic -Wconversion -Wsign-conversion -Wsign-compare -Wold-style-cast>
-    $<$<CONFIG:PROFILE>:-pg>
+    $<$<CONFIG:PROFILE>:-pg -O3>
     $<$<CONFIG:COVERAGE>:--coverage>
     $<$<CONFIG:SANITIZER>:-fsanitize=address,undefined,integer-divide-by-zero,float-divide-by-zero,float-cast-overflow,return -fno-omit-frame-pointer>)
 
