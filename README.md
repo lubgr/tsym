@@ -1,5 +1,7 @@
 
-# tsym: Tiny Symbolic Library [![Build Status](https://travis-ci.org/lubgr/tsym.svg?branch=develop)](https://travis-ci.org/lubgr/tsym) [![Coverage Status](https://coveralls.io/repos/github/lubgr/tsym/badge.svg?branch=develop)](https://coveralls.io/github/lubgr/tsym?branch=develop) [![BCH compliance](https://bettercodehub.com/edge/badge/lubgr/tsym?branch=develop)](https://bettercodehub.com/results/lubgr/tsym)
+# tsym: Tiny Symbolic Library [![Coverage Status](https://coveralls.io/repos/github/lubgr/tsym/badge.svg?branch=develop)](https://coveralls.io/github/lubgr/tsym?branch=develop)
+
+**This library is currently not maintained or otherwise being worked on.**
 
 This small C++ library intends to provide a simple approach to symbolic algebra. In contrast to
 fully-fledged computer algebra systems or libraries (e.g. maxima, GiNaC, sympy), only basic features
